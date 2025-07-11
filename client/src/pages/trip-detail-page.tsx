@@ -107,6 +107,34 @@ export default function TripDetailPage() {
     },
   });
 
+  const quitTripMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("DELETE", `/api/trips/${id}/participants/${user?.id}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erro ao sair da viagem');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Saída confirmada!",
+        description: data.message,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/trips", id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/my-trips"] });
+      // Redirect to dashboard after leaving
+      window.location.href = "/dashboard";
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro ao sair da viagem",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -590,13 +618,63 @@ export default function TripDetailPage() {
                 )}
 
                 {isParticipant && !isCreator && (
-                  <div className="pt-4">
+                  <div className="pt-4 space-y-2">
                     <Button className="w-full" asChild>
                       <a href={`/chat/${trip.id}`}>
                         <MessageCircle className="h-4 w-4 mr-2" />
                         Abrir Chat
                       </a>
                     </Button>
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
+                          <X className="h-4 w-4 mr-2" />
+                          Desistir da Viagem
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle className="text-red-600">Desistir da Viagem</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="bg-red-50 p-3 rounded-lg">
+                            <p className="text-sm text-red-800">
+                              ⚠️ <strong>Atenção!</strong> Esta ação não pode ser desfeita.
+                            </p>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            Você está prestes a sair da viagem <strong>"{trip.title}"</strong>. 
+                            Após confirmar, você será removido da lista de participantes e não terá mais acesso ao chat e às informações da viagem.
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Se desejar participar novamente, precisará enviar uma nova solicitação ao organizador.
+                          </p>
+                          <div className="flex gap-2">
+                            <DialogTrigger asChild>
+                              <Button variant="outline" className="flex-1">
+                                Cancelar
+                              </Button>
+                            </DialogTrigger>
+                            <Button 
+                              onClick={() => quitTripMutation.mutate()}
+                              disabled={quitTripMutation.isPending}
+                              variant="destructive"
+                              className="flex-1"
+                            >
+                              {quitTripMutation.isPending ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                                  Saindo...
+                                </>
+                              ) : (
+                                "Confirmar Saída"
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 )}
 

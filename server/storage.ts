@@ -26,6 +26,7 @@ export interface IStorage {
   getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]>;
   addTripParticipant(tripId: number, userId: number): Promise<TripParticipant>;
   updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined>;
+  removeTripParticipant(tripId: number, userId: number): Promise<void>;
 
   // Messages
   getTripMessages(tripId: number): Promise<(Message & { sender: User })[]>;
@@ -231,6 +232,29 @@ export class MemStorage implements IStorage {
     const updatedParticipant = { ...participant, status };
     this.tripParticipants.set(key, updatedParticipant);
     return updatedParticipant;
+  }
+
+  async removeTripParticipant(tripId: number, userId: number): Promise<void> {
+    const key = `${tripId}-${userId}`;
+    this.tripParticipants.delete(key);
+    
+    // Se o usuário removido era o organizador, transferir para o primeiro participante
+    const trip = this.trips.get(tripId);
+    if (trip && trip.creatorId === userId) {
+      const participants = await this.getTripParticipants(tripId);
+      const activeParticipants = participants.filter(p => p.status === 'accepted');
+      
+      if (activeParticipants.length > 0) {
+        // Transferir organização para o primeiro participante ativo
+        const newOrganizer = activeParticipants[0];
+        await this.updateTrip(tripId, { creatorId: newOrganizer.userId });
+        console.log(`✅ Organização da viagem ${tripId} transferida para usuário ${newOrganizer.user.username}`);
+      } else {
+        // Se não há mais participantes, marcar viagem como cancelada
+        await this.updateTrip(tripId, { status: 'cancelled' });
+        console.log(`❌ Viagem ${tripId} cancelada - sem participantes`);
+      }
+    }
   }
 
   async getTripMessages(tripId: number): Promise<(Message & { sender: User })[]> {

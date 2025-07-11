@@ -223,6 +223,54 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Remove participant from trip
+  app.delete("/api/trips/:id/participants/:userId", requireAuth, async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const userIdToRemove = parseInt(req.params.userId);
+      
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+      
+      // Verificar se o usuário atual tem permissão (é o próprio participante ou o organizador)
+      const isOwnParticipation = req.user!.id === userIdToRemove;
+      const isOrganizer = trip.creatorId === req.user!.id;
+      
+      if (!isOwnParticipation && !isOrganizer) {
+        return res.status(403).json({ message: "Você não tem permissão para remover este participante" });
+      }
+      
+      // Verificar se o usuário é realmente um participante
+      const participants = await storage.getTripParticipants(tripId);
+      const participant = participants.find(p => p.userId === userIdToRemove && p.status === 'accepted');
+      
+      if (!participant) {
+        return res.status(404).json({ message: "Participante não encontrado nesta viagem" });
+      }
+      
+      // Remover participante
+      await storage.removeTripParticipant(tripId, userIdToRemove);
+      
+      // Atualizar contador de participantes
+      const updatedTrip = await storage.getTrip(tripId);
+      if (updatedTrip && updatedTrip.status !== 'cancelled') {
+        await storage.updateTrip(tripId, { 
+          currentParticipants: Math.max(0, updatedTrip.currentParticipants - 1) 
+        });
+      }
+      
+      res.json({ 
+        message: isOwnParticipation ? "Você saiu da viagem com sucesso" : "Participante removido com sucesso",
+        tripStatus: updatedTrip?.status 
+      });
+    } catch (error) {
+      console.error('Erro ao remover participante:', error);
+      res.status(500).json({ message: "Erro ao remover participante" });
+    }
+  });
+
   // Message routes
   app.get("/api/trips/:id/messages", requireAuth, async (req, res) => {
     try {

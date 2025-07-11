@@ -164,3 +164,7 @@ Changelog:
 - July 11, 2025. Added comprehensive error handling with toast notifications, debug logging, and graceful error states throughout the dashboard
 - July 11, 2025. Implemented responsive design improvements for mobile and tablet devices with flexible layouts and better component organization
 - July 11, 2025. Enhanced trip statistics calculation with real-time data processing for upcoming, in-progress, and completed trips with visual progress indicators
+- July 11, 2025. Implemented "Desistir da Viagem" (quit trip) functionality - participants can leave trips with automatic organizer transfer to first participant if creator leaves
+- July 11, 2025. Added backend API endpoint DELETE /api/trips/:id/participants/:userId for removing participants with proper permission checks and automatic trip management
+- July 11, 2025. Enhanced storage interface with removeTripParticipant method that handles organizer transfer and automatic trip cancellation when no participants remain
+- July 11, 2025. Added confirmation dialog in trip detail page for participants to leave trips with clear warnings and user feedback
