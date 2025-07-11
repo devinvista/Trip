@@ -77,18 +77,13 @@ export function Navbar() {
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <Link key={item.href} href={item.href}>
-                      <Button 
-                        variant={isActive(item.href) ? "default" : "ghost"}
-                        className={`flex items-center gap-2 ${
+                    <Link key={item.href} href={item.href} className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                           isActive(item.href) 
                             ? "bg-primary text-white" 
-                            : "text-dark hover:text-primary"
-                        }`}
-                      >
+                            : "text-dark hover:text-primary hover:bg-gray-50"
+                        }`}>
                         <Icon className="h-4 w-4" />
                         {item.label}
-                      </Button>
                     </Link>
                   );
                 })}
