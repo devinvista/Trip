@@ -1,0 +1,136 @@
+🧭 PRD - Plataforma de Encontro de Viajantes
+1. Visão Geral
+Nome do Projeto
+ViajaJunto
+
+Objetivo
+Desenvolver um site onde usuários possam encontrar companheiros de viagem com interesses, destinos e datas em comum, permitindo compartilhar custos (como hospedagem, transporte, aluguel de carro etc.) e experiências. A plataforma também ajudará no planejamento colaborativo da viagem.
+
+2. Público-Alvo
+Jovens adultos (18-35) que buscam experiências compartilhadas;
+Viajantes solo procurando companhia e economia;
+Aventureiros e mochileiros com flexibilidade de roteiro;
+Pessoas interessadas em dividir custos de viagem.
+
+3. Principais Funcionalidades
+3.1. Cadastro e Autenticação
+Cadastro de usuário com email e senha, autenticação local (compatível com MySQL);
+Login via formulário padrão;
+Recuperação de senha via email;
+Perfil com foto, bio, idiomas falados, preferências de viagem (estilo, orçamento etc.).
+
+3.2. Planejamento de Viagem
+Seleção de destino(s), data(s) e tipo de viagem (aventura, luxo, mochilão, etc.);
+Criação de “Viagem Planejada” com:
+Nome da viagem;
+Roteiro (datas e locais);
+Orçamento estimado;
+Descrição e objetivos;
+Itens a dividir (ex: hospedagem, aluguel de carro);
+Opção de abrir a viagem para participação de outros usuários.
+
+3.3. Busca por Parceiros
+Filtros de busca por:
+Destino;
+Datas;
+Perfil do viajante (idade, gênero, estilo de viagem);
+Tipo de divisão de custos;
+Página com sugestões de compatibilidade com outros usuários com base em interesses e datas.
+
+3.4. Interação e Comunicação
+Solicitação para participar de uma viagem;
+
+Chat interno entre participantes de uma mesma viagem;
+
+Comentários e reações em perfis e viagens.
+
+3.5. Dashboard
+Painel para cada usuário com:
+
+Minhas viagens criadas;
+
+Viagens que estou participando;
+
+Convites recebidos;
+
+Sugestões de grupos/viagens.
+
+3.6. Notificações
+Notificações por email e internas:
+
+Novos interessados na viagem;
+
+Alterações de roteiro;
+
+Mensagens novas no chat;
+
+Convites recebidos ou aceitos.
+
+3.7. Segurança e Moderação
+Denúncia de perfis e viagens;
+
+Verificação por e-mail;
+
+Políticas claras de uso e comportamento.
+
+4. Requisitos Técnicos
+4.1. Backend
+Linguagem: PHP (compatível com Hostinger);
+Banco de dados: MySQL 8+;
+
+4.2. Frontend
+HTML5, CSS3, JavaScript;
+
+5. Integrações Futuras (Versão Premium / V2)
+Integração com Google Maps (rotas, pontos turísticos);
+Avaliação de viajantes após cada viagem;
+
+Integração com APIs de passagens/hotéis (Skyscanner, Booking.com).
+
+6. Wireframes (resumido)
+[Página Inicial]
+
+Banner explicativo + botão "Comece Agora"
+
+Busca rápida: destino + datas
+
+Seções de: “Viagens em destaque”, “Parceiros ideais”, “Depoimentos”
+
+[Perfil de Usuário]
+
+Foto, bio, interesses
+
+Viagens criadas/participando
+
+Avaliações (futuro)
+
+[Página de Viagem]
+
+Roteiro completo, membros, chat
+
+Botão “Solicitar Participação”
+
+7. Métricas de Sucesso
+Número de viagens criadas por mês;
+
+Taxa de participação em viagens;
+
+Mensagens trocadas entre viajantes;
+
+Taxa de retorno de usuários ativos.
+
+8. Cronograma Inicial (MVP)
+Semana	Entregável
+1	Setup do ambiente + estrutura do banco
+2	Sistema de autenticação e perfis
+3	Cadastro e visualização de viagens
+4	Busca de parceiros e filtros
+5	Chat básico + painel do usuário
+6	Testes, segurança e deploy Hostinger
+
+9. Considerações Finais
+O projeto deve ter código limpo, seguro e documentação mínima;
+
+O MVP deve funcionar de forma fluida, mesmo em celulares com internet limitada;
+
+Design moderno, mas leve, priorizando usabilidade e clareza.
