@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -28,12 +28,14 @@ import {
   Settings,
   Bell,
   Search,
-  Filter
+  Filter,
+  X
 } from "lucide-react";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedTimeframe, setSelectedTimeframe] = useState('upcoming');
 
   const { data: myTrips, isLoading: tripsLoading, error: tripsError, refetch: refetchTrips } = useQuery({
@@ -73,6 +75,35 @@ export default function DashboardPage() {
     refetchOnMount: true,
     retry: 2,
     refetchInterval: false,
+  });
+
+  // Mutation para desistir da viagem
+  const quitTripMutation = useMutation({
+    mutationFn: async (tripId: number) => {
+      const response = await fetch(`/api/trips/${tripId}/participants/${user?.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erro ao sair da viagem');
+      }
+      return response.json();
+    },
+    onSuccess: (data, tripId) => {
+      toast({
+        title: "Saída confirmada!",
+        description: data.message,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/my-trips"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro ao sair da viagem",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   const createdTrips = (myTrips as any)?.created || [];
@@ -434,6 +465,32 @@ export default function DashboardPage() {
                             Chat
                           </Button>
                         </Link>
+                        {/* Botão desistir apenas para participantes (não organizadores) */}
+                        {trip.creatorId !== user?.id && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                            onClick={() => {
+                              if (window.confirm(`Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`)) {
+                                quitTripMutation.mutate(trip.id);
+                              }
+                            }}
+                            disabled={quitTripMutation.isPending}
+                          >
+                            {quitTripMutation.isPending ? (
+                              <>
+                                <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
+                                Saindo...
+                              </>
+                            ) : (
+                              <>
+                                <X className="h-4 w-4 mr-1" />
+                                Desistir
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         {new Date(trip.startDate) > new Date() ? (
