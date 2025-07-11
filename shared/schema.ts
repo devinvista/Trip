@@ -31,6 +31,7 @@ export const trips = pgTable("trips", {
   description: text("description").notNull(),
   travelStyle: text("travel_style").notNull(),
   sharedCosts: text("shared_costs").array(),
+  plannedActivities: jsonb("planned_activities"), // Advanced activities with attachments, links, costs
   status: text("status").default("open").notNull(), // open, full, cancelled
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -179,6 +180,40 @@ export interface BudgetBreakdown {
   visas?: number;
   other?: number;
 }
+
+// Advanced planned activity interface
+export interface PlannedActivity {
+  id: string;
+  title: string;
+  description?: string;
+  estimatedCost?: number;
+  priority: 'high' | 'medium' | 'low';
+  category: 'sightseeing' | 'food' | 'adventure' | 'culture' | 'relaxation' | 'nightlife' | 'shopping' | 'other';
+  duration?: string; // e.g., "2 hours", "full day"
+  links?: string[]; // URLs for reference
+  attachments?: Array<{
+    name: string;
+    url: string;
+    type: 'image' | 'document' | 'video' | 'other';
+  }>;
+  notes?: string;
+  completed?: boolean;
+  scheduledDate?: string; // ISO date string
+  location?: string;
+  createdAt: string;
+}
+
+// Activity categories with labels and icons
+export const activityCategories = {
+  sightseeing: { label: "Pontos Turísticos", icon: "🏛️" },
+  food: { label: "Gastronomia", icon: "🍽️" },
+  adventure: { label: "Aventura", icon: "🏔️" },
+  culture: { label: "Cultura", icon: "🎭" },
+  relaxation: { label: "Relaxamento", icon: "🧘" },
+  nightlife: { label: "Vida Noturna", icon: "🌙" },
+  shopping: { label: "Compras", icon: "🛍️" },
+  other: { label: "Outros", icon: "📋" }
+} as const;
 
 // Expense category labels
 export const expenseCategories = {

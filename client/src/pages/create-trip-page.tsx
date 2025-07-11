@@ -52,13 +52,15 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { insertTripSchema, expenseCategories, BudgetBreakdown } from "@shared/schema";
+import { insertTripSchema, expenseCategories, BudgetBreakdown, PlannedActivity } from "@shared/schema";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
+import { AdvancedActivityManager } from "@/components/advanced-activity-manager";
 import { apiRequest } from "@/lib/queryClient";
 
 const createTripSchema = insertTripSchema.extend({
   startDate: z.string().min(1, "Data de início é obrigatória"),
   endDate: z.string().min(1, "Data de fim é obrigatória"),
+  plannedActivities: z.array(z.any()).optional(),
 }).refine((data) => {
   const startDate = new Date(data.startDate);
   const endDate = new Date(data.endDate);
@@ -97,6 +99,14 @@ const PLANNING_ROADMAP = [
     description: 'Escolha as melhores datas considerando clima e eventos'
   },
   { 
+    id: 'activities', 
+    title: 'Atividades Planejadas', 
+    icon: Camera, 
+    points: 30,
+    status: 'pending',
+    description: 'Adicione atividades com custos, links e anexos'
+  },
+  { 
     id: 'group', 
     title: 'Formação do Grupo', 
     icon: Users, 
@@ -114,43 +124,7 @@ const PLANNING_ROADMAP = [
   },
 ] as const;
 
-// Sortable Activity Item Component
-function SortableActivityItem({ id, activity, onRemove }: { 
-  id: string; 
-  activity: string; 
-  onRemove: () => void; 
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-  
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg shadow-sm"
-    >
-      <div {...listeners} className="cursor-move">
-        <GripVertical className="h-4 w-4 text-gray-400" />
-      </div>
-      <Camera className="h-4 w-4 text-primary" />
-      <span className="text-sm font-medium flex-1">{activity}</span>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={onRemove}
-        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-      >
-        <Minus className="h-3 w-3" />
-      </Button>
-    </div>
-  );
-}
+// Old SortableActivityItem removed - now using AdvancedActivityManager
 
 // Achievement System
 const ACHIEVEMENTS = [
@@ -169,12 +143,35 @@ function CreateTripPageContent() {
   const [totalPoints, setTotalPoints] = useState(0);
   const [achievements, setAchievements] = useState(ACHIEVEMENTS);
   const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
-  const [activities, setActivities] = useState<Array<{ id: string; activity: string }>>([
-    { id: '1', activity: 'Visitar pontos turísticos principais' },
-    { id: '2', activity: 'Experimentar gastronomia local' },
-    { id: '3', activity: 'Explorar a vida noturna' },
+  const [plannedActivities, setPlannedActivities] = useState<PlannedActivity[]>([
+    {
+      id: '1',
+      title: 'Visitar pontos turísticos principais',
+      category: 'sightseeing',
+      priority: 'high',
+      estimatedCost: 150,
+      duration: '4 horas',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: '2',
+      title: 'Experimentar gastronomia local',
+      category: 'food',
+      priority: 'medium',
+      estimatedCost: 200,
+      duration: '2 horas',
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: '3',
+      title: 'Explorar a vida noturna',
+      category: 'nightlife',
+      priority: 'low',
+      estimatedCost: 100,
+      duration: '3 horas',
+      createdAt: new Date().toISOString(),
+    },
   ]);
-  const [newActivity, setNewActivity] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -232,27 +229,36 @@ function CreateTripPageContent() {
       updatedSteps[2].status = 'in-progress';
     }
     
-    // Group Formation
-    if (watchedValues.maxParticipants && watchedValues.maxParticipants > 2) {
+    // Activities Planning
+    if (plannedActivities.length >= 3) {
       updatedSteps[3].status = 'completed';
       totalProgress += updatedSteps[3].points;
+      completedCount++;
+    } else if (plannedActivities.length > 0) {
+      updatedSteps[3].status = 'in-progress';
+    }
+    
+    // Group Formation
+    if (watchedValues.maxParticipants && watchedValues.maxParticipants > 2) {
+      updatedSteps[4].status = 'completed';
+      totalProgress += updatedSteps[4].points;
       completedCount++;
     }
     
     // Logistics & Details
     if (watchedValues.title && watchedValues.description) {
-      updatedSteps[4].status = 'completed';
-      totalProgress += updatedSteps[4].points;
+      updatedSteps[5].status = 'completed';
+      totalProgress += updatedSteps[5].points;
       completedCount++;
     } else if (watchedValues.title || watchedValues.description) {
-      updatedSteps[4].status = 'in-progress';
+      updatedSteps[5].status = 'in-progress';
     }
     
     if (JSON.stringify(updatedSteps) !== JSON.stringify(roadmapSteps)) {
       setRoadmapSteps(updatedSteps);
     }
     
-    return { progress: (totalProgress / 100) * 100, completedCount };
+    return { progress: (totalProgress / 130) * 100, completedCount };
   };
 
   const { progress, completedCount } = calculateRoadmapProgress();
@@ -313,19 +319,27 @@ function CreateTripPageContent() {
     return Object.values(breakdown).reduce((total, amount) => total + (amount || 0), 0);
   };
 
+  const calculateActivitiesCost = (activities: PlannedActivity[]): number => {
+    return activities.reduce((total, activity) => total + (activity.estimatedCost || 0), 0);
+  };
+
   const calculateCostPerPerson = (totalBudget: number, participants: number): number => {
     return participants > 0 ? Math.round(totalBudget / participants) : 0;
   };
 
   const createTripMutation = useMutation({
     mutationFn: async (data: CreateTripForm) => {
+      const activitiesCost = calculateActivitiesCost(plannedActivities);
+      const totalBudget = data.budgetBreakdown 
+        ? calculateTotalBudget(data.budgetBreakdown) + activitiesCost
+        : (data.budget || 0) + activitiesCost;
+        
       const tripData = {
         ...data,
         startDate: new Date(data.startDate),
         endDate: new Date(data.endDate),
-        budget: data.budgetBreakdown 
-          ? calculateTotalBudget(data.budgetBreakdown)
-          : data.budget,
+        budget: totalBudget,
+        plannedActivities: plannedActivities,
       };
       
       const response = await apiRequest("POST", "/api/trips", tripData);
@@ -371,30 +385,7 @@ function CreateTripPageContent() {
     createTripMutation.mutate(data);
   };
 
-  const handleActivityDragEnd = (event: any) => {
-    const { active, over } = event;
-    
-    if (active.id !== over.id) {
-      setActivities((items) => {
-        const oldIndex = items.findIndex(item => item.id === active.id);
-        const newIndex = items.findIndex(item => item.id === over.id);
-        
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
-
-  const addActivity = () => {
-    if (newActivity.trim()) {
-      const newId = Date.now().toString();
-      setActivities(prev => [...prev, { id: newId, activity: newActivity.trim() }]);
-      setNewActivity('');
-    }
-  };
-
-  const removeActivity = (id: string) => {
-    setActivities(prev => prev.filter(item => item.id !== id));
-  };
+  // Removed old activity functions - now handled by AdvancedActivityManager
 
   const travelStyles = [
     { value: "praia", label: "Praia", icon: "🏖️" },
@@ -447,7 +438,7 @@ function CreateTripPageContent() {
               </div>
               <Progress value={progress} className="h-3 mb-2" />
               <div className="flex justify-between text-sm text-gray-500">
-                <span>{completedCount}/5 etapas concluídas</span>
+                <span>{completedCount}/6 etapas concluídas</span>
                 <span>{Math.round(progress)}% completo</span>
               </div>
             </div>
@@ -718,10 +709,24 @@ function CreateTripPageContent() {
                                     </div>
                                   </FormControl>
                                   {field.value && form.watch('maxParticipants') && (
-                                    <div className="bg-blue-50 p-3 rounded-lg">
-                                      <p className="text-sm font-medium text-blue-900">
-                                        💰 Custo por pessoa: R$ {calculateCostPerPerson(field.value, form.watch('maxParticipants')).toLocaleString('pt-BR')}
-                                      </p>
+                                    <div className="space-y-2">
+                                      {calculateActivitiesCost(plannedActivities) > 0 && (
+                                        <div className="bg-purple-50 p-3 rounded-lg">
+                                          <p className="text-sm font-medium text-purple-900">
+                                            🎯 Custo das Atividades: R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                                          </p>
+                                        </div>
+                                      )}
+                                      <div className="bg-emerald-50 p-3 rounded-lg">
+                                        <p className="text-sm font-medium text-emerald-900">
+                                          💰 Total da Viagem: R$ {(field.value + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                                        </p>
+                                      </div>
+                                      <div className="bg-blue-50 p-3 rounded-lg">
+                                        <p className="text-sm font-medium text-blue-900">
+                                          👥 Custo por pessoa: R$ {calculateCostPerPerson(field.value + calculateActivitiesCost(plannedActivities), form.watch('maxParticipants')).toLocaleString('pt-BR')}
+                                        </p>
+                                      </div>
                                     </div>
                                   )}
                                   <FormMessage />
@@ -762,17 +767,31 @@ function CreateTripPageContent() {
                               {form.watch('budgetBreakdown') && (
                                 <div className="space-y-3">
                                   <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
-                                    <span className="font-bold text-blue-900">💎 Total da Viagem:</span>
+                                    <span className="font-bold text-blue-900">💎 Orçamento Base:</span>
                                     <span className="text-xl font-bold text-blue-900">
                                       R$ {calculateTotalBudget(form.watch('budgetBreakdown') || {}).toLocaleString('pt-BR')}
                                     </span>
                                   </div>
-                                  {form.watch('maxParticipants') && calculateTotalBudget(form.watch('budgetBreakdown') || {}) > 0 && (
+                                  {calculateActivitiesCost(plannedActivities) > 0 && (
+                                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
+                                      <span className="font-bold text-purple-900">🎯 Custo das Atividades:</span>
+                                      <span className="text-xl font-bold text-purple-900">
+                                        R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                                      </span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border-2 border-emerald-300">
+                                    <span className="font-bold text-emerald-900">💰 Total da Viagem:</span>
+                                    <span className="text-2xl font-bold text-emerald-900">
+                                      R$ {(calculateTotalBudget(form.watch('budgetBreakdown') || {}) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                                    </span>
+                                  </div>
+                                  {form.watch('maxParticipants') && (calculateTotalBudget(form.watch('budgetBreakdown') || {}) + calculateActivitiesCost(plannedActivities)) > 0 && (
                                     <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border-2 border-green-200">
                                       <span className="font-bold text-green-900">👥 Custo por Pessoa:</span>
                                       <span className="text-xl font-bold text-green-900">
                                         R$ {calculateCostPerPerson(
-                                          calculateTotalBudget(form.watch('budgetBreakdown') || {}), 
+                                          calculateTotalBudget(form.watch('budgetBreakdown') || {}) + calculateActivitiesCost(plannedActivities), 
                                           form.watch('maxParticipants')
                                         ).toLocaleString('pt-BR')}
                                       </span>
@@ -787,7 +806,7 @@ function CreateTripPageContent() {
 
                       <Separator />
 
-                      {/* Step 5: Group */}
+                      {/* Step 5: Advanced Activities */}
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -795,8 +814,31 @@ function CreateTripPageContent() {
                       >
                         <div className="flex items-center gap-2 mb-4">
                           <Badge variant="outline" className="bg-orange-50">
-                            <Users className="h-3 w-3 mr-1" />
+                            <Camera className="h-3 w-3 mr-1" />
                             Etapa 5
+                          </Badge>
+                          <h3 className="text-lg font-semibold">Atividades Planejadas</h3>
+                        </div>
+                        
+                        <AdvancedActivityManager
+                          activities={plannedActivities}
+                          onActivitiesChange={setPlannedActivities}
+                          className="border-2 border-gray-200 rounded-lg p-4"
+                        />
+                      </motion.div>
+
+                      <Separator />
+
+                      {/* Step 6: Group */}
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 }}
+                      >
+                        <div className="flex items-center gap-2 mb-4">
+                          <Badge variant="outline" className="bg-indigo-50">
+                            <Users className="h-3 w-3 mr-1" />
+                            Etapa 6
                           </Badge>
                           <h3 className="text-lg font-semibold">Companheiros de Viagem</h3>
                         </div>
@@ -835,7 +877,7 @@ function CreateTripPageContent() {
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
+                        transition={{ delay: 0.7 }}
                       >
                         <Button 
                           type="submit" 
@@ -929,60 +971,42 @@ function CreateTripPageContent() {
                   </CardContent>
                 </Card>
 
-                {/* Activities Drag & Drop */}
-                <Card className="shadow-lg">
+                {/* Activities Summary */}
+                <Card className="shadow-lg border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-purple-800">
                       <Camera className="h-5 w-5" />
-                      Atividades Planejadas
+                      Resumo das Atividades
                     </CardTitle>
-                    <p className="text-sm text-gray-600">Arraste para priorizar suas atividades</p>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {/* Add new activity */}
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Nova atividade..."
-                          value={newActivity}
-                          onChange={(e) => setNewActivity(e.target.value)}
-                          className="text-sm"
-                          onKeyPress={(e) => e.key === 'Enter' && addActivity()}
-                        />
-                        <Button
-                          type="button"
-                          onClick={addActivity}
-                          size="sm"
-                          className="px-3"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-purple-700">Total de Atividades:</span>
+                        <Badge variant="outline" className="bg-purple-100 text-purple-800">
+                          {plannedActivities.length}
+                        </Badge>
                       </div>
-
-                      {/* Sortable activities */}
-                      <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleActivityDragEnd}
-                      >
-                        <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
-                          <div className="space-y-2">
-                            {activities.map((activity) => (
-                              <SortableActivityItem
-                                key={activity.id}
-                                id={activity.id}
-                                activity={activity.activity}
-                                onRemove={() => removeActivity(activity.id)}
-                              />
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-purple-700">Custo Estimado:</span>
+                        <span className="text-sm font-bold text-purple-900">
+                          R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                      {plannedActivities.length > 0 && (
+                        <div className="pt-2 border-t border-purple-200">
+                          <p className="text-xs text-purple-600 mb-2">Top 3 Atividades:</p>
+                          <div className="space-y-1">
+                            {plannedActivities.slice(0, 3).map((activity, index) => (
+                              <div key={activity.id} className="flex items-center gap-2 text-xs">
+                                <span className="w-4 h-4 bg-purple-200 rounded-full flex items-center justify-center text-purple-800 font-bold">
+                                  {index + 1}
+                                </span>
+                                <span className="truncate flex-1 text-purple-700">{activity.title}</span>
+                              </div>
                             ))}
                           </div>
-                        </SortableContext>
-                      </DndContext>
-
-                      {activities.length === 0 && (
-                        <p className="text-center text-sm text-gray-500 py-4">
-                          Adicione atividades para sua viagem
-                        </p>
+                        </div>
                       )}
                     </div>
                   </CardContent>
