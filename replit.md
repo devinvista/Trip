@@ -64,10 +64,6 @@ The application uses PostgreSQL with the following main entities:
 - Chat system with message polling (3-second intervals)
 - Live trip participant updates
 - Request notifications and status updates
-- WebSocket-based collaborative editing with real-time synchronization
-- Live presence indicators showing active editors
-- Conflict resolution for simultaneous edits
-- Operational transformation for seamless collaboration
 
 ## Data Flow
 
@@ -164,3 +160,16 @@ Changelog:
 - July 11, 2025. Added comprehensive error handling with toast notifications, debug logging, and graceful error states throughout the dashboard
 - July 11, 2025. Implemented responsive design improvements for mobile and tablet devices with flexible layouts and better component organization
 - July 11, 2025. Enhanced trip statistics calculation with real-time data processing for upcoming, in-progress, and completed trips with visual progress indicators
+- July 11, 2025. Implemented "Desistir da Viagem" (quit trip) functionality - participants can leave trips with automatic organizer transfer to first participant if creator leaves
+- July 11, 2025. Added backend API endpoint DELETE /api/trips/:id/participants/:userId for removing participants with proper permission checks and automatic trip management
+- July 11, 2025. Enhanced storage interface with removeTripParticipant method that handles organizer transfer and automatic trip cancellation when no participants remain
+- July 11, 2025. Added confirmation dialog in trip detail page for participants to leave trips with clear warnings and user feedback
+- July 11, 2025. Fixed trip join request API endpoint - removed incorrect Zod schema validation for tripId (comes from URL params, not request body) and added duplicate request prevention
+- July 11, 2025. Updated travel styles to match popular agency categories: Praia, Neve, Cruzeiros, Natureza e Ecoturismo, Culturais e Históricas, Aventura, Parques Temáticos - updated all components, forms, and test data
+- July 11, 2025. Added "Viagens Urbanas / Cidades Grandes" travel style - updated create trip form, search filters, travel board, trip cards, and test user data (Tom changed to urbanas style)
+- July 11, 2025. Removed collaborative editing functionality - deleted WebSocket connections, real-time editing components, and all related APIs for simplified architecture
+- July 11, 2025. Completely redesigned create trip page with modern gamified interface using React DnD Kit for drag/drop functionality
+- July 11, 2025. Implemented travel planning roadmap based on best practices: Research & Inspiration, Budget Planning, Dates & Duration, Group Formation, Logistics & Details
+- July 11, 2025. Added interactive activities management with drag/drop prioritization, add/remove functionality, and real-time progress tracking
+- July 11, 2025. Enhanced UX with Framer Motion animations, confetti celebrations, achievement system, and responsive gradient backgrounds
+- July 11, 2025. Integrated comprehensive travel planning tips and roadmap guidance following industry best practices for trip organization

@@ -173,22 +173,28 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
 
   const getTravelStyleLabel = (style: string) => {
     const styles: Record<string, string> = {
-      adventure: 'Aventura',
-      comfort: 'Conforto',
-      budget: 'Econômico',
-      luxury: 'Luxo',
-      mochilao: 'Mochilão'
+      praia: 'Praia',
+      neve: 'Neve',
+      cruzeiros: 'Cruzeiros',
+      natureza: 'Natureza e Ecoturismo',
+      cultural: 'Culturais e Históricas',
+      aventura: 'Aventura',
+      parques: 'Parques Temáticos',
+      urbanas: 'Viagens Urbanas / Cidades Grandes'
     };
     return styles[style] || style;
   };
 
   const getTravelStyleColor = (style: string) => {
     const colors: Record<string, string> = {
-      adventure: 'bg-orange-100 text-orange-800',
-      comfort: 'bg-blue-100 text-blue-800',
-      budget: 'bg-green-100 text-green-800',
-      luxury: 'bg-purple-100 text-purple-800',
-      mochilao: 'bg-yellow-100 text-yellow-800'
+      praia: 'bg-blue-100 text-blue-800',
+      neve: 'bg-cyan-100 text-cyan-800',
+      cruzeiros: 'bg-indigo-100 text-indigo-800',
+      natureza: 'bg-green-100 text-green-800',
+      cultural: 'bg-purple-100 text-purple-800',
+      aventura: 'bg-orange-100 text-orange-800',
+      parques: 'bg-pink-100 text-pink-800',
+      urbanas: 'bg-gray-100 text-gray-800'
     };
     return colors[style] || 'bg-gray-100 text-gray-800';
   };

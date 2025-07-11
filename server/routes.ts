@@ -1,7 +1,7 @@
 
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { WebSocketServer, WebSocket } from "ws";
+
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema } from "@shared/schema";
@@ -148,7 +148,9 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/trips/:id/request", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const requestData = insertTripRequestSchema.parse(req.body);
+      
+      // Parse only the message from request body
+      const { message } = req.body;
       
       const trip = await storage.getTrip(tripId);
       if (!trip) {
@@ -159,8 +161,15 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ message: "Você não pode solicitar participação na sua própria viagem" });
       }
       
+      // Check if user already has a pending request
+      const existingRequests = await storage.getTripRequests(tripId);
+      const userRequest = existingRequests.find(r => r.userId === req.user!.id);
+      if (userRequest && userRequest.status === 'pending') {
+        return res.status(400).json({ message: "Você já tem uma solicitação pendente para esta viagem" });
+      }
+      
       const request = await storage.createTripRequest({ 
-        ...requestData, 
+        message: message || "",
         tripId, 
         userId: req.user!.id 
       });
@@ -220,6 +229,54 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao atualizar solicitação:', error);
       res.status(500).json({ message: "Erro ao atualizar solicitação" });
+    }
+  });
+
+  // Remove participant from trip
+  app.delete("/api/trips/:id/participants/:userId", requireAuth, async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const userIdToRemove = parseInt(req.params.userId);
+      
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+      
+      // Verificar se o usuário atual tem permissão (é o próprio participante ou o organizador)
+      const isOwnParticipation = req.user!.id === userIdToRemove;
+      const isOrganizer = trip.creatorId === req.user!.id;
+      
+      if (!isOwnParticipation && !isOrganizer) {
+        return res.status(403).json({ message: "Você não tem permissão para remover este participante" });
+      }
+      
+      // Verificar se o usuário é realmente um participante
+      const participants = await storage.getTripParticipants(tripId);
+      const participant = participants.find(p => p.userId === userIdToRemove && p.status === 'accepted');
+      
+      if (!participant) {
+        return res.status(404).json({ message: "Participante não encontrado nesta viagem" });
+      }
+      
+      // Remover participante
+      await storage.removeTripParticipant(tripId, userIdToRemove);
+      
+      // Atualizar contador de participantes
+      const updatedTrip = await storage.getTrip(tripId);
+      if (updatedTrip && updatedTrip.status !== 'cancelled') {
+        await storage.updateTrip(tripId, { 
+          currentParticipants: Math.max(0, updatedTrip.currentParticipants - 1) 
+        });
+      }
+      
+      res.json({ 
+        message: isOwnParticipation ? "Você saiu da viagem com sucesso" : "Participante removido com sucesso",
+        tripStatus: updatedTrip?.status 
+      });
+    } catch (error) {
+      console.error('Erro ao remover participante:', error);
+      res.status(500).json({ message: "Erro ao remover participante" });
     }
   });
 
@@ -436,275 +493,6 @@ export function registerRoutes(app: Express): Server {
   });
 
   const httpServer = createServer(app);
-  
-  // WebSocket server for real-time collaborative editing
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
-  
-  // Store active editing sessions
-  const editingSessions = new Map<string, Array<{
-    ws: WebSocket;
-    userId: number;
-    username: string;
-    cursor?: { line: number; col: number };
-  }>>();
-
-  // Store trip edit states
-  const tripEditStates = new Map<string, any>();
-
-  wss.on('connection', (ws: WebSocket, req) => {
-    console.log('💬 Nova conexão WebSocket estabelecida');
-    
-    let userId: number | null = null;
-    let username: string | null = null;
-    let currentTripId: string | null = null;
-
-    ws.on('message', async (data) => {
-      try {
-        const message = JSON.parse(data.toString());
-        
-        switch (message.type) {
-          case 'auth':
-            // Authenticate user (in a real app, verify session)
-            userId = message.userId;
-            username = message.username;
-            console.log(`🔐 WebSocket autenticado: ${username} (ID: ${userId})`);
-            ws.send(JSON.stringify({ type: 'auth_success', userId, username }));
-            break;
-            
-          case 'join_trip':
-            if (!userId || !username) {
-              ws.send(JSON.stringify({ type: 'error', message: 'Not authenticated' }));
-              return;
-            }
-            
-            currentTripId = message.tripId;
-            
-            if (!currentTripId) {
-              ws.send(JSON.stringify({ type: 'error', message: 'Invalid trip ID' }));
-              return;
-            }
-            
-            // Add to editing session
-            if (!editingSessions.has(currentTripId)) {
-              editingSessions.set(currentTripId, []);
-            }
-            
-            const session = editingSessions.get(currentTripId)!;
-            session.push({ ws, userId, username });
-            
-            // Send current trip state
-            const tripState = tripEditStates.get(currentTripId);
-            if (tripState) {
-              ws.send(JSON.stringify({
-                type: 'trip_state',
-                tripId: currentTripId,
-                state: tripState
-              }));
-            }
-            
-            // Notify others of new participant
-            broadcastToTrip(currentTripId as string, {
-              type: 'user_joined',
-              userId,
-              username,
-              participants: session.map(s => ({
-                userId: s.userId,
-                username: s.username
-              }))
-            }, ws);
-            
-            console.log(`👥 Usuário ${username} entrou na edição da viagem ${currentTripId}`);
-            break;
-            
-          case 'trip_edit':
-            if (!currentTripId || !userId) return;
-            
-            // Update trip state
-            const currentState = tripEditStates.get(currentTripId) || {};
-            const newState = { ...currentState, ...message.changes };
-            tripEditStates.set(currentTripId, newState);
-            
-            // Broadcast changes to all participants
-            broadcastToTrip(currentTripId, {
-              type: 'trip_updated',
-              tripId: currentTripId,
-              changes: message.changes,
-              userId,
-              username: username!,
-              timestamp: new Date().toISOString()
-            }, ws);
-            
-            console.log(`✏️ Viagem ${currentTripId} editada por ${username}: ${Object.keys(message.changes).join(', ')}`);
-            break;
-            
-          case 'cursor_move':
-            if (!currentTripId || !userId) return;
-            
-            // Update cursor position
-            const tripSession = editingSessions.get(currentTripId);
-            if (tripSession) {
-              const participant = tripSession.find(p => p.userId === userId);
-              if (participant) {
-                participant.cursor = message.cursor;
-              }
-            }
-            
-            // Broadcast cursor position
-            broadcastToTrip(currentTripId, {
-              type: 'cursor_updated',
-              userId,
-              username: username!,
-              cursor: message.cursor
-            }, ws);
-            break;
-            
-          case 'field_focus':
-            if (!currentTripId || !userId) return;
-            
-            // Broadcast field focus
-            broadcastToTrip(currentTripId, {
-              type: 'field_focused',
-              userId,
-              username: username!,
-              fieldName: message.fieldName,
-              timestamp: new Date().toISOString()
-            }, ws);
-            break;
-            
-          case 'field_blur':
-            if (!currentTripId || !userId) return;
-            
-            // Broadcast field blur
-            broadcastToTrip(currentTripId, {
-              type: 'field_blurred',
-              userId,
-              username: username!,
-              fieldName: message.fieldName,
-              timestamp: new Date().toISOString()
-            }, ws);
-            break;
-        }
-      } catch (error) {
-        console.error('Erro no WebSocket:', error);
-        ws.send(JSON.stringify({ type: 'error', message: 'Invalid message format' }));
-      }
-    });
-
-    ws.on('close', () => {
-      console.log(`🔌 WebSocket desconectado: ${username || 'Usuário desconhecido'}`);
-      
-      if (currentTripId && userId) {
-        const session = editingSessions.get(currentTripId);
-        if (session) {
-          // Remove from session
-          const participantIndex = session.findIndex(p => p.userId === userId);
-          if (participantIndex !== -1) {
-            session.splice(participantIndex, 1);
-          }
-          
-          // Notify others of departure
-          if (username) {
-            broadcastToTrip(currentTripId, {
-              type: 'user_left',
-              userId,
-              username,
-              participants: session.map(s => ({
-                userId: s.userId,
-                username: s.username
-              }))
-            });
-          }
-          
-          // Clean up empty sessions
-          if (session.length === 0) {
-            editingSessions.delete(currentTripId);
-            tripEditStates.delete(currentTripId);
-          }
-        }
-      }
-    });
-
-    ws.on('error', (error) => {
-      console.error('Erro no WebSocket:', error);
-    });
-  });
-
-  function broadcastToTrip(tripId: string, message: any, exclude?: WebSocket) {
-    const session = editingSessions.get(tripId);
-    if (session) {
-      for (const participant of session) {
-        if (participant.ws !== exclude && participant.ws.readyState === WebSocket.OPEN) {
-          participant.ws.send(JSON.stringify(message));
-        }
-      }
-    }
-  }
-
-  // API endpoint to get current editing participants
-  app.get("/api/trips/:id/editing", requireAuth, async (req, res) => {
-    try {
-      const tripId = req.params.id;
-      const session = editingSessions.get(tripId);
-      
-      if (!session) {
-        return res.json({ participants: [] });
-      }
-      
-      const participants = Array.from(session).map(s => ({
-        userId: s.userId,
-        username: s.username,
-        cursor: s.cursor
-      }));
-      
-      res.json({ participants });
-    } catch (error) {
-      console.error('Erro ao buscar participantes da edição:', error);
-      res.status(500).json({ message: "Erro ao buscar participantes da edição" });
-    }
-  });
-
-  // API endpoint to save collaborative edits
-  app.post("/api/trips/:id/collaborative-save", requireAuth, async (req, res) => {
-    try {
-      const tripId = parseInt(req.params.id);
-      const updates = req.body;
-      
-      // Validate and save trip updates
-      const trip = await storage.getTrip(tripId);
-      if (!trip) {
-        return res.status(404).json({ message: "Viagem não encontrada" });
-      }
-      
-      // Check if user has permission to edit
-      const participants = await storage.getTripParticipants(tripId);
-      const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
-      const isCreator = trip.creatorId === req.user!.id;
-      
-      if (!isParticipant && !isCreator) {
-        return res.status(403).json({ message: "Acesso negado" });
-      }
-      
-      // Save updates
-      const updatedTrip = await storage.updateTrip(tripId, updates);
-      
-      // Clear editing state
-      tripEditStates.delete(req.params.id);
-      
-      // Broadcast save notification
-      broadcastToTrip(req.params.id, {
-        type: 'trip_saved',
-        tripId: req.params.id,
-        userId: req.user!.id,
-        username: req.user!.username,
-        timestamp: new Date().toISOString()
-      });
-      
-      res.json(updatedTrip);
-    } catch (error) {
-      console.error('Erro ao salvar edição colaborativa:', error);
-      res.status(500).json({ message: "Erro ao salvar edição colaborativa" });
-    }
-  });
 
   return httpServer;
 }

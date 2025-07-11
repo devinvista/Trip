@@ -26,6 +26,7 @@ export interface IStorage {
   getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]>;
   addTripParticipant(tripId: number, userId: number): Promise<TripParticipant>;
   updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined>;
+  removeTripParticipant(tripId: number, userId: number): Promise<void>;
 
   // Messages
   getTripMessages(tripId: number): Promise<(Message & { sender: User })[]>;
@@ -233,6 +234,29 @@ export class MemStorage implements IStorage {
     return updatedParticipant;
   }
 
+  async removeTripParticipant(tripId: number, userId: number): Promise<void> {
+    const key = `${tripId}-${userId}`;
+    this.tripParticipants.delete(key);
+    
+    // Se o usuário removido era o organizador, transferir para o primeiro participante
+    const trip = this.trips.get(tripId);
+    if (trip && trip.creatorId === userId) {
+      const participants = await this.getTripParticipants(tripId);
+      const activeParticipants = participants.filter(p => p.status === 'accepted');
+      
+      if (activeParticipants.length > 0) {
+        // Transferir organização para o primeiro participante ativo
+        const newOrganizer = activeParticipants[0];
+        await this.updateTrip(tripId, { creatorId: newOrganizer.userId });
+        console.log(`✅ Organização da viagem ${tripId} transferida para usuário ${newOrganizer.user.username}`);
+      } else {
+        // Se não há mais participantes, marcar viagem como cancelada
+        await this.updateTrip(tripId, { status: 'cancelled' });
+        console.log(`❌ Viagem ${tripId} cancelada - sem participantes`);
+      }
+    }
+  }
+
   async getTripMessages(tripId: number): Promise<(Message & { sender: User })[]> {
     const tripMessages = Array.from(this.messages.values())
       .filter(m => m.tripId === tripId)
@@ -437,7 +461,7 @@ async function createDefaultTestUser() {
         password: hashedPassword,
         bio: 'Usuário de teste padrão',
         location: 'São Paulo, SP',
-        travelStyle: 'adventure',
+        travelStyle: 'urbanas',
         languages: ['Português', 'Inglês'],
         interests: ['Aventura', 'Cultura', 'Gastronomia']
       });
@@ -482,7 +506,7 @@ async function createSecondTestUser() {
         password: hashedPassword,
         bio: 'Usuária de teste para participação',
         location: 'Rio de Janeiro, RJ',
-        travelStyle: 'comfort',
+        travelStyle: 'praia',
         languages: ['Português', 'Espanhol'],
         interests: ['Praia', 'Cultura', 'Fotografia']
       });
@@ -518,7 +542,7 @@ async function createMariaTripsWithTomAsParticipant(maria: User) {
       budget: 1800,
       maxParticipants: 4,
       description: 'Descubra o Rio de Janeiro! Praias de Copacabana e Ipanema, Cristo Redentor, Pão de Açúcar, e muito mais. Inclui hospedagem em Copacabana e passeios culturais.',
-      travelStyle: 'comfort',
+      travelStyle: 'praia',
       sharedCosts: ['accommodation', 'transport', 'activities'],
       budgetBreakdown: {
         transport: 400,
@@ -560,7 +584,7 @@ async function createDefaultTrips(user: User) {
       budget: 2500,
       maxParticipants: 6,
       description: 'Aventura incrível na Chapada Diamantina! Vamos explorar cachoeiras, fazer trilhas e acampar sob as estrelas. Inclui visitas ao Poço Azul, Cachoeira da Fumaça e Vale do Pati.',
-      travelStyle: 'adventure',
+      travelStyle: 'aventura',
       sharedCosts: ['accommodation', 'transport', 'food'],
       creatorId: user.id,
       budgetBreakdown: {
@@ -580,7 +604,7 @@ async function createDefaultTrips(user: User) {
       budget: 1200,
       maxParticipants: 4,
       description: 'Escapada perfeita para relaxar no clima de montanha. Pousada aconchegante, gastronomia local, passeios de teleférico e muito chocolate! Ideal para quem quer descansar.',
-      travelStyle: 'comfort',
+      travelStyle: 'neve',
       sharedCosts: ['accommodation', 'transport'],
       creatorId: user.id,
       budgetBreakdown: {
