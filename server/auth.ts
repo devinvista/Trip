@@ -29,16 +29,44 @@ export function setupAuth(app: Express) {
   app.use(session({
     secret: process.env.SESSION_SECRET || "viaja-junto-secret-key-2024",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // Create session even if not modified
     cookie: {
       secure: false, // false para desenvolvimento
       httpOnly: false, // Allow frontend access in development
       maxAge: 24 * 60 * 60 * 1000, // 24 horas
-      sameSite: 'lax'
+      sameSite: 'lax', // Use lax for same-site in Replit
+      path: '/',
+      domain: undefined // Use default domain
     },
     name: 'connect.sid',
-    store: storage.sessionStore
+    store: storage.sessionStore,
+    rolling: true // Extend session on each request
   }));
+
+  // Add CORS headers for development
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+  });
+
+  // Debug middleware to log session information
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      console.log('🔍 Session debug:', {
+        url: req.url,
+        method: req.method,
+        sessionID: req.sessionID,
+        isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+        hasUser: !!req.user,
+        sessionData: req.session,
+        cookies: Object.keys(req.cookies || {})
+      });
+    }
+    next();
+  });
 
   // Inicializar Passport
   app.use(passport.initialize());
@@ -128,6 +156,15 @@ export function setupAuth(app: Express) {
 
   // Rota de verificação do usuário
   app.get("/api/user", (req, res) => {
+    console.log('🔍 Verificando usuário atual:', {
+      isAuthenticated: req.isAuthenticated(),
+      hasUser: !!req.user,
+      user: req.user,
+      sessionID: req.sessionID,
+      session: req.session,
+      cookies: req.cookies
+    });
+    
     if (req.isAuthenticated() && req.user) {
       res.json(req.user);
     } else {
@@ -139,10 +176,12 @@ export function setupAuth(app: Express) {
   app.post("/api/login", (req, res, next) => {
     passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
+        console.error('Erro na autenticação:', err);
         return res.status(500).json({ message: "Erro interno do servidor" });
       }
       
       if (!user) {
+        console.log('Login falhado:', info?.message);
         return res.status(401).json({ 
           message: info?.message || "Credenciais inválidas" 
         });
@@ -150,10 +189,27 @@ export function setupAuth(app: Express) {
 
       req.logIn(user, (err) => {
         if (err) {
+          console.error('Erro ao fazer login:', err);
           return res.status(500).json({ message: "Erro ao fazer login" });
         }
         
-        return res.json(user);
+        console.log('Login bem-sucedido:', {
+          userId: user.id,
+          username: user.username,
+          sessionID: req.sessionID,
+          isAuthenticated: req.isAuthenticated()
+        });
+        
+        // Force session save to ensure persistence
+        req.session.save((err) => {
+          if (err) {
+            console.error('Erro ao salvar sessão:', err);
+            return res.status(500).json({ message: "Erro ao salvar sessão" });
+          }
+          
+          console.log('Sessão salva com sucesso. SessionID:', req.sessionID);
+          return res.json(user);
+        });
       });
     })(req, res, next);
   });

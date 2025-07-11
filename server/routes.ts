@@ -13,6 +13,8 @@ function requireAuth(req: any, res: any, next: any) {
     hasUser: !!req.user,
     sessionID: req.sessionID,
     session: !!req.session,
+    sessionData: req.session,
+    cookies: req.cookies,
     url: req.url
   });
   
