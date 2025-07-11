@@ -38,6 +38,15 @@ export default function DashboardPage() {
 
   const { data: myTrips, isLoading: tripsLoading, error: tripsError, refetch: refetchTrips } = useQuery({
     queryKey: ["/api/my-trips"],
+    queryFn: async () => {
+      const response = await fetch("/api/my-trips", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+    },
     enabled: !!user,
     staleTime: 0, // Always fresh
     refetchOnWindowFocus: true,
@@ -49,6 +58,15 @@ export default function DashboardPage() {
 
   const { data: requests, isLoading: requestsLoading, error: requestsError, refetch: refetchRequests } = useQuery({
     queryKey: ["/api/user-requests"],
+    queryFn: async () => {
+      const response = await fetch("/api/user-requests", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+    },
     enabled: !!user,
     staleTime: 0, // Always fresh
     refetchOnWindowFocus: true,
@@ -96,14 +114,14 @@ export default function DashboardPage() {
     }
   }, [tripsError, requestsError, toast]);
 
-  // Manual refetch on component mount
+  // Manual refetch only on user change
   useEffect(() => {
-    if (user && !tripsLoading && !requestsLoading) {
-      console.log('Tentando refetch manual...');
+    if (user) {
+      console.log('Usuário autenticado, forçando refetch...');
       refetchTrips();
       refetchRequests();
     }
-  }, [user, refetchTrips, refetchRequests]);
+  }, [user?.id, refetchTrips, refetchRequests]);
 
   // Calculate trip statistics
   const upcomingTrips = allTrips.filter(trip => new Date(trip.startDate) > new Date());
