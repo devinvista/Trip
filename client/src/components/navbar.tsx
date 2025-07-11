@@ -15,7 +15,8 @@ import {
   MapPin,
   MessageCircle,
   Kanban,
-  TrendingUp
+  TrendingUp,
+  Edit3
 } from "lucide-react";
 
 export function Navbar() {
@@ -28,6 +29,7 @@ export function Navbar() {
     { href: "/search", label: "Buscar Viagens", icon: Search },
     { href: "/create-trip", label: "Criar Viagem", icon: Plus },
     { href: "/journey-tracker", label: "Progresso", icon: TrendingUp },
+    { href: "/collaborative-editing", label: "Edição Colaborativa", icon: Edit3 },
   ];
 
   const isActive = (href: string) => location === href || location.startsWith(href);
