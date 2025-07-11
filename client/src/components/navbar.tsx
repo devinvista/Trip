@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 export function Navbar() {
-  const { user, logoutMutation } = useAuth();
+  const { user, logoutMutation, isLoading } = useAuth();
   const [location] = useLocation();
 
   const navItems = [
@@ -37,6 +37,28 @@ export function Navbar() {
   const handleLogout = () => {
     logoutMutation.mutate();
   };
+
+  // Don't render navigation items if still loading
+  if (isLoading) {
+    return (
+      <header className="bg-white shadow-lg sticky top-0 z-50">
+        <nav className="container mx-auto px-4 py-3">
+          <div className="flex justify-between items-center">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <Plane className="h-6 w-6 text-primary" />
+              <span className="font-heading font-bold text-2xl text-dark">ViajaJunto</span>
+            </Link>
+            
+            {/* Loading state */}
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        </nav>
+      </header>
+    );
+  }
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">

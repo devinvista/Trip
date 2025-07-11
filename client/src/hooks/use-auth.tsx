@@ -67,7 +67,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return await res.json();
     },
-    onSuccess: (userData: User) => {
+    onSuccess: (userData: User & { sessionId?: string }) => {
+      // Store session ID in localStorage for authentication fallback
+      if (userData.sessionId) {
+        localStorage.setItem('sessionId', userData.sessionId);
+      }
+      
       // Atualizar cache imediatamente com dados do usuário
       queryClient.setQueryData(["/api/user"], userData);
       
@@ -100,7 +105,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return await res.json();
     },
-    onSuccess: (userData: User) => {
+    onSuccess: (userData: User & { sessionId?: string }) => {
+      // Store session ID in localStorage for authentication fallback
+      if (userData.sessionId) {
+        localStorage.setItem('sessionId', userData.sessionId);
+      }
+      
       // Atualizar cache imediatamente com dados do usuário
       queryClient.setQueryData(["/api/user"], userData);
       
@@ -132,6 +142,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     },
     onSuccess: () => {
+      // Clear session ID from localStorage
+      localStorage.removeItem('sessionId');
+      
       // Limpar cache do usuário
       queryClient.setQueryData(["/api/user"], null);
       // Invalidar todas as queries para limpar dados

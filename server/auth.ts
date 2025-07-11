@@ -36,7 +36,8 @@ export function setupAuth(app: Express) {
       maxAge: 24 * 60 * 60 * 1000, // 24 horas
       sameSite: 'lax', // Use lax for same-site in Replit
       path: '/',
-      domain: undefined // Use default domain
+      domain: undefined, // Use default domain
+      partitioned: false // Prevent partitioned cookies
     },
     name: 'connect.sid',
     store: storage.sessionStore,
@@ -49,11 +50,63 @@ export function setupAuth(app: Express) {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Credentials', 'true');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+      return;
+    }
+    
     next();
   });
 
-  // Debug middleware to log session information
-  app.use((req, res, next) => {
+  // Custom authentication middleware to handle both session and manual session ID
+  app.use(async (req: any, res, next) => {
+    // If already authenticated via session, continue
+    if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+      return next();
+    }
+    
+    // Check for session ID in headers (fallback for browser compatibility)
+    const sessionId = req.headers['x-session-id'] || req.query.sessionId;
+    if (sessionId && req.path.startsWith('/api/')) {
+      try {
+        // Try to find session in store
+        const sessionData = await new Promise((resolve, reject) => {
+          storage.sessionStore.get(sessionId, (err, session) => {
+            if (err) reject(err);
+            else resolve(session);
+          });
+        });
+        
+        if (sessionData && (sessionData as any).passport && (sessionData as any).passport.user) {
+          const userId = (sessionData as any).passport.user;
+          const user = await storage.getUser(userId);
+          
+          if (user) {
+            // Manually set user on request
+            const { password: _, ...userWithoutPassword } = user;
+            const cleanUser = {
+              ...userWithoutPassword,
+              bio: userWithoutPassword.bio || undefined,
+              location: userWithoutPassword.location || undefined,
+              profilePhoto: userWithoutPassword.profilePhoto || undefined,
+              languages: userWithoutPassword.languages || undefined,
+              interests: userWithoutPassword.interests || undefined,
+              travelStyle: userWithoutPassword.travelStyle || undefined,
+            };
+            
+            req.user = cleanUser;
+            req.isAuthenticated = () => true;
+            console.log('✅ Autenticação manual bem-sucedida:', user.username);
+          }
+        }
+      } catch (error) {
+        console.error('Erro na autenticação manual:', error);
+      }
+    }
+    
+    // Debug middleware to log session information
     if (req.path.startsWith('/api/')) {
       console.log('🔍 Session debug:', {
         url: req.url,
@@ -62,7 +115,11 @@ export function setupAuth(app: Express) {
         isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
         hasUser: !!req.user,
         sessionData: req.session,
-        cookies: Object.keys(req.cookies || {})
+        cookies: Object.keys(req.cookies || {}),
+        headers: {
+          cookie: req.headers.cookie ? 'presente' : 'ausente',
+          sessionIdHeader: req.headers['x-session-id'] ? 'presente' : 'ausente'
+        }
       });
     }
     next();
@@ -208,7 +265,13 @@ export function setupAuth(app: Express) {
           }
           
           console.log('Sessão salva com sucesso. SessionID:', req.sessionID);
-          return res.json(user);
+          console.log('Cookie headers:', res.getHeaders());
+          
+          // Also send session ID in response for browser compatibility
+          return res.json({
+            ...user,
+            sessionId: req.sessionID
+          });
         });
       });
     })(req, res, next);

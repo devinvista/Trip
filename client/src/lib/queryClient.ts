@@ -12,11 +12,21 @@ export async function apiRequest(
   path: string,
   body?: any,
 ): Promise<Response> {
+  // Get session ID from localStorage if available
+  const sessionId = localStorage.getItem('sessionId');
+  
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  
+  // Add session ID to headers if available (fallback for cookie issues)
+  if (sessionId) {
+    headers['X-Session-ID'] = sessionId;
+  }
+  
   const response = await fetch(path, {
     method,
-    headers: { 
-      "Content-Type": "application/json",
-    },
+    headers,
     body: body ? JSON.stringify(body) : undefined,
     credentials: 'include', // Include cookies/session
   });
@@ -44,11 +54,21 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Get session ID from localStorage if available
+    const sessionId = localStorage.getItem('sessionId');
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add session ID to headers if available (fallback for cookie issues)
+    if (sessionId) {
+      headers['X-Session-ID'] = sessionId;
+    }
+    
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
