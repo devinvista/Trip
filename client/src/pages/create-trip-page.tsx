@@ -121,7 +121,8 @@ function CreateTripPageContent() {
     { value: "natureza", label: "Natureza e Ecoturismo" },
     { value: "cultural", label: "Culturais e Históricas" },
     { value: "aventura", label: "Aventura" },
-    { value: "parques", label: "Parques Temáticos" }
+    { value: "parques", label: "Parques Temáticos" },
+    { value: "urbanas", label: "Viagens Urbanas / Cidades Grandes" }
   ];
 
   return (

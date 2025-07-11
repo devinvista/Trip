@@ -461,7 +461,7 @@ async function createDefaultTestUser() {
         password: hashedPassword,
         bio: 'Usuário de teste padrão',
         location: 'São Paulo, SP',
-        travelStyle: 'aventura',
+        travelStyle: 'urbanas',
         languages: ['Português', 'Inglês'],
         interests: ['Aventura', 'Cultura', 'Gastronomia']
       });

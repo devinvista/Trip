@@ -179,7 +179,8 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
       natureza: 'Natureza e Ecoturismo',
       cultural: 'Culturais e Históricas',
       aventura: 'Aventura',
-      parques: 'Parques Temáticos'
+      parques: 'Parques Temáticos',
+      urbanas: 'Viagens Urbanas / Cidades Grandes'
     };
     return styles[style] || style;
   };
@@ -192,7 +193,8 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
       natureza: 'bg-green-100 text-green-800',
       cultural: 'bg-purple-100 text-purple-800',
       aventura: 'bg-orange-100 text-orange-800',
-      parques: 'bg-pink-100 text-pink-800'
+      parques: 'bg-pink-100 text-pink-800',
+      urbanas: 'bg-gray-100 text-gray-800'
     };
     return colors[style] || 'bg-gray-100 text-gray-800';
   };

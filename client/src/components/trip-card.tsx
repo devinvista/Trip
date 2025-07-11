@@ -53,6 +53,7 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
     cultural: "Culturais e Históricas",
     aventura: "Aventura",
     parques: "Parques Temáticos",
+    urbanas: "Viagens Urbanas / Cidades Grandes",
   };
 
   return (

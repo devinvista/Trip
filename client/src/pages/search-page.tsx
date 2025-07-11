@@ -140,6 +140,7 @@ export default function SearchPage() {
                     <SelectItem value="cultural">Culturais e Históricas</SelectItem>
                     <SelectItem value="aventura">Aventura</SelectItem>
                     <SelectItem value="parques">Parques Temáticos</SelectItem>
+                    <SelectItem value="urbanas">Viagens Urbanas / Cidades Grandes</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
