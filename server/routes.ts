@@ -148,7 +148,9 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/trips/:id/request", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const requestData = insertTripRequestSchema.parse(req.body);
+      
+      // Parse only the message from request body
+      const { message } = req.body;
       
       const trip = await storage.getTrip(tripId);
       if (!trip) {
@@ -159,8 +161,15 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ message: "Você não pode solicitar participação na sua própria viagem" });
       }
       
+      // Check if user already has a pending request
+      const existingRequests = await storage.getTripRequests(tripId);
+      const userRequest = existingRequests.find(r => r.userId === req.user!.id);
+      if (userRequest && userRequest.status === 'pending') {
+        return res.status(400).json({ message: "Você já tem uma solicitação pendente para esta viagem" });
+      }
+      
       const request = await storage.createTripRequest({ 
-        ...requestData, 
+        message: message || "",
         tripId, 
         userId: req.user!.id 
       });
