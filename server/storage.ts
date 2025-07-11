@@ -138,7 +138,8 @@ export class MemStorage implements IStorage {
     const participantTrips = Array.from(this.tripParticipants.values())
       .filter(p => p.userId === userId && p.status === 'accepted')
       .map(p => this.trips.get(p.tripId))
-      .filter((trip): trip is Trip => trip !== undefined);
+      .filter((trip): trip is Trip => trip !== undefined)
+      .filter(trip => trip.creatorId !== userId); // Excluir viagens onde o usuário é o criador
 
     return participantTrips;
   }
@@ -448,8 +449,96 @@ async function createDefaultTestUser() {
     } else {
       console.log('ℹ️ Usuário de teste já existe: tom');
     }
+    
+    // Criar segundo usuário para teste de participação
+    await createSecondTestUser();
   } catch (error) {
     console.error('❌ Erro ao criar usuário de teste:', error);
+  }
+}
+
+// Create second test user for participation testing
+async function createSecondTestUser() {
+  try {
+    // Check if second test user already exists
+    const existingUser = await storage.getUserByUsername('maria');
+
+    if (!existingUser) {
+      // Import crypto functions for password hashing
+      const { scrypt, randomBytes } = await import('crypto');
+      const { promisify } = await import('util');
+      const scryptAsync = promisify(scrypt);
+
+      // Hash the password
+      const salt = randomBytes(16).toString("hex");
+      const buf = (await scryptAsync('demo123', salt, 64)) as Buffer;
+      const hashedPassword = `${buf.toString("hex")}.${salt}`;
+
+      // Create the second test user
+      const user = await storage.createUser({
+        username: 'maria',
+        email: 'maria@teste.com',
+        fullName: 'Maria Santos',
+        password: hashedPassword,
+        bio: 'Usuária de teste para participação',
+        location: 'Rio de Janeiro, RJ',
+        travelStyle: 'comfort',
+        languages: ['Português', 'Espanhol'],
+        interests: ['Praia', 'Cultura', 'Fotografia']
+      });
+
+      console.log('✅ Segundo usuário de teste criado: maria / demo123');
+      
+      // Criar viagem da Maria e adicionar Tom como participante
+      await createMariaTripsWithTomAsParticipant(user);
+    } else {
+      console.log('ℹ️ Segundo usuário de teste já existe: maria');
+    }
+  } catch (error) {
+    console.error('❌ Erro ao criar segundo usuário de teste:', error);
+  }
+}
+
+// Create Maria's trips and add Tom as participant
+async function createMariaTripsWithTomAsParticipant(maria: User) {
+  try {
+    // Verificar se já existem viagens da Maria
+    const existingTrips = await storage.getTripsByCreator(maria.id);
+    if (existingTrips.length > 0) {
+      console.log('ℹ️ Viagens da Maria já existem');
+      return;
+    }
+
+    // Criar viagem da Maria
+    const trip = await storage.createTrip({
+      title: 'Praia e Cultura no Rio de Janeiro',
+      destination: 'Rio de Janeiro, RJ, Brasil',
+      startDate: new Date('2025-09-10'),
+      endDate: new Date('2025-09-15'),
+      budget: 1800,
+      maxParticipants: 4,
+      description: 'Descubra o Rio de Janeiro! Praias de Copacabana e Ipanema, Cristo Redentor, Pão de Açúcar, e muito mais. Inclui hospedagem em Copacabana e passeios culturais.',
+      travelStyle: 'comfort',
+      sharedCosts: ['accommodation', 'transport', 'activities'],
+      budgetBreakdown: {
+        transport: 400,
+        accommodation: 800,
+        food: 400,
+        activities: 200
+      },
+      creatorId: maria.id
+    });
+
+    // Adicionar Tom como participante aceito
+    const tomUser = await storage.getUserByUsername('tom');
+    if (tomUser) {
+      await storage.addTripParticipant(trip.id, tomUser.id);
+      console.log('✅ Tom adicionado como participante na viagem da Maria');
+    }
+
+    console.log('✅ Viagem da Maria criada com Tom como participante');
+  } catch (error) {
+    console.error('❌ Erro ao criar viagem da Maria:', error);
   }
 }
 
