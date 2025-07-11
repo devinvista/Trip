@@ -321,6 +321,9 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/trips/:id/expenses", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
+      console.log('Dados recebidos para criação de despesa:', req.body);
+      console.log('Usuário autenticado:', req.user);
+      
       const expenseData = insertExpenseSchema.parse({
         ...req.body,
         tripId

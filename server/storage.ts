@@ -62,6 +62,12 @@ export class MemStorage implements IStorage {
   private currentExpenseSplitId: number;
   public sessionStore: session.Store;
 
+  // Helper function to remove sensitive information from user objects
+  private sanitizeUser(user: User): Omit<User, 'password'> {
+    const { password, ...sanitizedUser } = user;
+    return sanitizedUser;
+  }
+
   constructor() {
     this.users = new Map();
     this.trips = new Map();
@@ -198,7 +204,7 @@ export class MemStorage implements IStorage {
 
     return participants.map(p => {
       const user = this.users.get(p.userId)!;
-      return { ...p, user };
+      return { ...p, user: this.sanitizeUser(user) as User };
     });
   }
 
@@ -233,7 +239,7 @@ export class MemStorage implements IStorage {
 
     return tripMessages.map(m => {
       const sender = this.users.get(m.senderId)!;
-      return { ...m, sender };
+      return { ...m, sender: this.sanitizeUser(sender) as User };
     });
   }
 
@@ -254,7 +260,7 @@ export class MemStorage implements IStorage {
 
     return requests.map(r => {
       const user = this.users.get(r.userId)!;
-      return { ...r, user };
+      return { ...r, user: this.sanitizeUser(user) as User };
     });
   }
 
@@ -307,11 +313,11 @@ export class MemStorage implements IStorage {
       for (const split of splits) {
         const user = await this.getUser(split.userId);
         if (user) {
-          splitsWithUsers.push({ ...split, user });
+          splitsWithUsers.push({ ...split, user: this.sanitizeUser(user) as User });
         }
       }
 
-      result.push({ ...expense, payer, splits: splitsWithUsers });
+      result.push({ ...expense, payer: this.sanitizeUser(payer) as User, splits: splitsWithUsers });
     }
     
     return result;
@@ -395,7 +401,7 @@ export class MemStorage implements IStorage {
     for (const [userId, balance] of balances.entries()) {
       const user = await this.getUser(userId);
       if (user) {
-        result.push({ userId, user, balance });
+        result.push({ userId, user: this.sanitizeUser(user) as User, balance });
       }
     }
 
