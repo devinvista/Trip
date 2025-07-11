@@ -70,17 +70,56 @@ const createTripSchema = insertTripSchema.extend({
 
 type CreateTripForm = z.input<typeof createTripSchema>;
 
-// Gamification steps
-const CREATION_STEPS = [
-  { id: 'basic', title: 'Informações Básicas', icon: Globe, points: 25 },
-  { id: 'destination', title: 'Destino dos Sonhos', icon: MapPin, points: 20 },
-  { id: 'dates', title: 'Quando Partir', icon: Calendar, points: 15 },
-  { id: 'budget', title: 'Planejamento Financeiro', icon: DollarSign, points: 30 },
-  { id: 'group', title: 'Companheiros de Viagem', icon: Users, points: 10 },
+// Travel Planning Roadmap - Best Practices Based
+const PLANNING_ROADMAP = [
+  { 
+    id: 'research', 
+    title: 'Pesquisa & Inspiração', 
+    icon: Globe, 
+    points: 20,
+    status: 'pending',
+    description: 'Escolha destino e pesquise sobre cultura, clima e atrações'
+  },
+  { 
+    id: 'budget', 
+    title: 'Planejamento Financeiro', 
+    icon: DollarSign, 
+    points: 25,
+    status: 'pending',
+    description: 'Defina orçamento total e categorize gastos'
+  },
+  { 
+    id: 'dates', 
+    title: 'Datas & Duração', 
+    icon: Calendar, 
+    points: 15,
+    status: 'pending',
+    description: 'Escolha as melhores datas considerando clima e eventos'
+  },
+  { 
+    id: 'group', 
+    title: 'Formação do Grupo', 
+    icon: Users, 
+    points: 20,
+    status: 'pending',
+    description: 'Defina tamanho ideal e perfil dos companheiros'
+  },
+  { 
+    id: 'logistics', 
+    title: 'Logística & Detalhes', 
+    icon: CheckCircle, 
+    points: 20,
+    status: 'pending',
+    description: 'Finalize descrição e estilo de viagem'
+  },
 ] as const;
 
-// Sortable Priority Item Component
-function SortablePriorityItem({ id, label, icon: Icon }: { id: string; label: string; icon: any }) {
+// Sortable Activity Item Component
+function SortableActivityItem({ id, activity, onRemove }: { 
+  id: string; 
+  activity: string; 
+  onRemove: () => void; 
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   
   const style = {
@@ -93,12 +132,22 @@ function SortablePriorityItem({ id, label, icon: Icon }: { id: string; label: st
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
-      className="flex items-center gap-3 p-3 bg-white border rounded-lg shadow-sm cursor-move hover:shadow-md transition-shadow"
+      className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg shadow-sm"
     >
-      <GripVertical className="h-4 w-4 text-gray-400" />
-      <Icon className="h-4 w-4 text-primary" />
-      <span className="text-sm font-medium">{label}</span>
+      <div {...listeners} className="cursor-move">
+        <GripVertical className="h-4 w-4 text-gray-400" />
+      </div>
+      <Camera className="h-4 w-4 text-primary" />
+      <span className="text-sm font-medium flex-1">{activity}</span>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={onRemove}
+        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+      >
+        <Minus className="h-3 w-3" />
+      </Button>
     </div>
   );
 }
@@ -115,18 +164,17 @@ function CreateTripPageContent() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+  const [roadmapSteps, setRoadmapSteps] = useState(PLANNING_ROADMAP);
   const [showConfetti, setShowConfetti] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [achievements, setAchievements] = useState(ACHIEVEMENTS);
   const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
-  const [priorityItems, setPriorityItems] = useState([
-    { id: 'transport', label: 'Transporte', icon: Plane },
-    { id: 'accommodation', label: 'Hospedagem', icon: Coffee },
-    { id: 'food', label: 'Alimentação', icon: Heart },
-    { id: 'activities', label: 'Atividades', icon: Camera },
+  const [activities, setActivities] = useState<Array<{ id: string; activity: string }>>([
+    { id: '1', activity: 'Visitar pontos turísticos principais' },
+    { id: '2', activity: 'Experimentar gastronomia local' },
+    { id: '3', activity: 'Explorar a vida noturna' },
   ]);
+  const [newActivity, setNewActivity] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -153,21 +201,61 @@ function CreateTripPageContent() {
 
   const watchedValues = useWatch({ control: form.control });
 
-  // Calculate completion progress
-  const calculateProgress = () => {
-    let progress = 0;
+  // Calculate roadmap progress and update steps
+  const calculateRoadmapProgress = () => {
+    const updatedSteps = [...roadmapSteps];
+    let totalProgress = 0;
     let completedCount = 0;
     
-    if (watchedValues.title) { progress += 20; completedCount++; }
-    if (watchedValues.destination) { progress += 20; completedCount++; }
-    if (watchedValues.startDate && watchedValues.endDate) { progress += 20; completedCount++; }
-    if (watchedValues.budget || watchedValues.budgetBreakdown) { progress += 20; completedCount++; }
-    if (watchedValues.travelStyle) { progress += 20; completedCount++; }
+    // Research & Inspiration
+    if (watchedValues.destination && watchedValues.travelStyle) {
+      updatedSteps[0].status = 'completed';
+      totalProgress += updatedSteps[0].points;
+      completedCount++;
+    } else if (watchedValues.destination || watchedValues.travelStyle) {
+      updatedSteps[0].status = 'in-progress';
+    }
     
-    return { progress, completedCount };
+    // Budget Planning
+    if (watchedValues.budget || watchedValues.budgetBreakdown) {
+      updatedSteps[1].status = 'completed';
+      totalProgress += updatedSteps[1].points;
+      completedCount++;
+    }
+    
+    // Dates & Duration
+    if (watchedValues.startDate && watchedValues.endDate) {
+      updatedSteps[2].status = 'completed';
+      totalProgress += updatedSteps[2].points;
+      completedCount++;
+    } else if (watchedValues.startDate || watchedValues.endDate) {
+      updatedSteps[2].status = 'in-progress';
+    }
+    
+    // Group Formation
+    if (watchedValues.maxParticipants && watchedValues.maxParticipants > 2) {
+      updatedSteps[3].status = 'completed';
+      totalProgress += updatedSteps[3].points;
+      completedCount++;
+    }
+    
+    // Logistics & Details
+    if (watchedValues.title && watchedValues.description) {
+      updatedSteps[4].status = 'completed';
+      totalProgress += updatedSteps[4].points;
+      completedCount++;
+    } else if (watchedValues.title || watchedValues.description) {
+      updatedSteps[4].status = 'in-progress';
+    }
+    
+    if (JSON.stringify(updatedSteps) !== JSON.stringify(roadmapSteps)) {
+      setRoadmapSteps(updatedSteps);
+    }
+    
+    return { progress: (totalProgress / 100) * 100, completedCount };
   };
 
-  const { progress, completedCount } = calculateProgress();
+  const { progress, completedCount } = calculateRoadmapProgress();
 
   // Check achievements
   useEffect(() => {
@@ -283,17 +371,29 @@ function CreateTripPageContent() {
     createTripMutation.mutate(data);
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleActivityDragEnd = (event: any) => {
     const { active, over } = event;
     
     if (active.id !== over.id) {
-      setPriorityItems((items) => {
+      setActivities((items) => {
         const oldIndex = items.findIndex(item => item.id === active.id);
         const newIndex = items.findIndex(item => item.id === over.id);
         
         return arrayMove(items, oldIndex, newIndex);
       });
     }
+  };
+
+  const addActivity = () => {
+    if (newActivity.trim()) {
+      const newId = Date.now().toString();
+      setActivities(prev => [...prev, { id: newId, activity: newActivity.trim() }]);
+      setNewActivity('');
+    }
+  };
+
+  const removeActivity = (id: string) => {
+    setActivities(prev => prev.filter(item => item.id !== id));
   };
 
   const travelStyles = [
@@ -348,7 +448,7 @@ function CreateTripPageContent() {
               <Progress value={progress} className="h-3 mb-2" />
               <div className="flex justify-between text-sm text-gray-500">
                 <span>{completedCount}/5 etapas concluídas</span>
-                <span>{progress}% completo</span>
+                <span>{Math.round(progress)}% completo</span>
               </div>
             </div>
 
@@ -765,58 +865,154 @@ function CreateTripPageContent() {
             {/* Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-6">
-                {/* Priority Drag & Drop */}
+                {/* Planning Roadmap */}
                 <Card className="shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Target className="h-5 w-5" />
-                      Prioridades da Viagem
+                      <Compass className="h-5 w-5" />
+                      Roadmap de Planejamento
                     </CardTitle>
-                    <p className="text-sm text-gray-600">Arraste para reorganizar por importância</p>
+                    <p className="text-sm text-gray-600">Siga as melhores práticas para viagens</p>
                   </CardHeader>
                   <CardContent>
-                    <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={handleDragEnd}
-                    >
-                      <SortableContext items={priorityItems} strategy={verticalListSortingStrategy}>
-                        <div className="space-y-3">
-                          {priorityItems.map((item) => (
-                            <SortablePriorityItem 
-                              key={item.id} 
-                              id={item.id} 
-                              label={item.label} 
-                              icon={item.icon}
-                            />
-                          ))}
-                        </div>
-                      </SortableContext>
-                    </DndContext>
+                    <div className="space-y-4">
+                      {roadmapSteps.map((step, index) => {
+                        const Icon = step.icon;
+                        return (
+                          <motion.div
+                            key={step.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className={`relative flex items-start gap-3 p-3 rounded-lg border-2 transition-all ${
+                              step.status === 'completed' 
+                                ? 'bg-green-50 border-green-200' 
+                                : step.status === 'in-progress'
+                                ? 'bg-blue-50 border-blue-200'
+                                : 'bg-gray-50 border-gray-200'
+                            }`}
+                          >
+                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                              step.status === 'completed' 
+                                ? 'bg-green-500 text-white' 
+                                : step.status === 'in-progress'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-300 text-gray-600'
+                            }`}>
+                              {step.status === 'completed' ? (
+                                <CheckCircle className="h-4 w-4" />
+                              ) : (
+                                <Icon className="h-4 w-4" />
+                              )}
+                            </div>
+                            
+                            <div className="flex-1">
+                              <h4 className={`text-sm font-semibold ${
+                                step.status === 'completed' ? 'text-green-800' : 'text-gray-800'
+                              }`}>
+                                {step.title}
+                              </h4>
+                              <p className="text-xs text-gray-600 mt-1">{step.description}</p>
+                              {step.status === 'completed' && (
+                                <div className="flex items-center gap-1 mt-2">
+                                  <Star className="h-3 w-3 text-yellow-500" />
+                                  <span className="text-xs text-yellow-600 font-medium">
+                                    +{step.points} pontos
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
                   </CardContent>
                 </Card>
 
-                {/* Tips Card */}
+                {/* Activities Drag & Drop */}
+                <Card className="shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Camera className="h-5 w-5" />
+                      Atividades Planejadas
+                    </CardTitle>
+                    <p className="text-sm text-gray-600">Arraste para priorizar suas atividades</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {/* Add new activity */}
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Nova atividade..."
+                          value={newActivity}
+                          onChange={(e) => setNewActivity(e.target.value)}
+                          className="text-sm"
+                          onKeyPress={(e) => e.key === 'Enter' && addActivity()}
+                        />
+                        <Button
+                          type="button"
+                          onClick={addActivity}
+                          size="sm"
+                          className="px-3"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      {/* Sortable activities */}
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleActivityDragEnd}
+                      >
+                        <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
+                          <div className="space-y-2">
+                            {activities.map((activity) => (
+                              <SortableActivityItem
+                                key={activity.id}
+                                id={activity.id}
+                                activity={activity.activity}
+                                onRemove={() => removeActivity(activity.id)}
+                              />
+                            ))}
+                          </div>
+                        </SortableContext>
+                      </DndContext>
+
+                      {activities.length === 0 && (
+                        <p className="text-center text-sm text-gray-500 py-4">
+                          Adicione atividades para sua viagem
+                        </p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Travel Tips */}
                 <Card className="shadow-lg border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-yellow-800">
                       <Zap className="h-5 w-5" />
-                      Dicas de Ouro
+                      Dicas de Planejamento
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3 text-sm">
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>Complete todas as etapas para maximizar seus pontos</span>
+                        <span>Pesquise sobre feriados e eventos locais</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>Viagens detalhadas atraem mais participantes</span>
+                        <span>Reserve pelo menos 20% do orçamento para emergências</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>Organize as prioridades para melhor planejamento</span>
+                        <span>Organize atividades por prioridade e proximidade</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span>Considere seguro viagem para destinos internacionais</span>
                       </div>
                     </div>
                   </CardContent>
