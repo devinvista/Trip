@@ -174,6 +174,17 @@ export default function TripDetailPage() {
   const isParticipant = trip.participants?.some((p: any) => p.userId === user?.id);
   const canJoin = !isCreator && !isParticipant && trip.currentParticipants < trip.maxParticipants;
 
+  // Debug logs
+  console.log('🔍 Trip Debug:', {
+    tripId: trip.id,
+    userId: user?.id,
+    isCreator,
+    isParticipant,
+    canJoin,
+    participants: trip.participants,
+    participantsLength: trip.participants?.length
+  });
+
   const costLabels: { [key: string]: string } = {
     hospedagem: "Hospedagem",
     transporte: "Transporte",
