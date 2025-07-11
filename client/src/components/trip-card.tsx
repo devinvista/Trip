@@ -46,12 +46,13 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
   };
 
   const travelStyleLabels: { [key: string]: string } = {
+    praia: "Praia",
+    neve: "Neve",
+    cruzeiros: "Cruzeiros",
+    natureza: "Natureza e Ecoturismo",
+    cultural: "Culturais e Históricas",
     aventura: "Aventura",
-    relaxante: "Relaxante",
-    cultural: "Cultural",
-    mochilao: "Mochilão",
-    luxo: "Luxo",
-    gastronomia: "Gastronômico",
+    parques: "Parques Temáticos",
   };
 
   return (

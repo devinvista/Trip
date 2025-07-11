@@ -115,12 +115,13 @@ function CreateTripPageContent() {
   };
 
   const travelStyles = [
+    { value: "praia", label: "Praia" },
+    { value: "neve", label: "Neve" },
+    { value: "cruzeiros", label: "Cruzeiros" },
+    { value: "natureza", label: "Natureza e Ecoturismo" },
+    { value: "cultural", label: "Culturais e Históricas" },
     { value: "aventura", label: "Aventura" },
-    { value: "relaxante", label: "Relaxante" },
-    { value: "cultural", label: "Cultural" },
-    { value: "mochilao", label: "Mochilão" },
-    { value: "luxo", label: "Luxo" },
-    { value: "gastronomia", label: "Gastronômico" }
+    { value: "parques", label: "Parques Temáticos" }
   ];
 
   return (

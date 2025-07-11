@@ -461,7 +461,7 @@ async function createDefaultTestUser() {
         password: hashedPassword,
         bio: 'Usuário de teste padrão',
         location: 'São Paulo, SP',
-        travelStyle: 'adventure',
+        travelStyle: 'aventura',
         languages: ['Português', 'Inglês'],
         interests: ['Aventura', 'Cultura', 'Gastronomia']
       });
@@ -506,7 +506,7 @@ async function createSecondTestUser() {
         password: hashedPassword,
         bio: 'Usuária de teste para participação',
         location: 'Rio de Janeiro, RJ',
-        travelStyle: 'comfort',
+        travelStyle: 'praia',
         languages: ['Português', 'Espanhol'],
         interests: ['Praia', 'Cultura', 'Fotografia']
       });
@@ -542,7 +542,7 @@ async function createMariaTripsWithTomAsParticipant(maria: User) {
       budget: 1800,
       maxParticipants: 4,
       description: 'Descubra o Rio de Janeiro! Praias de Copacabana e Ipanema, Cristo Redentor, Pão de Açúcar, e muito mais. Inclui hospedagem em Copacabana e passeios culturais.',
-      travelStyle: 'comfort',
+      travelStyle: 'praia',
       sharedCosts: ['accommodation', 'transport', 'activities'],
       budgetBreakdown: {
         transport: 400,
@@ -584,7 +584,7 @@ async function createDefaultTrips(user: User) {
       budget: 2500,
       maxParticipants: 6,
       description: 'Aventura incrível na Chapada Diamantina! Vamos explorar cachoeiras, fazer trilhas e acampar sob as estrelas. Inclui visitas ao Poço Azul, Cachoeira da Fumaça e Vale do Pati.',
-      travelStyle: 'adventure',
+      travelStyle: 'aventura',
       sharedCosts: ['accommodation', 'transport', 'food'],
       creatorId: user.id,
       budgetBreakdown: {
@@ -604,7 +604,7 @@ async function createDefaultTrips(user: User) {
       budget: 1200,
       maxParticipants: 4,
       description: 'Escapada perfeita para relaxar no clima de montanha. Pousada aconchegante, gastronomia local, passeios de teleférico e muito chocolate! Ideal para quem quer descansar.',
-      travelStyle: 'comfort',
+      travelStyle: 'neve',
       sharedCosts: ['accommodation', 'transport'],
       creatorId: user.id,
       budgetBreakdown: {

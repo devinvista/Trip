@@ -133,12 +133,13 @@ export default function SearchPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos os estilos</SelectItem>
+                    <SelectItem value="praia">Praia</SelectItem>
+                    <SelectItem value="neve">Neve</SelectItem>
+                    <SelectItem value="cruzeiros">Cruzeiros</SelectItem>
+                    <SelectItem value="natureza">Natureza e Ecoturismo</SelectItem>
+                    <SelectItem value="cultural">Culturais e Históricas</SelectItem>
                     <SelectItem value="aventura">Aventura</SelectItem>
-                    <SelectItem value="relaxante">Relaxante</SelectItem>
-                    <SelectItem value="cultural">Cultural</SelectItem>
-                    <SelectItem value="mochilao">Mochilão</SelectItem>
-                    <SelectItem value="luxo">Luxo</SelectItem>
-                    <SelectItem value="gastronomia">Gastronômico</SelectItem>
+                    <SelectItem value="parques">Parques Temáticos</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
