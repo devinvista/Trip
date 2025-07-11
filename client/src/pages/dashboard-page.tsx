@@ -36,20 +36,25 @@ export default function DashboardPage() {
   const { toast } = useToast();
   const [selectedTimeframe, setSelectedTimeframe] = useState('upcoming');
 
-  const { data: myTrips, isLoading: tripsLoading, error: tripsError } = useQuery({
+  const { data: myTrips, isLoading: tripsLoading, error: tripsError, refetch: refetchTrips } = useQuery({
     queryKey: ["/api/my-trips"],
     enabled: !!user,
-    staleTime: 30 * 1000,
+    staleTime: 0, // Always fresh
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    retry: 2,
+    retryDelay: 1000,
+    refetchInterval: false,
   });
 
-  const { data: requests, isLoading: requestsLoading, error: requestsError } = useQuery({
+  const { data: requests, isLoading: requestsLoading, error: requestsError, refetch: refetchRequests } = useQuery({
     queryKey: ["/api/user-requests"],
     enabled: !!user,
-    staleTime: 30 * 1000,
+    staleTime: 0, // Always fresh
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    retry: 2,
+    refetchInterval: false,
   });
 
   const createdTrips = (myTrips as any)?.created || [];
@@ -61,15 +66,20 @@ export default function DashboardPage() {
   console.log('Dashboard Debug:', {
     user: user?.username,
     myTrips,
+    myTripsType: typeof myTrips,
+    myTripsKeys: myTrips ? Object.keys(myTrips) : null,
     createdTrips: createdTrips.length,
     participatingTrips: participatingTrips.length,
-    tripsError,
-    requestsError
+    tripsError: tripsError?.message,
+    requestsError: requestsError?.message,
+    tripsLoading,
+    requestsLoading
   });
 
   // Show toast on errors
   useEffect(() => {
     if (tripsError) {
+      console.error('Trips error:', tripsError);
       toast({
         title: "Erro ao carregar viagens",
         description: "Não foi possível carregar suas viagens. Tente novamente.",
@@ -77,6 +87,7 @@ export default function DashboardPage() {
       });
     }
     if (requestsError) {
+      console.error('Requests error:', requestsError);
       toast({
         title: "Erro ao carregar solicitações",
         description: "Não foi possível carregar suas solicitações. Tente novamente.",
@@ -84,6 +95,15 @@ export default function DashboardPage() {
       });
     }
   }, [tripsError, requestsError, toast]);
+
+  // Manual refetch on component mount
+  useEffect(() => {
+    if (user && !tripsLoading && !requestsLoading) {
+      console.log('Tentando refetch manual...');
+      refetchTrips();
+      refetchRequests();
+    }
+  }, [user, refetchTrips, refetchRequests]);
 
   // Calculate trip statistics
   const upcomingTrips = allTrips.filter(trip => new Date(trip.startDate) > new Date());
