@@ -119,10 +119,25 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/my-trips", requireAuth, async (req, res) => {
     try {
+      console.log(`🔍 Buscando viagens do usuário ${req.user!.id} (${req.user!.username})`);
+      
       const createdTrips = await storage.getTripsByCreator(req.user!.id);
       const participatingTrips = await storage.getTripsByParticipant(req.user!.id);
       
-      res.json({ created: createdTrips, participating: participatingTrips });
+      console.log(`📊 Viagens encontradas: ${createdTrips.length} criadas, ${participatingTrips.length} participando`);
+      
+      // Add creator info for participating trips
+      const participatingTripsWithCreators = await Promise.all(
+        participatingTrips.map(async (trip) => {
+          const creator = await storage.getUser(trip.creatorId);
+          return { ...trip, creator };
+        })
+      );
+      
+      res.json({ 
+        created: createdTrips, 
+        participating: participatingTripsWithCreators 
+      });
     } catch (error) {
       console.error('Erro ao buscar suas viagens:', error);
       res.status(500).json({ message: "Erro ao buscar suas viagens" });

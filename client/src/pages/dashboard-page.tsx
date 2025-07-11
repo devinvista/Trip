@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Briefcase, 
   Users, 
@@ -32,9 +33,10 @@ import {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [selectedTimeframe, setSelectedTimeframe] = useState('upcoming');
 
-  const { data: myTrips, isLoading: tripsLoading } = useQuery({
+  const { data: myTrips, isLoading: tripsLoading, error: tripsError } = useQuery({
     queryKey: ["/api/my-trips"],
     enabled: !!user,
     staleTime: 30 * 1000,
@@ -42,7 +44,7 @@ export default function DashboardPage() {
     refetchOnMount: true,
   });
 
-  const { data: requests, isLoading: requestsLoading } = useQuery({
+  const { data: requests, isLoading: requestsLoading, error: requestsError } = useQuery({
     queryKey: ["/api/user-requests"],
     enabled: !!user,
     staleTime: 30 * 1000,
@@ -54,6 +56,34 @@ export default function DashboardPage() {
   const participatingTrips = (myTrips as any)?.participating || [];
   const pendingRequests = (requests as any)?.filter((r: any) => r.status === 'pending') || [];
   const allTrips = [...createdTrips, ...participatingTrips];
+
+  // Debug logging
+  console.log('Dashboard Debug:', {
+    user: user?.username,
+    myTrips,
+    createdTrips: createdTrips.length,
+    participatingTrips: participatingTrips.length,
+    tripsError,
+    requestsError
+  });
+
+  // Show toast on errors
+  useEffect(() => {
+    if (tripsError) {
+      toast({
+        title: "Erro ao carregar viagens",
+        description: "Não foi possível carregar suas viagens. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+    if (requestsError) {
+      toast({
+        title: "Erro ao carregar solicitações",
+        description: "Não foi possível carregar suas solicitações. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  }, [tripsError, requestsError, toast]);
 
   // Calculate trip statistics
   const upcomingTrips = allTrips.filter(trip => new Date(trip.startDate) > new Date());
@@ -238,11 +268,13 @@ export default function DashboardPage() {
           <div className="mb-6">
             <Card>
               <CardContent className="p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <Filter className="h-5 w-5 text-gray-600" />
-                    <span className="font-medium text-gray-700">Filtrar por:</span>
-                    <div className="flex gap-2">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-700">Filtrar por:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                       {[
                         { id: 'all', label: 'Todas', count: allTrips.length },
                         { id: 'upcoming', label: 'Próximas', count: upcomingTrips.length },
@@ -283,6 +315,21 @@ export default function DashboardPage() {
             </Card>
           </div>
 
+          {/* Error State */}
+          {tripsError && (
+            <Card className="mb-6 border-red-200 bg-red-50">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-2 text-red-700">
+                  <AlertCircle className="h-5 w-5" />
+                  <span className="font-medium">Erro ao carregar viagens</span>
+                </div>
+                <p className="text-red-600 mt-2">
+                  Houve um problema ao carregar suas viagens. Tente atualizar a página.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Trips Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {tripsLoading ? (
@@ -296,7 +343,7 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               ))
-            ) : getFilteredTrips().length > 0 ? (
+            ) : !tripsError && getFilteredTrips().length > 0 ? (
               getFilteredTrips().map((trip: any) => (
                 <Card key={trip.id} className="group hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-400">
                   <CardContent className="p-6">
