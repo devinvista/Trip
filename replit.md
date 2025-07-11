@@ -64,10 +64,6 @@ The application uses PostgreSQL with the following main entities:
 - Chat system with message polling (3-second intervals)
 - Live trip participant updates
 - Request notifications and status updates
-- WebSocket-based collaborative editing with real-time synchronization
-- Live presence indicators showing active editors
-- Conflict resolution for simultaneous edits
-- Operational transformation for seamless collaboration
 
 ## Data Flow
 
@@ -171,3 +167,4 @@ Changelog:
 - July 11, 2025. Fixed trip join request API endpoint - removed incorrect Zod schema validation for tripId (comes from URL params, not request body) and added duplicate request prevention
 - July 11, 2025. Updated travel styles to match popular agency categories: Praia, Neve, Cruzeiros, Natureza e Ecoturismo, Culturais e Históricas, Aventura, Parques Temáticos - updated all components, forms, and test data
 - July 11, 2025. Added "Viagens Urbanas / Cidades Grandes" travel style - updated create trip form, search filters, travel board, trip cards, and test user data (Tom changed to urbanas style)
+- July 11, 2025. Removed collaborative editing functionality - deleted WebSocket connections, real-time editing components, and all related APIs for simplified architecture
