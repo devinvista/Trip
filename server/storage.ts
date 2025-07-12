@@ -73,6 +73,20 @@ function getCoverImageForDestination(destination: string): string | null {
     "petropolis": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", // Museu Imperial
     "tiradentes": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Centro Histórico
     "ouro preto": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Igreja São Francisco
+    
+    // Destinos de cruzeiro
+    "mediterrâneo": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80", // Cruzeiro mediterrâneo
+    "mediterranean": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80",
+    "caribe": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", // Cruzeiro caribe
+    "caribbean": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
+    "fiorde": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80", // Fiordes noruegueses
+    "fiord": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+    "noruega": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+    "norway": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+    "alasca": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80", // Cruzeiro Alasca
+    "alaska": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+    "cruzeiro": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80", // Imagem genérica de cruzeiro
+    "cruise": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80",
     "paraty": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Centro Histórico
     "angra dos reis": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Ilha Grande
     "ubatuba": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praia da Fazenda
