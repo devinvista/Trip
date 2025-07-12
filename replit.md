@@ -185,3 +185,5 @@ Changelog:
 - July 12, 2025. Replaced "Navegue Pelos Seus Sonhos" title with emphasized main message about discovering destinations and connecting with travel companions
 - July 12, 2025. Reduced hero section height by 50% and added statistical highlights (250+ trips, 1.2k travelers, 85+ destinations, 4.8★ rating)
 - July 12, 2025. Positioned lighthouse visual element in bottom right corner for better layout balance
+- July 12, 2025. Added comprehensive date filtering system with options for next week, next month, next 3 months, and specific months (Jan-Dec 2025)
+- July 12, 2025. Implemented date range calculation logic with smart filtering based on trip start dates and enhanced active filters display

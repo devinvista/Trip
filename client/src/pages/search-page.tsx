@@ -68,6 +68,25 @@ const budgetRanges = [
   { id: 'budget-5', label: 'Acima de R$ 5.000', value: 10000, color: 'bg-red-100 text-red-800' },
 ];
 
+const dateFilters = [
+  { id: 'next-week', label: 'Próxima Semana', icon: Clock, color: 'bg-emerald-100 text-emerald-800' },
+  { id: 'next-two-weeks', label: 'Próximas 2 Semanas', icon: Clock, color: 'bg-blue-100 text-blue-800' },
+  { id: 'next-month', label: 'Próximo Mês', icon: Calendar, color: 'bg-purple-100 text-purple-800' },
+  { id: 'next-three-months', label: 'Próximos 3 Meses', icon: Calendar, color: 'bg-orange-100 text-orange-800' },
+  { id: 'jan-2025', label: 'Janeiro 2025', icon: Calendar, color: 'bg-cyan-100 text-cyan-800' },
+  { id: 'feb-2025', label: 'Fevereiro 2025', icon: Calendar, color: 'bg-pink-100 text-pink-800' },
+  { id: 'mar-2025', label: 'Março 2025', icon: Calendar, color: 'bg-green-100 text-green-800' },
+  { id: 'apr-2025', label: 'Abril 2025', icon: Calendar, color: 'bg-yellow-100 text-yellow-800' },
+  { id: 'may-2025', label: 'Maio 2025', icon: Calendar, color: 'bg-red-100 text-red-800' },
+  { id: 'jun-2025', label: 'Junho 2025', icon: Calendar, color: 'bg-indigo-100 text-indigo-800' },
+  { id: 'jul-2025', label: 'Julho 2025', icon: Calendar, color: 'bg-teal-100 text-teal-800' },
+  { id: 'aug-2025', label: 'Agosto 2025', icon: Calendar, color: 'bg-purple-100 text-purple-800' },
+  { id: 'sep-2025', label: 'Setembro 2025', icon: Calendar, color: 'bg-blue-100 text-blue-800' },
+  { id: 'oct-2025', label: 'Outubro 2025', icon: Calendar, color: 'bg-orange-100 text-orange-800' },
+  { id: 'nov-2025', label: 'Novembro 2025', icon: Calendar, color: 'bg-gray-100 text-gray-800' },
+  { id: 'dec-2025', label: 'Dezembro 2025', icon: Calendar, color: 'bg-red-100 text-red-800' },
+];
+
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [destination, setDestination] = useState("");
@@ -76,6 +95,7 @@ export default function SearchPage() {
   const [budgetRange, setBudgetRange] = useState([0, 10000]);
   const [sortBy, setSortBy] = useState("date");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [selectedDateFilter, setSelectedDateFilter] = useState<string>("");
 
   // Helper functions
   const toggleTravelType = (typeId: string) => {
@@ -92,6 +112,62 @@ export default function SearchPage() {
     setSelectedContinent("");
     setSelectedTravelTypes([]);
     setBudgetRange([0, 10000]);
+    setSelectedDateFilter("");
+  };
+
+  // Helper function to get date range from filter
+  const getDateRangeFromFilter = (filterId: string) => {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    switch (filterId) {
+      case 'next-week':
+        return {
+          start: startOfToday,
+          end: new Date(startOfToday.getTime() + 7 * 24 * 60 * 60 * 1000)
+        };
+      case 'next-two-weeks':
+        return {
+          start: startOfToday,
+          end: new Date(startOfToday.getTime() + 14 * 24 * 60 * 60 * 1000)
+        };
+      case 'next-month':
+        return {
+          start: startOfToday,
+          end: new Date(startOfToday.getTime() + 30 * 24 * 60 * 60 * 1000)
+        };
+      case 'next-three-months':
+        return {
+          start: startOfToday,
+          end: new Date(startOfToday.getTime() + 90 * 24 * 60 * 60 * 1000)
+        };
+      case 'jan-2025':
+        return { start: new Date(2025, 0, 1), end: new Date(2025, 0, 31) };
+      case 'feb-2025':
+        return { start: new Date(2025, 1, 1), end: new Date(2025, 1, 28) };
+      case 'mar-2025':
+        return { start: new Date(2025, 2, 1), end: new Date(2025, 2, 31) };
+      case 'apr-2025':
+        return { start: new Date(2025, 3, 1), end: new Date(2025, 3, 30) };
+      case 'may-2025':
+        return { start: new Date(2025, 4, 1), end: new Date(2025, 4, 31) };
+      case 'jun-2025':
+        return { start: new Date(2025, 5, 1), end: new Date(2025, 5, 30) };
+      case 'jul-2025':
+        return { start: new Date(2025, 6, 1), end: new Date(2025, 6, 31) };
+      case 'aug-2025':
+        return { start: new Date(2025, 7, 1), end: new Date(2025, 7, 31) };
+      case 'sep-2025':
+        return { start: new Date(2025, 8, 1), end: new Date(2025, 8, 30) };
+      case 'oct-2025':
+        return { start: new Date(2025, 9, 1), end: new Date(2025, 9, 31) };
+      case 'nov-2025':
+        return { start: new Date(2025, 10, 1), end: new Date(2025, 10, 30) };
+      case 'dec-2025':
+        return { start: new Date(2025, 11, 1), end: new Date(2025, 11, 31) };
+      default:
+        return null;
+    }
   };
 
   // Build query parameters for API call
@@ -164,6 +240,17 @@ export default function SearchPage() {
         const internationalKeywords = ['eua', 'frança', 'itália', 'japão', 'argentina', 'chile', 'nova york', 'paris', 'tokyo'];
         const isInternational = internationalKeywords.some(keyword => destination.includes(keyword));
         if (isInternational) return false;
+      }
+
+      // Date filter
+      if (selectedDateFilter) {
+        const dateRange = getDateRangeFromFilter(selectedDateFilter);
+        if (dateRange) {
+          const tripStartDate = new Date(trip.startDate);
+          if (tripStartDate < dateRange.start || tripStartDate > dateRange.end) {
+            return false;
+          }
+        }
       }
 
       return true;
@@ -311,7 +398,7 @@ export default function SearchPage() {
             className="lg:col-span-1 space-y-6"
           >
             {/* Active Filters */}
-            {(destination || selectedContinent || selectedTravelTypes.length > 0 || budgetRange[0] > 0 || budgetRange[1] < 10000) && (
+            {(destination || selectedContinent || selectedTravelTypes.length > 0 || budgetRange[0] > 0 || budgetRange[1] < 10000 || selectedDateFilter) && (
               <Card className="bg-white/80 backdrop-blur-sm">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -351,6 +438,12 @@ export default function SearchPage() {
                       R$ {budgetRange[0]} - R$ {budgetRange[1] === 10000 ? '10k+' : budgetRange[1]}
                     </Badge>
                   )}
+                  {selectedDateFilter && (
+                    <Badge variant="secondary" className="text-xs">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {dateFilters.find(d => d.id === selectedDateFilter)?.label}
+                    </Badge>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -378,6 +471,53 @@ export default function SearchPage() {
                     </Button>
                   );
                 })}
+              </CardContent>
+            </Card>
+
+            {/* Date Filter */}
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Calendar className="h-5 w-5 text-indigo-500" />
+                  Período da Viagem
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Próximos Períodos</div>
+                  {dateFilters.slice(0, 4).map((filter) => {
+                    const Icon = filter.icon;
+                    return (
+                      <Button
+                        key={filter.id}
+                        variant={selectedDateFilter === filter.id ? "default" : "ghost"}
+                        onClick={() => setSelectedDateFilter(selectedDateFilter === filter.id ? "" : filter.id)}
+                        className="w-full justify-start h-10 text-sm"
+                      >
+                        <Icon className="h-4 w-4 mr-2" />
+                        {filter.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+                <Separator />
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Meses Específicos</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {dateFilters.slice(4).map((filter) => (
+                      <Button
+                        key={filter.id}
+                        variant={selectedDateFilter === filter.id ? "default" : "ghost"}
+                        onClick={() => setSelectedDateFilter(selectedDateFilter === filter.id ? "" : filter.id)}
+                        className="justify-start h-8 text-xs"
+                      >
+                        <Badge className={`mr-1 ${filter.color}`}>
+                          {filter.label.split(' ')[0]}
+                        </Badge>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
