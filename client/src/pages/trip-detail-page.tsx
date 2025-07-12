@@ -559,45 +559,59 @@ export default function TripDetailPage() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Main Content */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-2"
+            className="lg:col-span-2 order-2 lg:order-1"
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm">
-                <TabsTrigger value="overview" className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Visão Geral
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-gradient-to-r from-slate-50 to-blue-50 backdrop-blur-sm rounded-xl p-1 shadow-md border border-slate-200">
+                <TabsTrigger 
+                  value="overview" 
+                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                >
+                  <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
+                  <span className="hidden sm:inline">Visão Geral</span>
+                  <span className="sm:hidden">Visão</span>
                 </TabsTrigger>
-                <TabsTrigger value="activities" className="flex items-center gap-2">
-                  <Camera className="h-4 w-4" />
-                  Atividades
+                <TabsTrigger 
+                  value="activities" 
+                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                >
+                  <Camera className="h-3 w-3 md:h-4 md:w-4" />
+                  <span>Atividades</span>
                 </TabsTrigger>
-                <TabsTrigger value="expenses" className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
-                  Despesas
+                <TabsTrigger 
+                  value="expenses" 
+                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                >
+                  <DollarSign className="h-3 w-3 md:h-4 md:w-4" />
+                  <span>Despesas</span>
                 </TabsTrigger>
-                <TabsTrigger value="participants" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Participantes
+                <TabsTrigger 
+                  value="participants" 
+                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                >
+                  <Users className="h-3 w-3 md:h-4 md:w-4" />
+                  <span className="hidden sm:inline">Participantes</span>
+                  <span className="sm:hidden">Pessoas</span>
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="overview" className="space-y-6">
+              <TabsContent value="overview" className="space-y-4 lg:space-y-6">
                 {/* Description */}
                 <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Star className="h-5 w-5 text-yellow-500" />
                       Sobre a Viagem
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed text-sm lg:text-base">
                       {trip.description || "Descrição não disponível"}
                     </p>
                   </CardContent>
@@ -620,10 +634,10 @@ export default function TripDetailPage() {
                     <div className="space-y-4">
                       {trip.budgetBreakdown ? (
                         <>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {Object.entries(trip.budgetBreakdown).map(([category, amount]) => (
                               <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span className="text-sm font-medium text-gray-700 capitalize">
+                                <span className="text-xs md:text-sm font-medium text-gray-700 capitalize">
                                   {category === 'transport' ? 'Transporte' :
                                    category === 'accommodation' ? 'Hospedagem' :
                                    category === 'food' ? 'Alimentação' :
@@ -633,7 +647,7 @@ export default function TripDetailPage() {
                                    category === 'visas' ? 'Vistos' :
                                    category === 'other' ? 'Outros' : category}
                                 </span>
-                                <span className="font-bold text-gray-900">
+                                <span className="font-bold text-gray-900 text-xs md:text-sm">
                                   R$ {amount.toLocaleString('pt-BR')}
                                 </span>
                               </div>
@@ -686,10 +700,10 @@ export default function TripDetailPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="activities" className="space-y-6">
+              <TabsContent value="activities" className="space-y-4 lg:space-y-6">
                 <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Target className="h-5 w-5 text-blue-500" />
                       Atividades Planejadas
                     </CardTitle>
@@ -759,10 +773,10 @@ export default function TripDetailPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="expenses" className="space-y-6">
+              <TabsContent value="expenses" className="space-y-4 lg:space-y-6">
                 <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <DollarSign className="h-5 w-5 text-green-500" />
                       Gestão de Despesas
                     </CardTitle>
@@ -789,35 +803,35 @@ export default function TripDetailPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="participants" className="space-y-6">
+              <TabsContent value="participants" className="space-y-4 lg:space-y-6">
                 <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Users className="h-5 w-5 text-purple-500" />
                       Participantes ({trip.participants?.length || 0})
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {trip.participants?.map((participant: any) => (
-                        <div key={participant.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div key={participant.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-gray-50 rounded-lg">
                           <div className="flex items-center gap-3">
-                            <Avatar>
+                            <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                               <AvatarImage src={participant.user.profilePhoto} />
-                              <AvatarFallback>
+                              <AvatarFallback className="text-xs sm:text-sm">
                                 {participant.user.fullName?.[0] || participant.user.username[0]}
                               </AvatarFallback>
                             </Avatar>
-                            <div>
-                              <p className="font-medium">{participant.user.fullName || participant.user.username}</p>
-                              <p className="text-sm text-gray-600">{participant.user.location}</p>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm sm:text-base truncate">{participant.user.fullName || participant.user.username}</p>
+                              <p className="text-xs sm:text-sm text-gray-600 truncate">{participant.user.location}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             {participant.userId === trip.creatorId && (
-                              <Badge className="bg-yellow-100 text-yellow-800">Organizador</Badge>
+                              <Badge className="bg-yellow-100 text-yellow-800 text-xs">Organizador</Badge>
                             )}
-                            <Badge variant="outline" className="text-green-800 border-green-200">
+                            <Badge variant="outline" className="text-green-800 border-green-200 text-xs">
                               {participant.status}
                             </Badge>
                           </div>
@@ -885,12 +899,12 @@ export default function TripDetailPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-6"
+            className="space-y-4 lg:space-y-6 order-1 lg:order-2"
           >
 
             {/* Action Buttons */}
-            <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-              <CardContent className="p-4 space-y-3">
+            <Card className="bg-white/80 backdrop-blur-sm shadow-lg lg:sticky lg:top-4">
+              <CardContent className="p-3 lg:p-4 space-y-3">
                 {canJoin && (
                   <Dialog>
                     <DialogTrigger asChild>
@@ -969,32 +983,32 @@ export default function TripDetailPage() {
               <CardContent className="space-y-4">
                 {/* Budget Breakdown */}
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-emerald-200">
+                  <div className="flex justify-between items-center p-2 lg:p-3 bg-white rounded-lg border border-emerald-200">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Orçamento Base</span>
+                      <div className="w-2 h-2 lg:w-3 lg:h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-xs lg:text-sm font-medium text-gray-700">Orçamento Base</span>
                     </div>
-                    <span className="font-bold text-blue-900">
+                    <span className="font-bold text-blue-900 text-xs lg:text-sm">
                       R$ {(trip.budget || 0).toLocaleString('pt-BR')}
                     </span>
                   </div>
                   
-                  <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-emerald-200">
+                  <div className="flex justify-between items-center p-2 lg:p-3 bg-white rounded-lg border border-emerald-200">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-gray-700">Atividades</span>
+                      <div className="w-2 h-2 lg:w-3 lg:h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-xs lg:text-sm font-medium text-gray-700">Atividades</span>
                     </div>
-                    <span className="font-bold text-purple-900">
+                    <span className="font-bold text-purple-900 text-xs lg:text-sm">
                       R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
                     </span>
                   </div>
                   
-                  <div className="flex justify-between items-center p-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-lg border-2 border-emerald-300">
+                  <div className="flex justify-between items-center p-2 lg:p-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-lg border-2 border-emerald-300">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                      <span className="text-sm font-bold text-emerald-800">Total Geral</span>
+                      <div className="w-2 h-2 lg:w-3 lg:h-3 bg-emerald-500 rounded-full"></div>
+                      <span className="text-xs lg:text-sm font-bold text-emerald-800">Total Geral</span>
                     </div>
-                    <span className="text-lg font-bold text-emerald-900">
+                    <span className="text-sm lg:text-lg font-bold text-emerald-900">
                       R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
                     </span>
                   </div>
@@ -1003,13 +1017,13 @@ export default function TripDetailPage() {
                 <Separator className="bg-emerald-200" />
 
                 {/* Cost per Person */}
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg border border-amber-200">
-                  <div className="flex items-center justify-between">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 lg:p-4 rounded-lg border border-amber-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-amber-600" />
-                      <span className="text-sm font-medium text-amber-800">Custo Estimado por Pessoa</span>
+                      <Users className="h-3 w-3 lg:h-4 lg:w-4 text-amber-600" />
+                      <span className="text-xs lg:text-sm font-medium text-amber-800">Custo Estimado por Pessoa</span>
                     </div>
-                    <span className="text-xl font-bold text-amber-900">
+                    <span className="text-lg lg:text-xl font-bold text-amber-900">
                       R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
                     </span>
                   </div>
@@ -1020,7 +1034,7 @@ export default function TripDetailPage() {
 
                 {/* Budget Progress */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs lg:text-sm">
                     <span className="text-gray-600">Progresso do Orçamento</span>
                     <span className="font-medium text-gray-900">
                       {Math.round((calculateTotalExpenses() / (trip.budget || 1)) * 100)}%
