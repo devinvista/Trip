@@ -441,6 +441,42 @@ export const popularDestinations = {
     category: "cultural",
     description: "Cidade Eterna com Coliseu e Vaticano"
   },
+  "Cairo, Egito": {
+    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80",
+    category: "cultural",
+    description: "Pirâmides de Gizé e Esfinge"
+  },
+  "Tóquio, Japão": {
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
+    category: "urbanas",
+    description: "Shibuya Crossing e cultura pop"
+  },
+  "Bangkok, Tailândia": {
+    image: "https://images.unsplash.com/photo-1563492065-b4f1d404b730?w=800&q=80",
+    category: "cultural",
+    description: "Templos dourados e mercados flutuantes"
+  },
+  "Pequim, China": {
+    image: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80",
+    category: "cultural",
+    description: "Cidade Proibida e Muralha da China"
+  },
+  "Istambul, Turquia": {
+    image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&q=80",
+    category: "cultural",
+    description: "Hagia Sophia e Mesquita Azul"
+  },
+  "Machu Picchu, Peru": {
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    category: "cultural",
+    description: "Cidade perdida dos Incas"
+  },
+  "Sydney, Austrália": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Opera House e Harbour Bridge"
+  },
+
   "Barcelona, Espanha": {
     image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80",
     category: "urbanas",
@@ -601,12 +637,7 @@ export const popularDestinations = {
     description: "Capital mais alta do mundo nos Andes"
   },
 
-  // Ásia
-  "Tóquio, Japão": {
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
-    category: "urbanas",
-    description: "Shibuya Crossing, Templo Senso-ji e Monte Fuji"
-  },
+  // Ásia (removendo duplicatas)
   "Kyoto, Japão": {
     image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80",
     category: "cultural",
