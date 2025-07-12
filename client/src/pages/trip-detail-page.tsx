@@ -568,36 +568,36 @@ export default function TripDetailPage() {
             className="lg:col-span-2 order-2 lg:order-1"
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-gradient-to-r from-slate-50 to-blue-50 backdrop-blur-sm rounded-xl p-1 shadow-md border border-slate-200">
+              <TabsList className="flex w-full bg-gradient-to-r from-slate-50 to-blue-50 backdrop-blur-sm rounded-xl p-1 shadow-md border border-slate-200">
                 <TabsTrigger 
                   value="overview" 
-                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
                 >
-                  <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden sm:inline">Visão Geral</span>
-                  <span className="sm:hidden">Visão</span>
+                  <Sparkles className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Visão Geral</span>
+                  <span className="sm:hidden truncate">Visão</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="activities" 
-                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
                 >
-                  <Camera className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>Atividades</span>
+                  <Camera className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="truncate">Atividades</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="expenses" 
-                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
                 >
-                  <DollarSign className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>Despesas</span>
+                  <DollarSign className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="truncate">Despesas</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="participants" 
-                  className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
                 >
-                  <Users className="h-3 w-3 md:h-4 md:w-4" />
-                  <span className="hidden sm:inline">Participantes</span>
-                  <span className="sm:hidden">Pessoas</span>
+                  <Users className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline truncate">Participantes</span>
+                  <span className="sm:hidden truncate">Pessoas</span>
                 </TabsTrigger>
               </TabsList>
 
