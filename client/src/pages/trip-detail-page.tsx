@@ -37,8 +37,7 @@ import {
   Trophy,
   Zap,
   Gift,
-  AlertCircle,
-  Lock
+  AlertCircle
 } from "lucide-react";
 import { format, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -512,7 +511,7 @@ export default function TripDetailPage() {
                   </CardContent>
                 </Card>
 
-                {/* Budget Visualization */}
+                {/* Budget Breakdown */}
                 {trip.budgetBreakdown && (
                   <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
                     <CardHeader>
@@ -522,11 +521,39 @@ export default function TripDetailPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <BudgetVisualization 
-                        budget={trip.budget}
-                        budgetBreakdown={trip.budgetBreakdown}
-                        maxParticipants={trip.maxParticipants}
-                      />
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          {Object.entries(trip.budgetBreakdown).map(([category, amount]) => (
+                            <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                              <span className="text-sm font-medium text-gray-700 capitalize">
+                                {category === 'transport' ? 'Transporte' :
+                                 category === 'accommodation' ? 'Hospedagem' :
+                                 category === 'food' ? 'Alimentação' :
+                                 category === 'activities' ? 'Atividades' :
+                                 category === 'shopping' ? 'Compras' :
+                                 category === 'insurance' ? 'Seguro' :
+                                 category === 'visas' ? 'Vistos' :
+                                 category === 'other' ? 'Outros' : category}
+                              </span>
+                              <span className="font-bold text-gray-900">
+                                R$ {amount.toLocaleString('pt-BR')}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-semibold text-blue-900">Total</span>
+                            <span className="text-xl font-bold text-blue-900">
+                              R$ {trip.budget.toLocaleString('pt-BR')}
+                            </span>
+                          </div>
+                          <div className="mt-2 text-sm text-blue-700">
+                            R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
+                          </div>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -541,25 +568,11 @@ export default function TripDetailPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {(isCreator || isParticipant) ? (
-                      <AdvancedActivityManager
-                        activities={plannedActivities}
-                        onActivitiesChange={setPlannedActivities}
-                        className="border-0"
-                      />
-                    ) : (
-                      <div className="text-center py-8">
-                        <Lock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <p className="text-gray-600">
-                          Apenas participantes podem ver as atividades planejadas
-                        </p>
-                        {canJoin && (
-                          <Button className="mt-4" onClick={() => setActiveTab("overview")}>
-                            Solicitar Participação
-                          </Button>
-                        )}
-                      </div>
-                    )}
+                    <AdvancedActivityManager
+                      activities={plannedActivities}
+                      onActivitiesChange={setPlannedActivities}
+                      className="border-0"
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -580,10 +593,14 @@ export default function TripDetailPage() {
                       />
                     ) : (
                       <div className="text-center py-8">
-                        <Lock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                        <p className="text-gray-600">
-                          Apenas participantes podem ver as despesas
+                        <p className="text-gray-600 mb-4">
+                          Faça login e participe da viagem para gerenciar despesas compartilhadas
                         </p>
+                        {canJoin && (
+                          <Button onClick={() => setActiveTab("overview")}>
+                            Solicitar Participação
+                          </Button>
+                        )}
                       </div>
                     )}
                   </CardContent>
