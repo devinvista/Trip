@@ -313,7 +313,7 @@ function ActivityFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
@@ -323,7 +323,7 @@ function ActivityFormDialog({
         
         <div className="space-y-6">
           {/* Basic Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="title">Título *</Label>
               <Input
@@ -365,7 +365,7 @@ function ActivityFormDialog({
           </div>
 
           {/* Details */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="priority">Prioridade</Label>
               <Select value={formData.priority} onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value as any }))}>
@@ -397,7 +397,7 @@ function ActivityFormDialog({
               </div>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 sm:col-span-2 lg:col-span-1">
               <Label htmlFor="duration">Duração</Label>
               <Input
                 id="duration"
@@ -409,7 +409,7 @@ function ActivityFormDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="location">Local</Label>
               <div className="relative">
@@ -442,7 +442,7 @@ function ActivityFormDialog({
           {/* Links Section */}
           <div className="space-y-3">
             <Label>Links de Referência</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
                 value={newLink}
                 onChange={(e) => setNewLink(e.target.value)}
@@ -450,8 +450,9 @@ function ActivityFormDialog({
                 className="flex-1 border-2 focus:border-primary"
                 onKeyPress={(e) => e.key === 'Enter' && addLink()}
               />
-              <Button type="button" onClick={addLink} variant="outline">
-                <Plus className="h-4 w-4" />
+              <Button type="button" onClick={addLink} variant="outline" className="sm:w-auto">
+                <Plus className="h-4 w-4 mr-2 sm:mr-0" />
+                <span className="sm:hidden">Adicionar</span>
               </Button>
             </div>
             
@@ -534,11 +535,11 @@ function ActivityFormDialog({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex flex-col sm:flex-row justify-end gap-2">
+            <Button variant="outline" onClick={onClose} className="sm:w-auto">
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={!formData.title}>
+            <Button onClick={handleSave} disabled={!formData.title} className="sm:w-auto">
               <CheckCircle className="h-4 w-4 mr-2" />
               Salvar
             </Button>
