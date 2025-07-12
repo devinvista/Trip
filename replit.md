@@ -222,6 +222,7 @@ Registro de Alterações:
 - July 12, 2025. Tradução completa de todas as mensagens de erro em inglês para português brasileiro (Failed to fetch → Falha ao buscar)
 - July 12, 2025. Atualizado HTML principal com lang="pt-BR", título "PartiuTrip" e meta description em português para SEO
 - July 12, 2025. Verificação e confirmação de que todos os botões "Cancel" e "Save" já estão traduzidos para "Cancelar" e "Salvar"
+- July 12, 2025. Aplicado gradiente vermelho no botão "Desistir da Viagem" para aderir ao padrão visual do site (from-red-500 to-red-600 com hover from-red-600 to-red-700)
 - 12 de julho de 2025. Migração completa do Replit Agent para ambiente Replit padrão
 - 12 de julho de 2025. Documentação traduzida para português brasileiro e nome do projeto alterado para PartiuTrip
 - 12 de julho de 2025. Verificação de segurança e boas práticas implementadas na migração

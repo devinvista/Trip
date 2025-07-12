@@ -943,7 +943,7 @@ export default function TripDetailPage() {
                 {isParticipant && !isCreator && (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full">
+                      <Button className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-lg">
                         <X className="h-4 w-4 mr-2" />
                         Desistir da Viagem
                       </Button>
@@ -956,15 +956,14 @@ export default function TripDetailPage() {
                         <p>Tem certeza que deseja sair desta viagem? Esta ação não pode ser desfeita.</p>
                         <div className="flex gap-2">
                           <Button 
-                            variant="destructive" 
                             onClick={() => quitTripMutation.mutate()}
                             disabled={quitTripMutation.isPending}
-                            className="flex-1"
+                            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-lg"
                           >
                             {quitTripMutation.isPending ? "Saindo..." : "Confirmar Saída"}
                           </Button>
                           <DialogTrigger asChild>
-                            <Button variant="outline" className="flex-1">
+                            <Button variant="outline" className="flex-1 border-gray-300 hover:bg-gray-50">
                               Cancelar
                             </Button>
                           </DialogTrigger>
