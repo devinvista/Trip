@@ -205,3 +205,8 @@ Changelog:
 - July 12, 2025. Updated background gradient to match reference image with deep blue tones (slate-900 → blue-950 → slate-800)
 - July 12, 2025. Adjusted floating orbs opacity and colors to harmonize with darker background theme
 - July 12, 2025. Enhanced navbar "Entrar" button with hover effect matching "Viaje Junto" gradient colors and dark background
+- July 12, 2025. Completely redesigned "Destinos em Alta" section with modern glassmorphism design, gradient backgrounds, animated elements, and trending indicators
+- July 12, 2025. Implemented new footer with comprehensive site navigation, social media links, platform statistics, and cohesive slate-based color scheme
+- July 12, 2025. Enhanced destination cards with backdrop blur effects, improved typography, floating trend badges, and smooth hover animations
+- July 12, 2025. Updated CTA section with improved gradient backgrounds, animated orbs, and better visual hierarchy matching overall design theme
+- July 12, 2025. Added glassmorphism effects throughout sections using backdrop-blur and white/transparent overlays for modern aesthetic
