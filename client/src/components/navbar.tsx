@@ -207,7 +207,7 @@ export function Navbar() {
           {!user && (
             <div className="flex items-center space-x-3">
               <Link href="/auth">
-                <Button variant="ghost" className="text-dark hover:text-primary">
+                <Button variant="ghost" className="text-dark hover:text-primary bg-[#02132D]">
                   Entrar
                 </Button>
               </Link>
