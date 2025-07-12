@@ -239,7 +239,7 @@ export default function TripDetailPage() {
     queryKey: ["/api/trips", id],
     queryFn: async () => {
       const res = await apiRequest("GET", `/api/trips/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch trip');
+      if (!res.ok) throw new Error('Falha ao buscar viagem');
       return res.json();
     },
     enabled: !!id,
@@ -249,7 +249,7 @@ export default function TripDetailPage() {
     queryKey: ["/api/trips", id, "requests"],
     queryFn: async () => {
       const res = await apiRequest("GET", `/api/trips/${id}/requests`);
-      if (!res.ok) throw new Error('Failed to fetch requests');
+      if (!res.ok) throw new Error('Falha ao buscar solicitações');
       return res.json();
     },
     enabled: !!trip && !!user && trip.creatorId === user?.id,
@@ -263,7 +263,7 @@ export default function TripDetailPage() {
     queryKey: ["/api/trips", id, "expenses"],
     queryFn: async () => {
       const res = await apiRequest("GET", `/api/trips/${id}/expenses`);
-      if (!res.ok) throw new Error('Failed to fetch expenses');
+      if (!res.ok) throw new Error('Falha ao buscar despesas');
       return res.json();
     },
     enabled: !!trip && !!user && (isCreator || isParticipant),
@@ -833,7 +833,10 @@ export default function TripDetailPage() {
                               <Badge className="bg-yellow-100 text-yellow-800 text-xs">Organizador</Badge>
                             )}
                             <Badge variant="outline" className="text-green-800 border-green-200 text-xs">
-                              {participant.status}
+                              {participant.status === 'accepted' ? 'Aceito' : 
+                               participant.status === 'pending' ? 'Pendente' : 
+                               participant.status === 'rejected' ? 'Rejeitado' : 
+                               participant.status}
                             </Badge>
                           </div>
                         </div>
