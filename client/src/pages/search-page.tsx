@@ -264,17 +264,10 @@ export default function SearchPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-200 via-white to-blue-200 bg-clip-text text-transparent"
+              className="text-5xl font-bold mb-8 bg-gradient-to-r from-yellow-200 via-white to-blue-200 bg-clip-text text-transparent leading-tight"
             >
-              Navegue Pelos Seus Sonhos
+              Descubra destinos únicos e conecte-se com companheiros de viagem que compartilham seus sonhos
             </motion.h1>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-xl text-blue-100 max-w-3xl mx-auto mb-8 leading-relaxed"
-            >Descubra destinos únicos e conecte-se com companheiros de viagem que compartilham seus sonhos.</motion.p>
             
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
