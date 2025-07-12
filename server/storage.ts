@@ -11,9 +11,14 @@ function getCoverImageForDestination(destination: string): string | null {
     return popularDestinations[destination as keyof typeof popularDestinations].image;
   }
   
-  // Try to find partial match
+  // Try to find partial match - more flexible matching
+  const destLower = destination.toLowerCase();
   for (const [dest, data] of Object.entries(popularDestinations)) {
-    if (destination.includes(dest.split(',')[0]) || dest.includes(destination.split(',')[0])) {
+    const destKey = dest.toLowerCase();
+    const cityName = destKey.split(',')[0].trim();
+    const inputCity = destLower.split(',')[0].trim();
+    
+    if (destKey === destLower || cityName === inputCity || destLower.includes(cityName) || cityName.includes(inputCity)) {
       return data.image;
     }
   }
