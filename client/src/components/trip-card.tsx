@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface TripCardProps {
   trip: any;
@@ -28,6 +29,7 @@ interface TripCardProps {
 export function TripCard({ trip, showActions = true }: TripCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const { toast } = useToast();
   const availableSpots = trip.maxParticipants - trip.currentParticipants;
   const duration = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
@@ -109,11 +111,32 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
               whileTap={{ scale: 0.9 }}
               onClick={(e) => {
                 e.preventDefault();
-                navigator.share?.({
+                e.stopPropagation();
+                
+                const shareData = {
                   title: trip.title,
                   text: trip.description,
-                  url: window.location.href
-                });
+                  url: `${window.location.origin}/trip/${trip.id}`
+                };
+
+                if (navigator.share) {
+                  navigator.share(shareData).catch(console.error);
+                } else {
+                  // Fallback: copiar URL para clipboard
+                  navigator.clipboard.writeText(shareData.url).then(() => {
+                    toast({
+                      title: "Link copiado!",
+                      description: "O link da viagem foi copiado para sua área de transferência.",
+                    });
+                  }).catch(() => {
+                    // Fallback final: abrir WhatsApp
+                    window.open(`https://wa.me/?text=${encodeURIComponent(`${shareData.title} - ${shareData.text} ${shareData.url}`)}`, '_blank');
+                    toast({
+                      title: "Compartilhar via WhatsApp",
+                      description: "Redirecionando para o WhatsApp...",
+                    });
+                  });
+                }
               }}
               className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:text-blue-500 transition-colors"
             >
