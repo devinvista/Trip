@@ -775,22 +775,22 @@ export const popularDestinations = {
 
   // Destinos de cruzeiro
   "Mediterrâneo": {
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80",
     category: "cruzeiros",
     description: "Rota clássica entre ilhas gregas e cidades históricas"
   },
   "Caribe": {
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
     category: "cruzeiros",
     description: "Ilhas tropicais com praias de areia branca"
   },
   "Fiorde Norueguês": {
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
     category: "cruzeiros",
     description: "Paisagens dramáticas da Escandinávia"
   },
   "Alasca": {
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1570197526-ebbe9c6df8f2?w=800&q=80",
     category: "cruzeiros",
     description: "Natureza selvagem e geleiras impressionantes"
   }

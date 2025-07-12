@@ -1016,7 +1016,28 @@ async function createDefaultTrips(user: User) {
       }
     });
 
-    console.log('✅ Viagens padrão criadas:', trip1.title, 'e', trip2.title);
+    // Criar viagem 3: Cruzeiro pelo Mediterrâneo
+    const trip3 = await storage.createTrip({
+      title: 'Cruzeiro pelo Mediterrâneo',
+      destination: 'Mediterrâneo',
+      coverImage: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80',
+      startDate: new Date('2025-09-20'),
+      endDate: new Date('2025-09-27'),
+      budget: 3500,
+      maxParticipants: 8,
+      description: 'Cruzeiro de luxo pelo Mediterrâneo visitando Roma, Barcelona, Marselha e Nápoles. Inclui todas as refeições a bordo, entretenimento e excursões nos portos.',
+      travelStyle: 'cruzeiros',
+      sharedCosts: ['accommodation', 'transport', 'food'],
+      creatorId: user.id,
+      budgetBreakdown: {
+        transport: 1500,
+        accommodation: 1200,
+        food: 600,
+        activities: 200
+      }
+    });
+
+    console.log('✅ Viagens padrão criadas:', trip1.title, trip2.title, 'e', trip3.title);
   } catch (error) {
     console.error('❌ Erro ao criar viagens padrão:', error);
   }

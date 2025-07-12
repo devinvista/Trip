@@ -24,6 +24,7 @@ import {
   TreePine,
   Snowflake,
   Plane,
+  Ship,
   Camera,
   Star,
   Users,
@@ -56,7 +57,7 @@ const travelTypes = [
   { id: 'cultural', name: 'Cultural', icon: Camera, color: 'from-purple-500 to-violet-400' },
   { id: 'natureza', name: 'Natureza', icon: TreePine, color: 'from-green-600 to-lime-500' },
   { id: 'neve', name: 'Neve', icon: Snowflake, color: 'from-blue-300 to-white' },
-  { id: 'cruzeiros', name: 'Cruzeiros', icon: Plane, color: 'from-indigo-500 to-blue-400' },
+  { id: 'cruzeiros', name: 'Cruzeiros', icon: Ship, color: 'from-indigo-500 to-blue-400' },
   { id: 'parques', name: 'Parques Temáticos', icon: Star, color: 'from-pink-500 to-rose-400' },
 ];
 

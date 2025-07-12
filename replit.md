@@ -187,3 +187,7 @@ Changelog:
 - July 12, 2025. Positioned lighthouse visual element in bottom right corner for better layout balance
 - July 12, 2025. Added comprehensive date filtering system with options for next week, next month, next 3 months, and specific months (Jan-Dec 2025)
 - July 12, 2025. Implemented date range calculation logic with smart filtering based on trip start dates and enhanced active filters display
+- July 12, 2025. Updated "cruzeiros" travel type to use ship icon instead of plane icon for better semantic accuracy
+- July 12, 2025. Enhanced cruise trip handling - cruise trips now display cruise ship images instead of destination city images
+- July 12, 2025. Added cruise ship image library with Mediterranean, Caribbean, Norwegian fjord, and Alaska cruise imagery
+- July 12, 2025. Created test cruise trip "Cruzeiro pelo Mediterrâneo" to demonstrate cruise-specific features

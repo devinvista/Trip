@@ -34,8 +34,24 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
   const duration = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
   const getDestinationImage = (trip: any) => {
-    // Use the trip's cover image if available, otherwise use default
-    return trip.coverImage || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80";
+    // Use the trip's cover image if available
+    if (trip.coverImage) {
+      return trip.coverImage;
+    }
+    
+    // For cruise trips, use cruise ship images instead of destination images
+    if (trip.travelStyle === 'cruzeiros') {
+      const cruiseImages = [
+        "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80", // Luxury cruise ship
+        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", // Cruise ship at sunset
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80", // Cruise ship in fjord
+        "https://images.unsplash.com/photo-1570197526-ebbe9c6df8f2?w=800&q=80", // Cruise ship in Alaska
+      ];
+      return cruiseImages[Math.floor(Math.random() * cruiseImages.length)];
+    }
+    
+    // Default fallback for other travel types
+    return "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80";
   };
 
   const travelStyleLabels: { [key: string]: string } = {
