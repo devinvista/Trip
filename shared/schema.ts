@@ -421,5 +421,346 @@ export const popularDestinations = {
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
     category: "urbanas",
     description: "Capital gaúcha com tradição e modernidade"
+  },
+
+  // DESTINOS INTERNACIONAIS
+  
+  // Europa - Cidades Urbanas
+  "Londres, Reino Unido": {
+    image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
+    category: "urbanas",
+    description: "Capital britânica com história e modernidade"
+  },
+  "Paris, França": {
+    image: "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade Luz com arte, cultura e romance"
+  },
+  "Roma, Itália": {
+    image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+    category: "cultural",
+    description: "Cidade Eterna com história milenar"
+  },
+  "Barcelona, Espanha": {
+    image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80",
+    category: "urbanas",
+    description: "Arte moderna e arquitetura de Gaudí"
+  },
+  "Amsterdam, Holanda": {
+    image: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800&q=80",
+    category: "urbanas",
+    description: "Canais históricos e cultura liberal"
+  },
+  "Berlim, Alemanha": {
+    image: "https://images.unsplash.com/photo-1560930950-5cc20e80e392?w=800&q=80",
+    category: "cultural",
+    description: "História moderna e vida noturna vibrante"
+  },
+  "Praga, República Tcheca": {
+    image: "https://images.unsplash.com/photo-1541849546-216549ae216d?w=800&q=80",
+    category: "cultural",
+    description: "Cidade de contos de fadas no coração da Europa"
+  },
+  "Viena, Áustria": {
+    image: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=800&q=80",
+    category: "cultural",
+    description: "Capital da música clássica e arquitetura imperial"
+  },
+  "Budapeste, Hungria": {
+    image: "https://images.unsplash.com/photo-1541849546-216549ae216d?w=800&q=80",
+    category: "cultural",
+    description: "Pérola do Danúbio com termas históricas"
+  },
+  "Zurich, Suíça": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "neve",
+    description: "Cidade alpina com qualidade de vida excepcional"
+  },
+  "Estocolmo, Suécia": {
+    image: "https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=800&q=80",
+    category: "urbanas",
+    description: "Veneza do Norte com design escandinavo"
+  },
+  "Copenhague, Dinamarca": {
+    image: "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade hygge com arquitetura contemporânea"
+  },
+
+  // América do Norte
+  "Nova York, EUA": {
+    image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
+    category: "urbanas",
+    description: "A cidade que nunca dorme"
+  },
+  "Los Angeles, EUA": {
+    image: "https://images.unsplash.com/photo-1534190239940-9ba8944ea261?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade dos anjos e capital do entretenimento"
+  },
+  "Las Vegas, EUA": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Capital mundial dos cassinos e shows"
+  },
+  "San Francisco, EUA": {
+    image: "https://images.unsplash.com/photo-1534190239940-9ba8944ea261?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade das colinas e tecnologia"
+  },
+  "Chicago, EUA": {
+    image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade dos ventos com arquitetura icônica"
+  },
+  "Miami, EUA": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Praias de South Beach e vida noturna"
+  },
+  "Toronto, Canadá": {
+    image: "https://images.unsplash.com/photo-1517935706615-2717063c2225?w=800&q=80",
+    category: "urbanas",
+    description: "Metrópole multicultural canadense"
+  },
+  "Vancouver, Canadá": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "natureza",
+    description: "Cidade costeira entre montanhas e oceano"
+  },
+  "Cidade do México, México": {
+    image: "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?w=800&q=80",
+    category: "cultural",
+    description: "Metrópole com rica herança asteca"
+  },
+  "Cancún, México": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Riviera Maya com praias paradisíacas"
+  },
+
+  // América do Sul
+  "Buenos Aires, Argentina": {
+    image: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80",
+    category: "urbanas",
+    description: "Paris da América do Sul com tango e cultura"
+  },
+  "Bariloche, Argentina": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "neve",
+    description: "Suíça argentina com lagos e montanhas"
+  },
+  "Santiago, Chile": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "urbanas",
+    description: "Capital chilena cercada pelos Andes"
+  },
+  "Valparaíso, Chile": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "cultural",
+    description: "Porto histórico com arte de rua vibrante"
+  },
+  "Lima, Peru": {
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    category: "cultural",
+    description: "Capital gastronômica da América do Sul"
+  },
+  "Cusco, Peru": {
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    category: "cultural",
+    description: "Portal para Machu Picchu e cultura inca"
+  },
+  "Machu Picchu, Peru": {
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    category: "aventura",
+    description: "Cidadela perdida dos incas"
+  },
+  "Quito, Equador": {
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    category: "cultural",
+    description: "Centro histórico patrimônio da UNESCO"
+  },
+  "Bogotá, Colômbia": {
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    category: "urbanas",
+    description: "Capital colombiana com rica vida cultural"
+  },
+  "Cartagena, Colômbia": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "cultural",
+    description: "Cidade colonial murada no Caribe"
+  },
+  "Montevidéu, Uruguai": {
+    image: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80",
+    category: "urbanas",
+    description: "Capital uruguaia com charme portenho"
+  },
+  "La Paz, Bolívia": {
+    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    category: "cultural",
+    description: "Capital mais alta do mundo nos Andes"
+  },
+
+  // Ásia
+  "Tóquio, Japão": {
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
+    category: "urbanas",
+    description: "Metrópole futurista com tradição milenar"
+  },
+  "Kyoto, Japão": {
+    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80",
+    category: "cultural",
+    description: "Antiga capital com templos e jardins zen"
+  },
+  "Pequim, China": {
+    image: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80",
+    category: "cultural",
+    description: "Capital chinesa com a Grande Muralha"
+  },
+  "Xangai, China": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Metrópole moderna com skyline impressionante"
+  },
+  "Hong Kong": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade cosmopolita entre Oriente e Ocidente"
+  },
+  "Singapura": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade-estado com arquitetura futurista"
+  },
+  "Bangkok, Tailândia": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Capital do sorriso com templos dourados"
+  },
+  "Phuket, Tailândia": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Praias paradisíacas e vida noturna asiática"
+  },
+  "Bali, Indonésia": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Ilha dos deuses com praias e cultura hindu"
+  },
+  "Kuala Lumpur, Malásia": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Torres Petronas e diversidade cultural"
+  },
+  "Seul, Coreia do Sul": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Capital do K-pop e tecnologia avançada"
+  },
+  "Mumbai, Índia": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Bollywood e contrastes urbanos indianos"
+  },
+  "Nova Déli, Índia": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "cultural",
+    description: "Capital indiana com patrimônio mogol"
+  },
+  "Istambul, Turquia": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "cultural",
+    description: "Ponte entre Europa e Ásia com história otomana"
+  },
+  "Dubai, Emirados Árabes": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade futurista no deserto com luxo extremo"
+  },
+  "Tel Aviv, Israel": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade costeira com vida noturna e inovação"
+  },
+
+  // África
+  "Cairo, Egito": {
+    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73a73?w=800&q=80",
+    category: "cultural",
+    description: "Cidade dos faraós com as pirâmides de Gizé"
+  },
+  "Marrakech, Marrocos": {
+    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73a73?w=800&q=80",
+    category: "cultural",
+    description: "Cidade imperial com souks e cultura berber"
+  },
+  "Cidade do Cabo, África do Sul": {
+    image: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80",
+    category: "natureza",
+    description: "Beleza natural com Table Mountain e vinícolas"
+  },
+  "Joanesburgo, África do Sul": {
+    image: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade do ouro com história do apartheid"
+  },
+  "Nairóbi, Quênia": {
+    image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80",
+    category: "aventura",
+    description: "Portal para safáris no coração da África"
+  },
+
+  // Oceania
+  "Sydney, Austrália": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Ópera House icônica e praias urbanas"
+  },
+  "Melbourne, Austrália": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "urbanas",
+    description: "Capital cultural australiana com café e arte"
+  },
+  "Auckland, Nova Zelândia": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "natureza",
+    description: "Cidade dos veleiros com paisagens épicas"
+  },
+  "Queenstown, Nova Zelândia": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "aventura",
+    description: "Capital mundial dos esportes radicais"
+  },
+  "Fiji": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Ilhas paradisíacas com águas cristalinas"
+  },
+  "Tahiti, Polinésia Francesa": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Paraíso tropical com bangalôs sobre a água"
+  },
+
+  // Destinos de cruzeiro
+  "Mediterrâneo": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "cruzeiros",
+    description: "Rota clássica entre ilhas gregas e cidades históricas"
+  },
+  "Caribe": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "cruzeiros",
+    description: "Ilhas tropicais com praias de areia branca"
+  },
+  "Fiorde Norueguês": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "cruzeiros",
+    description: "Paisagens dramáticas da Escandinávia"
+  },
+  "Alasca": {
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    category: "cruzeiros",
+    description: "Natureza selvagem e geleiras impressionantes"
   }
 } as const;
