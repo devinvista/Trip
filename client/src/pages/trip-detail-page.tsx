@@ -77,51 +77,72 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const isUpcoming = new Date(targetDate) > new Date();
   const isPast = new Date(targetDate) < new Date();
 
   if (isPast) {
     return (
-      <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-center gap-2 text-amber-800">
-            <Trophy className="h-5 w-5" />
-            <span className="font-semibold">Viagem Concluída!</span>
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white shadow-xl">
+        <div className="flex items-center justify-center gap-3">
+          <Trophy className="h-8 w-8 text-amber-100" />
+          <div className="text-center">
+            <h2 className="text-2xl font-bold">Viagem Concluída!</h2>
+            <p className="text-amber-100">Esperamos que tenha sido incrível!</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
-      <CardContent className="p-4">
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Timer className="h-5 w-5 text-blue-600" />
-            <h3 className="font-semibold text-blue-800">Contagem Regressiva</h3>
-          </div>
-          <div className="grid grid-cols-4 gap-2 text-center">
-            <div className="bg-white rounded-lg p-2 border border-blue-200">
-              <div className="text-xl font-bold text-blue-900">{timeLeft.days}</div>
-              <div className="text-xs text-blue-600">Dias</div>
-            </div>
-            <div className="bg-white rounded-lg p-2 border border-blue-200">
-              <div className="text-xl font-bold text-blue-900">{timeLeft.hours}</div>
-              <div className="text-xs text-blue-600">Horas</div>
-            </div>
-            <div className="bg-white rounded-lg p-2 border border-blue-200">
-              <div className="text-xl font-bold text-blue-900">{timeLeft.minutes}</div>
-              <div className="text-xs text-blue-600">Min</div>
-            </div>
-            <div className="bg-white rounded-lg p-2 border border-blue-200">
-              <div className="text-xl font-bold text-blue-900">{timeLeft.seconds}</div>
-              <div className="text-xs text-blue-600">Seg</div>
-            </div>
-          </div>
+    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl">
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Timer className="h-8 w-8 text-blue-100" />
+          <h2 className="text-2xl font-bold">Contagem Regressiva</h2>
         </div>
-      </CardContent>
-    </Card>
+        <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+          >
+            <div className="text-3xl font-bold text-white">{timeLeft.days}</div>
+            <div className="text-sm text-blue-100">Dias</div>
+          </motion.div>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+          >
+            <div className="text-3xl font-bold text-white">{timeLeft.hours}</div>
+            <div className="text-sm text-blue-100">Horas</div>
+          </motion.div>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+          >
+            <div className="text-3xl font-bold text-white">{timeLeft.minutes}</div>
+            <div className="text-sm text-blue-100">Min</div>
+          </motion.div>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+          >
+            <div className="text-3xl font-bold text-white">{timeLeft.seconds}</div>
+            <div className="text-sm text-blue-100">Seg</div>
+          </motion.div>
+        </div>
+        <p className="mt-4 text-blue-100 text-sm">
+          Faltam {timeLeft.days} dias para a sua aventura começar!
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -373,11 +394,21 @@ export default function TripDetailPage() {
       <Navbar />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
+        {/* Countdown Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          className="mb-6"
+        >
+          <CountdownTimer targetDate={trip.startDate} />
+        </motion.div>
+
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8"
         >
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-xl">
@@ -657,8 +688,6 @@ export default function TripDetailPage() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="space-y-6"
           >
-            {/* Countdown Timer */}
-            <CountdownTimer targetDate={trip.startDate} />
 
             {/* Action Buttons */}
             <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
@@ -730,34 +759,93 @@ export default function TripDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
-            <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-yellow-800">
-                  <Zap className="h-5 w-5" />
-                  Estatísticas Rápidas
+            {/* Enhanced Budget Tracking */}
+            <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-emerald-800">
+                  <TrendingUp className="h-5 w-5" />
+                  Acompanhamento de Orçamento
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {/* Budget Breakdown */}
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-yellow-700">Custo das Atividades:</span>
-                    <span className="font-medium text-yellow-900">
+                  <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-emerald-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-gray-700">Orçamento Base</span>
+                    </div>
+                    <span className="font-bold text-blue-900">
+                      R$ {(trip.budget || 0).toLocaleString('pt-BR')}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-emerald-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-gray-700">Atividades</span>
+                    </div>
+                    <span className="font-bold text-purple-900">
                       R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-yellow-700">Orçamento Total:</span>
-                    <span className="font-bold text-yellow-900">
+                  
+                  <div className="flex justify-between items-center p-3 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-lg border-2 border-emerald-300">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                      <span className="text-sm font-bold text-emerald-800">Total Geral</span>
+                    </div>
+                    <span className="text-lg font-bold text-emerald-900">
                       R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
                     </span>
                   </div>
-                  <Separator className="bg-yellow-200" />
-                  <div className="flex justify-between">
-                    <span className="text-sm text-yellow-700">Por Pessoa:</span>
-                    <span className="font-bold text-yellow-900">
+                </div>
+
+                <Separator className="bg-emerald-200" />
+
+                {/* Cost per Person */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-lg border border-amber-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-amber-600" />
+                      <span className="text-sm font-medium text-amber-800">Custo por Pessoa</span>
+                    </div>
+                    <span className="text-xl font-bold text-amber-900">
                       R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
                     </span>
+                  </div>
+                  <div className="mt-2 text-xs text-amber-600">
+                    Dividido entre {trip.maxParticipants} participantes
+                  </div>
+                </div>
+
+                {/* Budget Progress */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Progresso do Orçamento</span>
+                    <span className="font-medium text-gray-900">
+                      {Math.round((calculateActivitiesCost(plannedActivities) / (trip.budget || 1)) * 100)}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={Math.min(100, (calculateActivitiesCost(plannedActivities) / (trip.budget || 1)) * 100)} 
+                    className="h-2"
+                  />
+                  <div className="text-xs text-gray-500">
+                    Atividades planejadas em relação ao orçamento base
+                  </div>
+                </div>
+
+                {/* Budget Tips */}
+                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                  <div className="flex items-start gap-2">
+                    <Sparkles className="h-4 w-4 text-blue-600 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-medium text-blue-800 mb-1">Dica de Orçamento</p>
+                      <p className="text-xs text-blue-700">
+                        Reserve 15-20% do orçamento para gastos extras e emergências durante a viagem.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </CardContent>
