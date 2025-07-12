@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { OnboardingTour, useOnboardingTour } from "@/components/onboarding-tour";
+import { WelcomeBanner } from "@/components/welcome-banner";
 import { 
   Briefcase, 
   Users, 
@@ -37,6 +39,21 @@ export default function DashboardPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedTimeframe, setSelectedTimeframe] = useState('upcoming');
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(false);
+  
+  // Onboarding tour hook
+  const { isOpen, isCompleted, startTour, closeTour, completeTour } = useOnboardingTour();
+
+  // Check if user should see welcome banner (first time or hasn't completed tour)
+  useEffect(() => {
+    if (user && !isCompleted) {
+      // Check if user was created recently (within last 24 hours)
+      const welcomeBannerDismissed = localStorage.getItem('welcome-banner-dismissed');
+      if (!welcomeBannerDismissed) {
+        setShowWelcomeBanner(true);
+      }
+    }
+  }, [user, isCompleted]);
 
   const { data: myTrips, isLoading: tripsLoading, error: tripsError, refetch: refetchTrips } = useQuery({
     queryKey: ["/api/my-trips"],
@@ -191,6 +208,17 @@ export default function DashboardPage() {
         <Navbar />
 
         <div className="container mx-auto px-4 py-8">
+          {/* Welcome Banner */}
+          <WelcomeBanner
+            userName={user?.fullName?.split(' ')[0]}
+            onStartTour={startTour}
+            onDismiss={() => {
+              setShowWelcomeBanner(false);
+              localStorage.setItem('welcome-banner-dismissed', 'true');
+            }}
+            isVisible={showWelcomeBanner}
+          />
+
           {/* Header Section */}
           <div className="mb-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
@@ -575,6 +603,18 @@ export default function DashboardPage() {
             </Card>
           )}
         </div>
+
+        {/* Onboarding Tour */}
+        <OnboardingTour
+          isOpen={isOpen}
+          onClose={closeTour}
+          onComplete={completeTour}
+          userPreferences={{
+            travelStyle: user?.travelStyle,
+            interests: user?.interests,
+            experience: 'iniciante' // Could be determined from user profile
+          }}
+        />
       </div>
     </ProtectedRoute>
   );

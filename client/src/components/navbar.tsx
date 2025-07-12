@@ -26,8 +26,8 @@ export function Navbar() {
   const navItems = [
     { href: "/dashboard", label: "Painel", icon: LayoutDashboard },
     { href: "/board", label: "Quadro Visual", icon: Kanban },
-    { href: "/search", label: "Buscar Viagens", icon: Search },
-    { href: "/create-trip", label: "Criar Viagem", icon: Plus },
+    { href: "/search", label: "Buscar Viagens", icon: Search, tourData: "search-button" },
+    { href: "/create-trip", label: "Criar Viagem", icon: Plus, tourData: "create-button" },
     { href: "/journey-tracker", label: "Progresso", icon: TrendingUp },
     { href: "/collaborative-editing", label: "Edição Colaborativa", icon: Edit3 },
   ];
@@ -77,11 +77,16 @@ export function Navbar() {
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <Link key={item.href} href={item.href} className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                    <Link 
+                      key={item.href} 
+                      href={item.href} 
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                           isActive(item.href) 
                             ? "bg-primary text-white" 
                             : "text-dark hover:text-primary hover:bg-gray-50"
-                        }`}>
+                        }`}
+                      data-tour={item.tourData}
+                    >
                         <Icon className="h-4 w-4" />
                         {item.label}
                     </Link>
@@ -169,6 +174,7 @@ export function Navbar() {
                                       ? "bg-primary text-white" 
                                       : "text-dark hover:text-primary hover:bg-gray-50"
                                   }`}
+                                  data-tour={item.tourData}
                                 >
                                   <Icon className="h-4 w-4" />
                                   {item.label}
