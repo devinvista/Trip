@@ -512,51 +512,86 @@ export default function TripDetailPage() {
                 </Card>
 
                 {/* Budget Breakdown */}
-                {trip.budgetBreakdown && (
-                  <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-green-500" />
-                        Orçamento Detalhado
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          {Object.entries(trip.budgetBreakdown).map(([category, amount]) => (
-                            <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                              <span className="text-sm font-medium text-gray-700 capitalize">
-                                {category === 'transport' ? 'Transporte' :
-                                 category === 'accommodation' ? 'Hospedagem' :
-                                 category === 'food' ? 'Alimentação' :
-                                 category === 'activities' ? 'Atividades' :
-                                 category === 'shopping' ? 'Compras' :
-                                 category === 'insurance' ? 'Seguro' :
-                                 category === 'visas' ? 'Vistos' :
-                                 category === 'other' ? 'Outros' : category}
-                              </span>
-                              <span className="font-bold text-gray-900">
-                                R$ {amount.toLocaleString('pt-BR')}
+                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-green-500" />
+                      Orçamento Detalhado
+                      {!(isCreator || isParticipant) && (
+                        <Badge variant="outline" className="text-xs ml-2">
+                          Somente Visualização
+                        </Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {trip.budgetBreakdown ? (
+                        <>
+                          <div className="grid grid-cols-2 gap-4">
+                            {Object.entries(trip.budgetBreakdown).map(([category, amount]) => (
+                              <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span className="text-sm font-medium text-gray-700 capitalize">
+                                  {category === 'transport' ? 'Transporte' :
+                                   category === 'accommodation' ? 'Hospedagem' :
+                                   category === 'food' ? 'Alimentação' :
+                                   category === 'activities' ? 'Atividades' :
+                                   category === 'shopping' ? 'Compras' :
+                                   category === 'insurance' ? 'Seguro' :
+                                   category === 'visas' ? 'Vistos' :
+                                   category === 'other' ? 'Outros' : category}
+                                </span>
+                                <span className="font-bold text-gray-900">
+                                  R$ {amount.toLocaleString('pt-BR')}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <div className="flex justify-between items-center">
+                              <span className="text-lg font-semibold text-blue-900">Total</span>
+                              <span className="text-xl font-bold text-blue-900">
+                                R$ {trip.budget.toLocaleString('pt-BR')}
                               </span>
                             </div>
-                          ))}
+                            <div className="mt-2 text-sm text-blue-700">
+                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center py-8">
+                          <DollarSign className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                          <div className="space-y-2">
+                            <p className="text-lg font-semibold text-gray-900">
+                              Orçamento Total: R$ {trip.budget.toLocaleString('pt-BR')}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
+                            </p>
+                            <p className="text-xs text-gray-500 mt-4">
+                              Detalhamento não disponível ainda
+                            </p>
+                          </div>
                         </div>
-                        
+                      )}
+                      
+                      {!(isCreator || isParticipant) && canJoin && (
                         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                          <div className="flex justify-between items-center">
-                            <span className="text-lg font-semibold text-blue-900">Total</span>
-                            <span className="text-xl font-bold text-blue-900">
-                              R$ {trip.budget.toLocaleString('pt-BR')}
-                            </span>
-                          </div>
-                          <div className="mt-2 text-sm text-blue-700">
-                            R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
+                          <div className="text-center">
+                            <p className="text-sm text-blue-700 mb-2">
+                              Participe da viagem para ajudar no planejamento do orçamento!
+                            </p>
+                            <Button size="sm" onClick={() => setActiveTab("overview")}>
+                              Solicitar Participação
+                            </Button>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="activities" className="space-y-6">
@@ -568,11 +603,66 @@ export default function TripDetailPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <AdvancedActivityManager
-                      activities={plannedActivities}
-                      onActivitiesChange={setPlannedActivities}
-                      className="border-0"
-                    />
+                    {(isCreator || isParticipant) ? (
+                      <AdvancedActivityManager
+                        activities={plannedActivities}
+                        onActivitiesChange={setPlannedActivities}
+                        className="border-0"
+                      />
+                    ) : (
+                      <div className="space-y-4">
+                        {plannedActivities.length > 0 ? (
+                          <div className="space-y-3">
+                            {plannedActivities.map((activity, index) => (
+                              <div key={activity.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="font-medium text-gray-900">{activity.title}</h4>
+                                  <Badge variant="outline" className="text-xs">
+                                    {activity.category === 'sightseeing' ? 'Turismo' :
+                                     activity.category === 'food' ? 'Comida' :
+                                     activity.category === 'adventure' ? 'Aventura' :
+                                     activity.category === 'culture' ? 'Cultura' :
+                                     activity.category === 'relaxation' ? 'Relaxamento' :
+                                     activity.category === 'nightlife' ? 'Vida Noturna' :
+                                     activity.category === 'shopping' ? 'Compras' :
+                                     activity.category}
+                                  </Badge>
+                                </div>
+                                {activity.description && (
+                                  <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
+                                )}
+                                <div className="flex justify-between items-center text-xs text-gray-500">
+                                  <span>
+                                    Prioridade: {activity.priority === 'high' ? 'Alta' : 
+                                                activity.priority === 'medium' ? 'Média' : 'Baixa'}
+                                  </span>
+                                  {activity.estimatedCost && (
+                                    <span className="font-medium text-green-600">
+                                      R$ {activity.estimatedCost.toLocaleString('pt-BR')}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <Target className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                            <p className="text-gray-600">Nenhuma atividade planejada ainda</p>
+                          </div>
+                        )}
+                        {canJoin && (
+                          <div className="text-center mt-4">
+                            <p className="text-sm text-gray-600 mb-2">
+                              Participe da viagem para ajudar no planejamento!
+                            </p>
+                            <Button onClick={() => setActiveTab("overview")}>
+                              Solicitar Participação
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
