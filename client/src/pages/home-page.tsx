@@ -63,50 +63,88 @@ const featuredDestinations = [
   }
 ];
 
-// Lighthouse SVG Component inspired by Alexandria
-const LighthouseSVG = ({ className = "" }: { className?: string }) => (
+// Community Connection SVG Component inspired by shared experiences
+const CommunityLighthouseSVG = ({ className = "" }: { className?: string }) => (
   <svg 
     viewBox="0 0 400 600" 
     className={className}
     fill="none" 
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Ocean Base */}
+    {/* Ocean Base with Waves */}
     <path 
-      d="M0 580 Q200 560 400 580 L400 600 L0 600 Z" 
+      d="M0 580 Q100 570 200 580 Q300 590 400 580 L400 600 L0 600 Z" 
       fill="url(#oceanGradient)" 
+      className="animate-wave"
     />
     
-    {/* Lighthouse Base */}
-    <rect x="170" y="400" width="60" height="180" fill="url(#lighthouseGradient)" rx="4"/>
+    {/* Island Base */}
+    <ellipse cx="200" cy="580" rx="80" ry="20" fill="url(#islandGradient)" />
     
-    {/* Lighthouse Body Segments */}
-    <rect x="175" y="420" width="50" height="8" fill="#e2e8f0" />
-    <rect x="175" y="440" width="50" height="8" fill="#e2e8f0" />
-    <rect x="175" y="460" width="50" height="8" fill="#e2e8f0" />
-    <rect x="175" y="480" width="50" height="8" fill="#e2e8f0" />
+    {/* Lighthouse Base - Modern Tower */}
+    <rect x="175" y="420" width="50" height="160" fill="url(#lighthouseGradient)" rx="6"/>
     
-    {/* Lighthouse Top Structure */}
-    <rect x="165" y="380" width="70" height="30" fill="url(#topGradient)" rx="6"/>
+    {/* Lighthouse Segments - Representing Community Levels */}
+    <rect x="180" y="440" width="40" height="6" fill="#fbbf24" opacity="0.8" />
+    <rect x="180" y="460" width="40" height="6" fill="#10b981" opacity="0.8" />
+    <rect x="180" y="480" width="40" height="6" fill="#3b82f6" opacity="0.8" />
+    <rect x="180" y="500" width="40" height="6" fill="#8b5cf6" opacity="0.8" />
     
-    {/* Light Beam */}
+    {/* Community Platform at Top */}
+    <rect x="160" y="400" width="80" height="25" fill="url(#platformGradient)" rx="8"/>
+    
+    {/* Connection Beams - Multiple directions representing community reach */}
     <g className="animate-pulse">
       <path 
-        d="M200 380 L50 200 L200 360 L350 200 Z" 
-        fill="url(#lightBeam)" 
-        opacity="0.3"
+        d="M200 400 L80 250 L200 385 L150 250 Z" 
+        fill="url(#lightBeam1)" 
+        opacity="0.4"
+      />
+      <path 
+        d="M200 400 L320 250 L200 385 L250 250 Z" 
+        fill="url(#lightBeam2)" 
+        opacity="0.4"
+      />
+      <path 
+        d="M200 400 L200 200 L185 385 L215 385 Z" 
+        fill="url(#lightBeam3)" 
+        opacity="0.5"
       />
     </g>
     
-    {/* Light Source */}
-    <circle cx="200" cy="370" r="8" fill="#fbbf24" className="animate-pulse" />
-    <circle cx="200" cy="370" r="12" fill="#fbbf24" opacity="0.5" className="animate-ping" />
+    {/* Central Community Hub */}
+    <circle cx="200" cy="390" r="12" fill="#fbbf24" className="animate-pulse" />
+    <circle cx="200" cy="390" r="18" fill="#fbbf24" opacity="0.3" className="animate-ping" />
     
-    {/* Stars */}
-    <circle cx="100" cy="100" r="2" fill="#fbbf24" className="animate-pulse" />
-    <circle cx="300" cy="80" r="1.5" fill="#fbbf24" className="animate-pulse" style={{animationDelay: '0.5s'}} />
-    <circle cx="350" cy="120" r="1" fill="#fbbf24" className="animate-pulse" style={{animationDelay: '1s'}} />
-    <circle cx="80" cy="60" r="1.5" fill="#fbbf24" className="animate-pulse" style={{animationDelay: '1.5s'}} />
+    {/* People Icons Around Lighthouse - Representing Community */}
+    <circle cx="120" cy="380" r="8" fill="#10b981" className="animate-pulse" style={{animationDelay: '0.5s'}} />
+    <circle cx="120" cy="375" r="4" fill="#065f46" />
+    <rect x="116" y="383" width="8" height="12" fill="#065f46" rx="2" />
+    
+    <circle cx="280" cy="370" r="8" fill="#3b82f6" className="animate-pulse" style={{animationDelay: '1s'}} />
+    <circle cx="280" cy="365" r="4" fill="#1e3a8a" />
+    <rect x="276" y="373" width="8" height="12" fill="#1e3a8a" rx="2" />
+    
+    <circle cx="150" cy="350" r="8" fill="#8b5cf6" className="animate-pulse" style={{animationDelay: '1.5s'}} />
+    <circle cx="150" cy="345" r="4" fill="#581c87" />
+    <rect x="146" y="353" width="8" height="12" fill="#581c87" rx="2" />
+    
+    <circle cx="250" cy="340" r="8" fill="#f59e0b" className="animate-pulse" style={{animationDelay: '2s'}} />
+    <circle cx="250" cy="335" r="4" fill="#92400e" />
+    <rect x="246" y="343" width="8" height="12" fill="#92400e" rx="2" />
+    
+    {/* Connection Lines Between People */}
+    <line x1="120" y1="380" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
+    <line x1="280" y1="370" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
+    <line x1="150" y1="350" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
+    <line x1="250" y1="340" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
+    
+    {/* Stars representing destinations/dreams */}
+    <circle cx="100" cy="100" r="2" fill="#fbbf24" className="animate-star-twinkle" />
+    <circle cx="300" cy="80" r="1.5" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '0.5s'}} />
+    <circle cx="350" cy="120" r="1" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '1s'}} />
+    <circle cx="80" cy="60" r="1.5" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '1.5s'}} />
+    <circle cx="200" cy="50" r="2" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '2s'}} />
     
     {/* Definitions */}
     <defs>
@@ -114,15 +152,27 @@ const LighthouseSVG = ({ className = "" }: { className?: string }) => (
         <stop offset="0%" stopColor="#3b82f6" />
         <stop offset="100%" stopColor="#1e40af" />
       </linearGradient>
+      <linearGradient id="islandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#065f46" />
+        <stop offset="100%" stopColor="#064e3b" />
+      </linearGradient>
       <linearGradient id="lighthouseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stopColor="#f8fafc" />
         <stop offset="100%" stopColor="#e2e8f0" />
       </linearGradient>
-      <linearGradient id="topGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#dc2626" />
-        <stop offset="100%" stopColor="#991b1b" />
+      <linearGradient id="platformGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#fbbf24" />
+        <stop offset="100%" stopColor="#f59e0b" />
       </linearGradient>
-      <linearGradient id="lightBeam" x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id="lightBeam1" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#10b981" />
+        <stop offset="100%" stopColor="#059669" />
+      </linearGradient>
+      <linearGradient id="lightBeam2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#3b82f6" />
+        <stop offset="100%" stopColor="#2563eb" />
+      </linearGradient>
+      <linearGradient id="lightBeam3" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stopColor="#fbbf24" />
         <stop offset="100%" stopColor="#f59e0b" />
       </linearGradient>
@@ -229,8 +279,8 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <Navigation className="w-4 h-4" />
-                <span className="text-sm font-medium">Navegue pelos seus sonhos</span>
+                <Users className="w-4 h-4" />
+                <span className="text-sm font-medium">Compartilhe experiências únicas</span>
               </motion.div>
 
               {/* Main Heading */}
@@ -241,11 +291,11 @@ export default function HomePage() {
               >
                 <h1 className="text-6xl md:text-7xl font-bold text-white leading-tight">
                   <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
-                    Ilumine
+                    Viaje Junto
                   </span>
                   <br />
                   <span className="text-white">
-                    Sua Jornada
+                    Gaste Menos
                   </span>
                 </h1>
               </motion.div>
@@ -257,9 +307,9 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                Como o lendário Farol de Alexandria guiava navegadores, 
-                <span className="text-yellow-300 font-semibold"> ViajaJunto </span>
-                ilumina seu caminho para aventuras extraordinárias pelo mundo.
+                Conecte-se com viajantes que compartilham seus interesses. 
+                <span className="text-yellow-300 font-semibold"> Divida custos</span>, troque experiências 
+                e descubra o mundo de forma mais inteligente e econômica.
               </motion.p>
 
               {/* CTA Buttons */}
@@ -271,14 +321,14 @@ export default function HomePage() {
               >
                 <Button asChild size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold px-8 py-6 rounded-full shadow-xl shadow-yellow-500/25 transform hover:scale-105 transition-all">
                   <Link href="/search">
-                    <Compass className="mr-2 h-5 w-5" />
-                    Descobrir Destinos
+                    <Users className="mr-2 h-5 w-5" />
+                    Encontrar Companheiros
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-6 rounded-full">
                   <Link href="/create-trip">
-                    <Globe className="mr-2 h-5 w-5" />
-                    Criar Aventura
+                    <DollarSign className="mr-2 h-5 w-5" />
+                    Compartilhar Viagem
                   </Link>
                 </Button>
               </motion.div>
@@ -297,9 +347,9 @@ export default function HomePage() {
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
                   >
-                    3.2k+
+                    65%
                   </motion.p>
-                  <p className="text-blue-200 text-sm">Exploradores Ativos</p>
+                  <p className="text-blue-200 text-sm">Economia Média</p>
                 </div>
                 <div className="text-center">
                   <motion.p
@@ -308,9 +358,9 @@ export default function HomePage() {
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.4, type: "spring", stiffness: 200 }}
                   >
-                    1.5k+
+                    2.8k+
                   </motion.p>
-                  <p className="text-blue-200 text-sm">Jornadas Realizadas</p>
+                  <p className="text-blue-200 text-sm">Viajantes Conectados</p>
                 </div>
                 <div className="text-center">
                   <motion.p
@@ -319,9 +369,9 @@ export default function HomePage() {
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.6, type: "spring", stiffness: 200 }}
                   >
-                    4.9★
+                    1.2k+
                   </motion.p>
-                  <p className="text-blue-200 text-sm">Avaliação Média</p>
+                  <p className="text-blue-200 text-sm">Experiências Compartilhadas</p>
                 </div>
               </motion.div>
             </motion.div>
@@ -359,11 +409,11 @@ export default function HomePage() {
                     ease: "easeInOut"
                   }}
                 >
-                  <LighthouseSVG className="w-80 h-96 lg:w-96 lg:h-[500px]" />
+                  <CommunityLighthouseSVG className="w-80 h-96 lg:w-96 lg:h-[500px]" />
                 </motion.div>
               </div>
 
-              {/* Floating Navigation Elements */}
+              {/* Floating Community Elements */}
               <motion.div
                 className="absolute top-20 left-10 bg-white/10 backdrop-blur-sm rounded-full p-3"
                 animate={{
@@ -376,14 +426,14 @@ export default function HomePage() {
                   ease: "easeInOut"
                 }}
               >
-                <Compass className="w-6 h-6 text-yellow-400" />
+                <Users className="w-6 h-6 text-yellow-400" />
               </motion.div>
 
               <motion.div
                 className="absolute bottom-20 right-10 bg-white/10 backdrop-blur-sm rounded-full p-3"
                 animate={{
                   y: [0, 20, 0],
-                  rotate: [360, 0],
+                  scale: [1, 1.1, 1],
                 }}
                 transition={{
                   duration: 6,
@@ -391,7 +441,7 @@ export default function HomePage() {
                   ease: "easeInOut"
                 }}
               >
-                <Navigation className="w-6 h-6 text-blue-400" />
+                <DollarSign className="w-6 h-6 text-green-400" />
               </motion.div>
 
               <motion.div
@@ -406,7 +456,7 @@ export default function HomePage() {
                   ease: "easeInOut"
                 }}
               >
-                <Globe className="w-6 h-6 text-green-400" />
+                <Heart className="w-6 h-6 text-purple-400" />
               </motion.div>
             </motion.div>
           </div>

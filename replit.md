@@ -196,3 +196,9 @@ Changelog:
 - July 12, 2025. Fixed cruise destination image mapping in both schema.ts and storage.ts to use single high-quality cruise ship image
 - July 12, 2025. Updated cruise ship default image to use Brazilian travel guide image (https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg) for better compatibility and visual quality
 - July 12, 2025. Replaced all cruise destination images in schema.ts and storage.ts to use new standardized cruise ship image from travel guide website
+- July 12, 2025. Redesigned hero section with community focus - changed messaging from "Ilumine Sua Jornada" to "Viaje Junto, Gaste Menos" emphasizing shared experiences and cost reduction
+- July 12, 2025. Updated lighthouse SVG to CommunityLighthouseSVG featuring people connections, community platform, and multiple colored beams representing shared experiences
+- July 12, 2025. Modified statistics to show "65% Economia Média", "2.8k+ Viajantes Conectados", "1.2k+ Experiências Compartilhadas" focusing on community benefits
+- July 12, 2025. Changed CTA buttons to "Encontrar Companheiros" and "Compartilhar Viagem" with Users and DollarSign icons for better community focus
+- July 12, 2025. Updated floating elements around lighthouse to show Users (community), DollarSign (savings), and Heart (experiences) icons
+- July 12, 2025. Enhanced subtitle to emphasize connecting travelers, cost sharing, and intelligent travel approach
