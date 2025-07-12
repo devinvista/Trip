@@ -1,128 +1,128 @@
-# ViajaJunto - Travel Companion Platform
+# PartiuTrip - Plataforma de Companheiros de Viagem
 
-## Overview
+## Visão Geral
 
-ViajaJunto is a web-based platform that connects travelers with common interests, destinations, and dates to share travel experiences and costs. Built as a full-stack application using modern web technologies, it enables users to create travel plans, find compatible travel companions, and coordinate shared expenses like accommodation, transportation, and activities.
+PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos e datas comuns para compartilhar experiências de viagem e custos. Desenvolvida como uma aplicação full-stack usando tecnologias web modernas, permite que usuários criem planos de viagem, encontrem companheiros de viagem compatíveis e coordenem despesas compartilhadas como acomodação, transporte e atividades.
 
-## System Architecture
+## Arquitetura do Sistema
 
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Routing**: Wouter (lightweight React router)
-- **State Management**: TanStack React Query for server state
-- **UI Components**: Radix UI primitives with shadcn/ui styling system
-- **Styling**: Tailwind CSS with CSS variables for theming
-- **Form Handling**: React Hook Form with Zod validation
-- **Build Tool**: Vite with custom configuration
+### Arquitetura Frontend
+- **Framework**: React 18 com TypeScript
+- **Roteamento**: Wouter (roteador React leve)
+- **Gerenciamento de Estado**: TanStack React Query para estado do servidor
+- **Componentes UI**: Primitivos Radix UI com sistema de estilo shadcn/ui
+- **Estilização**: Tailwind CSS com variáveis CSS para temas
+- **Manipulação de Formulários**: React Hook Form com validação Zod
+- **Ferramenta de Build**: Vite com configuração personalizada
 
-### Backend Architecture
-- **Runtime**: Node.js with Express.js
-- **Authentication**: Passport.js with local strategy and session-based auth
-- **Session Storage**: Express sessions with PostgreSQL store
-- **Password Security**: Node.js crypto module with scrypt hashing
-- **API Design**: RESTful endpoints with JSON responses
-- **Database**: PostgreSQL with Drizzle ORM
+### Arquitetura Backend
+- **Runtime**: Node.js com Express.js
+- **Autenticação**: Passport.js com estratégia local e autenticação baseada em sessão
+- **Armazenamento de Sessão**: Sessões Express com armazenamento PostgreSQL
+- **Segurança de Senha**: Módulo crypto do Node.js com hash scrypt
+- **Design de API**: Endpoints RESTful com respostas JSON
+- **Banco de Dados**: PostgreSQL com Drizzle ORM
 
-### Database Schema
-The application uses PostgreSQL with the following main entities:
-- **Users**: Authentication, profile information, and travel preferences
-- **Trips**: Travel plans with destinations, dates, budgets, and shared costs
-- **Trip Participants**: Many-to-many relationship between users and trips
-- **Messages**: Real-time chat functionality for trip groups
-- **Trip Requests**: Request system for joining trips
+### Esquema do Banco de Dados
+A aplicação usa PostgreSQL com as seguintes entidades principais:
+- **Usuários**: Autenticação, informações de perfil e preferências de viagem
+- **Viagens**: Planos de viagem com destinos, datas, orçamentos e custos compartilhados
+- **Participantes da Viagem**: Relacionamento muitos-para-muitos entre usuários e viagens
+- **Mensagens**: Funcionalidade de chat em tempo real para grupos de viagem
+- **Solicitações de Viagem**: Sistema de solicitações para participar de viagens
 
-## Key Components
+## Componentes Principais
 
-### Authentication System
-- Local authentication with username/password
-- Session-based authentication using express-session
-- Password hashing using Node.js scrypt with salt
-- Protected routes on both frontend and backend
-- User profile management with travel preferences
+### Sistema de Autenticação
+- Autenticação local com usuário/senha
+- Autenticação baseada em sessão usando express-session
+- Hash de senhas usando Node.js scrypt com salt
+- Rotas protegidas no frontend e backend
+- Gerenciamento de perfil de usuário com preferências de viagem
 
-### Trip Management
-- Trip creation with detailed planning (destination, dates, budget, style)
-- Trip discovery with advanced filtering capabilities
-- Participant management with request/approval system
-- Real-time messaging within trip groups
-- Shared cost tracking for various expense categories
-- Expense splitting system similar to Splitwise
-  - Add expenses with description, amount, and category
-  - Split costs among selected participants
-  - Automatic balance calculation
-  - Settlement suggestions
-  - Receipt upload support
+### Gerenciamento de Viagens
+- Criação de viagens com planejamento detalhado (destino, datas, orçamento, estilo)
+- Descoberta de viagens com capacidades de filtro avançado
+- Gerenciamento de participantes com sistema de solicitação/aprovação
+- Mensagens em tempo real dentro de grupos de viagem
+- Rastreamento de custos compartilhados para várias categorias de despesas
+- Sistema de divisão de despesas similar ao Splitwise
+  - Adicionar despesas com descrição, valor e categoria
+  - Dividir custos entre participantes selecionados
+  - Cálculo automático de saldo
+  - Sugestões de liquidação
+  - Suporte para upload de recibos
 
-### User Interface
-- Responsive design with mobile-first approach
-- Component-based architecture using Radix UI primitives
-- Dark/light theme support through CSS variables
-- Form validation with real-time feedback
-- Loading states and error handling throughout the application
+### Interface do Usuário
+- Design responsivo com abordagem mobile-first
+- Arquitetura baseada em componentes usando primitivos Radix UI
+- Suporte a tema escuro/claro através de variáveis CSS
+- Validação de formulários com feedback em tempo real
+- Estados de carregamento e tratamento de erros em toda a aplicação
 
-### Real-time Features
-- Chat system with message polling (3-second intervals)
-- Live trip participant updates
-- Request notifications and status updates
+### Recursos em Tempo Real
+- Sistema de chat com polling de mensagens (intervalos de 3 segundos)
+- Atualizações ao vivo de participantes da viagem
+- Notificações de solicitações e atualizações de status
 
-## Data Flow
+## Fluxo de Dados
 
-1. **User Registration/Login**: Users authenticate through the local strategy, sessions are stored in PostgreSQL
-2. **Trip Creation**: Authenticated users create trips with detailed planning information
-3. **Trip Discovery**: Users search and filter trips based on preferences and compatibility
-4. **Join Requests**: Users request to join trips, creators approve/reject requests
-5. **Communication**: Approved participants can chat within trip groups
-6. **Cost Sharing**: Trip creators define shared expenses, participants coordinate payments
+1. **Cadastro/Login de Usuário**: Usuários se autenticam através da estratégia local, sessões são armazenadas no PostgreSQL
+2. **Criação de Viagem**: Usuários autenticados criam viagens com informações de planejamento detalhado
+3. **Descoberta de Viagem**: Usuários pesquisam e filtram viagens baseadas em preferências e compatibilidade
+4. **Solicitações de Participação**: Usuários solicitam participar de viagens, criadores aprovam/rejeitam solicitações
+5. **Comunicação**: Participantes aprovados podem conversar dentro de grupos de viagem
+6. **Compartilhamento de Custos**: Criadores de viagem definem despesas compartilhadas, participantes coordenam pagamentos
 
-## External Dependencies
+## Dependências Externas
 
-### Core Dependencies
-- **@neondatabase/serverless**: PostgreSQL driver for Neon database
-- **drizzle-orm**: Type-safe ORM with PostgreSQL dialect
-- **passport & passport-local**: Authentication middleware
-- **@tanstack/react-query**: Server state management
-- **react-hook-form**: Form handling with validation
-- **zod**: Schema validation library
-- **date-fns**: Date manipulation and formatting
+### Dependências Principais
+- **@neondatabase/serverless**: Driver PostgreSQL para banco de dados Neon
+- **drizzle-orm**: ORM type-safe com dialeto PostgreSQL
+- **passport & passport-local**: Middleware de autenticação
+- **@tanstack/react-query**: Gerenciamento de estado do servidor
+- **react-hook-form**: Manipulação de formulários com validação
+- **zod**: Biblioteca de validação de esquema
+- **date-fns**: Manipulação e formatação de datas
 
-### UI Dependencies
-- **@radix-ui/***: Accessible UI primitives (dialog, dropdown, etc.)
-- **tailwindcss**: Utility-first CSS framework
-- **lucide-react**: Icon library
-- **class-variance-authority**: Component variant management
+### Dependências de UI
+- **@radix-ui/***: Primitivos de UI acessíveis (dialog, dropdown, etc.)
+- **tailwindcss**: Framework CSS utility-first
+- **lucide-react**: Biblioteca de ícones
+- **class-variance-authority**: Gerenciamento de variantes de componentes
 
-### Development Dependencies
-- **vite**: Build tool and development server
-- **typescript**: Type safety
-- **tsx**: TypeScript execution for development
+### Dependências de Desenvolvimento
+- **vite**: Ferramenta de build e servidor de desenvolvimento
+- **typescript**: Segurança de tipos
+- **tsx**: Execução TypeScript para desenvolvimento
 
-## Deployment Strategy
+## Estratégia de Deploy
 
-### Build Process
-- Frontend: Vite builds React application to `dist/public`
-- Backend: esbuild bundles Express server to `dist/index.js`
-- Single deployment artifact with static file serving
+### Processo de Build
+- Frontend: Vite compila aplicação React para `dist/public`
+- Backend: esbuild empacota servidor Express para `dist/index.js`
+- Artefato único de deploy com servir arquivos estáticos
 
-### Environment Configuration
-- Database connection via `DATABASE_URL` environment variable
-- Session secret for authentication security
-- Neon PostgreSQL as the production database
+### Configuração de Ambiente
+- Conexão com banco de dados via variável de ambiente `DATABASE_URL`
+- Segredo de sessão para segurança de autenticação
+- Neon PostgreSQL como banco de dados de produção
 
-### Development Setup
-- `npm run dev`: Starts development server with hot reload
-- `npm run build`: Creates production build
-- `npm run start`: Runs production server
-- `npm run db:push`: Syncs database schema with Drizzle
+### Configuração de Desenvolvimento
+- `npm run dev`: Inicia servidor de desenvolvimento com hot reload
+- `npm run build`: Cria build de produção
+- `npm run start`: Executa servidor de produção
+- `npm run db:push`: Sincroniza esquema do banco com Drizzle
 
-## User Preferences
+## Preferências do Usuário
 
-Preferred communication style: Simple, everyday language.
-Interface language: Portuguese (all UI elements translated from English to Portuguese).
+Estilo de comunicação preferido: Linguagem simples e cotidiana.
+Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos do inglês para português).
 
-## Changelog
+## Registro de Alterações
 
-Changelog:
-- June 30, 2025. Initial setup
+Registro de Alterações:
+- 30 de junho de 2025. Configuração inicial
 - July 5, 2025. Fixed authentication session management with proper cookie configuration
 - July 5, 2025. Implemented budget subdivision system - budget now represents total trip cost with automatic per-person calculation
 - July 5, 2025. Enhanced trip detail page with chat functionality and improved user interface
@@ -214,3 +214,6 @@ Changelog:
 - July 12, 2025. Substituídas todas as cores roxas/púrpuras por tons de azul para paleta harmoniosa (purple-400 → blue-400, purple-500 → indigo-500)
 - July 12, 2025. Ajustados textos da hero section para slate-800 e slate-600 garantindo boa legibilidade no fundo claro
 - July 12, 2025. Elementos de destaque mantidos em tons quentes (amarelo/laranja) para contrastar com o fundo azul claro
+- 12 de julho de 2025. Migração completa do Replit Agent para ambiente Replit padrão
+- 12 de julho de 2025. Documentação traduzida para português brasileiro e nome do projeto alterado para PartiuTrip
+- 12 de julho de 2025. Verificação de segurança e boas práticas implementadas na migração
