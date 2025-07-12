@@ -45,6 +45,7 @@ import { useState, useEffect, useMemo } from "react";
 import { expenseCategories, BudgetBreakdown } from "@shared/schema";
 import { BudgetVisualization } from "@/components/budget-visualization";
 import { ExpenseManager } from "@/components/expense-manager";
+import { CoverImageSelector } from "@/components/cover-image-selector";
 
 // Countdown Timer Component
 function CountdownTimer({ targetDate }: { targetDate: string }) {
@@ -317,6 +318,33 @@ export default function TripDetailPage() {
     },
   });
 
+  const updateCoverImageMutation = useMutation({
+    mutationFn: async (coverImage: string) => {
+      const response = await apiRequest("PATCH", `/api/trips/${id}/cover-image`, {
+        coverImage
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erro ao atualizar imagem');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Imagem atualizada!",
+        description: "A imagem da viagem foi alterada com sucesso.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/trips", id] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro ao atualizar imagem",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const quitTripMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("DELETE", `/api/trips/${id}/participants/${user?.id}`);
@@ -421,16 +449,48 @@ export default function TripDetailPage() {
           <CountdownTimer targetDate={trip.startDate} />
         </motion.div>
 
-        {/* Hero Section */}
+        {/* Cover Image Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8"
         >
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-xl">
-            <div className="flex justify-between items-start mb-6">
-              <div>
+          <div className="relative rounded-2xl overflow-hidden shadow-xl">
+            {/* Cover Image */}
+            <div className="relative h-96 bg-gradient-to-br from-blue-500 to-purple-600">
+              {trip.coverImage && (
+                <img 
+                  src={trip.coverImage}
+                  alt={`Imagem da viagem: ${trip.title}`}
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <div className="absolute inset-0 bg-black/40" />
+              
+              {/* Cover Image Edit Button (only for trip creator) */}
+              {isCreator && (
+                <div className="absolute top-4 right-4">
+                  <CoverImageSelector
+                    currentImage={trip.coverImage}
+                    destination={trip.destination}
+                    onImageSelect={(imageUrl) => updateCoverImageMutation.mutate(imageUrl)}
+                    trigger={
+                      <Button 
+                        variant="secondary" 
+                        size="sm"
+                        disabled={updateCoverImageMutation.isPending}
+                      >
+                        <Camera className="w-4 h-4 mr-2" />
+                        {updateCoverImageMutation.isPending ? "Alterando..." : "Alterar Imagem"}
+                      </Button>
+                    }
+                  />
+                </div>
+              )}
+              
+              {/* Trip Title and Info Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
                 <h1 className="font-bold text-4xl mb-3">{trip.title || "Viagem sem título"}</h1>
                 <div className="flex items-center gap-6 text-blue-100">
                   <div className="flex items-center gap-2">
@@ -444,6 +504,30 @@ export default function TripDetailPage() {
                     </span>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mb-8"
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
+            <div className="flex justify-between items-start mb-6">
+              <div className="flex gap-3">
+                <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                  {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
+                </Badge>
+                <Badge variant="outline" className="bg-white/50">
+                  {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
+                </Badge>
+                <Badge variant="outline" className="bg-white/50">
+                  {trip.currentParticipants}/{trip.maxParticipants} participantes
+                </Badge>
               </div>
               
               <div className="flex gap-3">
@@ -467,18 +551,6 @@ export default function TripDetailPage() {
                   </Button>
                 )}
               </div>
-            </div>
-
-            <div className="flex gap-3 mb-6">
-              <Badge className="bg-white/20 text-white border-white/30">
-                {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
-              </Badge>
-              <Badge className="bg-white/20 text-white border-white/30">
-                {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
-              </Badge>
-              <Badge className="bg-white/20 text-white border-white/30">
-                {trip.currentParticipants}/{trip.maxParticipants} participantes
-              </Badge>
             </div>
 
             <TripStatistics trip={trip} />

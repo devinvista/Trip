@@ -144,6 +144,34 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Update trip cover image
+  app.patch("/api/trips/:id/cover-image", requireAuth, async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const { coverImage } = req.body;
+      
+      if (!coverImage) {
+        return res.status(400).json({ message: "URL da imagem é obrigatória" });
+      }
+      
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+      
+      // Only trip creator can update cover image
+      if (trip.creatorId !== req.user!.id) {
+        return res.status(403).json({ message: "Apenas o criador da viagem pode alterar a imagem" });
+      }
+      
+      const updatedTrip = await storage.updateTrip(tripId, { coverImage });
+      res.json(updatedTrip);
+    } catch (error) {
+      console.error('Erro ao atualizar imagem da viagem:', error);
+      res.status(500).json({ message: "Erro ao atualizar imagem da viagem" });
+    }
+  });
+
   // Trip request routes
   app.post("/api/trips/:id/request", requireAuth, async (req, res) => {
     try {

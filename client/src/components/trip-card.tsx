@@ -23,26 +23,9 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
   const availableSpots = trip.maxParticipants - trip.currentParticipants;
   const duration = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
-  const getDestinationImage = (destination: string) => {
-    // Simple mapping for common destinations
-    const destinationImages: { [key: string]: string } = {
-      "rio": "https://images.unsplash.com/photo-1544262686-20e4db59b33a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250",
-      "paris": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250",
-      "peru": "https://images.unsplash.com/photo-1526392060635-9d6019884377?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250",
-      "europa": "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250",
-      "cancun": "https://images.unsplash.com/photo-1512046849505-bdf46560827d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250",
-      "fernando": "https://images.unsplash.com/photo-1558618047-79c0c2b9c9e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250"
-    };
-
-    const key = destination.toLowerCase();
-    for (const [searchTerm, image] of Object.entries(destinationImages)) {
-      if (key.includes(searchTerm)) {
-        return image;
-      }
-    }
-    
-    // Default travel image
-    return "https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=250";
+  const getDestinationImage = (trip: any) => {
+    // Use the trip's cover image if available, otherwise use default
+    return trip.coverImage || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80";
   };
 
   const travelStyleLabels: { [key: string]: string } = {
@@ -61,7 +44,7 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
       {/* Trip Image */}
       <div className="relative overflow-hidden">
         <img 
-          src={getDestinationImage(trip.destination)} 
+          src={getDestinationImage(trip)} 
           alt={`Imagem de ${trip.destination}`}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />

@@ -1,8 +1,26 @@
-import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit } from "@shared/schema";
+import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, popularDestinations } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
 const MemoryStore = createMemoryStore(session);
+
+// Helper function to get cover image for destination
+function getCoverImageForDestination(destination: string): string | null {
+  // Try to find exact match first
+  if (destination in popularDestinations) {
+    return popularDestinations[destination as keyof typeof popularDestinations].image;
+  }
+  
+  // Try to find partial match
+  for (const [dest, data] of Object.entries(popularDestinations)) {
+    if (destination.includes(dest.split(',')[0]) || dest.includes(destination.split(',')[0])) {
+      return data.image;
+    }
+  }
+  
+  // Default image for unknown destinations
+  return "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80";
+}
 
 export interface IStorage {
   sessionStore: session.Store;
@@ -174,9 +192,14 @@ export class MemStorage implements IStorage {
 
   async createTrip(tripData: InsertTrip & { creatorId: number }): Promise<Trip> {
     const id = this.currentTripId++;
+    
+    // Automatically assign cover image if not provided
+    const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination);
+    
     const trip: Trip = { 
       ...tripData, 
       id, 
+      coverImage,
       budget: tripData.budget ?? null,
       budgetBreakdown: tripData.budgetBreakdown || null,
       currentParticipants: 1,
@@ -573,7 +596,8 @@ async function createMariaTripsWithTomAsParticipant(maria: User) {
     // Criar viagem da Maria
     const trip = await storage.createTrip({
       title: 'Praia e Cultura no Rio de Janeiro',
-      destination: 'Rio de Janeiro, RJ, Brasil',
+      destination: 'Rio de Janeiro, RJ',
+      coverImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80',
       startDate: new Date('2025-09-10'),
       endDate: new Date('2025-09-15'),
       budget: 1800,
@@ -615,7 +639,8 @@ async function createDefaultTrips(user: User) {
     // Criar viagem 1: Trilha na Chapada Diamantina
     const trip1 = await storage.createTrip({
       title: 'Trilha na Chapada Diamantina',
-      destination: 'Lençóis, BA, Brasil',
+      destination: 'Chapada Diamantina, BA',
+      coverImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
       startDate: new Date('2025-08-15'),
       endDate: new Date('2025-08-22'),
       budget: 2500,
@@ -635,7 +660,8 @@ async function createDefaultTrips(user: User) {
     // Criar viagem 2: Fim de semana em Campos do Jordão
     const trip2 = await storage.createTrip({
       title: 'Fim de semana relaxante em Campos do Jordão',
-      destination: 'Campos do Jordão, SP, Brasil',
+      destination: 'Campos do Jordão, SP',
+      coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
       startDate: new Date('2025-08-01'),
       endDate: new Date('2025-08-03'),
       budget: 1200,

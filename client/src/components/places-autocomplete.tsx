@@ -4,6 +4,7 @@ import { MapPin, ChevronDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { popularDestinations } from "@shared/schema";
 
 interface PlacesAutocompleteProps {
   value: string;
@@ -12,42 +13,8 @@ interface PlacesAutocompleteProps {
   className?: string;
 }
 
-const popularCities = [
-  "São Paulo, SP, Brasil",
-  "Rio de Janeiro, RJ, Brasil",
-  "Belo Horizonte, MG, Brasil",
-  "Salvador, BA, Brasil",
-  "Brasília, DF, Brasil",
-  "Fortaleza, CE, Brasil",
-  "Recife, PE, Brasil",
-  "Porto Alegre, RS, Brasil",
-  "Curitiba, PR, Brasil",
-  "Florianópolis, SC, Brasil",
-  "Buenos Aires, Argentina",
-  "Lima, Peru",
-  "Santiago, Chile",
-  "Paris, França",
-  "Londres, Reino Unido",
-  "Barcelona, Espanha",
-  "Madrid, Espanha",
-  "Roma, Itália",
-  "Amsterdam, Holanda",
-  "Berlim, Alemanha",
-  "Nova York, Estados Unidos",
-  "Los Angeles, Estados Unidos",
-  "Miami, Estados Unidos",
-  "Toronto, Canadá",
-  "Vancouver, Canadá",
-  "Tokyo, Japão",
-  "Bangkok, Tailândia",
-  "Dubai, Emirados Árabes Unidos",
-  "Cairo, Egito",
-  "Marrakech, Marrocos",
-  "Lisboa, Portugal",
-  "Porto, Portugal",
-  "Cancún, México",
-  "Cidade do México, México"
-];
+// Get popular destinations from schema
+const popularCities = Object.keys(popularDestinations).sort();
 
 export function PlacesAutocomplete({ 
   value, 

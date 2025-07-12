@@ -55,6 +55,7 @@ import { useToast } from "@/hooks/use-toast";
 import { insertTripSchema, expenseCategories, BudgetBreakdown, PlannedActivity } from "@shared/schema";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { AdvancedActivityManager } from "@/components/advanced-activity-manager";
+import { CoverImageSelector } from "@/components/cover-image-selector";
 import { apiRequest } from "@/lib/queryClient";
 
 const createTripSchema = insertTripSchema.extend({
@@ -592,6 +593,43 @@ function CreateTripPageContent() {
                                   ))}
                                 </SelectContent>
                               </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="coverImage"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Imagem da Viagem</FormLabel>
+                              <FormControl>
+                                <CoverImageSelector
+                                  currentImage={field.value}
+                                  destination={form.watch('destination')}
+                                  onImageSelect={field.onChange}
+                                  trigger={
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      className="w-full border-2 border-dashed hover:border-primary"
+                                    >
+                                      <Camera className="w-4 h-4 mr-2" />
+                                      {field.value ? 'Alterar Imagem' : 'Escolher Imagem'}
+                                    </Button>
+                                  }
+                                />
+                              </FormControl>
+                              {field.value && (
+                                <div className="mt-2">
+                                  <img 
+                                    src={field.value} 
+                                    alt="Preview da imagem selecionada" 
+                                    className="w-full h-32 object-cover rounded-md"
+                                  />
+                                </div>
+                              )}
                               <FormMessage />
                             </FormItem>
                           )}

@@ -22,6 +22,7 @@ export const trips = pgTable("trips", {
   creatorId: integer("creator_id").notNull().references(() => users.id),
   title: text("title").notNull(),
   destination: text("destination").notNull(),
+  coverImage: text("cover_image"), // URL for trip cover image
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   budget: integer("budget"), // Now optional - total estimated budget
@@ -105,6 +106,7 @@ export const insertTripSchema = createInsertSchema(trips).omit({
 }).extend({
   title: z.string().min(3, "O título deve ter pelo menos 3 caracteres"),
   budget: z.number().optional(),
+  coverImage: z.string().optional(),
   budgetBreakdown: z.object({
     transport: z.number().optional(),
     accommodation: z.number().optional(),
@@ -225,4 +227,199 @@ export const expenseCategories = {
   insurance: "Seguro",
   visas: "Vistos",
   other: "Outros"
+} as const;
+
+// Popular destinations in Brazil with cover images
+export const popularDestinations = {
+  // Beach destinations
+  "Rio de Janeiro, RJ": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Cidade maravilhosa com praias icônicas e Cristo Redentor"
+  },
+  "Florianópolis, SC": {
+    image: "https://images.unsplash.com/photo-1544963150-889d45c4e2f8?w=800&q=80",
+    category: "praia",
+    description: "Ilha da Magia com praias paradisíacas"
+  },
+  "Salvador, BA": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Capital baiana com cultura rica e praias belíssimas"
+  },
+  "Maceió, AL": {
+    image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
+    category: "praia",
+    description: "Paraíso tropical com águas cristalinas"
+  },
+  "Natal, RN": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Cidade do sol com dunas e praias espetaculares"
+  },
+  "Fortaleza, CE": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Litoral cearense com praias urbanas e vida noturna"
+  },
+  "Recife, PE": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Veneza brasileira com cultura pernambucana"
+  },
+  "Búzios, RJ": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Península charmosa com praias exclusivas"
+  },
+  "Ilhéus, BA": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Terra de Jorge Amado com praias e cacau"
+  },
+  "Ubatuba, SP": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "praia",
+    description: "Litoral norte paulista com praias selvagens"
+  },
+
+  // Mountain destinations
+  "Campos do Jordão, SP": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "neve",
+    description: "Suíça brasileira com clima de montanha"
+  },
+  "Gramado, RS": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "neve",
+    description: "Cidade encantadora com arquitetura europeia"
+  },
+  "Canela, RS": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "neve",
+    description: "Serra gaúcha com natureza exuberante"
+  },
+  "Monte Verde, MG": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "neve",
+    description: "Vila de montanha com clima europeu"
+  },
+  "Penedo, RJ": {
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    category: "neve",
+    description: "Pequena Finlândia brasileira"
+  },
+
+  // Nature and ecotourism
+  "Chapada Diamantina, BA": {
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    category: "natureza",
+    description: "Paraíso natural com cachoeiras e trilhas"
+  },
+  "Pantanal, MT": {
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    category: "natureza",
+    description: "Maior planície alagável do mundo"
+  },
+  "Amazônia, AM": {
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    category: "natureza",
+    description: "Floresta tropical com biodiversidade única"
+  },
+  "Chapada dos Veadeiros, GO": {
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    category: "natureza",
+    description: "Cerrado brasileiro com formações rochosas"
+  },
+  "Bonito, MS": {
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    category: "natureza",
+    description: "Ecoturismo com rios cristalinos"
+  },
+  "Jalapão, TO": {
+    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    category: "natureza",
+    description: "Oásis no cerrado com dunas douradas"
+  },
+
+  // Cultural and historical
+  "Ouro Preto, MG": {
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+    category: "culturais",
+    description: "Patrimônio histórico com arquitetura colonial"
+  },
+  "Paraty, RJ": {
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+    category: "culturais",
+    description: "Cidade histórica com centro preservado"
+  },
+  "Tiradentes, MG": {
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+    category: "culturais",
+    description: "Charme colonial mineiro"
+  },
+  "São Luís, MA": {
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+    category: "culturais",
+    description: "Patrimônio da UNESCO com azulejos portugueses"
+  },
+  "Diamantina, MG": {
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+    category: "culturais",
+    description: "Berço de JK com arquitetura barroca"
+  },
+
+  // Adventure destinations
+  "Brotas, SP": {
+    image: "https://images.unsplash.com/photo-1464822759844-d150065c7fb5?w=800&q=80",
+    category: "aventura",
+    description: "Capital do ecoturismo radical"
+  },
+  "Socorro, SP": {
+    image: "https://images.unsplash.com/photo-1464822759844-d150065c7fb5?w=800&q=80",
+    category: "aventura",
+    description: "Aventura com rafting e rapel"
+  },
+  "Capitólio, MG": {
+    image: "https://images.unsplash.com/photo-1464822759844-d150065c7fb5?w=800&q=80",
+    category: "aventura",
+    description: "Mar de Minas com cânions e cachoeiras"
+  },
+  "Arraial do Cabo, RJ": {
+    image: "https://images.unsplash.com/photo-1464822759844-d150065c7fb5?w=800&q=80",
+    category: "aventura",
+    description: "Caribe brasileiro com mergulho"
+  },
+
+  // Theme parks and urban
+  "Orlando, FL": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "parques",
+    description: "Capital mundial dos parques temáticos"
+  },
+  "São Paulo, SP": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "urbanas",
+    description: "Metrópole com gastronomia e cultura"
+  },
+  "Brasília, DF": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "urbanas",
+    description: "Capital federal com arquitetura modernista"
+  },
+  "Belo Horizonte, MG": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "urbanas",
+    description: "Cidade planejada com vida cultural intensa"
+  },
+  "Curitiba, PR": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "urbanas",
+    description: "Modelo de sustentabilidade urbana"
+  },
+  "Porto Alegre, RS": {
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
+    category: "urbanas",
+    description: "Capital gaúcha com tradição e modernidade"
+  }
 } as const;
