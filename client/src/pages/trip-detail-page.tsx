@@ -466,7 +466,9 @@ export default function TripDetailPage() {
                   className="w-full h-full object-cover"
                 />
               )}
-              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0 bg-black/40 shadow-inner" style={{
+                boxShadow: 'inset 0 0 60px rgba(0,0,0,0.3), inset 0 -100px 80px rgba(0,0,0,0.4)'
+              }} />
               
               {/* Cover Image Edit Button (only for trip creator) */}
               {isCreator && (
