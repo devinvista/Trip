@@ -389,6 +389,41 @@ export default function SearchPage() {
           </Card>
         </motion.div>
 
+        {/* Travel Types Filter - Horizontal */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-8"
+        >
+          <Card className="bg-white/80 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Camera className="h-5 w-5 text-purple-500" />
+                <h3 className="text-lg font-semibold">Tipos de Viagem</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {travelTypes.map((type) => {
+                  const Icon = type.icon;
+                  const isSelected = selectedTravelTypes.includes(type.id);
+                  return (
+                    <Button
+                      key={type.id}
+                      variant={isSelected ? "default" : "outline"}
+                      onClick={() => toggleTravelType(type.id)}
+                      className="flex items-center gap-2 h-10"
+                    >
+                      <Icon className="h-4 w-4" />
+                      {type.name}
+                      {isSelected && <Badge className="ml-1 bg-white text-primary">✓</Badge>}
+                    </Button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
           <motion.div
@@ -516,34 +551,6 @@ export default function SearchPage() {
                     </SelectContent>
                   </Select>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Travel Types Filter */}
-            <Card className="bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Camera className="h-5 w-5 text-purple-500" />
-                  Tipos de Viagem
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {travelTypes.map((type) => {
-                  const Icon = type.icon;
-                  const isSelected = selectedTravelTypes.includes(type.id);
-                  return (
-                    <Button
-                      key={type.id}
-                      variant={isSelected ? "default" : "ghost"}
-                      onClick={() => toggleTravelType(type.id)}
-                      className="w-full justify-start h-12"
-                    >
-                      <Icon className="h-4 w-4 mr-3" />
-                      {type.name}
-                      {isSelected && <Badge className="ml-auto" variant="secondary">✓</Badge>}
-                    </Button>
-                  );
-                })}
               </CardContent>
             </Card>
 
