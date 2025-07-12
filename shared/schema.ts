@@ -744,7 +744,7 @@ export const popularDestinations = {
 
   // Destinos de cruzeiro
   "Mediterrâneo": {
-    image: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
     category: "cruzeiros",
     description: "Rota clássica entre ilhas gregas e cidades históricas"
   },

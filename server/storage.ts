@@ -5,7 +5,7 @@ import createMemoryStore from "memorystore";
 const MemoryStore = createMemoryStore(session);
 
 // Helper function to get cover image for destination
-function getCoverImageForDestination(destination: string): string | null {
+function getCoverImageForDestination(destination: string, travelStyle?: string): string | null {
   // Define specific landmark images for iconic destinations
   const iconicDestinations: { [key: string]: string } = {
     // Marcos icônicos mundiais
@@ -75,8 +75,8 @@ function getCoverImageForDestination(destination: string): string | null {
     "ouro preto": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Igreja São Francisco
     
     // Destinos de cruzeiro
-    "mediterrâneo": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80", // Cruzeiro mediterrâneo
-    "mediterranean": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80",
+    "mediterrâneo": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", // Cruzeiro mediterrâneo
+    "mediterranean": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
     "caribe": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", // Cruzeiro caribe
     "caribbean": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
     "fiorde": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80", // Fiordes noruegueses
@@ -85,8 +85,8 @@ function getCoverImageForDestination(destination: string): string | null {
     "norway": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
     "alasca": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80", // Cruzeiro Alasca
     "alaska": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
-    "cruzeiro": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80", // Imagem genérica de cruzeiro
-    "cruise": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80",
+    "cruzeiro": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", // Imagem genérica de cruzeiro
+    "cruise": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80",
     "paraty": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Centro Histórico
     "angra dos reis": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Ilha Grande
     "ubatuba": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praia da Fazenda
@@ -348,6 +348,25 @@ function getCoverImageForDestination(destination: string): string | null {
   // Normalize destination for comparison
   const destLower = destination.toLowerCase();
   
+  // Special handling for cruise destinations
+  if (travelStyle === 'cruzeiros') {
+    // First check for exact cruise destination matches
+    if (destLower.includes('mediterrâneo') || destLower.includes('mediterranean')) {
+      return "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80";
+    }
+    if (destLower.includes('caribe') || destLower.includes('caribbean')) {
+      return "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80";
+    }
+    if (destLower.includes('fiorde') || destLower.includes('fiord') || destLower.includes('norway') || destLower.includes('noruegu')) {
+      return "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80";
+    }
+    if (destLower.includes('alasca') || destLower.includes('alaska')) {
+      return "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80";
+    }
+    // Default cruise ship image for any other cruise destination
+    return "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80";
+  }
+  
   // Try to find exact match or partial match in iconic destinations
   for (const [key, image] of Object.entries(iconicDestinations)) {
     if (destLower.includes(key) || key.includes(destLower)) {
@@ -547,7 +566,7 @@ export class MemStorage implements IStorage {
     const id = this.currentTripId++;
     
     // Automatically assign cover image if not provided
-    const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination);
+    const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination, tripData.travelStyle);
     
     const trip: Trip = { 
       ...tripData, 
