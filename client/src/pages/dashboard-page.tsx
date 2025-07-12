@@ -55,7 +55,7 @@ export default function DashboardPage() {
     refetchOnMount: true,
     retry: 2,
     retryDelay: 1000,
-    refetchInterval: false,
+    refetchInterval: 5000, // Auto refresh every 5 seconds
   });
 
   const { data: requests, isLoading: requestsLoading, error: requestsError, refetch: refetchRequests } = useQuery({
@@ -212,6 +212,22 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    refetchTrips();
+                    refetchRequests();
+                    toast({
+                      title: "Dados atualizados!",
+                      description: "Dashboard foi atualizado com as informações mais recentes.",
+                    });
+                  }}
+                  disabled={tripsLoading || requestsLoading}
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  {tripsLoading || requestsLoading ? "Atualizando..." : "Atualizar"}
+                </Button>
                 <Button variant="outline" size="sm">
                   <Settings className="h-4 w-4 mr-2" />
                   Configurações

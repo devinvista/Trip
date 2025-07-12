@@ -353,8 +353,12 @@ function CreateTripPageContent() {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate all trip-related queries
       queryClient.invalidateQueries({ queryKey: ["/api/trips"] });
       queryClient.invalidateQueries({ queryKey: ["/api/my-trips"] });
+      
+      // Also remove any cached queries to force fresh fetch
+      queryClient.removeQueries({ queryKey: ["/api/my-trips"] });
       
       setShowConfetti(true);
       toast({
