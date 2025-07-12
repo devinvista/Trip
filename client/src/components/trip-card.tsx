@@ -9,10 +9,16 @@ import {
   DollarSign, 
   Users, 
   Clock,
-  MessageCircle
+  MessageCircle,
+  Heart,
+  Share2,
+  Star,
+  Eye
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface TripCardProps {
   trip: any;
@@ -20,6 +26,8 @@ interface TripCardProps {
 }
 
 export function TripCard({ trip, showActions = true }: TripCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const availableSpots = trip.maxParticipants - trip.currentParticipants;
   const duration = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
@@ -40,27 +48,94 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
   };
 
   return (
-    <Card className="trip-card group">
-      {/* Trip Image */}
-      <div className="relative overflow-hidden">
-        <img 
-          src={getDestinationImage(trip)} 
-          alt={`Imagem de ${trip.destination}`}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="absolute top-3 right-3">
-          <Badge className={availableSpots > 0 ? "status-open" : "bg-red-100 text-red-800"}>
-            {availableSpots > 0 ? `${availableSpots} vagas` : "Lotada"}
-          </Badge>
-        </div>
-        <div className="absolute top-3 left-3">
-          <Badge variant="outline" className="bg-white/90">
-            {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
-          </Badge>
-        </div>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="group"
+    >
+      <Card className="trip-card overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300">
+        {/* Trip Image */}
+        <div className="relative overflow-hidden">
+          <img 
+            src={getDestinationImage(trip)} 
+            alt={`Imagem de ${trip.destination}`}
+            className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+          
+          {/* Overlay gradient on hover */}
+          <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+          
+          {/* Status badges */}
+          <div className="absolute top-3 right-3 flex gap-2">
+            <Badge className={availableSpots > 0 ? "status-open" : "bg-red-100 text-red-800"}>
+              {availableSpots > 0 ? `${availableSpots} vagas` : "Lotada"}
+            </Badge>
+          </div>
+          
+          <div className="absolute top-3 left-3">
+            <Badge variant="outline" className="bg-white/90 backdrop-blur-sm">
+              {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
+            </Badge>
+          </div>
 
-      <CardContent className="p-6">
+          {/* Floating action buttons on hover */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute bottom-3 right-3 flex gap-2"
+          >
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsLiked(!isLiked);
+              }}
+              className={`p-2 rounded-full backdrop-blur-sm transition-colors ${
+                isLiked 
+                  ? 'bg-red-500 text-white' 
+                  : 'bg-white/80 text-gray-700 hover:bg-white hover:text-red-500'
+              }`}
+            >
+              <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => {
+                e.preventDefault();
+                navigator.share?.({
+                  title: trip.title,
+                  text: trip.description,
+                  url: window.location.href
+                });
+              }}
+              className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:text-blue-500 transition-colors"
+            >
+              <Share2 className="h-4 w-4" />
+            </motion.button>
+          </motion.div>
+
+          {/* Trip rating overlay */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -20 }}
+            transition={{ duration: 0.2, delay: 0.1 }}
+            className="absolute bottom-3 left-3"
+          >
+            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full">
+              <Star className="h-3 w-3 text-yellow-500 fill-current" />
+              <span className="text-xs font-medium text-gray-700">4.8</span>
+            </div>
+          </motion.div>
+        </div>
+
+        <CardContent className="p-6">
         {/* Trip Header */}
         <div className="mb-3">
           <h3 className="font-heading font-semibold text-xl text-dark mb-2 line-clamp-1">
@@ -156,7 +231,8 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
