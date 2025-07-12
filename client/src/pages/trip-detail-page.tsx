@@ -81,12 +81,12 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 
   if (isPast) {
     return (
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white shadow-xl">
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-4 md:p-6 text-white shadow-xl">
         <div className="flex items-center justify-center gap-3">
-          <Trophy className="h-8 w-8 text-amber-100" />
+          <Trophy className="h-6 w-6 md:h-8 md:w-8 text-amber-100" />
           <div className="text-center">
-            <h2 className="text-2xl font-bold">Viagem Concluída!</h2>
-            <p className="text-amber-100">Esperamos que tenha sido incrível!</p>
+            <h2 className="text-lg md:text-2xl font-bold">Viagem Concluída!</h2>
+            <p className="text-amber-100 text-sm md:text-base">Esperamos que tenha sido incrível!</p>
           </div>
         </div>
       </div>
@@ -94,51 +94,51 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
   }
 
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl">
+    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-4 md:p-6 text-white shadow-xl">
       <div className="text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Timer className="h-8 w-8 text-blue-100" />
-          <h2 className="text-2xl font-bold">Contagem Regressiva</h2>
+          <Timer className="h-6 w-6 md:h-8 md:w-8 text-blue-100" />
+          <h2 className="text-lg md:text-2xl font-bold">Contagem Regressiva</h2>
         </div>
-        <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
+        <div className="grid grid-cols-4 gap-2 md:gap-4 max-w-xs md:max-w-md mx-auto">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
-            <div className="text-3xl font-bold text-white">{timeLeft.days}</div>
-            <div className="text-sm text-blue-100">Dias</div>
+            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.days}</div>
+            <div className="text-xs md:text-sm text-blue-100">Dias</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
-            <div className="text-3xl font-bold text-white">{timeLeft.hours}</div>
-            <div className="text-sm text-blue-100">Horas</div>
+            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.hours}</div>
+            <div className="text-xs md:text-sm text-blue-100">Horas</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
-            <div className="text-3xl font-bold text-white">{timeLeft.minutes}</div>
-            <div className="text-sm text-blue-100">Min</div>
+            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.minutes}</div>
+            <div className="text-xs md:text-sm text-blue-100">Min</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
-            <div className="text-3xl font-bold text-white">{timeLeft.seconds}</div>
-            <div className="text-sm text-blue-100">Seg</div>
+            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.seconds}</div>
+            <div className="text-xs md:text-sm text-blue-100">Seg</div>
           </motion.div>
         </div>
-        <p className="mt-4 text-blue-100 text-sm">
+        <p className="mt-4 text-blue-100 text-xs md:text-sm">
           Faltam {timeLeft.days} dias para a sua aventura começar!
         </p>
       </div>
@@ -164,14 +164,14 @@ function TripStatistics({ trip }: { trip: any }) {
   }, [trip]);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
       <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-        <CardContent className="p-4">
+        <CardContent className="p-3 lg:p-4">
           <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-medium text-green-800">Orçamento Total</span>
+            <DollarSign className="h-3 w-3 lg:h-4 lg:w-4 text-green-600" />
+            <span className="text-xs lg:text-sm font-medium text-green-800">Orçamento Total</span>
           </div>
-          <div className="text-xl font-bold text-green-900">
+          <div className="text-lg lg:text-xl font-bold text-green-900">
             R$ {stats.totalBudget.toLocaleString('pt-BR')}
           </div>
           <div className="text-xs text-green-600">
@@ -181,12 +181,12 @@ function TripStatistics({ trip }: { trip: any }) {
       </Card>
 
       <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
-        <CardContent className="p-4">
+        <CardContent className="p-3 lg:p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="h-4 w-4 text-purple-600" />
-            <span className="text-sm font-medium text-purple-800">Participação</span>
+            <Users className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600" />
+            <span className="text-xs lg:text-sm font-medium text-purple-800">Participação</span>
           </div>
-          <div className="text-xl font-bold text-purple-900">
+          <div className="text-lg lg:text-xl font-bold text-purple-900">
             {trip.currentParticipants}/{trip.maxParticipants}
           </div>
           <Progress value={stats.occupancy} className="h-2 mt-2" />
@@ -194,12 +194,12 @@ function TripStatistics({ trip }: { trip: any }) {
       </Card>
 
       <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
-        <CardContent className="p-4">
+        <CardContent className="p-3 lg:p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Calendar className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-800">Duração</span>
+            <Calendar className="h-3 w-3 lg:h-4 lg:w-4 text-blue-600" />
+            <span className="text-xs lg:text-sm font-medium text-blue-800">Duração</span>
           </div>
-          <div className="text-xl font-bold text-blue-900">
+          <div className="text-lg lg:text-xl font-bold text-blue-900">
             {stats.duration} {stats.duration === 1 ? 'dia' : 'dias'}
           </div>
           <div className="text-xs text-blue-600">
@@ -209,12 +209,12 @@ function TripStatistics({ trip }: { trip: any }) {
       </Card>
 
       <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
-        <CardContent className="p-4">
+        <CardContent className="p-3 lg:p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Star className="h-4 w-4 text-amber-600" />
-            <span className="text-sm font-medium text-amber-800">Status</span>
+            <Star className="h-3 w-3 lg:h-4 lg:w-4 text-amber-600" />
+            <span className="text-xs lg:text-sm font-medium text-amber-800">Status</span>
           </div>
-          <div className="text-xl font-bold text-amber-900">
+          <div className="text-lg lg:text-xl font-bold text-amber-900">
             {trip.status === 'open' ? 'Aberta' : 'Fechada'}
           </div>
           <div className="text-xs text-amber-600">
@@ -518,21 +518,21 @@ export default function TripDetailPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mb-8"
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex gap-3">
-                <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 lg:p-8 shadow-xl">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-6">
+              <div className="flex flex-wrap gap-2 lg:gap-3">
+                <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs lg:text-sm">
                   {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
                 </Badge>
-                <Badge variant="outline" className="bg-white/50">
+                <Badge variant="outline" className="bg-white/50 text-xs lg:text-sm">
                   {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
                 </Badge>
-                <Badge variant="outline" className="bg-white/50">
+                <Badge variant="outline" className="bg-white/50 text-xs lg:text-sm">
                   {trip.currentParticipants}/{trip.maxParticipants} participantes
                 </Badge>
               </div>
               
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 lg:gap-3">
                 <Button 
                   variant="secondary" 
                   size="sm"
@@ -540,14 +540,15 @@ export default function TripDetailPage() {
                     navigator.clipboard.writeText(window.location.href);
                     toast({ title: "Link copiado!", description: "O link da viagem foi copiado para a área de transferência." });
                   }}
+                  className="text-xs lg:text-sm"
                 >
-                  <Share2 className="h-4 w-4 mr-2" />
+                  <Share2 className="h-3 w-3 lg:h-4 lg:w-4 mr-2" />
                   Compartilhar
                 </Button>
                 {(isParticipant || isCreator) && (
-                  <Button variant="secondary" asChild>
+                  <Button variant="secondary" asChild size="sm" className="text-xs lg:text-sm">
                     <a href={`/chat/${trip.id}`}>
-                      <MessageCircle className="h-4 w-4 mr-2" />
+                      <MessageCircle className="h-3 w-3 lg:h-4 lg:w-4 mr-2" />
                       Chat
                     </a>
                   </Button>
@@ -1018,17 +1019,19 @@ export default function TripDetailPage() {
 
                 {/* Cost per Person */}
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 lg:p-4 rounded-lg border border-amber-200">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <Users className="h-3 w-3 lg:h-4 lg:w-4 text-amber-600" />
                       <span className="text-xs lg:text-sm font-medium text-amber-800">Custo Estimado por Pessoa</span>
                     </div>
-                    <span className="text-lg lg:text-xl font-bold text-amber-900">
-                      R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-xs text-amber-600">
-                    Dividido entre {trip.maxParticipants} participantes
+                    <div className="text-center">
+                      <span className="text-lg lg:text-xl font-bold text-amber-900">
+                        R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
+                      </span>
+                      <div className="text-xs text-amber-600 mt-1">
+                        Dividido entre {trip.maxParticipants} participantes
+                      </div>
+                    </div>
                   </div>
                 </div>
 

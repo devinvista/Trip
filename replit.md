@@ -214,6 +214,11 @@ Registro de Alterações:
 - July 12, 2025. Substituídas todas as cores roxas/púrpuras por tons de azul para paleta harmoniosa (purple-400 → blue-400, purple-500 → indigo-500)
 - July 12, 2025. Ajustados textos da hero section para slate-800 e slate-600 garantindo boa legibilidade no fundo claro
 - July 12, 2025. Elementos de destaque mantidos em tons quentes (amarelo/laranja) para contrastar com o fundo azul claro
+- July 12, 2025. Melhorias massivas de responsividade na página de detalhes da viagem - seção de informações principais, TripStatistics, CountdownTimer, e sidebar otimizados para dispositivos móveis
+- July 12, 2025. Implementado sistema de grid responsivo adaptativo: 1 coluna (mobile) → 2 colunas (tablet) → 4 colunas (desktop) para melhor aproveitamento do espaço
+- July 12, 2025. Ajustados tamanhos de fonte, padding e ícones para escalabilidade entre dispositivos (text-xs → text-sm → text-base, h-3 → h-4 → h-5)
+- July 12, 2025. Otimização completa do modal de gerenciamento de atividades com largura 95% viewport, layouts responsivos e botões adaptativos
+- July 12, 2025. Melhorada navegação por abas com distribuição flex-1 e textos adaptativos para diferentes tamanhos de tela
 - 12 de julho de 2025. Migração completa do Replit Agent para ambiente Replit padrão
 - 12 de julho de 2025. Documentação traduzida para português brasileiro e nome do projeto alterado para PartiuTrip
 - 12 de julho de 2025. Verificação de segurança e boas práticas implementadas na migração
