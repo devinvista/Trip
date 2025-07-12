@@ -42,6 +42,32 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes lighthouse-glow {
+  0%, 100% { 
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes beacon-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes wave-animation {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.02); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
 .animate-fade-in {
   animation: fade-in 0.8s ease-out;
 }
@@ -69,8 +95,37 @@
   animation: shimmer 2s linear infinite;
 }
 
+.animate-lighthouse-glow {
+  animation: lighthouse-glow 3s ease-in-out infinite;
+}
+
+.animate-beacon-sweep {
+  animation: beacon-sweep 8s linear infinite;
+  transform-origin: center bottom;
+}
+
+.animate-wave {
+  animation: wave-animation 4s ease-in-out infinite;
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle 2s ease-in-out infinite;
+}
+
 .animation-delay-200 {
   animation-delay: 200ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1000ms;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1500ms;
 }
 
 .animation-delay-400 {
