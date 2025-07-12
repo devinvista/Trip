@@ -27,6 +27,7 @@ export interface IStorage {
   addTripParticipant(tripId: number, userId: number): Promise<TripParticipant>;
   updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined>;
   removeTripParticipant(tripId: number, userId: number): Promise<void>;
+  recalculateExpenseSplits(tripId: number): Promise<void>;
 
   // Messages
   getTripMessages(tripId: number): Promise<(Message & { sender: User })[]>;
@@ -253,6 +254,42 @@ export class MemStorage implements IStorage {
         // Se não há mais participantes, marcar viagem como cancelada
         await this.updateTrip(tripId, { status: 'cancelled' });
         console.log(`❌ Viagem ${tripId} cancelada - sem participantes`);
+      }
+    }
+  }
+
+  async recalculateExpenseSplits(tripId: number): Promise<void> {
+    // Get all expenses for this trip that were split equally among all participants
+    const expenses = await this.getTripExpenses(tripId);
+    const participants = await this.getTripParticipants(tripId);
+    const activeParticipants = participants.filter(p => p.status === 'accepted');
+    
+    for (const expense of expenses) {
+      // Check if this expense was split equally among all participants
+      const splits = Array.from(this.expenseSplits.values())
+        .filter(split => split.expenseId === expense.id);
+      
+      // If the number of splits matches the number of participants at the time,
+      // recalculate with new participants
+      if (splits.length > 0) {
+        const newSplitAmount = expense.amount / activeParticipants.length;
+        
+        // Remove existing splits
+        splits.forEach(split => this.expenseSplits.delete(split.id));
+        
+        // Create new splits for all current participants
+        for (const participant of activeParticipants) {
+          const newSplit: ExpenseSplit = {
+            id: this.currentExpenseSplitId++,
+            expenseId: expense.id,
+            userId: participant.userId,
+            amount: newSplitAmount,
+            paid: participant.userId === expense.paidBy,
+            settledAt: null,
+          };
+          
+          this.expenseSplits.set(newSplit.id, newSplit);
+        }
       }
     }
   }

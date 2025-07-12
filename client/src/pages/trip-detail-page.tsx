@@ -943,18 +943,7 @@ export default function TripDetailPage() {
                   </div>
                 </div>
 
-                {/* Budget Tips */}
-                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                  <div className="flex items-start gap-2">
-                    <Sparkles className="h-4 w-4 text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-medium text-blue-800 mb-1">Dica de Orçamento</p>
-                      <p className="text-xs text-blue-700">
-                        Reserve 15-20% do orçamento para gastos extras e emergências durante a viagem.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+
               </CardContent>
             </Card>
           </motion.div>

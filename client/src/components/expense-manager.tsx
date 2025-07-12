@@ -36,6 +36,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
     category: "other",
     splitWith: participants.map(p => p.userId),
     receipt: null as string | null,
+    splitEqually: true,
   });
 
   // Fetch expenses
@@ -76,6 +77,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
         category: "other",
         splitWith: participants.map(p => p.userId),
         receipt: null,
+        splitEqually: true,
       });
       toast({
         title: "Despesa adicionada",
@@ -117,7 +119,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
       amount: parseFloat(newExpense.amount),
       description: newExpense.description,
       category: newExpense.category,
-      splitWith: newExpense.splitWith,
+      splitWith: newExpense.splitEqually ? 'all' : newExpense.splitWith,
       receipt: newExpense.receipt,
     });
   };
@@ -291,31 +293,52 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
 
               <div>
                 <Label>Dividir com:</Label>
-                <ScrollArea className="h-32 border rounded-lg p-3">
-                  <div className="space-y-2">
-                    {participants.map((participant) => (
-                      <div key={participant.userId} className="flex items-center gap-2">
-                        <Checkbox
-                          id={`split-${participant.userId}`}
-                          checked={newExpense.splitWith.includes(participant.userId)}
-                          onCheckedChange={() => handleSplitParticipantToggle(participant.userId)}
-                        />
-                        <Label
-                          htmlFor={`split-${participant.userId}`}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage src={participant.user.profilePhoto || ""} />
-                            <AvatarFallback className="text-xs">
-                              {participant.user.fullName.substring(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>{participant.user.fullName}</span>
-                        </Label>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="split-equally"
+                      checked={newExpense.splitEqually}
+                      onCheckedChange={(checked) => setNewExpense(prev => ({ ...prev, splitEqually: checked as boolean }))}
+                    />
+                    <Label htmlFor="split-equally" className="cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        <span>Dividir igualmente entre todos os participantes</span>
                       </div>
-                    ))}
+                      <p className="text-xs text-gray-500 mt-1">
+                        Incluindo futuros participantes que entrarem na viagem
+                      </p>
+                    </Label>
                   </div>
-                </ScrollArea>
+                  
+                  {!newExpense.splitEqually && (
+                    <ScrollArea className="h-32 border rounded-lg p-3">
+                      <div className="space-y-2">
+                        {participants.map((participant) => (
+                          <div key={participant.userId} className="flex items-center gap-2">
+                            <Checkbox
+                              id={`split-${participant.userId}`}
+                              checked={newExpense.splitWith.includes(participant.userId)}
+                              onCheckedChange={() => handleSplitParticipantToggle(participant.userId)}
+                            />
+                            <Label
+                              htmlFor={`split-${participant.userId}`}
+                              className="flex items-center gap-2 cursor-pointer"
+                            >
+                              <Avatar className="h-6 w-6">
+                                <AvatarImage src={participant.user.profilePhoto || ""} />
+                                <AvatarFallback className="text-xs">
+                                  {participant.user.fullName.substring(0, 2).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span>{participant.user.fullName}</span>
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-end gap-2">

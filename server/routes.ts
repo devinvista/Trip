@@ -416,7 +416,14 @@ export function registerRoutes(app: Express): Server {
       });
       
       // Create splits based on selected participants
-      const splitParticipants = req.body.splitWith || participants.filter(p => p.status === 'accepted').map(p => p.userId);
+      let splitParticipants: number[];
+      if (req.body.splitWith === 'all') {
+        // Split equally among all participants (including future ones)
+        splitParticipants = participants.filter(p => p.status === 'accepted').map(p => p.userId);
+      } else {
+        splitParticipants = req.body.splitWith || participants.filter(p => p.status === 'accepted').map(p => p.userId);
+      }
+      
       const splitAmount = expenseData.amount / splitParticipants.length;
       
       const splits = await storage.createExpenseSplits(
