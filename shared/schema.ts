@@ -744,22 +744,22 @@ export const popularDestinations = {
 
   // Destinos de cruzeiro
   "Mediterrâneo": {
-    image: "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
+    image: "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
     category: "cruzeiros",
     description: "Rota clássica entre ilhas gregas e cidades históricas"
   },
   "Caribe": {
-    image: "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
+    image: "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
     category: "cruzeiros",
     description: "Ilhas tropicais com praias de areia branca"
   },
   "Fiorde Norueguês": {
-    image: "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
+    image: "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
     category: "cruzeiros",
     description: "Paisagens dramáticas da Escandinávia"
   },
   "Alasca": {
-    image: "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
+    image: "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
     category: "cruzeiros",
     description: "Natureza selvagem e geleiras impressionantes"
   }

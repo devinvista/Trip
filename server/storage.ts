@@ -75,18 +75,18 @@ function getCoverImageForDestination(destination: string, travelStyle?: string):
     "ouro preto": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Igreja São Francisco
     
     // Destinos de cruzeiro
-    "mediterrâneo": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80", // Cruzeiro padrão
-    "mediterranean": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
-    "caribe": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80", // Cruzeiro padrão
-    "caribbean": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
-    "fiorde": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80", // Cruzeiro padrão
-    "fiord": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
-    "noruega": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80", // Cruzeiro padrão
-    "norway": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
-    "alasca": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80", // Cruzeiro padrão
-    "alaska": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
-    "cruzeiro": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80", // Cruzeiro padrão
-    "cruise": "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80",
+    "mediterrâneo": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro padrão
+    "mediterranean": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
+    "caribe": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro padrão
+    "caribbean": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
+    "fiorde": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro padrão
+    "fiord": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
+    "noruega": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro padrão
+    "norway": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
+    "alasca": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro padrão
+    "alaska": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
+    "cruzeiro": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro padrão
+    "cruise": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg",
     "paraty": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Centro Histórico
     "angra dos reis": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Ilha Grande
     "ubatuba": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praia da Fazenda
@@ -351,7 +351,7 @@ function getCoverImageForDestination(destination: string, travelStyle?: string):
   // Special handling for cruise destinations - use single standard cruise ship image
   if (travelStyle === 'cruzeiros') {
     // Use a single, high-quality cruise ship image for all cruise trips
-    return "https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80";
+    return "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg";
   }
   
   // Try to find exact match or partial match in iconic destinations
@@ -1040,7 +1040,7 @@ async function createDefaultTrips(user: User) {
     const trip3 = await storage.createTrip({
       title: 'Cruzeiro pelo Mediterrâneo',
       destination: 'Mediterrâneo',
-      coverImage: 'https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc?w=800&q=80',
+      coverImage: 'https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg',
       startDate: new Date('2025-09-20'),
       endDate: new Date('2025-09-27'),
       budget: 3500,

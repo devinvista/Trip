@@ -194,3 +194,5 @@ Changelog:
 - July 12, 2025. Implemented single standardized cruise ship image (https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc) for all cruise destinations to ensure consistency and reliability
 - July 12, 2025. Updated getCoverImageForDestination function to prioritize cruise-specific imagery for all trips with travelStyle="cruzeiros"
 - July 12, 2025. Fixed cruise destination image mapping in both schema.ts and storage.ts to use single high-quality cruise ship image
+- July 12, 2025. Updated cruise ship default image to use Brazilian travel guide image (https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg) for better compatibility and visual quality
+- July 12, 2025. Replaced all cruise destination images in schema.ts and storage.ts to use new standardized cruise ship image from travel guide website
