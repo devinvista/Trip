@@ -10,8 +10,12 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { AdvancedActivityManager } from "@/components/advanced-activity-manager";
+import { PlannedActivity } from "@shared/schema";
+import { motion } from "framer-motion";
 import { 
   MapPin, 
   Calendar, 
@@ -22,14 +26,184 @@ import {
   Clock,
   Check,
   X,
-  User
+  User,
+  Camera,
+  Star,
+  Heart,
+  TrendingUp,
+  Timer,
+  Sparkles,
+  Target,
+  Trophy,
+  Zap,
+  Gift,
+  AlertCircle,
+  Lock
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { expenseCategories, BudgetBreakdown } from "@shared/schema";
 import { BudgetVisualization } from "@/components/budget-visualization";
 import { ExpenseManager } from "@/components/expense-manager";
+
+// Countdown Timer Component
+function CountdownTimer({ targetDate }: { targetDate: string }) {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const target = new Date(targetDate);
+      const difference = target.getTime() - now.getTime();
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  const isUpcoming = new Date(targetDate) > new Date();
+  const isPast = new Date(targetDate) < new Date();
+
+  if (isPast) {
+    return (
+      <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-center gap-2 text-amber-800">
+            <Trophy className="h-5 w-5" />
+            <span className="font-semibold">Viagem Concluída!</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+      <CardContent className="p-4">
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Timer className="h-5 w-5 text-blue-600" />
+            <h3 className="font-semibold text-blue-800">Contagem Regressiva</h3>
+          </div>
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="bg-white rounded-lg p-2 border border-blue-200">
+              <div className="text-xl font-bold text-blue-900">{timeLeft.days}</div>
+              <div className="text-xs text-blue-600">Dias</div>
+            </div>
+            <div className="bg-white rounded-lg p-2 border border-blue-200">
+              <div className="text-xl font-bold text-blue-900">{timeLeft.hours}</div>
+              <div className="text-xs text-blue-600">Horas</div>
+            </div>
+            <div className="bg-white rounded-lg p-2 border border-blue-200">
+              <div className="text-xl font-bold text-blue-900">{timeLeft.minutes}</div>
+              <div className="text-xs text-blue-600">Min</div>
+            </div>
+            <div className="bg-white rounded-lg p-2 border border-blue-200">
+              <div className="text-xl font-bold text-blue-900">{timeLeft.seconds}</div>
+              <div className="text-xs text-blue-600">Seg</div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Trip Statistics Component
+function TripStatistics({ trip }: { trip: any }) {
+  const stats = useMemo(() => {
+    const totalBudget = trip.budget || 0;
+    const perPerson = trip.maxParticipants > 0 ? totalBudget / trip.maxParticipants : 0;
+    const daysUntil = differenceInDays(new Date(trip.startDate), new Date());
+    const duration = differenceInDays(new Date(trip.endDate), new Date(trip.startDate));
+
+    return {
+      totalBudget,
+      perPerson,
+      daysUntil: Math.max(0, daysUntil),
+      duration: Math.max(1, duration),
+      occupancy: (trip.currentParticipants / trip.maxParticipants) * 100
+    };
+  }, [trip]);
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign className="h-4 w-4 text-green-600" />
+            <span className="text-sm font-medium text-green-800">Orçamento Total</span>
+          </div>
+          <div className="text-xl font-bold text-green-900">
+            R$ {stats.totalBudget.toLocaleString('pt-BR')}
+          </div>
+          <div className="text-xs text-green-600">
+            R$ {stats.perPerson.toLocaleString('pt-BR')} por pessoa
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="h-4 w-4 text-purple-600" />
+            <span className="text-sm font-medium text-purple-800">Participação</span>
+          </div>
+          <div className="text-xl font-bold text-purple-900">
+            {trip.currentParticipants}/{trip.maxParticipants}
+          </div>
+          <Progress value={stats.occupancy} className="h-2 mt-2" />
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Calendar className="h-4 w-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-800">Duração</span>
+          </div>
+          <div className="text-xl font-bold text-blue-900">
+            {stats.duration} {stats.duration === 1 ? 'dia' : 'dias'}
+          </div>
+          <div className="text-xs text-blue-600">
+            {stats.daysUntil > 0 ? `Em ${stats.daysUntil} dias` : 'Viagem iniciada'}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Star className="h-4 w-4 text-amber-600" />
+            <span className="text-sm font-medium text-amber-800">Status</span>
+          </div>
+          <div className="text-xl font-bold text-amber-900">
+            {trip.status === 'open' ? 'Aberta' : 'Fechada'}
+          </div>
+          <div className="text-xs text-amber-600">
+            {trip.status === 'open' ? 'Aceita novos membros' : 'Viagem lotada'}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 export default function TripDetailPage() {
   const { id } = useParams();
@@ -37,6 +211,8 @@ export default function TripDetailPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [requestMessage, setRequestMessage] = useState("");
+  const [plannedActivities, setPlannedActivities] = useState<PlannedActivity[]>([]);
+  const [activeTab, setActiveTab] = useState("overview");
 
   const { data: trip, isLoading } = useQuery<any>({
     queryKey: ["/api/trips", id],
@@ -123,7 +299,6 @@ export default function TripDetailPage() {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/trips", id] });
       queryClient.invalidateQueries({ queryKey: ["/api/my-trips"] });
-      // Redirect to dashboard after leaving
       window.location.href = "/dashboard";
     },
     onError: (error) => {
@@ -135,9 +310,16 @@ export default function TripDetailPage() {
     },
   });
 
+  // Calculate activities cost
+  const calculateActivitiesCost = (activities: PlannedActivity[]) => {
+    return activities.reduce((total, activity) => {
+      return total + (activity.estimatedCost || 0);
+    }, 0);
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
@@ -158,11 +340,12 @@ export default function TripDetailPage() {
 
   if (!trip) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <Card className="text-center p-8">
-            <h1 className="text-2xl font-bold text-dark mb-4">Viagem não encontrada</h1>
+          <Card className="text-center p-8 bg-white/80 backdrop-blur-sm">
+            <AlertCircle className="h-16 w-16 mx-auto text-red-500 mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Viagem não encontrada</h1>
             <p className="text-gray-600">A viagem que você procura não existe ou foi removida.</p>
           </Card>
         </div>
@@ -174,532 +357,412 @@ export default function TripDetailPage() {
   const isParticipant = trip.participants?.some((p: any) => p.userId === user?.id);
   const canJoin = !isCreator && !isParticipant && trip.currentParticipants < trip.maxParticipants;
 
-  // Debug logs
-  console.log('🔍 Trip Debug:', {
-    tripId: trip.id,
-    userId: user?.id,
-    isCreator,
-    isParticipant,
-    canJoin,
-    participants: trip.participants,
-    participantsLength: trip.participants?.length
-  });
-
-  const costLabels: { [key: string]: string } = {
-    hospedagem: "Hospedagem",
-    transporte: "Transporte",
-    alimentacao: "Alimentação",
-    aluguel_carro: "Aluguel de carro",
-    atividades: "Atividades",
-    combustivel: "Combustível",
-  };
-
   const travelStyleLabels: { [key: string]: string } = {
     praia: "Praia",
-    neve: "Neve",
+    neve: "Neve", 
     cruzeiros: "Cruzeiros",
     natureza: "Natureza e Ecoturismo",
     cultural: "Culturais e Históricas",
     aventura: "Aventura",
     parques: "Parques Temáticos",
+    urbanas: "Viagens Urbanas / Cidades Grandes"
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Navbar />
       
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="font-bold text-3xl text-dark mb-2">{trip.title || "Viagem sem título"}</h1>
-              <div className="flex items-center gap-4 text-gray-600">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  <span>{trip.destination}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
-                  </span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-xl">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h1 className="font-bold text-4xl mb-3">{trip.title || "Viagem sem título"}</h1>
+                <div className="flex items-center gap-6 text-blue-100">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    <span className="text-lg">{trip.destination}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    <span className="text-lg">
+                      {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast({ title: "Link copiado!", description: "O link da viagem foi copiado para a área de transferência." });
-                }}
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Compartilhar
-              </Button>
-              {(isParticipant || isCreator) && (
-                <Button asChild>
-                  <a href={`/chat/${trip.id}`}>
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Chat do Grupo
-                  </a>
+              
+              <div className="flex gap-3">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast({ title: "Link copiado!", description: "O link da viagem foi copiado para a área de transferência." });
+                  }}
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Compartilhar
                 </Button>
-              )}
+                {(isParticipant || isCreator) && (
+                  <Button variant="secondary" asChild>
+                    <a href={`/chat/${trip.id}`}>
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Chat
+                    </a>
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="flex gap-3">
-            <Badge className={trip.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-              {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
-            </Badge>
-            <Badge variant="outline">
-              {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
-            </Badge>
-            <Badge variant="secondary">
-              {trip.currentParticipants}/{trip.maxParticipants} participantes
-            </Badge>
+            <div className="flex gap-3 mb-6">
+              <Badge className="bg-white/20 text-white border-white/30">
+                {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
+              </Badge>
+              <Badge className="bg-white/20 text-white border-white/30">
+                {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
+              </Badge>
+              <Badge className="bg-white/20 text-white border-white/30">
+                {trip.currentParticipants}/{trip.maxParticipants} participantes
+              </Badge>
+            </div>
+
+            <TripStatistics trip={trip} />
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Sobre a Viagem</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 whitespace-pre-line">{trip.description}</p>
-              </CardContent>
-            </Card>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-2"
+          >
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm">
+                <TabsTrigger value="overview" className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Visão Geral
+                </TabsTrigger>
+                <TabsTrigger value="activities" className="flex items-center gap-2">
+                  <Camera className="h-4 w-4" />
+                  Atividades
+                </TabsTrigger>
+                <TabsTrigger value="expenses" className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" />
+                  Despesas
+                </TabsTrigger>
+                <TabsTrigger value="participants" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Participantes
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Budget Visualization */}
-            <BudgetVisualization 
-              budget={trip.budget}
-              budgetBreakdown={trip.budgetBreakdown}
-              maxParticipants={trip.maxParticipants}
-            />
-
-            {/* Shared Costs */}
-            {trip.sharedCosts && trip.sharedCosts.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Custos Compartilhados</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {trip.sharedCosts.map((cost: string) => (
-                      <Badge key={cost} variant="secondary">
-                        {costLabels[cost] || cost}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Participants */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Participantes ({trip.currentParticipants}/{trip.maxParticipants})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Creator */}
-                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
-                    <Avatar>
-                      <AvatarImage src={trip.creator?.profilePhoto || ""} />
-                      <AvatarFallback>
-                        {trip.creator?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h4 className="font-medium">{trip.creator?.fullName}</h4>
-                      <p className="text-sm text-gray-600">Organizador</p>
-                    </div>
-                    <Badge className="bg-primary text-primary-foreground">Criador</Badge>
-                  </div>
-
-                  {/* Other Participants */}
-                  {trip.participants?.filter((p: any) => p.userId !== trip.creatorId).map((participant: any) => (
-                    <div key={participant.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                      <Avatar>
-                        <AvatarImage src={participant.user?.profilePhoto || ""} />
-                        <AvatarFallback>
-                          {participant.user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <h4 className="font-medium">{participant.user?.fullName}</h4>
-                        <p className="text-sm text-gray-600">{participant.user?.location || "Localização não informada"}</p>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Empty Slots */}
-                  {Array.from({ length: trip.maxParticipants - trip.currentParticipants }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 border border-dashed rounded-lg opacity-50">
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-gray-500">Vaga disponível</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Expense Manager - only for participants */}
-            {(isParticipant || isCreator) && (
-              <ExpenseManager 
-                tripId={parseInt(id || "0")} 
-                participants={[
-                  ...(trip.participants || []),
-                  { userId: trip.creatorId, user: trip.creator, status: 'accepted' }
-                ].filter(p => p.status === 'accepted')}
-              />
-            )}
-
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Trip Requests (only for creator) */}
-            {isCreator && requests.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Solicitações de Participação</span>
-                    <Badge variant="secondary">
-                      {requests.filter((r: any) => r.status === 'pending').length}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {requests.filter((r: any) => r.status === 'pending').map((request: any) => (
-                      <div key={request.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-start gap-3">
-                          <Avatar>
-                            <AvatarImage src={request.user?.profilePhoto || ""} />
-                            <AvatarFallback>
-                              {request.user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-medium">{request.user?.fullName}</h4>
-                              <Badge variant="outline" className="text-xs">
-                                {request.user?.travelStyle || 'Sem estilo definido'}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-600 mb-2">{request.user?.location || 'Localização não informada'}</p>
-                            {request.message && (
-                              <div className="bg-gray-50 p-3 rounded-lg mb-3">
-                                <p className="text-sm text-gray-700 italic">"{request.message}"</p>
-                              </div>
-                            )}
-                            <div className="flex gap-2 mt-3">
-                              <Button 
-                                size="sm" 
-                                onClick={() => handleRequestMutation.mutate({ requestId: request.id, status: 'accepted' })}
-                                disabled={handleRequestMutation.isPending}
-                                className="bg-green-600 hover:bg-green-700"
-                              >
-                                <Check className="h-3 w-3 mr-1" />
-                                Aceitar
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => handleRequestMutation.mutate({ requestId: request.id, status: 'rejected' })}
-                                disabled={handleRequestMutation.isPending}
-                                className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
-                              >
-                                <X className="h-3 w-3 mr-1" />
-                                Rejeitar
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Chat Preview for Participants */}
-            {(isParticipant || isCreator) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Chat do Grupo</span>
-                    <Button size="sm" asChild>
-                      <a href={`/chat/${trip.id}`}>
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Abrir Chat
-                      </a>
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-gray-50 p-4 rounded-lg text-center">
-                    <MessageCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 mb-2">
-                      Converse com os outros participantes da viagem
+              <TabsContent value="overview" className="space-y-6">
+                {/* Description */}
+                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="h-5 w-5 text-yellow-500" />
+                      Sobre a Viagem
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 leading-relaxed">
+                      {trip.description || "Descrição não disponível"}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      Coordenem detalhes, compartilhem dicas e façam novos amigos!
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+                  </CardContent>
+                </Card>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Trip Info Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Detalhes da Viagem</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <DollarSign className="h-5 w-5 text-gray-500" />
-                  <div className="flex-1">
-                    {trip.budget ? (
-                      <>
-                        <p className="font-medium">R$ {trip.budget.toLocaleString('pt-BR')}</p>
-                        <p className="text-sm text-gray-600">orçamento total da viagem</p>
-                        <p className="text-sm font-medium text-primary mt-1">
-                          R$ {Math.round(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-sm text-gray-600">Orçamento não informado</p>
-                    )}
-                    
-                    {/* Budget Breakdown Display */}
-                    {trip.budgetBreakdown && typeof trip.budgetBreakdown === 'object' && (
-                      <div className="mt-3 space-y-2">
-                        <p className="text-xs font-medium text-gray-700">Detalhamento de Gastos (Total da Viagem):</p>
-                        <div className="grid grid-cols-1 gap-1 text-xs">
-                          {Object.entries(trip.budgetBreakdown).map(([key, value]) => {
-                            if (!value || value === 0) return null;
-                            const label = expenseCategories[key as keyof typeof expenseCategories] || key;
-                            const perPersonCost = Math.round(Number(value) / trip.maxParticipants);
-                            return (
-                              <div key={key} className="space-y-1">
-                                <div className="flex justify-between items-center">
-                                  <span className="text-gray-600">{label}:</span>
-                                  <span className="font-medium">R$ {new Intl.NumberFormat('pt-BR').format(Number(value))}</span>
-                                </div>
-                                <div className="flex justify-end">
-                                  <span className="text-primary text-xs">R$ {new Intl.NumberFormat('pt-BR').format(perPersonCost)} por pessoa</span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-500" />
-                  <div>
-                    <p className="font-medium">
-                      {format(new Date(trip.startDate), "dd 'de' MMMM", { locale: ptBR })}
-                    </p>
-                    <p className="text-sm text-gray-600">Data de partida</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-gray-500" />
-                  <div>
-                    <p className="font-medium">
-                      {format(new Date(trip.endDate), "dd 'de' MMMM", { locale: ptBR })}
-                    </p>
-                    <p className="text-sm text-gray-600">Data de retorno</p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-gray-500" />
-                  <div>
-                    <p className="font-medium">
-                      {Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24))} dias
-                    </p>
-                    <p className="text-sm text-gray-600">Duração da viagem</p>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="flex items-center gap-3">
-                  <Users className="h-5 w-5 text-gray-500" />
-                  <div>
-                    <p className="font-medium">{trip.currentParticipants}/{trip.maxParticipants}</p>
-                    <p className="text-sm text-gray-600">Participantes</p>
-                  </div>
-                </div>
-
-                {/* Action Button */}
-                {canJoin && !trip.userRequest && (
-                  <div className="pt-4">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className="w-full bg-primary hover:bg-primary/90">
-                          <Users className="h-4 w-4 mr-2" />
-                          Solicitar Participação
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Solicitar Participação</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div className="bg-blue-50 p-3 rounded-lg">
-                            <p className="text-sm text-blue-800">
-                              ✈️ <strong>{trip.title}</strong> - {trip.destination}
-                            </p>
-                            <p className="text-xs text-blue-600 mt-1">
-                              {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
-                            </p>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            Envie uma mensagem para o organizador explicando por que você gostaria de participar desta viagem.
-                          </p>
-                          <Textarea
-                            placeholder="Olá! Gostaria muito de participar desta viagem porque..."
-                            value={requestMessage}
-                            onChange={(e) => setRequestMessage(e.target.value)}
-                            className="min-h-[100px]"
-                            maxLength={500}
-                          />
-                          <div className="text-xs text-gray-500 text-right">
-                            {requestMessage.length}/500 caracteres
-                          </div>
-                          <Button 
-                            onClick={() => requestJoinMutation.mutate({ tripId: id!, message: requestMessage })}
-                            disabled={requestJoinMutation.isPending || !requestMessage.trim()}
-                            className="w-full"
-                          >
-                            {requestJoinMutation.isPending ? (
-                              <>
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                                Enviando...
-                              </>
-                            ) : (
-                              "Enviar Solicitação"
-                            )}
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                {/* Budget Visualization */}
+                {trip.budgetBreakdown && (
+                  <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-green-500" />
+                        Orçamento Detalhado
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <BudgetVisualization 
+                        budget={trip.budget}
+                        budgetBreakdown={trip.budgetBreakdown}
+                        maxParticipants={trip.maxParticipants}
+                      />
+                    </CardContent>
+                  </Card>
                 )}
+              </TabsContent>
 
-                {trip.userRequest && (
-                  <div className="pt-4">
-                    <Button disabled className="w-full bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-                      <Clock className="h-4 w-4 mr-2" />
-                      Solicitação Enviada
-                    </Button>
-                    <p className="text-xs text-gray-500 text-center mt-2">
-                      Aguardando resposta do organizador
-                    </p>
-                  </div>
+              <TabsContent value="activities" className="space-y-6">
+                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Target className="h-5 w-5 text-blue-500" />
+                      Atividades Planejadas
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {(isCreator || isParticipant) ? (
+                      <AdvancedActivityManager
+                        activities={plannedActivities}
+                        onActivitiesChange={setPlannedActivities}
+                        className="border-0"
+                      />
+                    ) : (
+                      <div className="text-center py-8">
+                        <Lock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                        <p className="text-gray-600">
+                          Apenas participantes podem ver as atividades planejadas
+                        </p>
+                        {canJoin && (
+                          <Button className="mt-4" onClick={() => setActiveTab("overview")}>
+                            Solicitar Participação
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="expenses" className="space-y-6">
+                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5 text-green-500" />
+                      Gestão de Despesas
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {(isCreator || isParticipant) ? (
+                      <ExpenseManager 
+                        tripId={parseInt(id!)}
+                        participants={trip.participants || []}
+                      />
+                    ) : (
+                      <div className="text-center py-8">
+                        <Lock className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                        <p className="text-gray-600">
+                          Apenas participantes podem ver as despesas
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="participants" className="space-y-6">
+                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5 text-purple-500" />
+                      Participantes ({trip.participants?.length || 0})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {trip.participants?.map((participant: any) => (
+                        <div key={participant.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarImage src={participant.user.profilePhoto} />
+                              <AvatarFallback>
+                                {participant.user.fullName?.[0] || participant.user.username[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium">{participant.user.fullName || participant.user.username}</p>
+                              <p className="text-sm text-gray-600">{participant.user.location}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {participant.userId === trip.creatorId && (
+                              <Badge className="bg-yellow-100 text-yellow-800">Organizador</Badge>
+                            )}
+                            <Badge variant="outline" className="text-green-800 border-green-200">
+                              {participant.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Join Requests for Creator */}
+                {isCreator && requests.length > 0 && (
+                  <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Gift className="h-5 w-5 text-orange-500" />
+                        Solicitações de Participação ({requests.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {requests.map((request: any) => (
+                          <div key={request.id} className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center gap-3">
+                                <Avatar>
+                                  <AvatarFallback>{request.user.fullName?.[0] || request.user.username[0]}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className="font-medium">{request.user.fullName || request.user.username}</p>
+                                  <p className="text-sm text-gray-600">{request.message}</p>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => handleRequestMutation.mutate({ requestId: request.id, status: 'accepted' })}
+                                  disabled={handleRequestMutation.isPending}
+                                >
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Aceitar
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleRequestMutation.mutate({ requestId: request.id, status: 'rejected' })}
+                                  disabled={handleRequestMutation.isPending}
+                                >
+                                  <X className="h-4 w-4 mr-1" />
+                                  Rejeitar
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
+          </motion.div>
+
+          {/* Sidebar */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="space-y-6"
+          >
+            {/* Countdown Timer */}
+            <CountdownTimer targetDate={trip.startDate} />
+
+            {/* Action Buttons */}
+            <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+              <CardContent className="p-4 space-y-3">
+                {canJoin && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                        <Heart className="h-4 w-4 mr-2" />
+                        Solicitar Participação
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Solicitar Participação</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <Textarea
+                          placeholder="Conte um pouco sobre você e por que gostaria de participar desta viagem..."
+                          value={requestMessage}
+                          onChange={(e) => setRequestMessage(e.target.value)}
+                          className="min-h-[100px]"
+                        />
+                        <Button 
+                          onClick={() => requestJoinMutation.mutate({ tripId: id!, message: requestMessage })}
+                          disabled={requestJoinMutation.isPending || !requestMessage.trim()}
+                          className="w-full"
+                        >
+                          {requestJoinMutation.isPending ? "Enviando..." : "Enviar Solicitação"}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 )}
 
                 {isParticipant && !isCreator && (
-                  <div className="pt-4 space-y-2">
-                    <Button className="w-full" asChild>
-                      <a href={`/chat/${trip.id}`}>
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Abrir Chat
-                      </a>
-                    </Button>
-                    
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
-                          <X className="h-4 w-4 mr-2" />
-                          Desistir da Viagem
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle className="text-red-600">Desistir da Viagem</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div className="bg-red-50 p-3 rounded-lg">
-                            <p className="text-sm text-red-800">
-                              ⚠️ <strong>Atenção!</strong> Esta ação não pode ser desfeita.
-                            </p>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            Você está prestes a sair da viagem <strong>"{trip.title}"</strong>. 
-                            Após confirmar, você será removido da lista de participantes e não terá mais acesso ao chat e às informações da viagem.
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Se desejar participar novamente, precisará enviar uma nova solicitação ao organizador.
-                          </p>
-                          <div className="flex gap-2">
-                            <DialogTrigger asChild>
-                              <Button variant="outline" className="flex-1">
-                                Cancelar
-                              </Button>
-                            </DialogTrigger>
-                            <Button 
-                              onClick={() => quitTripMutation.mutate()}
-                              disabled={quitTripMutation.isPending}
-                              variant="destructive"
-                              className="flex-1"
-                            >
-                              {quitTripMutation.isPending ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                                  Saindo...
-                                </>
-                              ) : (
-                                "Confirmar Saída"
-                              )}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full">
+                        <X className="h-4 w-4 mr-2" />
+                        Desistir da Viagem
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Confirmar Saída</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <p>Tem certeza que deseja sair desta viagem? Esta ação não pode ser desfeita.</p>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="destructive" 
+                            onClick={() => quitTripMutation.mutate()}
+                            disabled={quitTripMutation.isPending}
+                            className="flex-1"
+                          >
+                            {quitTripMutation.isPending ? "Saindo..." : "Confirmar Saída"}
+                          </Button>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" className="flex-1">
+                              Cancelar
                             </Button>
-                          </div>
+                          </DialogTrigger>
                         </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                )}
-
-                {trip.currentParticipants >= trip.maxParticipants && !isParticipant && !isCreator && (
-                  <div className="pt-4">
-                    <Button disabled className="w-full">
-                      Viagem Lotada
-                    </Button>
-                  </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 )}
               </CardContent>
             </Card>
-          </div>
+
+            {/* Quick Stats */}
+            <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-yellow-800">
+                  <Zap className="h-5 w-5" />
+                  Estatísticas Rápidas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-yellow-700">Custo das Atividades:</span>
+                    <span className="font-medium text-yellow-900">
+                      R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-yellow-700">Orçamento Total:</span>
+                    <span className="font-bold text-yellow-900">
+                      R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                    </span>
+                  </div>
+                  <Separator className="bg-yellow-200" />
+                  <div className="flex justify-between">
+                    <span className="text-sm text-yellow-700">Por Pessoa:</span>
+                    <span className="font-bold text-yellow-900">
+                      R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>
