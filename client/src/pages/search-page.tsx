@@ -501,22 +501,20 @@ export default function SearchPage() {
                   })}
                 </div>
                 <Separator />
-                <div className="grid grid-cols-1 gap-2">
-                  <div className="text-sm font-medium text-gray-700 mb-2">Meses Específicos</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {dateFilters.slice(4).map((filter) => (
-                      <Button
-                        key={filter.id}
-                        variant={selectedDateFilter === filter.id ? "default" : "ghost"}
-                        onClick={() => setSelectedDateFilter(selectedDateFilter === filter.id ? "" : filter.id)}
-                        className="justify-start h-8 text-xs"
-                      >
-                        <Badge className={`mr-1 ${filter.color}`}>
-                          {filter.label.split(' ')[0]}
-                        </Badge>
-                      </Button>
-                    ))}
-                  </div>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium text-gray-700">Meses Específicos</div>
+                  <Select value={selectedDateFilter} onValueChange={setSelectedDateFilter}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione um mês específico" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {dateFilters.slice(4).map((filter) => (
+                        <SelectItem key={filter.id} value={filter.id}>
+                          {filter.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
