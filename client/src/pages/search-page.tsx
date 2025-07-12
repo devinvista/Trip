@@ -208,7 +208,7 @@ export default function SearchPage() {
           
           {/* Lighthouse SVG with Animation */}
           <motion.div 
-            className="absolute right-8 top-8 opacity-40"
+            className="absolute right-8 bottom-8 opacity-40"
             animate={{ 
               scale: [1, 1.05, 1],
               opacity: [0.4, 0.6, 0.4]

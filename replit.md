@@ -183,3 +183,5 @@ Changelog:
 - July 12, 2025. Successfully migrated from Replit Agent to standard Replit environment with all functionality preserved
 - July 12, 2025. Created modern lighthouse-themed hero section for search page with animated SVG, gradient backgrounds, and glassmorphism effects
 - July 12, 2025. Replaced "Navegue Pelos Seus Sonhos" title with emphasized main message about discovering destinations and connecting with travel companions
+- July 12, 2025. Reduced hero section height by 50% and added statistical highlights (250+ trips, 1.2k travelers, 85+ destinations, 4.8★ rating)
+- July 12, 2025. Positioned lighthouse visual element in bottom right corner for better layout balance
