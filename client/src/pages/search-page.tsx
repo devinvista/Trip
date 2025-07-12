@@ -31,7 +31,10 @@ import {
   TrendingUp,
   X,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Navigation,
+  Compass,
+  Zap
 } from "lucide-react";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { motion, AnimatePresence } from "framer-motion";
@@ -190,18 +193,113 @@ export default function SearchPage() {
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Header Section */}
+        {/* Hero Section with Lighthouse Theme */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="relative overflow-hidden rounded-3xl mb-12 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white"
         >
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Descobrir Viagens
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Encontre a aventura perfeita com filtros inteligentes e busca avançada
-          </p>
+          {/* Background Elements */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-700/20 to-purple-800/20"></div>
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl"></div>
+          </div>
+          
+          {/* Lighthouse SVG with Animation */}
+          <motion.div 
+            className="absolute right-8 top-8 opacity-40"
+            animate={{ 
+              scale: [1, 1.05, 1],
+              opacity: [0.4, 0.6, 0.4]
+            }}
+            transition={{ 
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <svg width="120" height="160" viewBox="0 0 120 160" className="text-yellow-200">
+              {/* Lighthouse Base */}
+              <rect x="45" y="140" width="30" height="15" fill="currentColor" opacity="0.8"/>
+              {/* Lighthouse Body */}
+              <polygon points="48,140 52,20 68,20 72,140" fill="currentColor" opacity="0.6"/>
+              {/* Lighthouse Stripes */}
+              <rect x="48" y="30" width="24" height="4" fill="white" opacity="0.4"/>
+              <rect x="48" y="50" width="24" height="4" fill="white" opacity="0.4"/>
+              <rect x="48" y="70" width="24" height="4" fill="white" opacity="0.4"/>
+              <rect x="48" y="90" width="24" height="4" fill="white" opacity="0.4"/>
+              <rect x="48" y="110" width="24" height="4" fill="white" opacity="0.4"/>
+              <rect x="48" y="130" width="24" height="4" fill="white" opacity="0.4"/>
+              {/* Lighthouse Top */}
+              <rect x="46" y="15" width="28" height="8" fill="currentColor" opacity="0.8"/>
+              {/* Light Beam */}
+              <polygon points="60,20 30,5 30,35" fill="yellow" opacity="0.3"/>
+              <polygon points="60,20 90,5 90,35" fill="yellow" opacity="0.2"/>
+              {/* Light Source */}
+              <circle cx="60" cy="19" r="3" fill="yellow" opacity="0.8"/>
+            </svg>
+          </motion.div>
+
+          {/* Content */}
+          <div className="relative z-10 px-8 py-16 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex items-center justify-center gap-4 mb-6"
+            >
+              <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
+                <Zap className="h-8 w-8 text-yellow-300" />
+              </div>
+              <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
+                <Compass className="h-8 w-8 text-blue-300" />
+              </div>
+              <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
+                <Navigation className="h-8 w-8 text-purple-300" />
+              </div>
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-200 via-white to-blue-200 bg-clip-text text-transparent"
+            >
+              Navegue Pelos Seus Sonhos
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-xl text-blue-100 max-w-3xl mx-auto mb-8 leading-relaxed"
+            >
+              Como um farol guia os navegantes, deixe-nos iluminar o caminho para a sua próxima aventura. 
+              Descubra destinos únicos e conecte-se com companheiros de viagem que compartilham seus sonhos.
+            </motion.p>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-wrap items-center justify-center gap-6 text-sm"
+            >
+              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <Globe className="h-4 w-4 text-blue-300" />
+                <span>80+ Destinos</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <Users className="h-4 w-4 text-purple-300" />
+                <span>Viajantes Ativos</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <Star className="h-4 w-4 text-yellow-300" />
+                <span>Experiências Únicas</span>
+              </div>
+            </motion.div>
+          </div>
         </motion.div>
 
         {/* Main Search Bar */}
