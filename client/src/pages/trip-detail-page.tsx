@@ -254,6 +254,20 @@ export default function TripDetailPage() {
     enabled: !!trip && !!user && trip.creatorId === user?.id,
   });
 
+  // Calculate user permissions
+  const isCreator = trip && user && trip.creatorId === user.id;
+  const isParticipant = trip && user && trip.participants?.some((p: any) => p.userId === user.id && p.status === 'accepted');
+
+  const { data: expenses = [] } = useQuery<any[]>({
+    queryKey: ["/api/trips", id, "expenses"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/trips/${id}/expenses`);
+      if (!res.ok) throw new Error('Failed to fetch expenses');
+      return res.json();
+    },
+    enabled: !!trip && !!user && (isCreator || isParticipant),
+  });
+
   const requestJoinMutation = useMutation({
     mutationFn: async (data: { tripId: string; message: string }) => {
       const response = await apiRequest("POST", `/api/trips/${data.tripId}/request`, {
@@ -337,6 +351,12 @@ export default function TripDetailPage() {
     }, 0);
   };
 
+  const calculateTotalExpenses = () => {
+    return expenses.reduce((total, expense) => {
+      return total + expense.amount;
+    }, 0);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -373,8 +393,6 @@ export default function TripDetailPage() {
     );
   }
 
-  const isCreator = trip.creatorId === user?.id;
-  const isParticipant = trip.participants?.some((p: any) => p.userId === user?.id);
   const canJoin = !isCreator && !isParticipant && trip.currentParticipants < trip.maxParticipants;
 
   const travelStyleLabels: { [key: string]: string } = {
@@ -556,7 +574,7 @@ export default function TripDetailPage() {
                               </span>
                             </div>
                             <div className="mt-2 text-sm text-blue-700">
-                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
+                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} custo estimado por pessoa
                             </div>
                           </div>
                         </>
@@ -568,7 +586,7 @@ export default function TripDetailPage() {
                               Orçamento Total: R$ {trip.budget.toLocaleString('pt-BR')}
                             </p>
                             <p className="text-sm text-gray-600">
-                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
+                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} custo estimado por pessoa
                             </p>
                             <p className="text-xs text-gray-500 mt-4">
                               Detalhamento não disponível ainda
@@ -915,7 +933,7 @@ export default function TripDetailPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-amber-600" />
-                      <span className="text-sm font-medium text-amber-800">Custo por Pessoa</span>
+                      <span className="text-sm font-medium text-amber-800">Custo Estimado por Pessoa</span>
                     </div>
                     <span className="text-xl font-bold text-amber-900">
                       R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
@@ -931,15 +949,15 @@ export default function TripDetailPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Progresso do Orçamento</span>
                     <span className="font-medium text-gray-900">
-                      {Math.round((calculateActivitiesCost(plannedActivities) / (trip.budget || 1)) * 100)}%
+                      {Math.round((calculateTotalExpenses() / (trip.budget || 1)) * 100)}%
                     </span>
                   </div>
                   <Progress 
-                    value={Math.min(100, (calculateActivitiesCost(plannedActivities) / (trip.budget || 1)) * 100)} 
+                    value={Math.min(100, (calculateTotalExpenses() / (trip.budget || 1)) * 100)} 
                     className="h-2"
                   />
                   <div className="text-xs text-gray-500">
-                    Atividades planejadas em relação ao orçamento base
+                    Despesas realizadas em relação ao orçamento planejado
                   </div>
                 </div>
 
