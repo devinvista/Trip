@@ -191,3 +191,6 @@ Changelog:
 - July 12, 2025. Enhanced cruise trip handling - cruise trips now display cruise ship images instead of destination city images
 - July 12, 2025. Added cruise ship image library with Mediterranean, Caribbean, Norwegian fjord, and Alaska cruise imagery
 - July 12, 2025. Created test cruise trip "Cruzeiro pelo Mediterrâneo" to demonstrate cruise-specific features
+- July 12, 2025. Implemented single standardized cruise ship image (https://images.unsplash.com/photo-1570647236643-68ff5e6b1efc) for all cruise destinations to ensure consistency and reliability
+- July 12, 2025. Updated getCoverImageForDestination function to prioritize cruise-specific imagery for all trips with travelStyle="cruzeiros"
+- July 12, 2025. Fixed cruise destination image mapping in both schema.ts and storage.ts to use single high-quality cruise ship image
