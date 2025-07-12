@@ -470,7 +470,7 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold">Destinos em Alta</h2>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Destinos em Alta</h2>
             <p className="text-gray-600 dark:text-gray-400 mt-2">Os lugares mais procurados pelos nossos viajantes</p>
           </div>
           <Button asChild variant="ghost">
@@ -521,7 +521,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold">Viagens Recentes</h2>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Viagens Recentes</h2>
               <p className="text-gray-600 dark:text-gray-400 mt-2">Junte-se a uma aventura que está prestes a começar</p>
             </div>
             <Button asChild variant="ghost">
@@ -599,7 +599,7 @@ export default function HomePage() {
 
       {/* Features Section with Icons */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Por que escolher ViajaJunto?</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Por que escolher ViajaJunto?</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="text-center hover:shadow-lg transition-shadow">
             <CardHeader>
@@ -648,7 +648,7 @@ export default function HomePage() {
       {/* CTA Section with gradient */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Sua próxima aventura começa aqui</h2>
+          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Sua próxima aventura começa aqui</h2>
           <p className="text-xl mb-8 opacity-90">
             Junte-se a mais de 2.500 viajantes que já descobriram uma nova forma de explorar o mundo
           </p>
