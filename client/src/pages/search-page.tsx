@@ -242,7 +242,7 @@ export default function SearchPage() {
           </motion.div>
 
           {/* Content */}
-          <div className="relative z-10 px-8 py-16 text-center">
+          <div className="relative z-10 px-8 py-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -264,7 +264,7 @@ export default function SearchPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-5xl font-bold mb-8 bg-gradient-to-r from-yellow-200 via-white to-blue-200 bg-clip-text text-transparent leading-tight"
+              className="text-4xl font-bold mb-6 bg-gradient-to-r from-yellow-200 via-white to-blue-200 bg-clip-text text-transparent leading-tight"
             >
               Descubra destinos únicos e conecte-se com companheiros de viagem que compartilham seus sonhos
             </motion.h1>
@@ -272,20 +272,24 @@ export default function SearchPage() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap items-center justify-center gap-6 text-sm"
+              transition={{ delay: 0.4 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
             >
-              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-                <Globe className="h-4 w-4 text-blue-300" />
-                <span>80+ Destinos</span>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-3xl font-bold text-yellow-300 mb-1">250+</div>
+                <div className="text-sm text-blue-100">Viagens Planejadas</div>
               </div>
-              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-                <Users className="h-4 w-4 text-purple-300" />
-                <span>Viajantes Ativos</span>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-3xl font-bold text-blue-300 mb-1">1.2k</div>
+                <div className="text-sm text-blue-100">Viajantes Ativos</div>
               </div>
-              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
-                <Star className="h-4 w-4 text-yellow-300" />
-                <span>Experiências Únicas</span>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-3xl font-bold text-purple-300 mb-1">85+</div>
+                <div className="text-sm text-blue-100">Destinos Únicos</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div className="text-3xl font-bold text-green-300 mb-1">4.8★</div>
+                <div className="text-sm text-blue-100">Experiências</div>
               </div>
             </motion.div>
           </div>
