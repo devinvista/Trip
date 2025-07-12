@@ -203,7 +203,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
       <Navbar />
       
       {/* Animated Background Elements */}
@@ -223,7 +223,7 @@ export default function HomePage() {
           style={{ top: '10%', left: '10%' }}
         />
         <motion.div
-          className="absolute w-48 h-48 bg-slate-600/15 rounded-full blur-3xl"
+          className="absolute w-48 h-48 bg-indigo-300/20 rounded-full blur-3xl"
           animate={{
             x: [0, -80, 0],
             y: [0, 70, 0],
@@ -274,7 +274,7 @@ export default function HomePage() {
             >
               {/* Badge */}
               <motion.div
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-full border border-white/20 text-white"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/30 to-indigo-500/30 backdrop-blur-sm rounded-full border border-slate-300/30 text-slate-700"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -289,12 +289,12 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <h1 className="text-6xl md:text-7xl font-bold text-white leading-tight">
+                <h1 className="text-6xl md:text-7xl font-bold text-slate-800 leading-tight">
                   <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
                     Viaje Junto
                   </span>
                   <br />
-                  <span className="text-white">
+                  <span className="text-slate-800">
                     Gaste Menos
                   </span>
                 </h1>
@@ -302,13 +302,13 @@ export default function HomePage() {
 
               {/* Subtitle */}
               <motion.p
-                className="text-xl text-blue-100 max-w-lg leading-relaxed"
+                className="text-xl text-slate-600 max-w-lg leading-relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
               >
                 Conecte-se com viajantes que compartilham seus interesses. 
-                <span className="text-yellow-300 font-semibold"> Divida custos</span>, troque experiências 
+                <span className="text-amber-600 font-semibold"> Divida custos</span>, troque experiências 
                 e descubra o mundo de forma mais inteligente e econômica.
               </motion.p>
 
@@ -325,7 +325,7 @@ export default function HomePage() {
                     Encontrar Companheiros
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-6 rounded-full">
+                <Button asChild size="lg" variant="outline" className="border-2 border-slate-300 text-slate-700 hover:bg-slate-100 backdrop-blur-sm px-8 py-6 rounded-full">
                   <Link href="/create-trip">
                     <DollarSign className="mr-2 h-5 w-5" />
                     Compartilhar Viagem
@@ -349,7 +349,7 @@ export default function HomePage() {
                   >
                     65%
                   </motion.p>
-                  <p className="text-blue-200 text-sm">Economia Média</p>
+                  <p className="text-slate-600 text-sm">Economia Média</p>
                 </div>
                 <div className="text-center">
                   <motion.p
@@ -360,18 +360,18 @@ export default function HomePage() {
                   >
                     2.8k+
                   </motion.p>
-                  <p className="text-blue-200 text-sm">Viajantes Conectados</p>
+                  <p className="text-slate-600 text-sm">Viajantes Conectados</p>
                 </div>
                 <div className="text-center">
                   <motion.p
-                    className="text-3xl font-bold text-purple-400"
+                    className="text-3xl font-bold text-blue-500"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 1.6, type: "spring", stiffness: 200 }}
                   >
                     1.2k+
                   </motion.p>
-                  <p className="text-blue-200 text-sm">Experiências Compartilhadas</p>
+                  <p className="text-slate-600 text-sm">Experiências Compartilhadas</p>
                 </div>
               </motion.div>
             </motion.div>
@@ -456,22 +456,22 @@ export default function HomePage() {
                   ease: "easeInOut"
                 }}
               >
-                <Heart className="w-6 h-6 text-purple-400" />
+                <Heart className="w-6 h-6 text-blue-400" />
               </motion.div>
             </motion.div>
           </div>
         </div>
 
         {/* Bottom Gradient Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent" />
       </section>
 
       {/* Featured Destinations */}
-      <section className="relative bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-slate-50 via-blue-50/30 to-cyan-50/20 py-20 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-400 to-pink-600 rounded-full filter blur-3xl"></div>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-400 to-cyan-600 rounded-full filter blur-3xl"></div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -487,14 +487,14 @@ export default function HomePage() {
               <span className="text-sm font-medium text-slate-700">Mais Procurados</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                 Destinos em Alta
               </span>
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
               Descubra os lugares mais procurados pelos nossos viajantes e planeje sua próxima aventura
             </p>
-            <Button asChild className="mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all">
+            <Button asChild className="mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all">
               <Link href="/search">
                 <Globe className="mr-2 h-5 w-5" />
                 Explorar Todos os Destinos
@@ -521,7 +521,7 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                     
                     {/* Glass morphism overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-indigo-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     
                     <div className="absolute bottom-4 left-4 text-white">
                       <h3 className="text-2xl font-bold mb-1 drop-shadow-lg">{destination.name}</h3>
@@ -727,7 +727,7 @@ export default function HomePage() {
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full filter blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full filter blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-indigo-400 to-cyan-400 rounded-full filter blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
         </div>
         
         <div className="container mx-auto px-4 text-center relative z-10">

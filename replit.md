@@ -210,3 +210,7 @@ Changelog:
 - July 12, 2025. Enhanced destination cards with backdrop blur effects, improved typography, floating trend badges, and smooth hover animations
 - July 12, 2025. Updated CTA section with improved gradient backgrounds, animated orbs, and better visual hierarchy matching overall design theme
 - July 12, 2025. Added glassmorphism effects throughout sections using backdrop-blur and white/transparent overlays for modern aesthetic
+- July 12, 2025. Convertido plano de fundo da página inicial para degradê claro (slate-50 → blue-50 → cyan-50) criando visual clean e moderno
+- July 12, 2025. Substituídas todas as cores roxas/púrpuras por tons de azul para paleta harmoniosa (purple-400 → blue-400, purple-500 → indigo-500)
+- July 12, 2025. Ajustados textos da hero section para slate-800 e slate-600 garantindo boa legibilidade no fundo claro
+- July 12, 2025. Elementos de destaque mantidos em tons quentes (amarelo/laranja) para contrastar com o fundo azul claro
