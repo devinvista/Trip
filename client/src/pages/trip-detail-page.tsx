@@ -702,7 +702,7 @@ export default function TripDetailPage() {
                     ) : (
                       <div className="text-center py-8">
                         <p className="text-gray-600 mb-4">
-                          Entre na viagem e descubra como é fácil dividir automaticamente as despesas com os participantes!
+                          Faça login e participe da viagem para gerenciar despesas compartilhadas
                         </p>
                         {canJoin && (
                           <Button onClick={() => setActiveTab("overview")}>
