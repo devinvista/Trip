@@ -191,7 +191,6 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Navbar />
-
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section with Lighthouse Theme */}
         <motion.div 
@@ -275,10 +274,7 @@ export default function SearchPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="text-xl text-blue-100 max-w-3xl mx-auto mb-8 leading-relaxed"
-            >
-              Como um farol guia os navegantes, deixe-nos iluminar o caminho para a sua próxima aventura. 
-              Descubra destinos únicos e conecte-se com companheiros de viagem que compartilham seus sonhos.
-            </motion.p>
+            >Descubra destinos únicos e conecte-se com companheiros de viagem que compartilham seus sonhos.</motion.p>
             
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
