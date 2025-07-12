@@ -243,22 +243,7 @@ export default function SearchPage() {
 
           {/* Content */}
           <div className="relative z-10 px-8 py-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center justify-center gap-4 mb-6"
-            >
-              <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
-                <Zap className="h-8 w-8 text-yellow-300" />
-              </div>
-              <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
-                <Compass className="h-8 w-8 text-blue-300" />
-              </div>
-              <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
-                <Navigation className="h-8 w-8 text-purple-300" />
-              </div>
-            </motion.div>
+            
             
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
