@@ -6,33 +6,99 @@ import { TripCardSkeleton } from "@/components/trip-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter, SlidersHorizontal, MapPin } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Search, 
+  Filter, 
+  SlidersHorizontal, 
+  MapPin, 
+  Calendar,
+  DollarSign,
+  Globe,
+  Mountain,
+  Waves,
+  Building,
+  TreePine,
+  Snowflake,
+  Plane,
+  Camera,
+  Star,
+  Users,
+  Clock,
+  TrendingUp,
+  X,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
+import { motion, AnimatePresence } from "framer-motion";
+
+const continents = [
+  { id: 'america-sul', name: 'América do Sul', icon: Mountain, color: 'bg-green-500' },
+  { id: 'america-norte', name: 'América do Norte', icon: Building, color: 'bg-blue-500' },
+  { id: 'europa', name: 'Europa', icon: Globe, color: 'bg-purple-500' },
+  { id: 'asia', name: 'Ásia', icon: TreePine, color: 'bg-orange-500' },
+  { id: 'africa', name: 'África', icon: Mountain, color: 'bg-yellow-500' },
+  { id: 'oceania', name: 'Oceania', icon: Waves, color: 'bg-teal-500' },
+  { id: 'brasil', name: 'Brasil', icon: Star, color: 'bg-emerald-500' },
+];
+
+const travelTypes = [
+  { id: 'praia', name: 'Praia', icon: Waves, color: 'from-blue-400 to-cyan-300' },
+  { id: 'aventura', name: 'Aventura', icon: Mountain, color: 'from-green-500 to-emerald-400' },
+  { id: 'urbanas', name: 'Urbanas', icon: Building, color: 'from-gray-500 to-slate-400' },
+  { id: 'cultural', name: 'Cultural', icon: Camera, color: 'from-purple-500 to-violet-400' },
+  { id: 'natureza', name: 'Natureza', icon: TreePine, color: 'from-green-600 to-lime-500' },
+  { id: 'neve', name: 'Neve', icon: Snowflake, color: 'from-blue-300 to-white' },
+  { id: 'cruzeiros', name: 'Cruzeiros', icon: Plane, color: 'from-indigo-500 to-blue-400' },
+  { id: 'parques', name: 'Parques Temáticos', icon: Star, color: 'from-pink-500 to-rose-400' },
+];
+
+const budgetRanges = [
+  { id: 'budget-1', label: 'Até R$ 500', value: 500, color: 'bg-green-100 text-green-800' },
+  { id: 'budget-2', label: 'R$ 500 - R$ 1.500', value: 1500, color: 'bg-blue-100 text-blue-800' },
+  { id: 'budget-3', label: 'R$ 1.500 - R$ 3.000', value: 3000, color: 'bg-purple-100 text-purple-800' },
+  { id: 'budget-4', label: 'R$ 3.000 - R$ 5.000', value: 5000, color: 'bg-orange-100 text-orange-800' },
+  { id: 'budget-5', label: 'Acima de R$ 5.000', value: 10000, color: 'bg-red-100 text-red-800' },
+];
 
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [destination, setDestination] = useState("");
-  const [travelStyle, setTravelStyle] = useState("");
-  const [maxBudget, setMaxBudget] = useState("");
+  const [selectedContinent, setSelectedContinent] = useState("");
+  const [selectedTravelTypes, setSelectedTravelTypes] = useState<string[]>([]);
+  const [budgetRange, setBudgetRange] = useState([0, 10000]);
   const [sortBy, setSortBy] = useState("date");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Helper functions
+  const toggleTravelType = (typeId: string) => {
+    setSelectedTravelTypes(prev => 
+      prev.includes(typeId) 
+        ? prev.filter(id => id !== typeId)
+        : [...prev, typeId]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setDestination("");
+    setSelectedContinent("");
+    setSelectedTravelTypes([]);
+    setBudgetRange([0, 10000]);
+  };
 
   // Build query parameters for API call
   const queryParams = useMemo(() => {
     const params: Record<string, string> = {};
     if (destination) params.destination = destination;
-    if (travelStyle && travelStyle !== "all") params.travelStyle = travelStyle;
-    if (maxBudget && maxBudget !== "all") {
-      const budgetMap: Record<string, string> = {
-        "500": "500",
-        "1500": "1500", 
-        "3000": "3000",
-        "5000": "5000"
-      };
-      params.budget = budgetMap[maxBudget] || maxBudget;
-    }
+    if (selectedTravelTypes.length === 1) params.travelStyle = selectedTravelTypes[0];
+    if (budgetRange[1] < 10000) params.budget = budgetRange[1].toString();
     return params;
-  }, [destination, travelStyle, maxBudget]);
+  }, [destination, selectedTravelTypes, budgetRange]);
 
   const { data: trips = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/trips", queryParams],
@@ -46,9 +112,10 @@ export default function SearchPage() {
     refetchOnWindowFocus: false,
   });
 
-  // Client-side filtering for search term (since API doesn't support text search)
+  // Advanced client-side filtering
   const filteredTrips = useMemo(() => {
     return trips.filter((trip: any) => {
+      // Text search filter
       if (searchTerm && searchTerm.trim()) {
         const searchLower = searchTerm.toLowerCase().trim();
         const titleMatch = trip.title?.toLowerCase().includes(searchLower);
@@ -59,9 +126,46 @@ export default function SearchPage() {
           return false;
         }
       }
+
+      // Travel type filter
+      if (selectedTravelTypes.length > 0 && !selectedTravelTypes.includes(trip.travelStyle)) {
+        return false;
+      }
+
+      // Budget filter
+      const tripBudget = trip.budget || 0;
+      if (tripBudget < budgetRange[0] || tripBudget > budgetRange[1]) {
+        return false;
+      }
+
+      // Continent filter
+      if (selectedContinent && selectedContinent !== 'brasil') {
+        const destination = trip.destination?.toLowerCase() || '';
+        
+        const continentKeywords = {
+          'america-sul': ['chile', 'argentina', 'colombia', 'equador', 'venezuela', 'bolivia', 'peru', 'uruguai'],
+          'america-norte': ['eua', 'estados unidos', 'nova york', 'california', 'canada', 'méxico', 'toronto', 'vancouver'],
+          'europa': ['frança', 'itália', 'espanha', 'alemanha', 'portugal', 'inglaterra', 'london', 'paris', 'roma', 'madrid', 'barcelona'],
+          'asia': ['japão', 'china', 'tailândia', 'singapura', 'coreia', 'índia', 'tokyo', 'beijing', 'bangkok'],
+          'africa': ['egito', 'marrocos', 'áfrica do sul', 'cairo', 'casablanca'],
+          'oceania': ['austrália', 'nova zelândia', 'sydney', 'melbourne', 'auckland']
+        };
+
+        const keywords = continentKeywords[selectedContinent as keyof typeof continentKeywords] || [];
+        const hasMatch = keywords.some(keyword => destination.includes(keyword.toLowerCase()));
+        if (!hasMatch) return false;
+      }
+
+      if (selectedContinent === 'brasil') {
+        const destination = trip.destination?.toLowerCase() || '';
+        const internationalKeywords = ['eua', 'frança', 'itália', 'japão', 'argentina', 'chile', 'nova york', 'paris', 'tokyo'];
+        const isInternational = internationalKeywords.some(keyword => destination.includes(keyword));
+        if (isInternational) return false;
+      }
+
       return true;
     });
-  }, [trips, searchTerm]);
+  }, [trips, searchTerm, selectedTravelTypes, budgetRange, selectedContinent]);
 
   // Client-side sorting
   const sortedTrips = useMemo(() => {
@@ -82,125 +186,315 @@ export default function SearchPage() {
   }, [filteredTrips, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="font-heading text-3xl font-bold text-center mb-8">
-            Buscar Viagens
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            Descobrir Viagens
           </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Encontre a aventura perfeita com filtros inteligentes e busca avançada
+          </p>
+        </motion.div>
 
-          {/* Search and Filters */}
-          <Card className="mb-6">
+        {/* Main Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
-                <div className="md:col-span-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder="Buscar por título, destino ou descrição..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  placeholder="Buscar por destino, título ou descrição da viagem..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 h-14 text-lg border-0 focus:ring-2 focus:ring-blue-500 bg-white/80"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Filters Sidebar */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-1 space-y-6"
+          >
+            {/* Active Filters */}
+            {(destination || selectedContinent || selectedTravelTypes.length > 0 || budgetRange[0] > 0 || budgetRange[1] < 10000) && (
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-medium">Filtros Ativos</CardTitle>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={clearAllFilters}
+                      className="h-6 px-2 text-xs"
+                    >
+                      <X className="h-3 w-3 mr-1" />
+                      Limpar
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {destination && (
+                    <Badge variant="secondary" className="text-xs">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {destination}
+                    </Badge>
+                  )}
+                  {selectedContinent && (
+                    <Badge variant="secondary" className="text-xs">
+                      <Globe className="h-3 w-3 mr-1" />
+                      {continents.find(c => c.id === selectedContinent)?.name}
+                    </Badge>
+                  )}
+                  {selectedTravelTypes.map(type => (
+                    <Badge key={type} variant="secondary" className="text-xs">
+                      {travelTypes.find(t => t.id === type)?.name}
+                    </Badge>
+                  ))}
+                  {(budgetRange[0] > 0 || budgetRange[1] < 10000) && (
+                    <Badge variant="secondary" className="text-xs">
+                      <DollarSign className="h-3 w-3 mr-1" />
+                      R$ {budgetRange[0]} - R$ {budgetRange[1] === 10000 ? '10k+' : budgetRange[1]}
+                    </Badge>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Continent Filter */}
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Globe className="h-5 w-5 text-blue-500" />
+                  Continentes
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {continents.map((continent) => {
+                  const Icon = continent.icon;
+                  return (
+                    <Button
+                      key={continent.id}
+                      variant={selectedContinent === continent.id ? "default" : "ghost"}
+                      onClick={() => setSelectedContinent(selectedContinent === continent.id ? "" : continent.id)}
+                      className="w-full justify-start h-12"
+                    >
+                      <Icon className="h-4 w-4 mr-3" />
+                      {continent.name}
+                    </Button>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            {/* Travel Types Filter */}
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Camera className="h-5 w-5 text-purple-500" />
+                  Tipos de Viagem
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {travelTypes.map((type) => {
+                  const Icon = type.icon;
+                  const isSelected = selectedTravelTypes.includes(type.id);
+                  return (
+                    <Button
+                      key={type.id}
+                      variant={isSelected ? "default" : "ghost"}
+                      onClick={() => toggleTravelType(type.id)}
+                      className="w-full justify-start h-12"
+                    >
+                      <Icon className="h-4 w-4 mr-3" />
+                      {type.name}
+                      {isSelected && <Badge className="ml-auto" variant="secondary">✓</Badge>}
+                    </Button>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            {/* Budget Filter */}
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <DollarSign className="h-5 w-5 text-green-500" />
+                  Orçamento
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="px-2">
+                  <Slider
+                    value={budgetRange}
+                    onValueChange={setBudgetRange}
+                    max={10000}
+                    min={0}
+                    step={100}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>R$ {budgetRange[0].toLocaleString()}</span>
+                  <span>R$ {budgetRange[1] === 10000 ? '10k+' : budgetRange[1].toLocaleString()}</span>
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {budgetRanges.map((range) => (
+                    <Button
+                      key={range.id}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (range.value === 10000) {
+                          setBudgetRange([5000, 10000]);
+                        } else if (range.value === 500) {
+                          setBudgetRange([0, 500]);
+                        } else if (range.value === 1500) {
+                          setBudgetRange([500, 1500]);
+                        } else if (range.value === 3000) {
+                          setBudgetRange([1500, 3000]);
+                        } else if (range.value === 5000) {
+                          setBudgetRange([3000, 5000]);
+                        }
+                      }}
+                      className="justify-start text-xs h-8"
+                    >
+                      <Badge className={`mr-2 ${range.color}`}>
+                        {range.label}
+                      </Badge>
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Destination Input */}
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <MapPin className="h-5 w-5 text-red-500" />
+                  Destino Específico
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <PlacesAutocomplete
                   value={destination}
                   onChange={setDestination}
-                  placeholder="Destino"
+                  placeholder="Digite um destino..."
                   className="w-full"
                 />
+              </CardContent>
+            </Card>
+          </motion.div>
 
-                <Select value={maxBudget} onValueChange={setMaxBudget}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Orçamento máximo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os orçamentos</SelectItem>
-                    <SelectItem value="500">Até R$ 500</SelectItem>
-                    <SelectItem value="1500">Até R$ 1.500</SelectItem>
-                    <SelectItem value="3000">Até R$ 3.000</SelectItem>
-                    <SelectItem value="5000">Até R$ 5.000</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={travelStyle} onValueChange={setTravelStyle}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Estilo de viagem" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os estilos</SelectItem>
-                    <SelectItem value="praia">Praia</SelectItem>
-                    <SelectItem value="neve">Neve</SelectItem>
-                    <SelectItem value="cruzeiros">Cruzeiros</SelectItem>
-                    <SelectItem value="natureza">Natureza e Ecoturismo</SelectItem>
-                    <SelectItem value="cultural">Culturais e Históricas</SelectItem>
-                    <SelectItem value="aventura">Aventura</SelectItem>
-                    <SelectItem value="parques">Parques Temáticos</SelectItem>
-                    <SelectItem value="urbanas">Viagens Urbanas / Cidades Grandes</SelectItem>
-                  </SelectContent>
-                </Select>
+          {/* Results Section */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-3"
+          >
+            {/* Results Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {filteredTrips.length > 0 ? `${filteredTrips.length} viagens encontradas` : 'Nenhuma viagem encontrada'}
+                </h2>
+                {isLoading && (
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-500 rounded-full"></div>
+                    <span className="text-sm">Carregando...</span>
+                  </div>
+                )}
               </div>
+              
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-48 bg-white/80">
+                  <SelectValue placeholder="Ordenar por" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date">Data da viagem</SelectItem>
+                  <SelectItem value="price-low">Menor preço</SelectItem>
+                  <SelectItem value="price-high">Maior preço</SelectItem>
+                  <SelectItem value="popularity">Mais populares</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="h-4 w-4" />
-                  <span className="text-sm text-gray-600">
-                    {filteredTrips.length} viagem(ns) encontrada(s)
-                  </span>
+            {/* Results Grid */}
+            <div className="space-y-6">
+              {isLoading ? (
+                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <TripCardSkeleton key={i} />
+                  ))}
                 </div>
-
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Ordenar por" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="date">Data (mais próxima)</SelectItem>
-                    <SelectItem value="price-low">Preço (menor)</SelectItem>
-                    <SelectItem value="price-high">Preço (maior)</SelectItem>
-                    <SelectItem value="popularity">Popularidade</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
+              ) : sortedTrips.length > 0 ? (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="grid md:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
+                  {sortedTrips.map((trip, index) => (
+                    <motion.div
+                      key={trip.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                    >
+                      <TripCard trip={trip} />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-16"
+                >
+                  <Card className="bg-white/80 backdrop-blur-sm">
+                    <CardContent className="py-16">
+                      <Search className="h-16 w-16 text-gray-400 mx-auto mb-6" />
+                      <h3 className="text-2xl font-semibold mb-4 text-gray-800">Nenhuma viagem encontrada</h3>
+                      <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                        Tente ajustar seus filtros ou buscar por termos diferentes. Que tal criar uma nova viagem?
+                      </p>
+                      <div className="flex gap-3 justify-center">
+                        <Button onClick={clearAllFilters} variant="outline">
+                          <Filter className="h-4 w-4 mr-2" />
+                          Limpar Filtros
+                        </Button>
+                        <Button onClick={() => window.location.href = '/create-trip'}>
+                          <Star className="h-4 w-4 mr-2" />
+                          Criar Viagem
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
         </div>
-
-        {/* Results */}
-        {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <TripCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : sortedTrips.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedTrips.map((trip) => (
-              <TripCard key={trip.id} trip={trip} />
-            ))}
-          </div>
-        ) : (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Search className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Nenhuma viagem encontrada</h3>
-              <p className="text-gray-600 mb-4">
-                Tente ajustar seus filtros ou criar uma nova viagem.
-              </p>
-              <Button onClick={() => {
-                setSearchTerm("");
-                setDestination("");
-                setMaxBudget("");
-                setTravelStyle("");
-              }}>
-                Limpar Filtros
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
