@@ -207,8 +207,10 @@ export function Navbar() {
           {!user && (
             <div className="flex items-center space-x-3">
               <Link href="/auth">
-                <Button variant="ghost" className="text-dark hover:text-primary bg-[#02132D]">
-                  Entrar
+                <Button variant="ghost" className="text-dark hover:bg-[#02132D] relative overflow-hidden group">
+                  <span className="group-hover:bg-gradient-to-r group-hover:from-yellow-400 group-hover:via-orange-400 group-hover:to-red-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+                    Entrar
+                  </span>
                 </Button>
               </Link>
               <Link href="/auth">

@@ -202,3 +202,6 @@ Changelog:
 - July 12, 2025. Changed CTA buttons to "Encontrar Companheiros" and "Compartilhar Viagem" with Users and DollarSign icons for better community focus
 - July 12, 2025. Updated floating elements around lighthouse to show Users (community), DollarSign (savings), and Heart (experiences) icons
 - July 12, 2025. Enhanced subtitle to emphasize connecting travelers, cost sharing, and intelligent travel approach
+- July 12, 2025. Updated background gradient to match reference image with deep blue tones (slate-900 → blue-950 → slate-800)
+- July 12, 2025. Adjusted floating orbs opacity and colors to harmonize with darker background theme
+- July 12, 2025. Enhanced navbar "Entrar" button with hover effect matching "Viaje Junto" gradient colors and dark background
