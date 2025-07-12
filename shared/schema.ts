@@ -429,22 +429,22 @@ export const popularDestinations = {
   "Londres, Reino Unido": {
     image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
     category: "urbanas",
-    description: "Capital britânica com história e modernidade"
+    description: "Capital britânica com Big Ben e Tower Bridge"
   },
   "Paris, França": {
     image: "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80",
     category: "urbanas",
-    description: "Cidade Luz com arte, cultura e romance"
+    description: "Cidade Luz com Torre Eiffel e Louvre"
   },
   "Roma, Itália": {
     image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
     category: "cultural",
-    description: "Cidade Eterna com história milenar"
+    description: "Cidade Eterna com Coliseu e Vaticano"
   },
   "Barcelona, Espanha": {
     image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80",
     category: "urbanas",
-    description: "Arte moderna e arquitetura de Gaudí"
+    description: "Arte moderna com Sagrada Família e Park Güell"
   },
   "Amsterdam, Holanda": {
     image: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800&q=80",
@@ -491,12 +491,12 @@ export const popularDestinations = {
   "Nova York, EUA": {
     image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
     category: "urbanas",
-    description: "A cidade que nunca dorme"
+    description: "Times Square, Central Park e Estátua da Liberdade"
   },
   "Los Angeles, EUA": {
     image: "https://images.unsplash.com/photo-1534190239940-9ba8944ea261?w=800&q=80",
     category: "urbanas",
-    description: "Cidade dos anjos e capital do entretenimento"
+    description: "Hollywood, Beverly Hills e praias de Malibu"
   },
   "Las Vegas, EUA": {
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
@@ -543,12 +543,12 @@ export const popularDestinations = {
   "Buenos Aires, Argentina": {
     image: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80",
     category: "urbanas",
-    description: "Paris da América do Sul com tango e cultura"
+    description: "Tango em San Telmo e arquitetura europeia"
   },
   "Bariloche, Argentina": {
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     category: "neve",
-    description: "Suíça argentina com lagos e montanhas"
+    description: "Cerro Catedral e Lago Nahuel Huapi"
   },
   "Santiago, Chile": {
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
@@ -573,7 +573,7 @@ export const popularDestinations = {
   "Machu Picchu, Peru": {
     image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
     category: "aventura",
-    description: "Cidadela perdida dos incas"
+    description: "Cidadela inca nas montanhas dos Andes"
   },
   "Quito, Equador": {
     image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
@@ -605,12 +605,12 @@ export const popularDestinations = {
   "Tóquio, Japão": {
     image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
     category: "urbanas",
-    description: "Metrópole futurista com tradição milenar"
+    description: "Shibuya Crossing, Templo Senso-ji e Monte Fuji"
   },
   "Kyoto, Japão": {
     image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80",
     category: "cultural",
-    description: "Antiga capital com templos e jardins zen"
+    description: "Templo Dourado e distrito de Gion"
   },
   "Pequim, China": {
     image: "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80",
@@ -675,7 +675,7 @@ export const popularDestinations = {
   "Dubai, Emirados Árabes": {
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     category: "urbanas",
-    description: "Cidade futurista no deserto com luxo extremo"
+    description: "Burj Khalifa, Palm Jumeirah e Dubai Mall"
   },
   "Tel Aviv, Israel": {
     image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
@@ -687,10 +687,10 @@ export const popularDestinations = {
   "Cairo, Egito": {
     image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73a73?w=800&q=80",
     category: "cultural",
-    description: "Cidade dos faraós com as pirâmides de Gizé"
+    description: "Pirâmides de Gizé, Esfinge e Museu Egípcio"
   },
   "Marrakech, Marrocos": {
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73a73?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80",
     category: "cultural",
     description: "Cidade imperial com souks e cultura berber"
   },

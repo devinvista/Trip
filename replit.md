@@ -177,3 +177,6 @@ Changelog:
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips
 - July 12, 2025. Modernized trip detail page with gradient backgrounds, backdrop blur effects, tabbed navigation, and improved user experience
+- July 12, 2025. Expanded global destination coverage with 80+ international tourist destinations including Europe, Asia, Americas, Africa, and Oceania
+- July 12, 2025. Enhanced destination descriptions with specific tourist landmarks (Cairo with Pyramids, Paris with Eiffel Tower, Tokyo with Shibuya Crossing, etc.)
+- July 12, 2025. Improved cover image system with realistic travel agency-style destination images matching actual tourist attractions
