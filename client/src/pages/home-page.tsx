@@ -203,14 +203,14 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 relative overflow-hidden">
       <Navbar />
       
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Floating Orbs */}
         <motion.div
-          className="absolute w-64 h-64 bg-blue-500/20 rounded-full blur-3xl"
+          className="absolute w-64 h-64 bg-blue-400/15 rounded-full blur-3xl"
           animate={{
             x: [0, 100, 0],
             y: [0, -50, 0],
@@ -223,7 +223,7 @@ export default function HomePage() {
           style={{ top: '10%', left: '10%' }}
         />
         <motion.div
-          className="absolute w-48 h-48 bg-purple-500/20 rounded-full blur-3xl"
+          className="absolute w-48 h-48 bg-slate-600/15 rounded-full blur-3xl"
           animate={{
             x: [0, -80, 0],
             y: [0, 70, 0],
@@ -236,7 +236,7 @@ export default function HomePage() {
           style={{ top: '60%', right: '15%' }}
         />
         <motion.div
-          className="absolute w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl"
+          className="absolute w-32 h-32 bg-orange-400/10 rounded-full blur-2xl"
           animate={{
             x: [0, 60, 0],
             y: [0, -30, 0],
