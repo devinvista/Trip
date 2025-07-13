@@ -81,6 +81,46 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 
   const isPast = new Date(targetDate) < new Date();
 
+  // Função para determinar o gradiente baseado nos dias restantes
+  const getGradientClasses = (days: number) => {
+    if (days <= 1) {
+      // Vermelho intenso - urgente (até 1 dia)
+      return {
+        gradient: "from-red-600 via-red-500 to-orange-500",
+        textAccent: "text-red-100",
+        iconAccent: "text-red-100"
+      };
+    } else if (days <= 7) {
+      // Laranja - próximo (até 1 semana)
+      return {
+        gradient: "from-orange-500 via-amber-500 to-yellow-500",
+        textAccent: "text-orange-100",
+        iconAccent: "text-orange-100"
+      };
+    } else if (days <= 30) {
+      // Azul/roxo - médio prazo (até 1 mês)
+      return {
+        gradient: "from-blue-600 via-purple-600 to-indigo-600",
+        textAccent: "text-blue-100",
+        iconAccent: "text-blue-100"
+      };
+    } else if (days <= 90) {
+      // Verde/azul - planejamento (até 3 meses)
+      return {
+        gradient: "from-emerald-600 via-teal-600 to-cyan-600",
+        textAccent: "text-emerald-100",
+        iconAccent: "text-emerald-100"
+      };
+    } else {
+      // Roxo/rosa - longo prazo (mais de 3 meses)
+      return {
+        gradient: "from-purple-600 via-pink-600 to-rose-600",
+        textAccent: "text-purple-100",
+        iconAccent: "text-purple-100"
+      };
+    }
+  };
+
   if (isPast) {
     return (
       <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-4 md:p-6 text-white shadow-xl">
@@ -95,11 +135,13 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
     );
   }
 
+  const gradientConfig = getGradientClasses(timeLeft.days);
+
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-4 md:p-6 text-white shadow-xl">
+    <div className={`bg-gradient-to-r ${gradientConfig.gradient} rounded-2xl p-4 md:p-6 text-white shadow-xl transition-all duration-1000`}>
       <div className="text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Timer className="h-6 w-6 md:h-8 md:w-8 text-blue-100" />
+          <Timer className={`h-6 w-6 md:h-8 md:w-8 ${gradientConfig.iconAccent}`} />
           <h2 className="text-lg md:text-2xl font-bold">Contagem Regressiva</h2>
         </div>
         <div className="grid grid-cols-4 gap-2 md:gap-4 max-w-xs md:max-w-md mx-auto">
@@ -110,7 +152,7 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
             className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
             <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.days}</div>
-            <div className="text-xs md:text-sm text-blue-100">Dias</div>
+            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Dias</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -119,7 +161,7 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
             className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
             <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.hours}</div>
-            <div className="text-xs md:text-sm text-blue-100">Horas</div>
+            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Horas</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -128,7 +170,7 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
             className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
             <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.minutes}</div>
-            <div className="text-xs md:text-sm text-blue-100">Min</div>
+            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Min</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -137,10 +179,10 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
             className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
           >
             <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.seconds}</div>
-            <div className="text-xs md:text-sm text-blue-100">Seg</div>
+            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Seg</div>
           </motion.div>
         </div>
-        <p className="mt-4 text-blue-100 text-xs md:text-sm">
+        <p className={`mt-4 ${gradientConfig.textAccent} text-xs md:text-sm`}>
           Faltam {timeLeft.days} dias para a sua aventura começar!
         </p>
       </div>
