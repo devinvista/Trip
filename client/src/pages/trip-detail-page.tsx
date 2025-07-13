@@ -1017,95 +1017,84 @@ export default function TripDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Enhanced Budget Tracking */}
-            <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-emerald-800">
-                  <TrendingUp className="h-5 w-5" />
-                  Acompanhamento de Orçamento
+            {/* Budget Overview */}
+            <Card className="bg-white border-0 shadow-sm ring-1 ring-gray-200">
+              <CardHeader className="border-b border-gray-100 bg-gray-50/50">
+                <CardTitle className="text-lg font-semibold text-gray-900 tracking-tight">
+                  Resumo Financeiro
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Budget Breakdown */}
-                <div className="space-y-4">
-                  {/* Orçamento Base */}
-                  <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 hover:shadow-md transition-all duration-300">
-                    <div className="flex justify-between items-center">
+              <CardContent className="p-6">
+                <div className="space-y-6">
+                  {/* Budget Items */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                       <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full shadow-sm"></div>
-                        <span className="text-sm font-medium text-blue-800">Orçamento Base</span>
+                        <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                        <span className="text-sm font-medium text-gray-700">Orçamento Base</span>
                       </div>
-                      <span className="text-lg font-bold text-blue-900">
+                      <span className="text-base font-semibold text-gray-900 tabular-nums">
                         R$ {(trip.budget || 0).toLocaleString('pt-BR')}
                       </span>
                     </div>
-                  </div>
-                  
-                  {/* Atividades */}
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200 hover:shadow-md transition-all duration-300">
-                    <div className="flex justify-between items-center">
+                    
+                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                       <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-purple-500 rounded-full shadow-sm"></div>
-                        <span className="text-sm font-medium text-purple-800">Atividades</span>
+                        <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                        <span className="text-sm font-medium text-gray-700">Atividades</span>
                       </div>
-                      <span className="text-lg font-bold text-purple-900">
+                      <span className="text-base font-semibold text-gray-900 tabular-nums">
                         R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
                       </span>
                     </div>
-                  </div>
-                  
-                  {/* Total Geral */}
-                  <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 p-4 rounded-xl border-2 border-emerald-300 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div className="flex justify-between items-center">
+                    
+                    <div className="flex items-center justify-between py-4 bg-gray-50 -mx-6 px-6 mt-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-sm"></div>
-                        <span className="text-base font-bold text-emerald-800">Total Geral</span>
+                        <div className="w-2 h-2 bg-gray-800 rounded-full"></div>
+                        <span className="text-base font-semibold text-gray-900">Total</span>
                       </div>
-                      <span className="text-xl font-bold text-emerald-900">
+                      <span className="text-xl font-bold text-gray-900 tabular-nums">
                         R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
                       </span>
                     </div>
                   </div>
-                </div>
 
-                <Separator className="bg-emerald-200" />
-
-                {/* Custo por Pessoa */}
-                <div className="bg-gradient-to-r from-amber-50 to-amber-100 p-5 rounded-xl border border-amber-200 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="text-center space-y-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <Users className="h-5 w-5 text-amber-600" />
-                      <span className="text-sm font-medium text-amber-800">Custo por Pessoa</span>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-2xl font-bold text-amber-900 block">
+                  {/* Cost per Person */}
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <div className="text-center space-y-2">
+                      <div className="flex items-center justify-center gap-2">
+                        <Users className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-900">Custo Individual</span>
+                      </div>
+                      <div className="text-2xl font-bold text-blue-900 tabular-nums">
                         R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
+                      </div>
+                      <div className="text-xs text-blue-700">
+                        Para {trip.maxParticipants} participantes
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Budget Progress */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">Progresso das Despesas</span>
+                      <span className="text-sm font-semibold text-gray-900 tabular-nums">
+                        {Math.round((calculateTotalExpenses() / (trip.budget || 1)) * 100)}%
                       </span>
-                      <div className="text-sm text-amber-700">
-                        Dividido entre {trip.maxParticipants} participantes
+                    </div>
+                    <div className="space-y-2">
+                      <Progress 
+                        value={Math.min(100, (calculateTotalExpenses() / (trip.budget || 1)) * 100)} 
+                        className="h-2 bg-gray-200"
+                      />
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>R$ {calculateTotalExpenses().toLocaleString('pt-BR')}</span>
+                        <span>R$ {(trip.budget || 0).toLocaleString('pt-BR')}</span>
                       </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Progresso do Orçamento */}
-                <div className="bg-white p-4 rounded-xl border border-gray-200 space-y-3 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">Progresso do Orçamento</span>
-                    <span className="text-sm font-bold text-gray-900">
-                      {Math.round((calculateTotalExpenses() / (trip.budget || 1)) * 100)}%
-                    </span>
-                  </div>
-                  <Progress 
-                    value={Math.min(100, (calculateTotalExpenses() / (trip.budget || 1)) * 100)} 
-                    className="h-3"
-                  />
-                  <div className="text-xs text-gray-500 text-center">
-                    Despesas realizadas em relação ao orçamento planejado
-                  </div>
-                </div>
-
-
               </CardContent>
             </Card>
           </motion.div>
