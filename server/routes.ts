@@ -1088,7 +1088,16 @@ export function registerRoutes(app: Express): Server {
     try {
       const activityId = parseInt(req.params.id);
       const userId = req.user!.id;
+      
+      console.log('🔍 Dados recebidos para criação de proposta:', {
+        activityId,
+        userId,
+        body: req.body
+      });
+      
       const proposalData = insertActivityBudgetProposalSchema.parse(req.body);
+      
+      console.log('✅ Dados validados:', proposalData);
       
       const proposal = await storage.createActivityBudgetProposal({
         ...proposalData,
@@ -1096,10 +1105,15 @@ export function registerRoutes(app: Express): Server {
         createdBy: userId
       });
       
+      console.log('✅ Proposta criada com sucesso:', proposal);
+      
       res.status(201).json(proposal);
     } catch (error) {
-      console.error('Erro ao criar proposta de orçamento:', error);
-      res.status(400).json({ message: "Erro ao criar proposta de orçamento" });
+      console.error('❌ Erro ao criar proposta de orçamento:', error);
+      if (error instanceof Error) {
+        console.error('Stack trace:', error.stack);
+      }
+      res.status(400).json({ message: "Erro ao criar proposta de orçamento", error: error.message });
     }
   });
 
