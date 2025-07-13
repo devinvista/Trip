@@ -115,6 +115,78 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Update a trip (only creator can update)
+  app.patch("/api/trips/:id", requireAuth, async (req: any, res: any) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const updates = req.body;
+
+      // Get the trip to verify ownership
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+
+      if (trip.creatorId !== req.user.id) {
+        return res.status(403).json({ message: "Apenas o criador pode editar a viagem" });
+      }
+
+      // Validate that maxParticipants is not less than current participants
+      if (updates.maxParticipants && updates.maxParticipants < trip.currentParticipants) {
+        return res.status(400).json({ 
+          message: `Máximo de participantes não pode ser menor que ${trip.currentParticipants} (participantes atuais)` 
+        });
+      }
+
+      const updatedTrip = await storage.updateTrip(tripId, updates);
+      if (!updatedTrip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+
+      res.json(updatedTrip);
+    } catch (error: any) {
+      console.error("❌ Erro ao atualizar viagem:", error);
+      res.status(400).json({ 
+        message: error instanceof Error ? error.message : "Erro ao atualizar viagem" 
+      });
+    }
+  });
+
+  // Delete a trip (only creator can delete, and only if no other participants)
+  app.delete("/api/trips/:id", requireAuth, async (req: any, res: any) => {
+    try {
+      const tripId = parseInt(req.params.id);
+
+      // Get the trip to verify ownership and participants
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+
+      if (trip.creatorId !== req.user.id) {
+        return res.status(403).json({ message: "Apenas o criador pode excluir a viagem" });
+      }
+
+      if (trip.currentParticipants > 1) {
+        return res.status(400).json({ 
+          message: "Não é possível excluir viagem com outros participantes. Use a opção 'Cancelar' para transferir a organização." 
+        });
+      }
+
+      const deleted = await storage.deleteTrip(tripId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+
+      res.json({ message: "Viagem excluída com sucesso" });
+    } catch (error: any) {
+      console.error("❌ Erro ao excluir viagem:", error);
+      res.status(400).json({ 
+        message: error instanceof Error ? error.message : "Erro ao excluir viagem" 
+      });
+    }
+  });
+
 
 
   app.get("/api/my-trips", requireAuth, async (req, res) => {

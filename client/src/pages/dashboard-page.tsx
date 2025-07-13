@@ -674,32 +674,58 @@ export default function DashboardPage() {
                         </Button>
                       </Link>
                       
-                      {/* Botão desistir apenas para participantes (não organizadores) */}
-                      {trip.creatorId !== user?.id && (
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                          onClick={() => {
-                            if (window.confirm(`Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`)) {
-                              quitTripMutation.mutate(trip.id);
-                            }
-                          }}
-                          disabled={quitTripMutation.isPending}
-                        >
-                          {quitTripMutation.isPending ? (
-                            <>
-                              <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
-                              Saindo...
-                            </>
-                          ) : (
-                            <>
-                              <X className="h-4 w-4 mr-1" />
-                              Desistir
-                            </>
-                          )}
-                        </Button>
+                      {/* Botão editar apenas para criadores */}
+                      {trip.creatorId === user?.id && (
+                        <Link href={`/edit-trip/${trip.id}`}>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                          >
+                            <Settings className="h-4 w-4 mr-1" />
+                            Editar
+                          </Button>
+                        </Link>
                       )}
+                      
+                      {/* Botão desistir para criadores (com aviso especial) e participantes */}
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                        onClick={() => {
+                          const isCreator = trip.creatorId === user?.id;
+                          const hasOtherParticipants = trip.currentParticipants > 1;
+                          
+                          let confirmMessage = '';
+                          if (isCreator) {
+                            if (hasOtherParticipants) {
+                              confirmMessage = `Como criador da viagem "${trip.title}", ao desistir você transferirá a organização para o participante mais antigo. Confirma?`;
+                            } else {
+                              confirmMessage = `Como criador da viagem "${trip.title}" sem outros participantes, ao desistir a viagem será excluída permanentemente. Confirma?`;
+                            }
+                          } else {
+                            confirmMessage = `Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`;
+                          }
+                          
+                          if (window.confirm(confirmMessage)) {
+                            quitTripMutation.mutate(trip.id);
+                          }
+                        }}
+                        disabled={quitTripMutation.isPending}
+                      >
+                        {quitTripMutation.isPending ? (
+                          <>
+                            <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
+                            Saindo...
+                          </>
+                        ) : (
+                          <>
+                            <X className="h-4 w-4 mr-1" />
+                            {trip.creatorId === user?.id ? 'Cancelar' : 'Desistir'}
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

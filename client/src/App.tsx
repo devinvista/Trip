@@ -11,6 +11,7 @@ import DashboardPage from "@/pages/dashboard-page";
 import BoardPage from "@/pages/board-page";
 import SearchPage from "@/pages/search-page";
 import CreateTripPage from "@/pages/create-trip-page";
+import EditTripPage from "@/pages/edit-trip-page";
 import TripDetailPage from "@/pages/trip-detail-page";
 import ChatPage from "@/pages/chat-page";
 import JourneyTrackerPage from "@/pages/journey-tracker-page";
@@ -42,6 +43,7 @@ function App() {
               <Route path="/board" component={BoardPage} />
               <Route path="/search" component={SearchPage} />
               <Route path="/create-trip" component={CreateTripPage} />
+              <Route path="/edit-trip/:id" component={EditTripPage} />
               <Route path="/trip/:id" component={TripDetailPage} />
               <Route path="/chat/:tripId" component={ChatPage} />
               <Route path="/journey-tracker" component={JourneyTrackerPage} />

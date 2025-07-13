@@ -13,13 +13,15 @@ import {
   Heart,
   Share2,
   Star,
-  Eye
+  Eye,
+  Settings
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 interface TripCardProps {
   trip: any;
@@ -30,6 +32,7 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
   const availableSpots = trip.maxParticipants - trip.currentParticipants;
   const duration = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
@@ -267,6 +270,25 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
               </motion.div>
             </Link>
             
+            {/* Edit button for trip creators */}
+            {user && trip.creatorId === user.id && (
+              <Link href={`/edit-trip/${trip.id}`}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-auto"
+                >
+                  <Button 
+                    variant="outline"
+                    className="text-sm font-semibold bg-white/80 backdrop-blur-sm border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50/90 text-blue-600 hover:text-blue-700 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm hover:shadow-md"
+                  >
+                    <Settings className="w-4 h-4 mr-1" />
+                    Editar
+                  </Button>
+                </motion.div>
+              </Link>
+            )}
+
             {trip.currentParticipants < trip.maxParticipants ? (
               <Link href={`/trip/${trip.id}`} className="flex-1">
                 <motion.div

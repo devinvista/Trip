@@ -568,6 +568,7 @@ export interface IStorage {
   getTrips(filters?: { destination?: string; startDate?: Date; endDate?: Date; budget?: number; travelStyle?: string }): Promise<Trip[]>;
   createTrip(trip: InsertTrip & { creatorId: number }): Promise<Trip>;
   updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined>;
+  deleteTrip(id: number): Promise<boolean>;
 
   // Trip Participants
   getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]>;
@@ -753,6 +754,54 @@ export class MemStorage implements IStorage {
     return updatedTrip;
   }
 
+  async deleteTrip(id: number): Promise<boolean> {
+    const trip = this.trips.get(id);
+    if (!trip) return false;
+
+    // Remove all associated data
+    // Remove participants
+    const participantKeys = Array.from(this.tripParticipants.keys()).filter(key => {
+      const participant = this.tripParticipants.get(key);
+      return participant?.tripId === id;
+    });
+    participantKeys.forEach(key => this.tripParticipants.delete(key));
+
+    // Remove messages
+    const messageKeys = Array.from(this.messages.keys()).filter(msgId => {
+      const message = this.messages.get(msgId);
+      return message?.tripId === id;
+    });
+    messageKeys.forEach(msgId => this.messages.delete(msgId));
+
+    // Remove trip requests
+    const requestKeys = Array.from(this.tripRequests.keys()).filter(reqId => {
+      const request = this.tripRequests.get(reqId);
+      return request?.tripId === id;
+    });
+    requestKeys.forEach(reqId => this.tripRequests.delete(reqId));
+
+    // Remove expenses and expense splits
+    const expenseKeys = Array.from(this.expenses.keys()).filter(expId => {
+      const expense = this.expenses.get(expId);
+      return expense?.tripId === id;
+    });
+    expenseKeys.forEach(expId => {
+      // Remove associated expense splits first
+      const splitKeys = Array.from(this.expenseSplits.keys()).filter(splitId => {
+        const split = this.expenseSplits.get(splitId);
+        return split?.expenseId === expId;
+      });
+      splitKeys.forEach(splitId => this.expenseSplits.delete(splitId));
+      
+      // Remove expense
+      this.expenses.delete(expId);
+    });
+
+    // Finally remove the trip
+    this.trips.delete(id);
+    return true;
+  }
+
   // Fix existing trips with broken Egypt images
   async fixEgyptTrips(): Promise<void> {
     const trips = Array.from(this.trips.values());
@@ -805,24 +854,35 @@ export class MemStorage implements IStorage {
   }
 
   async removeTripParticipant(tripId: number, userId: number): Promise<void> {
+    const trip = this.trips.get(tripId);
+    if (!trip) return;
+
     const key = `${tripId}-${userId}`;
     this.tripParticipants.delete(key);
+
+    // Get remaining participants after removal
+    const participants = await this.getTripParticipants(tripId);
+    const activeParticipants = participants.filter(p => p.status === 'accepted');
     
-    // Se o usuário removido era o organizador, transferir para o primeiro participante
-    const trip = this.trips.get(tripId);
-    if (trip && trip.creatorId === userId) {
-      const participants = await this.getTripParticipants(tripId);
-      const activeParticipants = participants.filter(p => p.status === 'accepted');
-      
-      if (activeParticipants.length > 0) {
-        // Transferir organização para o primeiro participante ativo
+    if (activeParticipants.length === 0) {
+      // No participants left, delete the trip completely
+      await this.deleteTrip(tripId);
+      console.log(`❌ Viagem ${tripId} cancelada - sem participantes restantes`);
+    } else {
+      // Check if removed user was the creator
+      if (trip.creatorId === userId) {
+        // Transfer organizer role to oldest active participant (first one in the list)
         const newOrganizer = activeParticipants[0];
-        await this.updateTrip(tripId, { creatorId: newOrganizer.userId });
+        await this.updateTrip(tripId, { 
+          creatorId: newOrganizer.userId,
+          currentParticipants: activeParticipants.length
+        });
         console.log(`✅ Organização da viagem ${tripId} transferida para usuário ${newOrganizer.user.username}`);
       } else {
-        // Se não há mais participantes, marcar viagem como cancelada
-        await this.updateTrip(tripId, { status: 'cancelled' });
-        console.log(`❌ Viagem ${tripId} cancelada - sem participantes`);
+        // Just update participant count
+        await this.updateTrip(tripId, { 
+          currentParticipants: activeParticipants.length
+        });
       }
     }
   }
