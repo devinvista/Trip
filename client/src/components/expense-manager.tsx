@@ -209,6 +209,18 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
               <RefreshCw className={`h-4 w-4 ${balancesLoading ? 'animate-spin' : ''}`} />
             </Button>
           </CardTitle>
+          <div className="text-sm text-gray-600 mt-2">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-green-600" />
+                <span>Verde: Valor a receber</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <TrendingDown className="h-4 w-4 text-red-600" />
+                <span>Vermelho: Valor a pagar</span>
+              </div>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {balancesLoading ? (
@@ -235,6 +247,9 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                       }`}>
                         {balance.balance > 0 && '+ '}
                         {formatCurrency(balance.balance)}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {balance.balance > 0 ? 'Tem a receber' : balance.balance < 0 ? 'Tem a pagar' : 'Sem pendências'}
                       </p>
                     </div>
                     {balance.balance > 0 && <TrendingUp className="h-4 w-4 text-green-600" />}
