@@ -253,7 +253,7 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
 
         {/* Action Buttons */}
         {showActions && (
-          <div className="mt-6 pt-4 border-t border-gray-100 flex gap-3">
+          <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
             <Link href={`/trip/${trip.id}`} className="flex-1">
               <motion.div
                 whileHover={{ scale: 1.02 }}
@@ -262,10 +262,11 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
               >
                 <Button 
                   variant="outline" 
-                  className="w-full text-sm font-semibold bg-white/80 backdrop-blur-sm border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50/90 text-slate-700 hover:text-slate-800 rounded-xl py-3 transition-all duration-300 shadow-sm hover:shadow-md"
+                  size="sm"
+                  className="w-full text-xs font-semibold bg-white/80 backdrop-blur-sm border border-slate-200 hover:border-slate-300 hover:bg-slate-50/90 text-slate-700 hover:text-slate-800 rounded-lg py-2 h-8 transition-all duration-300 shadow-sm hover:shadow-md"
                 >
-                  <Eye className="w-4 h-4 mr-2" />
-                  Ver Detalhes
+                  <Eye className="w-3 h-3 mr-1" />
+                  Ver
                 </Button>
               </motion.div>
             </Link>
@@ -280,9 +281,10 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
                 >
                   <Button 
                     variant="outline"
-                    className="text-sm font-semibold bg-white/80 backdrop-blur-sm border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50/90 text-blue-600 hover:text-blue-700 rounded-xl px-4 py-3 transition-all duration-300 shadow-sm hover:shadow-md"
+                    size="sm"
+                    className="text-xs font-semibold bg-white/80 backdrop-blur-sm border border-blue-200 hover:border-blue-300 hover:bg-blue-50/90 text-blue-600 hover:text-blue-700 rounded-lg px-3 py-2 h-8 transition-all duration-300 shadow-sm hover:shadow-md"
                   >
-                    <Settings className="w-4 h-4 mr-1" />
+                    <Settings className="w-3 h-3 mr-1" />
                     Editar
                   </Button>
                 </motion.div>
@@ -296,8 +298,11 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
                   whileTap={{ scale: 0.98 }}
                   className="w-full"
                 >
-                  <Button className="w-full text-sm font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 rounded-xl py-3 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-blue-500/25">
-                    <Users className="w-4 h-4 mr-2" />
+                  <Button 
+                    size="sm"
+                    className="w-full text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 rounded-lg py-2 h-8 transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-blue-500/25"
+                  >
+                    <Users className="w-3 h-3 mr-1" />
                     Participar
                   </Button>
                 </motion.div>
@@ -306,9 +311,10 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
               <motion.div className="flex-1">
                 <Button 
                   disabled 
-                  className="w-full text-sm font-semibold bg-gray-100 text-gray-400 border-0 rounded-xl py-3 cursor-not-allowed"
+                  size="sm"
+                  className="w-full text-xs font-semibold bg-gray-100 text-gray-400 border-0 rounded-lg py-2 h-8 cursor-not-allowed"
                 >
-                  <Users className="w-4 h-4 mr-2" />
+                  <Users className="w-3 h-3 mr-1" />
                   Lotada
                 </Button>
               </motion.div>
