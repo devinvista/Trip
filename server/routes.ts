@@ -531,6 +531,14 @@ export function registerRoutes(app: Express): Server {
       }
       
       const balances = await storage.getTripBalances(tripId);
+      
+      // Set cache control headers to prevent caching
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      
       res.json(balances);
     } catch (error) {
       console.error('Erro ao calcular balanços:', error);

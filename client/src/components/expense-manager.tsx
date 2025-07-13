@@ -55,9 +55,17 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
   const { data: balances = [], isLoading: balancesLoading, error: balancesError, refetch: refetchBalances } = useQuery({
     queryKey: ['/api/trips', tripId, 'balances'],
     queryFn: async () => {
-      const response = await fetch(`/api/trips/${tripId}/balances`);
+      const response = await fetch(`/api/trips/${tripId}/balances`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) throw new Error('Falha ao buscar balanços');
-      return response.json();
+      const data = await response.json();
+      console.log('Balance data fetched:', data);
+      return data;
     },
     staleTime: 0, // Always fetch fresh data
     refetchOnWindowFocus: true,
