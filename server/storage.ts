@@ -6,12 +6,19 @@ const MemoryStore = createMemoryStore(session);
 
 // Helper function to get cover image for destination
 function getCoverImageForDestination(destination: string, travelStyle?: string): string | null {
+  console.log(`🖼️  Buscando imagem para destino: "${destination}", estilo: "${travelStyle}"`);
+  
+  // Normalize destination for better matching
+  const normalizedDestination = destination.toLowerCase().trim();
+  
   // Define specific landmark images for iconic destinations
   const iconicDestinations: { [key: string]: string } = {
     // Marcos icônicos mundiais
     "cairo": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80", // Pirâmides
     "egito": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80", // Pirâmides
+    "egypt": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80", // Pirâmides
     "pirâmides": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80",
+    "pyramids": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80",
     "roma": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80", // Coliseu
     "coliseu": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
     "rio de janeiro": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80", // Cristo Redentor
@@ -345,24 +352,29 @@ function getCoverImageForDestination(destination: string, travelStyle?: string):
     "itatiba do sul": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Campos de Cima da Serra
   };
   
-  // Normalize destination for comparison
-  const destLower = destination.toLowerCase();
-  
   // Special handling for cruise destinations - use single standard cruise ship image
   if (travelStyle === 'cruzeiros') {
-    // Use a single, high-quality cruise ship image for all cruise trips
+    console.log(`🚢 Usando imagem padrão de cruzeiro para ${destination}`);
     return "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg";
   }
   
-  // Try to find exact match or partial match in iconic destinations
+  // Try to find exact match first in iconic destinations
+  if (iconicDestinations[normalizedDestination]) {
+    console.log(`✅ Encontrou match exato: ${normalizedDestination} -> ${iconicDestinations[normalizedDestination]}`);
+    return iconicDestinations[normalizedDestination];
+  }
+  
+  // Try to find partial match in iconic destinations (more intelligent search)
   for (const [key, image] of Object.entries(iconicDestinations)) {
-    if (destLower.includes(key) || key.includes(destLower)) {
+    if (normalizedDestination.includes(key) || key.includes(normalizedDestination)) {
+      console.log(`✅ Encontrou match parcial: ${normalizedDestination} contém/está em ${key} -> ${image}`);
       return image;
     }
   }
   
   // Try to find exact match in popularDestinations
   if (destination in popularDestinations) {
+    console.log(`✅ Encontrou match exato em popularDestinations: ${destination} -> ${popularDestinations[destination as keyof typeof popularDestinations].image}`);
     return popularDestinations[destination as keyof typeof popularDestinations].image;
   }
   
@@ -370,14 +382,16 @@ function getCoverImageForDestination(destination: string, travelStyle?: string):
   for (const [dest, data] of Object.entries(popularDestinations)) {
     const destKey = dest.toLowerCase();
     const cityName = destKey.split(',')[0].trim();
-    const inputCity = destLower.split(',')[0].trim();
+    const inputCity = normalizedDestination.split(',')[0].trim();
     
-    if (destKey === destLower || cityName === inputCity || destLower.includes(cityName) || cityName.includes(inputCity)) {
+    if (destKey === normalizedDestination || cityName === inputCity || normalizedDestination.includes(cityName) || cityName.includes(inputCity)) {
+      console.log(`✅ Encontrou match parcial em popularDestinations: ${normalizedDestination} -> ${cityName} -> ${data.image}`);
       return data.image;
     }
   }
   
   // Default image for unknown destinations
+  console.log(`⚠️  Nenhuma imagem específica encontrada para "${destination}". Usando imagem padrão.`);
   return "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80";
 }
 
