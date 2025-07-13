@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { 
@@ -73,10 +73,26 @@ export default function ActivitiesPage() {
     sortBy: "rating",
   });
 
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: activities, isLoading } = useQuery<Activity[]>({
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Update filters when debounced search changes
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, search: debouncedSearch }));
+  }, [debouncedSearch]);
+
+  const { data: activities, isLoading, isFetching } = useQuery<Activity[]>({
     queryKey: ["/api/activities", filters],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -127,7 +143,8 @@ export default function ActivitiesPage() {
       : formatted;
   };
 
-  if (isLoading) {
+  // Show full preloader only on initial load
+  if (isLoading && !activities) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <LoadingSpinner variant="travel" />
@@ -188,10 +205,15 @@ export default function ActivitiesPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
               placeholder="Buscar atividades, experiências ou locais..."
-              value={filters.search}
-              onChange={(e) => updateFilter("search", e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="pl-10 pr-4 py-3 w-full"
             />
+            {isFetching && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+              </div>
+            )}
           </div>
         </div>
 
