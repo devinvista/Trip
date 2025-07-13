@@ -1,4 +1,4 @@
-import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, popularDestinations } from "@shared/schema";
+import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, popularDestinations } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
@@ -609,6 +609,33 @@ export interface IStorage {
   createVerificationRequest(request: InsertVerificationRequest & { userId: number }): Promise<VerificationRequest>;
   updateVerificationRequest(id: number, status: string, reviewedBy?: number, rejectionReason?: string): Promise<VerificationRequest | undefined>;
   updateUserVerificationStatus(userId: number, isVerified: boolean, method?: string): Promise<void>;
+
+  // Activities
+  getActivities(filters?: { 
+    search?: string; 
+    category?: string; 
+    location?: string; 
+    priceRange?: string; 
+    difficulty?: string; 
+    duration?: string; 
+    rating?: string; 
+    sortBy?: string; 
+  }): Promise<Activity[]>;
+  getActivity(id: number): Promise<Activity | undefined>;
+  createActivity(activity: InsertActivity & { createdById: number }): Promise<Activity>;
+  updateActivity(id: number, updates: Partial<Activity>): Promise<Activity | undefined>;
+  deleteActivity(id: number): Promise<boolean>;
+
+  // Activity Reviews
+  getActivityReviews(activityId: number): Promise<(ActivityReview & { user: User })[]>;
+  createActivityReview(review: InsertActivityReview & { userId: number }): Promise<ActivityReview>;
+  updateActivityAverageRating(activityId: number): Promise<void>;
+
+  // Activity Bookings
+  getActivityBookings(activityId: number): Promise<(ActivityBooking & { user: User })[]>;
+  getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]>;
+  createActivityBooking(booking: InsertActivityBooking & { userId: number }): Promise<ActivityBooking>;
+  updateActivityBooking(id: number, status: string): Promise<ActivityBooking | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -622,6 +649,9 @@ export class MemStorage implements IStorage {
   private userRatings: Map<number, UserRating>;
   private destinationRatings: Map<number, DestinationRating>;
   private verificationRequests: Map<number, VerificationRequest>;
+  private activities: Map<number, Activity>;
+  private activityReviews: Map<number, ActivityReview>;
+  private activityBookings: Map<number, ActivityBooking>;
   private currentUserId: number;
   private currentTripId: number;
   private currentMessageId: number;
@@ -632,6 +662,9 @@ export class MemStorage implements IStorage {
   private currentUserRatingId: number;
   private currentDestinationRatingId: number;
   private currentVerificationRequestId: number;
+  private currentActivityId: number;
+  private currentActivityReviewId: number;
+  private currentActivityBookingId: number;
   public sessionStore: session.Store;
 
   // Helper function to remove sensitive information from user objects
@@ -651,6 +684,9 @@ export class MemStorage implements IStorage {
     this.userRatings = new Map();
     this.destinationRatings = new Map();
     this.verificationRequests = new Map();
+    this.activities = new Map();
+    this.activityReviews = new Map();
+    this.activityBookings = new Map();
     this.currentUserId = 1;
     this.currentTripId = 1;
     this.currentMessageId = 1;
@@ -661,6 +697,9 @@ export class MemStorage implements IStorage {
     this.currentUserRatingId = 1;
     this.currentDestinationRatingId = 1;
     this.currentVerificationRequestId = 1;
+    this.currentActivityId = 1;
+    this.currentActivityReviewId = 1;
+    this.currentActivityBookingId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
@@ -1278,6 +1317,227 @@ export class MemStorage implements IStorage {
     
     this.users.set(userId, updatedUser);
   }
+
+  // ===== ACTIVITIES METHODS =====
+
+  async getActivities(filters?: { 
+    search?: string; 
+    category?: string; 
+    location?: string; 
+    priceRange?: string; 
+    difficulty?: string; 
+    duration?: string; 
+    rating?: string; 
+    sortBy?: string; 
+  }): Promise<Activity[]> {
+    let activities = Array.from(this.activities.values()).filter(a => a.isActive);
+
+    if (filters) {
+      if (filters.search) {
+        const search = filters.search.toLowerCase();
+        activities = activities.filter(a => 
+          a.title.toLowerCase().includes(search) ||
+          a.description.toLowerCase().includes(search) ||
+          a.location.toLowerCase().includes(search)
+        );
+      }
+
+      if (filters.category && filters.category !== "all") {
+        activities = activities.filter(a => a.category === filters.category);
+      }
+
+      if (filters.location) {
+        activities = activities.filter(a => 
+          a.location.toLowerCase().includes(filters.location!.toLowerCase())
+        );
+      }
+
+      if (filters.priceRange && filters.priceRange !== "all") {
+        activities = activities.filter(a => {
+          if (filters.priceRange === "free") return !a.priceAmount;
+          if (filters.priceRange === "0-50") return a.priceAmount && a.priceAmount <= 50;
+          if (filters.priceRange === "50-150") return a.priceAmount && a.priceAmount > 50 && a.priceAmount <= 150;
+          if (filters.priceRange === "150-300") return a.priceAmount && a.priceAmount > 150 && a.priceAmount <= 300;
+          if (filters.priceRange === "300+") return a.priceAmount && a.priceAmount > 300;
+          return true;
+        });
+      }
+
+      if (filters.difficulty && filters.difficulty !== "all") {
+        activities = activities.filter(a => a.difficultyLevel === filters.difficulty);
+      }
+
+      if (filters.rating && filters.rating !== "all") {
+        const minRating = parseFloat(filters.rating);
+        activities = activities.filter(a => parseFloat(a.averageRating) >= minRating);
+      }
+
+      // Sorting
+      if (filters.sortBy) {
+        activities.sort((a, b) => {
+          switch (filters.sortBy) {
+            case "rating":
+              return parseFloat(b.averageRating) - parseFloat(a.averageRating);
+            case "price_low":
+              const priceA = a.priceAmount || 0;
+              const priceB = b.priceAmount || 0;
+              return priceA - priceB;
+            case "price_high":
+              const priceA2 = a.priceAmount || 0;
+              const priceB2 = b.priceAmount || 0;
+              return priceB2 - priceA2;
+            case "newest":
+              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            default:
+              return 0;
+          }
+        });
+      }
+    }
+
+    return activities;
+  }
+
+  async getActivity(id: number): Promise<Activity | undefined> {
+    return this.activities.get(id);
+  }
+
+  async createActivity(activityData: InsertActivity & { createdById: number }): Promise<Activity> {
+    const activity: Activity = {
+      id: this.currentActivityId++,
+      ...activityData,
+      averageRating: "0.00",
+      totalRatings: 0,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.activities.set(activity.id, activity);
+    return activity;
+  }
+
+  async updateActivity(id: number, updates: Partial<Activity>): Promise<Activity | undefined> {
+    const activity = this.activities.get(id);
+    if (!activity) return undefined;
+    
+    const updatedActivity: Activity = {
+      ...activity,
+      ...updates,
+      updatedAt: new Date(),
+    };
+    
+    this.activities.set(id, updatedActivity);
+    return updatedActivity;
+  }
+
+  async deleteActivity(id: number): Promise<boolean> {
+    return this.activities.delete(id);
+  }
+
+  // Activity Reviews
+  async getActivityReviews(activityId: number): Promise<(ActivityReview & { user: User })[]> {
+    const reviews = Array.from(this.activityReviews.values())
+      .filter(r => r.activityId === activityId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    return reviews.map(review => {
+      const user = this.users.get(review.userId);
+      return {
+        ...review,
+        user: user ? this.sanitizeUser(user) : {} as User
+      };
+    });
+  }
+
+  async createActivityReview(reviewData: InsertActivityReview & { userId: number }): Promise<ActivityReview> {
+    const review: ActivityReview = {
+      id: this.currentActivityReviewId++,
+      ...reviewData,
+      helpfulVotes: 0,
+      isVerified: false,
+      createdAt: new Date(),
+    };
+    
+    this.activityReviews.set(review.id, review);
+    await this.updateActivityAverageRating(reviewData.activityId);
+    return review;
+  }
+
+  async updateActivityAverageRating(activityId: number): Promise<void> {
+    const reviews = Array.from(this.activityReviews.values())
+      .filter(r => r.activityId === activityId);
+    
+    if (reviews.length === 0) return;
+    
+    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = (totalRating / reviews.length).toFixed(2);
+    
+    const activity = this.activities.get(activityId);
+    if (activity) {
+      const updatedActivity: Activity = {
+        ...activity,
+        averageRating,
+        totalRatings: reviews.length,
+        updatedAt: new Date(),
+      };
+      this.activities.set(activityId, updatedActivity);
+    }
+  }
+
+  // Activity Bookings
+  async getActivityBookings(activityId: number): Promise<(ActivityBooking & { user: User })[]> {
+    const bookings = Array.from(this.activityBookings.values())
+      .filter(b => b.activityId === activityId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    return bookings.map(booking => {
+      const user = this.users.get(booking.userId);
+      return {
+        ...booking,
+        user: user ? this.sanitizeUser(user) : {} as User
+      };
+    });
+  }
+
+  async getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]> {
+    const bookings = Array.from(this.activityBookings.values())
+      .filter(b => b.userId === userId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    return bookings.map(booking => {
+      const activity = this.activities.get(booking.activityId);
+      return {
+        ...booking,
+        activity: activity || {} as Activity
+      };
+    });
+  }
+
+  async createActivityBooking(bookingData: InsertActivityBooking & { userId: number }): Promise<ActivityBooking> {
+    const booking: ActivityBooking = {
+      id: this.currentActivityBookingId++,
+      ...bookingData,
+      status: "pending",
+      createdAt: new Date(),
+    };
+    
+    this.activityBookings.set(booking.id, booking);
+    return booking;
+  }
+
+  async updateActivityBooking(id: number, status: string): Promise<ActivityBooking | undefined> {
+    const booking = this.activityBookings.get(id);
+    if (!booking) return undefined;
+    
+    const updatedBooking: ActivityBooking = {
+      ...booking,
+      status,
+    };
+    
+    this.activityBookings.set(id, updatedBooking);
+    return updatedBooking;
+  }
 }
 
 export const storage = new MemStorage();
@@ -1328,6 +1588,9 @@ async function createDefaultTestUser() {
     
     // Criar usuários adicionais e viagens históricas/futuras
     await createAdditionalTestUsers();
+    
+    // Criar atividades de exemplo
+    await createSampleActivities();
   } catch (error) {
     console.error('❌ Erro ao criar usuário de teste:', error);
   }
@@ -1817,6 +2080,243 @@ async function createAdditionalTestUsers() {
     console.log('✅ Usuários adicionais e viagens históricas/futuras criadas');
   } catch (error) {
     console.error('❌ Erro ao criar usuários e viagens adicionais:', error);
+  }
+}
+
+// Create sample activities for testing
+async function createSampleActivities() {
+  try {
+    // Check if activities already exist
+    const existingActivities = await storage.getActivities();
+    if (existingActivities.length > 0) {
+      console.log('ℹ️ Atividades de exemplo já existem');
+      return;
+    }
+
+    // Get default user for activity creation
+    const defaultUser = await storage.getUserByUsername('tom');
+    if (!defaultUser) {
+      console.error('❌ Usuário padrão não encontrado para criar atividades');
+      return;
+    }
+
+    // Sample activities with realistic data
+    const sampleActivities = [
+      {
+        title: "Passeio de Catamaran em Bombinhas",
+        description: "Navegue pelas águas cristalinas de Bombinhas com vista para ilhas paradisíacas. Inclui parada para mergulho livre e lanche a bordo.",
+        category: "water_sports",
+        location: "Bombinhas, SC",
+        priceAmount: 89.90,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "easy",
+        duration: "4 horas",
+        maxParticipants: 30,
+        imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["Vista panorâmica", "Mergulho livre", "Lanche incluído", "Guia especializado"],
+        requirements: ["Saber nadar", "Protetor solar", "Roupa de banho"],
+        cancellationPolicy: "Cancelamento gratuito até 24h antes",
+        contactInfo: "WhatsApp: (47) 99999-1234",
+        operatingHours: "Saídas: 9h e 14h",
+        seasonality: "Ano todo (sujeito a condições climáticas)",
+        accessibility: "Não acessível para cadeirantes",
+        tags: ["família", "aventura", "natureza", "mar"]
+      },
+      {
+        title: "Trilha do Morro da Urca",
+        description: "Caminhada até o topo do Morro da Urca com vista espetacular da cidade do Rio. Nível intermediário com duração de 3 horas.",
+        category: "hiking",
+        location: "Rio de Janeiro, RJ",
+        priceAmount: 45.00,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "medium",
+        duration: "3 horas",
+        maxParticipants: 15,
+        imageUrl: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["Vista 360° da cidade", "Nascer do sol", "Guia local", "Foto profissional"],
+        requirements: ["Tênis de caminhada", "Água", "Condicionamento físico básico"],
+        cancellationPolicy: "Cancelamento gratuito até 12h antes",
+        contactInfo: "Email: trilhas@rioadventure.com",
+        operatingHours: "Saída: 5h30 (nascer do sol)",
+        seasonality: "Ano todo",
+        accessibility: "Não recomendado para mobilidade reduzida",
+        tags: ["aventura", "natureza", "fitness", "fotografia"]
+      },
+      {
+        title: "Tour Gastronômico Centro Histórico",
+        description: "Descubra os sabores autênticos da culinária local em um tour guiado por restaurantes tradicionais do centro histórico.",
+        category: "food_tours",
+        location: "Salvador, BA",
+        priceAmount: 120.00,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "easy",
+        duration: "4 horas",
+        maxParticipants: 12,
+        imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["6 paradas gastronômicas", "Pratos típicos", "História local", "Degustação de cachaça"],
+        requirements: ["Apetite", "Sapatos confortáveis"],
+        cancellationPolicy: "Cancelamento gratuito até 48h antes",
+        contactInfo: "Tel: (71) 3333-5678",
+        operatingHours: "Diariamente às 15h",
+        seasonality: "Ano todo",
+        accessibility: "Acessível para cadeirantes",
+        tags: ["gastronomia", "cultura", "história", "grupo"]
+      },
+      {
+        title: "Rafting no Rio Jacaré-Pepira",
+        description: "Aventura radical de rafting em corredeiras classe III com instrutores experientes. Equipamentos inclusos e almoço no final.",
+        category: "adventure",
+        location: "Brotas, SP",
+        priceAmount: 180.00,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "hard",
+        duration: "6 horas",
+        maxParticipants: 8,
+        imageUrl: "https://images.unsplash.com/photo-1551524164-d60447d19a0e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["Corredeiras classe III", "Equipamentos inclusos", "Almoço", "Certificado de participação"],
+        requirements: ["Saber nadar", "Idade mínima 16 anos", "Condicionamento físico", "Roupa que pode molhar"],
+        cancellationPolicy: "Cancelamento gratuito até 72h antes",
+        contactInfo: "WhatsApp: (14) 99888-7777",
+        operatingHours: "Saídas: 8h (temporada alta)",
+        seasonality: "Março a novembro",
+        accessibility: "Não acessível para cadeirantes",
+        tags: ["aventura", "adrenalina", "esporte", "natureza"]
+      },
+      {
+        title: "Museu de Arte Moderna - Visita Guiada",
+        description: "Explore a coleção permanente e exposições temporárias do MAM com guia especializado em arte contemporânea brasileira.",
+        category: "cultural",
+        location: "São Paulo, SP",
+        priceAmount: 35.00,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "easy",
+        duration: "2 horas",
+        maxParticipants: 20,
+        imageUrl: "https://images.unsplash.com/photo-1554907984-15263bfd63bd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["Guia especializado", "Exposição permanente", "Arte contemporânea", "Material didático"],
+        requirements: ["Interesse em arte", "Sapatos confortáveis"],
+        cancellationPolicy: "Cancelamento gratuito até 2h antes",
+        contactInfo: "Tel: (11) 5085-1300",
+        operatingHours: "Ter a Dom: 10h-18h",
+        seasonality: "Ano todo",
+        accessibility: "Totalmente acessível",
+        tags: ["cultura", "arte", "educativo", "interior"]
+      },
+      {
+        title: "Observação de Baleias - Praia do Rosa",
+        description: "Avistamento de baleias francas no período de reprodução. Saída de barco com biólogo marinho para explicações técnicas.",
+        category: "wildlife",
+        location: "Imbituba, SC",
+        priceAmount: 95.00,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "easy",
+        duration: "3 horas",
+        maxParticipants: 25,
+        imageUrl: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["Biólogo marinho", "Baleias francas", "Equipamento óptico", "Certificado de conservação"],
+        requirements: ["Protetor solar", "Agasalho", "Câmera fotográfica"],
+        cancellationPolicy: "Cancelamento gratuito até 24h antes",
+        contactInfo: "WhatsApp: (48) 99777-8888",
+        operatingHours: "Julho a novembro: 9h e 14h",
+        seasonality: "Julho a novembro",
+        accessibility: "Parcialmente acessível",
+        tags: ["natureza", "animais", "educativo", "família"]
+      },
+      {
+        title: "Voo de Parapente - Pedra Bonita",
+        description: "Voo duplo de parapente com instrutor certificado. Vista aérea da cidade maravilhosa e pouso na Praia do Pepino.",
+        category: "adventure",
+        location: "Rio de Janeiro, RJ",
+        priceAmount: 280.00,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "medium",
+        duration: "4 horas",
+        maxParticipants: 6,
+        imageUrl: "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["Vista aérea única", "Instrutor certificado", "Fotos e vídeos", "Certificado de voo"],
+        requirements: ["Idade 16-60 anos", "Peso máximo 100kg", "Tênis fechado", "Roupa adequada"],
+        cancellationPolicy: "Cancelamento gratuito até 24h antes",
+        contactInfo: "Tel: (21) 99999-0000",
+        operatingHours: "Diariamente: 9h-16h",
+        seasonality: "Ano todo (sujeito ao tempo)",
+        accessibility: "Não acessível para cadeirantes",
+        tags: ["aventura", "adrenalina", "voo", "vista"]
+      },
+      {
+        title: "Aula de Surf - Praia do Campeche",
+        description: "Aprenda a surfar com instrutores credenciados. Equipamentos inclusos e aula teórica sobre segurança no mar.",
+        category: "water_sports",
+        location: "Florianópolis, SC",
+        priceAmount: 80.00,
+        priceCurrency: "BRL",
+        priceType: "per_person",
+        difficultyLevel: "easy",
+        duration: "2 horas",
+        maxParticipants: 8,
+        imageUrl: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+        highlights: ["Instrutor credenciado", "Prancha e roupa inclusos", "Aula teórica", "Certificado iniciante"],
+        requirements: ["Saber nadar", "Idade mínima 12 anos", "Protetor solar", "Roupa de banho"],
+        cancellationPolicy: "Cancelamento gratuito até 6h antes",
+        contactInfo: "WhatsApp: (48) 99666-5555",
+        operatingHours: "Diariamente: 8h-17h",
+        seasonality: "Ano todo",
+        accessibility: "Não acessível para cadeirantes",
+        tags: ["surf", "esporte", "praia", "iniciante"]
+      }
+    ];
+
+    // Create activities
+    for (const activityData of sampleActivities) {
+      await storage.createActivity({
+        ...activityData,
+        createdById: defaultUser.id
+      });
+    }
+
+    // Create sample reviews for some activities
+    const activities = await storage.getActivities();
+    const secondUser = await storage.getUserByUsername('maria');
+    
+    if (activities.length > 0 && secondUser) {
+      // Add reviews for first few activities
+      await storage.createActivityReview({
+        activityId: activities[0].id,
+        userId: secondUser.id,
+        rating: 5,
+        comment: "Experiência incrível! O catamaran estava em perfeito estado e a equipe muito profissional. As águas de Bombinhas são realmente cristalinas!",
+        visitDate: new Date("2024-12-01"),
+        images: []
+      });
+
+      await storage.createActivityReview({
+        activityId: activities[1].id,
+        userId: secondUser.id,
+        rating: 4,
+        comment: "Trilha desafiadora mas compensadora. A vista do topo é espetacular, especialmente no nascer do sol. Recomendo levar mais água.",
+        visitDate: new Date("2024-11-15"),
+        images: []
+      });
+
+      await storage.createActivityReview({
+        activityId: activities[2].id,
+        userId: secondUser.id,
+        rating: 5,
+        comment: "Tour gastronômico perfeito! Provamos pratos típicos deliciosos e aprendemos muito sobre a cultura baiana. Guia muito conhecedor!",
+        visitDate: new Date("2024-10-20"),
+        images: []
+      });
+    }
+
+    console.log('✅ Atividades de exemplo criadas com sucesso');
+  } catch (error) {
+    console.error('❌ Erro ao criar atividades de exemplo:', error);
   }
 }
 

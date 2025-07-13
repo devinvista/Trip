@@ -4,7 +4,7 @@ import { createServer, type Server } from "http";
 
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema } from "@shared/schema";
+import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema } from "@shared/schema";
 
 // Middleware para verificar autenticação
 function requireAuth(req: any, res: any, next: any) {
@@ -849,6 +849,223 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao atualizar solicitação de verificação:', error);
       res.status(400).json({ message: "Erro ao atualizar solicitação de verificação" });
+    }
+  });
+
+  // ============ ACTIVITIES ROUTES ============
+
+  // Get all activities with optional filters
+  app.get("/api/activities", async (req, res) => {
+    try {
+      const { search, category, location, priceRange, difficulty, duration, rating, sortBy } = req.query;
+      
+      const filters: any = {};
+      if (search) filters.search = search as string;
+      if (category) filters.category = category as string;
+      if (location) filters.location = location as string;
+      if (priceRange) filters.priceRange = priceRange as string;
+      if (difficulty) filters.difficulty = difficulty as string;
+      if (duration) filters.duration = duration as string;
+      if (rating) filters.rating = rating as string;
+      if (sortBy) filters.sortBy = sortBy as string;
+      
+      const activities = await storage.getActivities(filters);
+      res.json(activities);
+    } catch (error) {
+      console.error('Erro ao buscar atividades:', error);
+      res.status(500).json({ message: "Erro ao buscar atividades" });
+    }
+  });
+
+  // Get single activity
+  app.get("/api/activities/:id", async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const activity = await storage.getActivity(activityId);
+      
+      if (!activity) {
+        return res.status(404).json({ message: "Atividade não encontrada" });
+      }
+      
+      res.json(activity);
+    } catch (error) {
+      console.error('Erro ao buscar atividade:', error);
+      res.status(500).json({ message: "Erro ao buscar atividade" });
+    }
+  });
+
+  // Create new activity (requires authentication)
+  app.post("/api/activities", requireAuth, async (req, res) => {
+    try {
+      const creatorId = req.user!.id;
+      const activityData = insertActivitySchema.parse(req.body);
+      
+      const activity = await storage.createActivity({
+        ...activityData,
+        createdById: creatorId
+      });
+      
+      res.status(201).json(activity);
+    } catch (error) {
+      console.error('Erro ao criar atividade:', error);
+      res.status(400).json({ message: "Erro ao criar atividade" });
+    }
+  });
+
+  // Update activity (requires authentication and ownership)
+  app.put("/api/activities/:id", requireAuth, async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
+      // Check if user owns the activity
+      const activity = await storage.getActivity(activityId);
+      if (!activity) {
+        return res.status(404).json({ message: "Atividade não encontrada" });
+      }
+      
+      if (activity.createdById !== userId) {
+        return res.status(403).json({ message: "Você não tem permissão para editar esta atividade" });
+      }
+      
+      const updates = req.body;
+      const updatedActivity = await storage.updateActivity(activityId, updates);
+      
+      if (!updatedActivity) {
+        return res.status(404).json({ message: "Atividade não encontrada" });
+      }
+      
+      res.json(updatedActivity);
+    } catch (error) {
+      console.error('Erro ao atualizar atividade:', error);
+      res.status(400).json({ message: "Erro ao atualizar atividade" });
+    }
+  });
+
+  // Delete activity (requires authentication and ownership)
+  app.delete("/api/activities/:id", requireAuth, async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
+      // Check if user owns the activity
+      const activity = await storage.getActivity(activityId);
+      if (!activity) {
+        return res.status(404).json({ message: "Atividade não encontrada" });
+      }
+      
+      if (activity.createdById !== userId) {
+        return res.status(403).json({ message: "Você não tem permissão para deletar esta atividade" });
+      }
+      
+      const deleted = await storage.deleteActivity(activityId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Atividade não encontrada" });
+      }
+      
+      res.json({ message: "Atividade deletada com sucesso" });
+    } catch (error) {
+      console.error('Erro ao deletar atividade:', error);
+      res.status(500).json({ message: "Erro ao deletar atividade" });
+    }
+  });
+
+  // ============ ACTIVITY REVIEWS ROUTES ============
+
+  // Get reviews for an activity
+  app.get("/api/activities/:id/reviews", async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const reviews = await storage.getActivityReviews(activityId);
+      res.json(reviews);
+    } catch (error) {
+      console.error('Erro ao buscar avaliações:', error);
+      res.status(500).json({ message: "Erro ao buscar avaliações" });
+    }
+  });
+
+  // Create review for an activity (requires authentication)
+  app.post("/api/activities/:id/reviews", requireAuth, async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      const reviewData = insertActivityReviewSchema.parse(req.body);
+      
+      const review = await storage.createActivityReview({
+        ...reviewData,
+        activityId,
+        userId
+      });
+      
+      res.status(201).json(review);
+    } catch (error) {
+      console.error('Erro ao criar avaliação:', error);
+      res.status(400).json({ message: "Erro ao criar avaliação" });
+    }
+  });
+
+  // ============ ACTIVITY BOOKINGS ROUTES ============
+
+  // Get bookings for an activity
+  app.get("/api/activities/:id/bookings", requireAuth, async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const bookings = await storage.getActivityBookings(activityId);
+      res.json(bookings);
+    } catch (error) {
+      console.error('Erro ao buscar reservas:', error);
+      res.status(500).json({ message: "Erro ao buscar reservas" });
+    }
+  });
+
+  // Get user's bookings
+  app.get("/api/users/bookings", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      const bookings = await storage.getUserActivityBookings(userId);
+      res.json(bookings);
+    } catch (error) {
+      console.error('Erro ao buscar reservas do usuário:', error);
+      res.status(500).json({ message: "Erro ao buscar reservas do usuário" });
+    }
+  });
+
+  // Create booking for an activity (requires authentication)
+  app.post("/api/activities/:id/bookings", requireAuth, async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      const bookingData = insertActivityBookingSchema.parse(req.body);
+      
+      const booking = await storage.createActivityBooking({
+        ...bookingData,
+        activityId,
+        userId
+      });
+      
+      res.status(201).json(booking);
+    } catch (error) {
+      console.error('Erro ao criar reserva:', error);
+      res.status(400).json({ message: "Erro ao criar reserva" });
+    }
+  });
+
+  // Update booking status (requires authentication)
+  app.patch("/api/bookings/:id", requireAuth, async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      const updatedBooking = await storage.updateActivityBooking(bookingId, status);
+      
+      if (!updatedBooking) {
+        return res.status(404).json({ message: "Reserva não encontrada" });
+      }
+      
+      res.json(updatedBooking);
+    } catch (error) {
+      console.error('Erro ao atualizar reserva:', error);
+      res.status(400).json({ message: "Erro ao atualizar reserva" });
     }
   });
 

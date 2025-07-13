@@ -261,6 +261,101 @@ export type InsertUserRating = z.infer<typeof insertUserRatingSchema>;
 export type InsertDestinationRating = z.infer<typeof insertDestinationRatingSchema>;
 export type InsertVerificationRequest = z.infer<typeof insertVerificationRequestSchema>;
 
+// Activities System - TripAdvisor-style activities
+export const activities = pgTable("activities", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  location: text("location").notNull(), // cidade, país
+  category: text("category").notNull(), // sightseeing, food, adventure, culture, etc.
+  priceType: text("price_type").notNull().default("per_person"), // per_person, per_group, free
+  priceAmount: numeric("price_amount", { precision: 10, scale: 2 }), // null for free activities
+  duration: text("duration"), // "2 hours", "full day", etc.
+  difficultyLevel: text("difficulty_level").default("easy"), // easy, moderate, challenging
+  minParticipants: integer("min_participants").default(1).notNull(),
+  maxParticipants: integer("max_participants"),
+  languages: text("languages").array().default(["Português"]), // Available languages
+  inclusions: text("inclusions").array(), // What's included
+  exclusions: text("exclusions").array(), // What's not included
+  requirements: text("requirements").array(), // Age restrictions, fitness level, etc.
+  cancellationPolicy: text("cancellation_policy"),
+  contactInfo: jsonb("contact_info"), // { email, phone, website, whatsapp }
+  images: text("images").array().notNull(), // Array of image URLs
+  coverImage: text("cover_image").notNull(), // Main image
+  averageRating: numeric("average_rating", { precision: 3, scale: 2 }).default("0.00"),
+  totalRatings: integer("total_ratings").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdById: integer("created_by_id").references(() => users.id), // Who added this activity
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Activity Reviews/Ratings
+export const activityReviews = pgTable("activity_reviews", {
+  id: serial("id").primaryKey(),
+  activityId: integer("activity_id").notNull().references(() => activities.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  rating: integer("rating").notNull(), // 1-5 stars
+  review: text("review"), // Optional review text
+  photos: text("photos").array(), // Optional review photos
+  visitDate: timestamp("visit_date"), // When they participated
+  helpfulVotes: integer("helpful_votes").default(0).notNull(), // How many found this helpful
+  isVerified: boolean("is_verified").default(false).notNull(), // Verified purchase/participation
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Activity Bookings/Reservations
+export const activityBookings = pgTable("activity_bookings", {
+  id: serial("id").primaryKey(),
+  activityId: integer("activity_id").notNull().references(() => activities.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  tripId: integer("trip_id").references(() => trips.id), // Optional: if booked for a specific trip
+  participants: integer("participants").notNull(),
+  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
+  bookingDate: timestamp("booking_date").notNull(), // When activity will happen
+  status: text("status").default("pending").notNull(), // pending, confirmed, cancelled, completed
+  contactName: text("contact_name").notNull(),
+  contactEmail: text("contact_email").notNull(),
+  contactPhone: text("contact_phone"),
+  specialRequests: text("special_requests"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Activity types and schemas
+export type Activity = typeof activities.$inferSelect;
+export type ActivityReview = typeof activityReviews.$inferSelect;
+export type ActivityBooking = typeof activityBookings.$inferSelect;
+
+export const insertActivitySchema = createInsertSchema(activities).omit({
+  id: true,
+  averageRating: true,
+  totalRatings: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertActivityReviewSchema = createInsertSchema(activityReviews).omit({
+  id: true,
+  helpfulVotes: true,
+  isVerified: true,
+  createdAt: true,
+}).extend({
+  rating: z.number().min(1).max(5),
+});
+
+export const insertActivityBookingSchema = createInsertSchema(activityBookings).omit({
+  id: true,
+  status: true,
+  createdAt: true,
+}).extend({
+  participants: z.number().min(1),
+  totalAmount: z.number().positive(),
+});
+
+export type InsertActivity = z.infer<typeof insertActivitySchema>;
+export type InsertActivityReview = z.infer<typeof insertActivityReviewSchema>;
+export type InsertActivityBooking = z.infer<typeof insertActivityBookingSchema>;
+
 // Budget breakdown interface (simplified for budget base)
 export interface BudgetBreakdown {
   transport?: number;

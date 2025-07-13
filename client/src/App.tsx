@@ -17,6 +17,8 @@ import ChatPage from "@/pages/chat-page";
 import JourneyTrackerPage from "@/pages/journey-tracker-page";
 import ProfilePage from "@/pages/profile";
 import PreloaderDemo from "@/pages/preloader-demo";
+import ActivitiesPage from "@/pages/activities-page";
+import ActivityDetailPage from "@/pages/activity-detail-page";
 
 import NotFound from "@/pages/not-found";
 
@@ -50,6 +52,8 @@ function App() {
               <Route path="/journey-tracker" component={JourneyTrackerPage} />
               <Route path="/profile" component={ProfilePage} />
               <Route path="/preloader-demo" component={PreloaderDemo} />
+              <Route path="/activities" component={ActivitiesPage} />
+              <Route path="/activities/:id" component={ActivityDetailPage} />
 
               <Route component={NotFound} />
             </Switch>
