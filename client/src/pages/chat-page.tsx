@@ -15,10 +15,6 @@ import {
   Calendar,
   Settings,
   MoreVertical,
-  Info,
-  DollarSign,
-  Clock,
-  Star,
   MessageCircle,
   Phone,
   Video
@@ -231,35 +227,6 @@ export default function ChatPage() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-1 order-1 lg:order-2 space-y-4"
           >
-            {/* Trip Quick Stats */}
-            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                  <Info className="h-4 w-4 text-blue-600" />
-                  Resumo da Viagem
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="text-center p-3 bg-blue-50 rounded-lg">
-                    <DollarSign className="h-5 w-5 text-blue-600 mx-auto mb-1" />
-                    <div className="text-xs text-gray-600">Orçamento</div>
-                    <div className="font-bold text-sm text-blue-700">R$ {trip.budget.toLocaleString('pt-BR')}</div>
-                  </div>
-                  <div className="text-center p-3 bg-emerald-50 rounded-lg">
-                    <Clock className="h-5 w-5 text-emerald-600 mx-auto mb-1" />
-                    <div className="text-xs text-gray-600">Duração</div>
-                    <div className="font-bold text-sm text-emerald-700">{tripDuration} dias</div>
-                  </div>
-                </div>
-                <div className="text-center p-3 bg-purple-50 rounded-lg">
-                  <Star className="h-5 w-5 text-purple-600 mx-auto mb-1" />
-                  <div className="text-xs text-gray-600">Estilo</div>
-                  <div className="font-bold text-sm text-purple-700">{travelStyleLabels[trip.travelStyle] || trip.travelStyle}</div>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Participants List */}
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
               <CardHeader className="pb-3">
