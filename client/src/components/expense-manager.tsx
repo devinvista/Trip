@@ -52,7 +52,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
   });
 
   // Fetch balances
-  const { data: balances = [], isLoading: balancesLoading } = useQuery({
+  const { data: balances = [], isLoading: balancesLoading, error: balancesError } = useQuery({
     queryKey: ['/api/trips', tripId, 'balances'],
     queryFn: async () => {
       const response = await fetch(`/api/trips/${tripId}/balances`);
@@ -70,8 +70,14 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate both queries to ensure data refresh
       queryClient.invalidateQueries({ queryKey: ['/api/trips', tripId, 'expenses'] });
       queryClient.invalidateQueries({ queryKey: ['/api/trips', tripId, 'balances'] });
+      
+      // Also refetch immediately
+      queryClient.refetchQueries({ queryKey: ['/api/trips', tripId, 'expenses'] });
+      queryClient.refetchQueries({ queryKey: ['/api/trips', tripId, 'balances'] });
+      
       setIsAddingExpense(false);
       setNewExpense({
         amount: "",
@@ -102,8 +108,11 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidate and refetch both queries
       queryClient.invalidateQueries({ queryKey: ['/api/trips', tripId, 'expenses'] });
       queryClient.invalidateQueries({ queryKey: ['/api/trips', tripId, 'balances'] });
+      queryClient.refetchQueries({ queryKey: ['/api/trips', tripId, 'expenses'] });
+      queryClient.refetchQueries({ queryKey: ['/api/trips', tripId, 'balances'] });
     },
   });
 
