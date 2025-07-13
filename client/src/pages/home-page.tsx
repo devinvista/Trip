@@ -326,6 +326,12 @@ export default function HomePage() {
                     Encontrar Viagem
                   </Link>
                 </Button>
+                <Button asChild size="lg" className="bg-gradient-to-r from-purple-400 to-indigo-500 hover:from-purple-500 hover:to-indigo-600 text-white font-semibold px-8 py-6 rounded-full shadow-xl shadow-purple-500/25 transform hover:scale-105 transition-all">
+                  <Link href="/activities">
+                    <Calendar className="mr-2 h-5 w-5" />
+                    Explorar Atividades
+                  </Link>
+                </Button>
                 <Button asChild size="lg" className="bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-semibold px-8 py-6 rounded-full shadow-xl shadow-green-500/25 transform hover:scale-105 transition-all">
                   <Link href="/create-trip">
                     <DollarSign className="mr-2 h-5 w-5" />

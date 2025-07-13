@@ -16,7 +16,8 @@ import {
   MessageCircle,
   Kanban,
   TrendingUp,
-  Edit3
+  Edit3,
+  Calendar
 } from "lucide-react";
 import logoImage from "@assets/20250713_0013_Logo com Fundo Transparente_remix_01k00w7vt0fg184dm3z41h2sk1_1752377252367.png";
 
@@ -28,6 +29,7 @@ export function Navbar() {
     { href: "/dashboard", label: "Painel", icon: LayoutDashboard },
     { href: "/board", label: "Quadro Visual", icon: Kanban },
     { href: "/search", label: "Buscar Viagens", icon: Search, tourData: "search-button" },
+    { href: "/activities", label: "Atividades", icon: Calendar },
     { href: "/create-trip", label: "Criar Viagem", icon: Plus, tourData: "create-button" },
     { href: "/journey-tracker", label: "Progresso", icon: TrendingUp },
   ];
