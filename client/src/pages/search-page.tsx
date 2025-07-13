@@ -196,6 +196,16 @@ export default function SearchPage() {
   // Advanced client-side filtering
   const filteredTrips = useMemo(() => {
     return trips.filter((trip: any) => {
+      // Filter out past or completed trips - only show future trips
+      const currentDate = new Date();
+      const tripStartDate = new Date(trip.startDate);
+      const tripEndDate = new Date(trip.endDate);
+      
+      // Show only trips that haven't started yet or are currently in progress
+      if (tripEndDate < currentDate) {
+        return false; // Trip is completed
+      }
+
       // Text search filter
       if (searchTerm && searchTerm.trim()) {
         const searchLower = searchTerm.toLowerCase().trim();
