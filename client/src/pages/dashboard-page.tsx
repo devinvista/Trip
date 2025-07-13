@@ -462,124 +462,43 @@ export default function DashboardPage() {
 
           
 
-          {/* Modern Filter Section */}
-          <div className="mb-8">
-            <Card className="border-0 shadow-sm bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex flex-col space-y-4">
-                  {/* Header Section */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-blue-50 p-2 rounded-lg">
-                        <Filter className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-slate-900">Filtros de Viagem</h3>
-                        <p className="text-sm text-slate-600">Organize suas viagens por status</p>
-                      </div>
-                    </div>
-                    
-                    {/* Results Counter */}
-                    <div className="hidden sm:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium text-slate-700">
-                        {getFilteredTrips().length} {getFilteredTrips().length === 1 ? 'viagem' : 'viagens'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Filter Buttons */}
-                  <div className="flex flex-wrap gap-3">
-                    {[
-                      { 
-                        id: 'all', 
-                        label: 'Todas', 
-                        count: allTrips.length,
-                        icon: '🗂️',
-                        color: 'slate'
-                      },
-                      { 
-                        id: 'upcoming', 
-                        label: 'Próximas', 
-                        count: upcomingTrips.length,
-                        icon: '🚀',
-                        color: 'emerald'
-                      },
-                      { 
-                        id: 'in-progress', 
-                        label: 'Em Andamento', 
-                        count: inProgressTrips.length,
-                        icon: '✈️',
-                        color: 'blue'
-                      },
-                      { 
-                        id: 'completed', 
-                        label: 'Concluídas', 
-                        count: completedTrips.length,
-                        icon: '✅',
-                        color: 'violet'
-                      }
-                    ].map(filter => (
-                      <button
-                        key={filter.id}
-                        onClick={() => setSelectedTimeframe(filter.id)}
-                        className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105 ${
-                          selectedTimeframe === filter.id
-                            ? filter.id === 'all' 
-                              ? 'bg-slate-500 text-white shadow-lg shadow-slate-500/25'
-                              : filter.id === 'upcoming'
-                              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
-                              : filter.id === 'in-progress'
-                              ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
-                              : 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                            : filter.id === 'all'
-                            ? 'bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-                            : filter.id === 'upcoming'
-                            ? 'bg-white border border-slate-200 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50'
-                            : filter.id === 'in-progress'
-                            ? 'bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50'
-                            : 'bg-white border border-slate-200 text-slate-700 hover:border-violet-300 hover:bg-violet-50'
-                        }`}
-                      >
-                        {/* Icon */}
-                        <span className="text-lg">{filter.icon}</span>
-                        
-                        {/* Content */}
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{filter.label}</span>
-                          <div className={`flex items-center justify-center min-w-[24px] h-6 px-2 rounded-full text-xs font-bold ${
-                            selectedTimeframe === filter.id
-                              ? 'bg-white/20 text-white'
-                              : filter.id === 'all'
-                              ? 'bg-slate-100 text-slate-700'
-                              : filter.id === 'upcoming'
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : filter.id === 'in-progress'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-violet-100 text-violet-700'
-                          }`}>
-                            {filter.count}
-                          </div>
-                        </div>
-
-                        {/* Active indicator */}
-                        {selectedTimeframe === filter.id && (
-                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full"></div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Mobile Results Counter */}
-                  <div className="sm:hidden flex items-center justify-center gap-2 bg-slate-50 px-3 py-2 rounded-lg">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-slate-700">
-                      {getFilteredTrips().length} {getFilteredTrips().length === 1 ? 'viagem encontrada' : 'viagens encontradas'}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Clean Filter Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-medium text-slate-700">Filtrar por status</h3>
+              <span className="text-sm text-slate-500">
+                {getFilteredTrips().length} viagens
+              </span>
+            </div>
+            
+            {/* Simple Filter Tabs */}
+            <div className="flex gap-1 p-1 bg-slate-100 rounded-lg overflow-x-auto">
+              {[
+                { id: 'all', label: 'Todas', count: allTrips.length },
+                { id: 'upcoming', label: 'Próximas', count: upcomingTrips.length },
+                { id: 'in-progress', label: 'Em Andamento', count: inProgressTrips.length },
+                { id: 'completed', label: 'Concluídas', count: completedTrips.length }
+              ].map(filter => (
+                <button
+                  key={filter.id}
+                  onClick={() => setSelectedTimeframe(filter.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                    selectedTimeframe === filter.id
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                  }`}
+                >
+                  <span>{filter.label}</span>
+                  <span className={`px-1.5 py-0.5 rounded text-xs ${
+                    selectedTimeframe === filter.id
+                      ? 'bg-slate-100 text-slate-700'
+                      : 'bg-slate-200 text-slate-600'
+                  }`}>
+                    {filter.count}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Error State */}
