@@ -666,7 +666,7 @@ export default function SearchPage() {
             <div className="space-y-6">
               {isLoading ? (
                 <div className="flex items-center justify-center min-h-[400px]">
-                  <LoadingSpinner variant="travel" size="lg" />
+                  <LoadingSpinner variant="travel" size="lg" message="Buscando viagens incríveis..." />
                 </div>
               ) : sortedTrips.length > 0 ? (
                 <motion.div 

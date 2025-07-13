@@ -53,6 +53,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { insertTripSchema, expenseCategories, BudgetBreakdown, PlannedActivity } from "@shared/schema";
+import { LoadingSpinner } from "@/components/loading-spinner";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { AdvancedActivityManager } from "@/components/advanced-activity-manager";
 import { CoverImageSelector } from "@/components/cover-image-selector";
@@ -407,6 +408,22 @@ function CreateTripPageContent() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Navbar />
       {showConfetti && <Confetti />}
+      
+      {/* Loading Overlay */}
+      <AnimatePresence>
+        {createTripMutation.isPending && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          >
+            <div className="bg-white/90 backdrop-blur rounded-2xl p-8 shadow-2xl">
+              <LoadingSpinner variant="travel" size="lg" message="Criando sua aventura dos sonhos..." />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 export default function ChatPage() {
   const { tripId } = useParams();
@@ -36,12 +37,8 @@ export default function ChatPage() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-6" />
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-3 h-96 bg-gray-200 rounded" />
-              <div className="h-96 bg-gray-200 rounded" />
-            </div>
+          <div className="flex items-center justify-center min-h-[500px]">
+            <LoadingSpinner variant="travel" size="lg" message="Carregando chat da viagem..." />
           </div>
         </div>
       </div>

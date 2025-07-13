@@ -543,7 +543,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {tripsLoading ? (
               <div className="col-span-full flex items-center justify-center min-h-[300px]">
-                <LoadingSpinner variant="travel" size="lg" />
+                <LoadingSpinner variant="travel" size="lg" message="Carregando suas viagens..." />
               </div>
             ) : !tripsError && getFilteredTrips().length > 0 ? (
               getFilteredTrips().map((trip: any) => (
