@@ -390,6 +390,8 @@ export const insertActivityBookingSchema = createInsertSchema(activityBookings).
 
 export const insertActivityBudgetProposalSchema = createInsertSchema(activityBudgetProposals).omit({
   id: true,
+  activityId: true,
+  createdBy: true,
   votes: true,
   createdAt: true,
   updatedAt: true,
