@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertActivityBudgetProposalSchema } from "@shared/schema";
@@ -60,11 +61,9 @@ export function ActivityBudgetProposals({
     defaultValues: {
       title: "",
       description: "",
-      totalCost: 0,
+      amount: 0,
       currency: "BRL",
-      duration: "",
-      minParticipants: 1,
-      maxParticipants: 10,
+      priceType: "per_person",
       inclusions: [],
       exclusions: []
     }
@@ -203,7 +202,7 @@ export function ActivityBudgetProposals({
                     />
                     <FormField
                       control={form.control}
-                      name="totalCost"
+                      name="amount"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Custo Total (R$)</FormLabel>
@@ -238,15 +237,23 @@ export function ActivityBudgetProposals({
                     )}
                   />
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="duration"
+                      name="priceType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Duração</FormLabel>
+                          <FormLabel>Tipo de Preço</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: 4 horas" {...field} />
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione o tipo" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="per_person">Por pessoa</SelectItem>
+                                <SelectItem value="per_group">Por grupo</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -254,33 +261,21 @@ export function ActivityBudgetProposals({
                     />
                     <FormField
                       control={form.control}
-                      name="minParticipants"
+                      name="currency"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Mín. Participantes</FormLabel>
+                          <FormLabel>Moeda</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number"
-                              {...field}
-                              onChange={e => field.onChange(parseInt(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="maxParticipants"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Máx. Participantes</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number"
-                              {...field}
-                              onChange={e => field.onChange(parseInt(e.target.value))}
-                            />
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione a moeda" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="BRL">Real (BRL)</SelectItem>
+                                <SelectItem value="USD">Dólar (USD)</SelectItem>
+                                <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
