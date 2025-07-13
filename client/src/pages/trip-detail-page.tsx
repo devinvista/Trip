@@ -42,7 +42,7 @@ import {
 import { format, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState, useEffect, useMemo } from "react";
-import { expenseCategories, BudgetBreakdown } from "@shared/schema";
+import { expenseCategories, budgetCategories, BudgetBreakdown } from "@shared/schema";
 import { BudgetVisualization } from "@/components/budget-visualization";
 import { ExpenseManager } from "@/components/expense-manager";
 import { CoverImageSelector } from "@/components/cover-image-selector";
@@ -695,7 +695,7 @@ export default function TripDetailPage() {
                             {Object.entries(trip.budgetBreakdown).map(([category, amount]) => (
                               <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                 <span className="text-xs md:text-sm font-medium text-gray-700 capitalize">
-                                  {expenseCategories[category as keyof typeof expenseCategories] || category}
+                                  {budgetCategories[category as keyof typeof budgetCategories] || category}
                                 </span>
                                 <span className="font-bold text-gray-900 text-xs md:text-sm">
                                   R$ {amount.toLocaleString('pt-BR')}

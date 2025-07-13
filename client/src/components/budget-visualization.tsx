@@ -27,7 +27,7 @@ import {
   FileText, 
   MoreHorizontal 
 } from "lucide-react";
-import { BudgetBreakdown, expenseCategories } from "@shared/schema";
+import { BudgetBreakdown, budgetCategories } from "@shared/schema";
 
 interface BudgetVisualizationProps {
   budget: number;
@@ -40,10 +40,8 @@ const categoryIcons: { [key: string]: any } = {
   transport: Plane,
   accommodation: Home,
   food: Utensils,
-  activities: Camera,
-  shopping: ShoppingBag,
   insurance: Shield,
-  visas: FileText,
+  medical: Shield,
   other: MoreHorizontal,
 };
 
@@ -51,10 +49,8 @@ const categoryColors: { [key: string]: string } = {
   transport: "#3b82f6",
   accommodation: "#10b981",
   food: "#f59e0b",
-  activities: "#ef4444",
-  shopping: "#8b5cf6",
   insurance: "#06b6d4",
-  visas: "#84cc16",
+  medical: "#f97316",
   other: "#6b7280",
 };
 
@@ -68,7 +64,7 @@ export function BudgetVisualization({
   const perPersonBudget = totalBudget / maxParticipants;
   
   // Calculate breakdown data
-  const breakdownData = Object.entries(expenseCategories).map(([key, label]) => {
+  const breakdownData = Object.entries(budgetCategories).map(([key, label]) => {
     const amount = budgetBreakdown[key as keyof BudgetBreakdown] || 0;
     const percentage = totalBudget > 0 ? (amount / totalBudget) * 100 : 0;
     const Icon = categoryIcons[key];

@@ -232,3 +232,6 @@ Registro de Alterações:
 - 13 de julho de 2025. Separação do orçamento base e custos de atividades - orçamento base agora exclui atividades, custos de atividades calculados separadamente das atividades planejadas
 - 13 de julho de 2025. Expansão do sistema de categorias de despesas com 16 categorias detalhadas: transporte, hospedagem, alimentação, entretenimento, saúde, comunicação, gorjetas, lembranças, estacionamento, combustível, pedágios, emergências, outros
 - 13 de julho de 2025. Atualização dos dados de teste para refletir a nova estrutura orçamentária - removidas atividades do orçamento base em todas as viagens de teste
+- 13 de julho de 2025. Reestruturação completa das categorias de orçamento - "atividades" excluída do orçamento base, categorias relacionadas agrupadas (combustível, estacionamento, pedágios em "transporte"), sistema simplificado com 6 categorias principais
+- 13 de julho de 2025. Implementação do editor de orçamento com modal interativo - criadores de viagem podem editar orçamento total ou detalhado por categoria, validação automática e cálculo por pessoa
+- 13 de julho de 2025. Separação clara entre categorias de orçamento base (6 categorias) e categorias de despesas compartilhadas (16+ categorias) para maior flexibilidade e organização

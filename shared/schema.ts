@@ -171,23 +171,13 @@ export const insertExpenseSplitSchema = createInsertSchema(expenseSplits).omit({
 export type InsertExpense = z.infer<typeof insertExpenseSchema>;
 export type InsertExpenseSplit = z.infer<typeof insertExpenseSplitSchema>;
 
-// Budget breakdown interface
+// Budget breakdown interface (simplified for budget base)
 export interface BudgetBreakdown {
   transport?: number;
   accommodation?: number;
   food?: number;
-  shopping?: number;
   insurance?: number;
-  visas?: number;
-  entertainment?: number;
   medical?: number;
-  communication?: number;
-  tips?: number;
-  souvenirs?: number;
-  parking?: number;
-  fuel?: number;
-  tolls?: number;
-  emergency?: number;
   other?: number;
 }
 
@@ -243,6 +233,16 @@ export const expenseCategories = {
   fuel: "Combustível",
   tolls: "Pedágios",
   emergency: "Emergências",
+  other: "Outros"
+} as const;
+
+// Budget categories (for budget breakdown - excludes activities)
+export const budgetCategories = {
+  transport: "Transporte (Passagens, Combustível, Pedágios, Estacionamento)",
+  accommodation: "Hospedagem",
+  food: "Alimentação",
+  insurance: "Seguro e Documentos (Seguros, Vistos)",
+  medical: "Saúde e Emergências",
   other: "Outros"
 } as const;
 

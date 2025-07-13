@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Edit3, DollarSign, Calculator, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { expenseCategories, BudgetBreakdown } from "@shared/schema";
+import { budgetCategories, BudgetBreakdown } from "@shared/schema";
 
 interface BudgetEditorProps {
   tripId: number;
@@ -189,10 +189,10 @@ export function BudgetEditor({
                 <CardTitle className="text-lg">Orçamento por Categoria</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(expenseCategories).map(([key, label]) => (
+                <div className="grid grid-cols-1 gap-4">
+                  {Object.entries(budgetCategories).map(([key, label]) => (
                     <div key={key}>
-                      <Label htmlFor={key} className="text-sm">{label}</Label>
+                      <Label htmlFor={key} className="text-sm font-medium">{label}</Label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-3 h-3 w-3 text-gray-500" />
                         <Input
