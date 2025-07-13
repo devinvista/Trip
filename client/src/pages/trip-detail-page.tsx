@@ -201,17 +201,17 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
   }, [trip]);
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full">
       {/* Orçamento Card */}
       <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-        <CardContent className="p-3">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="p-1.5 bg-emerald-500 rounded-lg">
-              <DollarSign className="h-3.5 w-3.5 text-white" />
+              <DollarSign className="h-4 w-4 text-white" />
             </div>
-            <div className="text-xs font-medium text-gray-600">Orçamento</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600">Orçamento</div>
           </div>
-          <div className="text-lg font-bold text-gray-900">
+          <div className="text-base sm:text-lg font-bold text-gray-900">
             R$ {stats.totalBudget.toLocaleString('pt-BR')}
           </div>
           <div className="text-xs text-emerald-600">
@@ -222,14 +222,14 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
 
       {/* Participação Card */}
       <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-        <CardContent className="p-3">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="p-1.5 bg-purple-500 rounded-lg">
-              <Users className="h-3.5 w-3.5 text-white" />
+              <Users className="h-4 w-4 text-white" />
             </div>
-            <div className="text-xs font-medium text-gray-600">Participantes</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600">Participantes</div>
           </div>
-          <div className="text-lg font-bold text-gray-900">
+          <div className="text-base sm:text-lg font-bold text-gray-900">
             {trip.currentParticipants}/{trip.maxParticipants}
           </div>
           <div className="text-xs text-purple-600">
@@ -240,14 +240,14 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
 
       {/* Duração Card */}
       <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-        <CardContent className="p-3">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="p-1.5 bg-blue-500 rounded-lg">
-              <Calendar className="h-3.5 w-3.5 text-white" />
+              <Calendar className="h-4 w-4 text-white" />
             </div>
-            <div className="text-xs font-medium text-gray-600">Duração</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600">Duração</div>
           </div>
-          <div className="text-lg font-bold text-gray-900">
+          <div className="text-base sm:text-lg font-bold text-gray-900">
             {stats.duration} {stats.duration === 1 ? 'dia' : 'dias'}
           </div>
           {plannedActivities.length > 0 && (
@@ -260,20 +260,20 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
 
       {/* Status Card */}
       <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-        <CardContent className="p-3">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className={`p-1.5 rounded-lg ${
               trip.status === 'open' ? 'bg-green-500' : 'bg-red-500'
             }`}>
               {trip.status === 'open' ? (
-                <Star className="h-3.5 w-3.5 text-white" />
+                <Star className="h-4 w-4 text-white" />
               ) : (
-                <X className="h-3.5 w-3.5 text-white" />
+                <X className="h-4 w-4 text-white" />
               )}
             </div>
-            <div className="text-xs font-medium text-gray-600">Status</div>
+            <div className="text-xs sm:text-sm font-medium text-gray-600">Status</div>
           </div>
-          <div className={`text-lg font-bold ${
+          <div className={`text-base sm:text-lg font-bold ${
             trip.status === 'open' ? 'text-green-700' : 'text-red-700'
           }`}>
             {trip.status === 'open' ? 'Aberta' : 'Fechada'}
