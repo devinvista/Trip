@@ -12,11 +12,21 @@ import {
   ArrowLeft, 
   Users, 
   MapPin, 
-  Calendar
+  Calendar,
+  Settings,
+  MoreVertical,
+  Info,
+  DollarSign,
+  Clock,
+  Star,
+  MessageCircle,
+  Phone,
+  Video
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { motion } from "framer-motion";
 
 export default function ChatPage() {
   const { tripId } = useParams();
@@ -34,7 +44,7 @@ export default function ChatPage() {
 
   if (tripLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[500px]">
@@ -47,13 +57,28 @@ export default function ChatPage() {
 
   if (!trip) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <Card className="text-center p-8">
-            <h1 className="text-2xl font-bold text-dark mb-4">Viagem não encontrada</h1>
-            <p className="text-gray-600">A viagem que você procura não existe ou foi removida.</p>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md mx-auto"
+          >
+            <Card className="text-center p-8 shadow-lg bg-white/80 backdrop-blur-sm border-0">
+              <div className="w-16 h-16 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Info className="h-8 w-8 text-red-600" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 mb-2">Viagem não encontrada</h1>
+              <p className="text-gray-600 text-sm">A viagem que você procura não existe ou foi removida.</p>
+              <Button 
+                onClick={() => window.location.href = '/dashboard'} 
+                className="mt-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+              >
+                Voltar ao Dashboard
+              </Button>
+            </Card>
+          </motion.div>
         </div>
       </div>
     );
@@ -63,125 +88,232 @@ export default function ChatPage() {
 
   if (!isParticipant) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <Card className="text-center p-8">
-            <h1 className="text-2xl font-bold text-dark mb-4">Acesso negado</h1>
-            <p className="text-gray-600">Você precisa ser participante desta viagem para acessar o chat.</p>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md mx-auto"
+          >
+            <Card className="text-center p-8 shadow-lg bg-white/80 backdrop-blur-sm border-0">
+              <div className="w-16 h-16 bg-orange-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <Users className="h-8 w-8 text-orange-600" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 mb-2">Acesso restrito</h1>
+              <p className="text-gray-600 text-sm">Você precisa ser participante desta viagem para acessar o chat.</p>
+              <Button 
+                onClick={() => window.location.href = '/dashboard'} 
+                className="mt-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+              >
+                Voltar ao Dashboard
+              </Button>
+            </Card>
+          </motion.div>
         </div>
       </div>
     );
   }
 
+  const daysUntilTrip = differenceInDays(new Date(trip.startDate), new Date());
+  const tripDuration = differenceInDays(new Date(trip.endDate), new Date(trip.startDate));
+
+  const travelStyleLabels: { [key: string]: string } = {
+    praia: "Praia",
+    neve: "Neve", 
+    cruzeiros: "Cruzeiros",
+    natureza: "Natureza e Ecoturismo",
+    cultural: "Culturais e Históricas",
+    aventura: "Aventura",
+    parques: "Parques Temáticos",
+    urbanas: "Viagens Urbanas / Cidades Grandes"
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          <div className="flex-1">
-            <h1 className="font-bold text-2xl text-dark">{trip.title}</h1>
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <div className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                <span>{trip.destination}</span>
+      <div className="container mx-auto px-4 py-4 md:py-6 max-w-7xl">
+        {/* Modern Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-start gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => window.history.back()}
+                  className="shrink-0 hover:bg-blue-50"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Voltar</span>
+                </Button>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center shrink-0">
+                      <MessageCircle className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h1 className="font-bold text-xl md:text-2xl text-gray-900 truncate">{trip.title}</h1>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Chat ativo</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm">
+                    <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1 rounded-full">
+                      <MapPin className="h-3.5 w-3.5 text-blue-600" />
+                      <span className="text-blue-700 font-medium truncate">{trip.destination}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full">
+                      <Calendar className="h-3.5 w-3.5 text-emerald-600" />
+                      <span className="text-emerald-700 font-medium">
+                        {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-purple-50 px-3 py-1 rounded-full">
+                      <Users className="h-3.5 w-3.5 text-purple-600" />
+                      <span className="text-purple-700 font-medium">{trip.currentParticipants} participantes</span>
+                    </div>
+                    {daysUntilTrip > 0 && (
+                      <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1 rounded-full">
+                        <Clock className="h-3.5 w-3.5 text-amber-600" />
+                        <span className="text-amber-700 font-medium">{daysUntilTrip} dias restantes</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button variant="outline" size="sm" className="hidden md:flex">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Ligar
+                  </Button>
+                  <Button variant="outline" size="sm" className="hidden md:flex">
+                    <Video className="h-4 w-4 mr-2" />
+                    Vídeo
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                <span>
-                  {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Users className="h-3 w-3" />
-                <span>{trip.currentParticipants} participantes</span>
-              </div>
-            </div>
-          </div>
-        </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Chat Window */}
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
+          {/* Enhanced Chat Window */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-3 order-2 lg:order-1"
+          >
             <ChatWindow 
               tripId={tripId!} 
               participants={trip.participants || []}
-              className="h-[600px]"
+              className="h-[calc(100vh-280px)] md:h-[calc(100vh-320px)] min-h-[500px]"
             />
-          </div>
+          </motion.div>
 
-          {/* Participants Sidebar */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Participantes
+          {/* Enhanced Sidebar */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-1 order-1 lg:order-2 space-y-4"
+          >
+            {/* Trip Quick Stats */}
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                  <Info className="h-4 w-4 text-blue-600" />
+                  Resumo da Viagem
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+                    <div className="text-xs text-gray-600">Orçamento</div>
+                    <div className="font-bold text-sm text-blue-700">R$ {trip.budget.toLocaleString('pt-BR')}</div>
+                  </div>
+                  <div className="text-center p-3 bg-emerald-50 rounded-lg">
+                    <Clock className="h-5 w-5 text-emerald-600 mx-auto mb-1" />
+                    <div className="text-xs text-gray-600">Duração</div>
+                    <div className="font-bold text-sm text-emerald-700">{tripDuration} dias</div>
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-purple-50 rounded-lg">
+                  <Star className="h-5 w-5 text-purple-600 mx-auto mb-1" />
+                  <div className="text-xs text-gray-600">Estilo</div>
+                  <div className="font-bold text-sm text-purple-700">{travelStyleLabels[trip.travelStyle] || trip.travelStyle}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Participants List */}
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold text-gray-900 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-blue-600" />
+                    Participantes
+                  </div>
+                  <Badge variant="secondary" className="text-xs">
+                    {trip.currentParticipants}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {/* Creator */}
-                <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg">
-                  <Avatar className="w-10 h-10">
+                <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg">
+                  <Avatar className="w-10 h-10 ring-2 ring-blue-200">
                     <AvatarImage src={trip.creator?.profilePhoto || ""} />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
                       {trip.creator?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm">{trip.creator?.fullName}</h4>
-                    <Badge variant="secondary" className="text-xs">Organizador</Badge>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm text-gray-900 truncate">{trip.creator?.fullName}</h4>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="default" className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-100">
+                        Organizador
+                      </Badge>
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Other Participants */}
                 {trip.participants?.filter((p: any) => p.userId !== trip.creatorId).map((participant: any) => (
-                  <div key={participant.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
+                  <div key={participant.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                     <Avatar className="w-10 h-10">
                       <AvatarImage src={participant.user?.profilePhoto || ""} />
-                      <AvatarFallback>
+                      <AvatarFallback className="bg-gray-100 text-gray-700 font-semibold">
                         {participant.user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{participant.user?.fullName}</h4>
-                      <p className="text-xs text-gray-600">{participant.user?.location || "Sem localização"}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-sm text-gray-900 truncate">{participant.user?.fullName}</h4>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-gray-600 truncate">{participant.user?.location || "Sem localização"}</p>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      </div>
                     </div>
                   </div>
                 ))}
               </CardContent>
             </Card>
-
-            {/* Trip Summary */}
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle className="text-sm">Resumo da Viagem</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Orçamento:</span>
-                  <span className="font-medium">R$ {trip.budget.toLocaleString('pt-BR')}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Duração:</span>
-                  <span className="font-medium">
-                    {Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24))} dias
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Estilo:</span>
-                  <span className="font-medium capitalize">{trip.travelStyle}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

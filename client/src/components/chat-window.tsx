@@ -7,9 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Send, Users, Clock } from "lucide-react";
+import { MessageCircle, Send, Users, Clock, Smile, Plus, Image, Mic, MoreHorizontal, Check } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChatWindowProps {
   tripId: string;
@@ -17,23 +18,24 @@ interface ChatWindowProps {
   participants?: any[];
 }
 
-// Mock messages for demo
+// Mock messages for demo with enhanced content
 const mockMessages = [
   {
     id: 1,
-    content: "Olá pessoal! Estou muito animado para essa viagem! 🎒",
+    content: "Olá pessoal! Estou muito animado para essa viagem! 🎒✈️",
     senderId: 1,
     tripId: 1,
     sentAt: new Date(Date.now() - 86400000 * 2).toISOString(),
     sender: {
       id: 1,
-      fullName: "Tom Teste",
+      fullName: "Tom Tubin",
       profilePhoto: null
-    }
+    },
+    status: "read"
   },
   {
     id: 2,
-    content: "Oi Tom! Eu também estou super empolgado. Já comecei a fazer as malas. Vocês têm alguma sugestão de o que levar?",
+    content: "Oi Tom! Eu também estou super empolgado. Já comecei a fazer as malas. Vocês têm alguma sugestão de o que levar? 🧳",
     senderId: 2,
     tripId: 1,
     sentAt: new Date(Date.now() - 86400000).toISOString(),
@@ -41,11 +43,12 @@ const mockMessages = [
       id: 2,
       fullName: "Ana Silva",
       profilePhoto: null
-    }
+    },
+    status: "read"
   },
   {
     id: 3,
-    content: "Pessoal, consegui uma dica ótima de um restaurante local! Vou compartilhar no grupo do WhatsApp também.",
+    content: "Pessoal, consegui uma dica ótima de um restaurante local! Vou compartilhar no grupo do WhatsApp também. 🍽️",
     senderId: 3,
     tripId: 1,
     sentAt: new Date(Date.now() - 43200000).toISOString(),
@@ -53,7 +56,34 @@ const mockMessages = [
       id: 3,
       fullName: "Carlos Santos",
       profilePhoto: null
-    }
+    },
+    status: "read"
+  },
+  {
+    id: 4,
+    content: "Que legal, Carlos! Estou ansioso para experimentar. Alguém já verificou o clima para os próximos dias? ☀️",
+    senderId: 4,
+    tripId: 1,
+    sentAt: new Date(Date.now() - 21600000).toISOString(),
+    sender: {
+      id: 4,
+      fullName: "Maria Oliveira",
+      profilePhoto: null
+    },
+    status: "delivered"
+  },
+  {
+    id: 5,
+    content: "Acabei de conferir! Parece que vai estar ensolarado na maior parte do tempo. Perfeito para as trilhas! 🌞",
+    senderId: 1,
+    tripId: 1,
+    sentAt: new Date(Date.now() - 10800000).toISOString(),
+    sender: {
+      id: 1,
+      fullName: "Tom Tubin",
+      profilePhoto: null
+    },
+    status: "sent"
   }
 ];
 
@@ -62,6 +92,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
   const { toast } = useToast();
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState(mockMessages);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -82,7 +113,8 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
         id: user?.id || 1,
         fullName: user?.fullName || "Usuário",
         profilePhoto: null
-      }
+      },
+      status: "sent"
     };
 
     setMessages(prev => [...prev, message]);
@@ -90,7 +122,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
     
     toast({
       title: "Mensagem enviada",
-      description: "Sua mensagem foi adicionada ao mural",
+      description: "Sua mensagem foi adicionada ao chat",
     });
   };
 
@@ -98,96 +130,194 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const getMessageStatusIcon = (status: string) => {
+    switch (status) {
+      case "sent":
+        return <Check className="h-3 w-3 text-gray-400" />;
+      case "delivered":
+        return <div className="flex"><Check className="h-3 w-3 text-gray-400" /><Check className="h-3 w-3 text-gray-400 -ml-1" /></div>;
+      case "read":
+        return <div className="flex"><Check className="h-3 w-3 text-blue-500" /><Check className="h-3 w-3 text-blue-500 -ml-1" /></div>;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Card className={`flex flex-col h-[500px] ${className}`}>
-      <CardHeader className="pb-3 border-b">
+    <Card className={`flex flex-col bg-white/80 backdrop-blur-sm border-0 shadow-lg ${className}`}>
+      <CardHeader className="pb-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <MessageCircle className="h-5 w-5 text-primary" />
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+              <MessageCircle className="h-5 w-5 text-white" />
+            </div>
             <div className="flex flex-col">
-              <span className="text-base font-semibold">Mural da Viagem</span>
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <Users className="h-3 w-3" />
-                <span>Chat entre participantes</span>
+              <span className="text-base font-semibold text-gray-900">Chat da Viagem</span>
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>{participants.length || 0} participantes online</span>
               </div>
             </div>
           </div>
-          <Badge variant="secondary">
-            {messages.length} mensagens
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+              {messages.length} mensagens
+            </Badge>
+            <Button variant="ghost" size="sm" className="hidden md:flex">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages Area */}
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-gray-50/30 to-white/30">
           <div className="space-y-4">
             {messages.length === 0 ? (
-              <div className="text-center py-8">
-                <MessageCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">Nenhuma mensagem ainda.</p>
-                <p className="text-sm text-gray-500">Seja o primeiro a enviar uma mensagem!</p>
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-12"
+              >
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <MessageCircle className="h-8 w-8 text-white" />
+                </div>
+                <p className="text-gray-700 font-medium mb-2">Nenhuma mensagem ainda</p>
+                <p className="text-sm text-gray-500">Seja o primeiro a enviar uma mensagem para o grupo!</p>
+              </motion.div>
             ) : (
-              messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-3 ${message.senderId === user?.id ? 'flex-row-reverse' : ''}`}
-                >
-                  <Avatar className="w-10 h-10 flex-shrink-0">
-                    <AvatarImage src={message.sender?.profilePhoto || ""} />
-                    <AvatarFallback className="text-sm">
-                      {getInitials(message.sender?.fullName || 'U')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className={`flex-1 max-w-[70%] ${message.senderId === user?.id ? 'text-right' : ''}`}>
-                    <div className={`flex items-center gap-2 mb-1 ${message.senderId === user?.id ? 'justify-end' : ''}`}>
-                      <span className="text-sm font-medium text-gray-700">
-                        {message.senderId === user?.id ? 'Você' : message.sender?.fullName}
-                      </span>
-                      <span className="text-xs text-gray-400 flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {format(new Date(message.sentAt), "dd/MM HH:mm", { locale: ptBR })}
-                      </span>
+              <AnimatePresence>
+                {messages.map((message, index) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`flex gap-3 ${message.senderId === user?.id ? 'flex-row-reverse' : ''}`}
+                  >
+                    <Avatar className="w-10 h-10 flex-shrink-0 ring-2 ring-white shadow-sm">
+                      <AvatarImage src={message.sender?.profilePhoto || ""} />
+                      <AvatarFallback className="text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                        {getInitials(message.sender?.fullName || 'U')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className={`flex-1 max-w-[75%] ${message.senderId === user?.id ? 'text-right' : ''}`}>
+                      <div className={`flex items-center gap-2 mb-1 ${message.senderId === user?.id ? 'justify-end' : ''}`}>
+                        <span className="text-sm font-semibold text-gray-700">
+                          {message.senderId === user?.id ? 'Você' : message.sender?.fullName}
+                        </span>
+                        <span className="text-xs text-gray-500 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {format(new Date(message.sentAt), "dd/MM HH:mm", { locale: ptBR })}
+                        </span>
+                      </div>
+                      <div
+                        className={`relative p-3 rounded-2xl text-sm inline-block max-w-full shadow-sm ${
+                          message.senderId === user?.id
+                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-br-md'
+                            : 'bg-white border border-gray-200 text-gray-900 rounded-bl-md'
+                        }`}
+                      >
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                        {message.senderId === user?.id && (
+                          <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1">
+                            {getMessageStatusIcon(message.status)}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div
-                      className={`p-3 rounded-lg text-sm inline-block max-w-full ${
-                        message.senderId === user?.id
-                          ? 'bg-primary text-white rounded-br-sm'
-                          : 'bg-gray-100 text-gray-900 rounded-bl-sm'
-                      }`}
-                    >
-                      <p className="break-words whitespace-pre-wrap">{message.content}</p>
-                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3"
+              >
+                <Avatar className="w-8 h-8">
+                  <AvatarFallback className="text-xs bg-gray-200">...</AvatarFallback>
+                </Avatar>
+                <div className="bg-gray-200 rounded-2xl px-4 py-2">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 </div>
-              ))
+              </motion.div>
             )}
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
 
-        {/* Message Input */}
-        <div className="p-4 border-t bg-gray-50 dark:bg-gray-800">
+        {/* Enhanced Message Input */}
+        <div className="p-4 border-t border-gray-100 bg-white">
           <form onSubmit={handleSendMessage} className="space-y-3">
-            <Textarea
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Digite sua mensagem para o grupo..."
-              className="min-h-[80px] bg-white dark:bg-gray-700 resize-none"
-              maxLength={500}
-            />
+            <div className="relative">
+              <Textarea
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Digite sua mensagem..."
+                className="min-h-[60px] bg-gray-50 border-gray-200 rounded-xl resize-none pr-12 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                maxLength={500}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage(e);
+                  }
+                }}
+              />
+              <div className="absolute right-3 top-3 flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-blue-50"
+                >
+                  <Smile className="h-4 w-4 text-gray-500" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-blue-50"
+                >
+                  <Image className="h-4 w-4 text-gray-500" />
+                </Button>
+              </div>
+            </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">
-                {newMessage.length}/500 caracteres
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">
+                  {newMessage.length}/500
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-blue-50 hidden md:flex"
+                >
+                  <Plus className="h-4 w-4 text-gray-500" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-blue-50 hidden md:flex"
+                >
+                  <Mic className="h-4 w-4 text-gray-500" />
+                </Button>
+              </div>
               <Button 
                 type="submit" 
                 disabled={!newMessage.trim()}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium px-6 py-2 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Send className="h-4 w-4 mr-2" />
-                Enviar Mensagem
+                Enviar
               </Button>
             </div>
           </form>
