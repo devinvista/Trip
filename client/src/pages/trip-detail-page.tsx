@@ -166,106 +166,87 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
   }, [trip]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+    <div className="grid grid-cols-4 gap-3">
       {/* Orçamento Card */}
-      <Card className="group bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-        <CardContent className="p-5 lg:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
-              <DollarSign className="h-5 w-5 text-white" />
+      <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="p-1.5 bg-emerald-500 rounded-lg">
+              <DollarSign className="h-3.5 w-3.5 text-white" />
             </div>
-            <div className="text-right">
-              <div className="text-2xl lg:text-3xl font-bold text-gray-900">
-                R$ {stats.totalBudget.toLocaleString('pt-BR')}
-              </div>
-              <div className="text-xs font-medium text-emerald-600 mt-1">
-                R$ {stats.perPerson.toLocaleString('pt-BR')} por pessoa
-              </div>
-            </div>
+            <div className="text-xs font-medium text-gray-600">Orçamento</div>
           </div>
-          <div className="text-sm font-medium text-gray-600">
-            Orçamento Total
+          <div className="text-lg font-bold text-gray-900">
+            R$ {stats.totalBudget.toLocaleString('pt-BR')}
+          </div>
+          <div className="text-xs text-emerald-600">
+            R$ {stats.perPerson.toLocaleString('pt-BR')} /pessoa
           </div>
         </CardContent>
       </Card>
 
       {/* Participação Card */}
-      <Card className="group bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-        <CardContent className="p-5 lg:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg">
-              <Users className="h-5 w-5 text-white" />
+      <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="p-1.5 bg-purple-500 rounded-lg">
+              <Users className="h-3.5 w-3.5 text-white" />
             </div>
-            <div className="text-right">
-              <div className="text-2xl lg:text-3xl font-bold text-gray-900">
-                {trip.currentParticipants}/{trip.maxParticipants}
-              </div>
-              <div className="text-xs font-medium text-purple-600 mt-1">
-                {Math.round(stats.occupancy)}% ocupação
-              </div>
-            </div>
+            <div className="text-xs font-medium text-gray-600">Participantes</div>
           </div>
-          <div className="text-sm font-medium text-gray-600 mb-2">
-            Participação
+          <div className="text-lg font-bold text-gray-900">
+            {trip.currentParticipants}/{trip.maxParticipants}
           </div>
-          <Progress value={stats.occupancy} className="h-2" />
+          <div className="text-xs text-purple-600">
+            {Math.round(stats.occupancy)}% ocupação
+          </div>
         </CardContent>
       </Card>
 
       {/* Duração Card */}
-      <Card className="group bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-        <CardContent className="p-5 lg:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg">
-              <Calendar className="h-5 w-5 text-white" />
+      <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="p-1.5 bg-blue-500 rounded-lg">
+              <Calendar className="h-3.5 w-3.5 text-white" />
             </div>
-            <div className="text-right">
-              <div className="text-2xl lg:text-3xl font-bold text-gray-900">
-                {stats.duration}
-              </div>
-              {plannedActivities.length > 0 && (
-                <div className="text-xs font-medium text-blue-600 mt-1">
-                  {plannedActivities.length} atividades planejadas
-                </div>
-              )}
+            <div className="text-xs font-medium text-gray-600">Duração</div>
+          </div>
+          <div className="text-lg font-bold text-gray-900">
+            {stats.duration} {stats.duration === 1 ? 'dia' : 'dias'}
+          </div>
+          {plannedActivities.length > 0 && (
+            <div className="text-xs text-blue-600">
+              {plannedActivities.length} atividades
             </div>
-          </div>
-          <div className="text-sm font-medium text-gray-600">
-            {stats.duration === 1 ? 'Dia' : 'Dias'} de Viagem
-          </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Status Card */}
-      <Card className="group bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-        <CardContent className="p-5 lg:p-6">
-          <div className="flex items-center justify-between mb-3">
-            <div className={`p-2 rounded-xl shadow-lg ${
-              trip.status === 'open' 
-                ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
-                : 'bg-gradient-to-br from-red-500 to-rose-600'
+      <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`p-1.5 rounded-lg ${
+              trip.status === 'open' ? 'bg-green-500' : 'bg-red-500'
             }`}>
               {trip.status === 'open' ? (
-                <Star className="h-5 w-5 text-white" />
+                <Star className="h-3.5 w-3.5 text-white" />
               ) : (
-                <X className="h-5 w-5 text-white" />
+                <X className="h-3.5 w-3.5 text-white" />
               )}
             </div>
-            <div className="text-right">
-              <div className={`text-2xl lg:text-3xl font-bold ${
-                trip.status === 'open' ? 'text-green-700' : 'text-red-700'
-              }`}>
-                {trip.status === 'open' ? 'Aberta' : 'Fechada'}
-              </div>
-              <div className={`text-xs font-medium mt-1 ${
-                trip.status === 'open' ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {trip.status === 'open' ? 'Aceita novos membros' : 'Viagem lotada'}
-              </div>
-            </div>
+            <div className="text-xs font-medium text-gray-600">Status</div>
           </div>
-          <div className="text-sm font-medium text-gray-600">
-            Status da Viagem
+          <div className={`text-lg font-bold ${
+            trip.status === 'open' ? 'text-green-700' : 'text-red-700'
+          }`}>
+            {trip.status === 'open' ? 'Aberta' : 'Fechada'}
+          </div>
+          <div className={`text-xs ${
+            trip.status === 'open' ? 'text-green-600' : 'text-red-600'
+          }`}>
+            {trip.status === 'open' ? 'Aceita membros' : 'Viagem lotada'}
           </div>
         </CardContent>
       </Card>
