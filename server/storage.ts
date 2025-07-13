@@ -1,4 +1,4 @@
-import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, popularDestinations } from "@shared/schema";
+import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, popularDestinations } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
@@ -593,6 +593,22 @@ export interface IStorage {
   createExpenseSplits(splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]>;
   updateExpenseSplit(id: number, paid: boolean): Promise<ExpenseSplit | undefined>;
   getTripBalances(tripId: number): Promise<{ userId: number; user: User; balance: number }[]>;
+
+  // User Ratings
+  getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]>;
+  createUserRating(rating: InsertUserRating & { raterUserId: number }): Promise<UserRating>;
+  updateUserAverageRating(userId: number): Promise<void>;
+
+  // Destination Ratings
+  getDestinationRatings(destination: string): Promise<(DestinationRating & { user: User })[]>;
+  createDestinationRating(rating: InsertDestinationRating & { userId: number }): Promise<DestinationRating>;
+  getDestinationAverageRating(destination: string): Promise<{ average: number; total: number }>;
+
+  // User Verification
+  getVerificationRequests(userId?: number): Promise<(VerificationRequest & { user: User })[]>;
+  createVerificationRequest(request: InsertVerificationRequest & { userId: number }): Promise<VerificationRequest>;
+  updateVerificationRequest(id: number, status: string, reviewedBy?: number, rejectionReason?: string): Promise<VerificationRequest | undefined>;
+  updateUserVerificationStatus(userId: number, isVerified: boolean, method?: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -603,6 +619,9 @@ export class MemStorage implements IStorage {
   private tripRequests: Map<number, TripRequest>;
   private expenses: Map<number, Expense>;
   private expenseSplits: Map<number, ExpenseSplit>;
+  private userRatings: Map<number, UserRating>;
+  private destinationRatings: Map<number, DestinationRating>;
+  private verificationRequests: Map<number, VerificationRequest>;
   private currentUserId: number;
   private currentTripId: number;
   private currentMessageId: number;
@@ -610,6 +629,9 @@ export class MemStorage implements IStorage {
   private currentParticipantId: number;
   private currentExpenseId: number;
   private currentExpenseSplitId: number;
+  private currentUserRatingId: number;
+  private currentDestinationRatingId: number;
+  private currentVerificationRequestId: number;
   public sessionStore: session.Store;
 
   // Helper function to remove sensitive information from user objects
@@ -626,6 +648,9 @@ export class MemStorage implements IStorage {
     this.tripRequests = new Map();
     this.expenses = new Map();
     this.expenseSplits = new Map();
+    this.userRatings = new Map();
+    this.destinationRatings = new Map();
+    this.verificationRequests = new Map();
     this.currentUserId = 1;
     this.currentTripId = 1;
     this.currentMessageId = 1;
@@ -633,6 +658,9 @@ export class MemStorage implements IStorage {
     this.currentParticipantId = 1;
     this.currentExpenseId = 1;
     this.currentExpenseSplitId = 1;
+    this.currentUserRatingId = 1;
+    this.currentDestinationRatingId = 1;
+    this.currentVerificationRequestId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
@@ -661,6 +689,10 @@ export class MemStorage implements IStorage {
       languages: insertUser.languages || null,
       interests: insertUser.interests || null,
       travelStyle: insertUser.travelStyle || null,
+      isVerified: false,
+      verificationMethod: null,
+      averageRating: "0.00",
+      totalRatings: 0,
       createdAt: new Date() 
     };
     this.users.set(id, user);
@@ -1097,6 +1129,154 @@ export class MemStorage implements IStorage {
     }
 
     return result;
+  }
+
+  // User Rating Methods
+  async getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]> {
+    const ratings = Array.from(this.userRatings.values())
+      .filter(rating => rating.ratedUserId === userId);
+    
+    return ratings.map(rating => ({
+      ...rating,
+      rater: this.users.get(rating.raterUserId)!,
+      trip: this.trips.get(rating.tripId)!
+    }));
+  }
+
+  async createUserRating(ratingData: InsertUserRating & { raterUserId: number }): Promise<UserRating> {
+    const rating: UserRating = {
+      id: this.currentUserRatingId++,
+      ...ratingData,
+      createdAt: new Date(),
+    };
+    
+    this.userRatings.set(rating.id, rating);
+    
+    // Update user's average rating
+    await this.updateUserAverageRating(ratingData.ratedUserId);
+    
+    return rating;
+  }
+
+  async updateUserAverageRating(userId: number): Promise<void> {
+    const ratings = Array.from(this.userRatings.values())
+      .filter(rating => rating.ratedUserId === userId);
+    
+    if (ratings.length === 0) {
+      return;
+    }
+    
+    const average = ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
+    const user = this.users.get(userId);
+    
+    if (user) {
+      user.averageRating = average.toFixed(2);
+      user.totalRatings = ratings.length;
+      this.users.set(userId, user);
+    }
+  }
+
+  // Destination Rating Methods
+  async getDestinationRatings(destination: string): Promise<(DestinationRating & { user: User })[]> {
+    const ratings = Array.from(this.destinationRatings.values())
+      .filter(rating => rating.destination.toLowerCase() === destination.toLowerCase());
+    
+    return ratings.map(rating => ({
+      ...rating,
+      user: this.users.get(rating.userId)!
+    }));
+  }
+
+  async createDestinationRating(ratingData: InsertDestinationRating & { userId: number }): Promise<DestinationRating> {
+    const rating: DestinationRating = {
+      id: this.currentDestinationRatingId++,
+      ...ratingData,
+      createdAt: new Date(),
+    };
+    
+    this.destinationRatings.set(rating.id, rating);
+    return rating;
+  }
+
+  async getDestinationAverageRating(destination: string): Promise<{ average: number; total: number }> {
+    const ratings = Array.from(this.destinationRatings.values())
+      .filter(rating => rating.destination.toLowerCase() === destination.toLowerCase());
+    
+    if (ratings.length === 0) {
+      return { average: 0, total: 0 };
+    }
+    
+    const average = ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
+    return { average: Math.round(average * 10) / 10, total: ratings.length };
+  }
+
+  // Verification Methods
+  async getVerificationRequests(userId?: number): Promise<(VerificationRequest & { user: User })[]> {
+    let requests = Array.from(this.verificationRequests.values());
+    
+    if (userId) {
+      requests = requests.filter(request => request.userId === userId);
+    }
+    
+    return requests.map(request => ({
+      ...request,
+      user: this.users.get(request.userId)!
+    }));
+  }
+
+  async createVerificationRequest(requestData: InsertVerificationRequest & { userId: number }): Promise<VerificationRequest> {
+    const request: VerificationRequest = {
+      id: this.currentVerificationRequestId++,
+      ...requestData,
+      status: "pending",
+      submittedAt: new Date(),
+      reviewedAt: null,
+      reviewedBy: null,
+      rejectionReason: null,
+    };
+    
+    this.verificationRequests.set(request.id, request);
+    return request;
+  }
+
+  async updateVerificationRequest(
+    id: number, 
+    status: string, 
+    reviewedBy?: number, 
+    rejectionReason?: string
+  ): Promise<VerificationRequest | undefined> {
+    const request = this.verificationRequests.get(id);
+    if (!request) return undefined;
+    
+    const updatedRequest: VerificationRequest = {
+      ...request,
+      status,
+      reviewedAt: new Date(),
+      reviewedBy: reviewedBy || null,
+      rejectionReason: rejectionReason || null,
+    };
+    
+    this.verificationRequests.set(id, updatedRequest);
+    
+    // If approved, update user verification status
+    if (status === "approved") {
+      await this.updateUserVerificationStatus(request.userId, true, request.verificationType);
+    }
+    
+    return updatedRequest;
+  }
+
+  async updateUserVerificationStatus(userId: number, isVerified: boolean, method?: string): Promise<void> {
+    const user = this.users.get(userId);
+    if (!user) return;
+    
+    const updatedUser: User = {
+      ...user,
+      isVerified,
+      verificationMethod: method || null,
+    };
+    
+    this.users.set(userId, updatedUser);
   }
 }
 

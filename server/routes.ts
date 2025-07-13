@@ -4,7 +4,7 @@ import { createServer, type Server } from "http";
 
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema } from "@shared/schema";
+import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema } from "@shared/schema";
 
 // Middleware para verificar autenticação
 function requireAuth(req: any, res: any, next: any) {
@@ -718,6 +718,137 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao buscar dados de indicação:', error);
       res.status(500).json({ message: "Erro ao buscar dados de indicação" });
+    }
+  });
+
+  // User Rating routes
+  app.get("/api/users/:id/ratings", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const ratings = await storage.getUserRatings(userId);
+      res.json(ratings);
+    } catch (error) {
+      console.error('Erro ao buscar avaliações do usuário:', error);
+      res.status(500).json({ message: "Erro ao buscar avaliações" });
+    }
+  });
+
+  app.post("/api/users/:id/ratings", requireAuth, async (req, res) => {
+    try {
+      const ratedUserId = parseInt(req.params.id);
+      const raterUserId = req.user!.id;
+      
+      // Prevent self-rating
+      if (ratedUserId === raterUserId) {
+        return res.status(400).json({ message: "Não é possível avaliar a si mesmo" });
+      }
+      
+      const ratingData = insertUserRatingSchema.parse(req.body);
+      const rating = await storage.createUserRating({
+        ...ratingData,
+        ratedUserId,
+        raterUserId
+      });
+      
+      res.status(201).json(rating);
+    } catch (error) {
+      console.error('Erro ao criar avaliação:', error);
+      res.status(400).json({ message: "Erro ao criar avaliação" });
+    }
+  });
+
+  // Destination Rating routes
+  app.get("/api/destinations/:destination/ratings", async (req, res) => {
+    try {
+      const destination = decodeURIComponent(req.params.destination);
+      const ratings = await storage.getDestinationRatings(destination);
+      res.json(ratings);
+    } catch (error) {
+      console.error('Erro ao buscar avaliações do destino:', error);
+      res.status(500).json({ message: "Erro ao buscar avaliações do destino" });
+    }
+  });
+
+  app.post("/api/destinations/:destination/ratings", requireAuth, async (req, res) => {
+    try {
+      const destination = decodeURIComponent(req.params.destination);
+      const userId = req.user!.id;
+      
+      const ratingData = insertDestinationRatingSchema.parse(req.body);
+      const rating = await storage.createDestinationRating({
+        ...ratingData,
+        destination,
+        userId
+      });
+      
+      res.status(201).json(rating);
+    } catch (error) {
+      console.error('Erro ao criar avaliação do destino:', error);
+      res.status(400).json({ message: "Erro ao criar avaliação do destino" });
+    }
+  });
+
+  app.get("/api/destinations/:destination/rating-average", async (req, res) => {
+    try {
+      const destination = decodeURIComponent(req.params.destination);
+      const average = await storage.getDestinationAverageRating(destination);
+      res.json(average);
+    } catch (error) {
+      console.error('Erro ao calcular média do destino:', error);
+      res.status(500).json({ message: "Erro ao calcular média do destino" });
+    }
+  });
+
+  // Verification routes
+  app.get("/api/verification/requests", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      const requests = await storage.getVerificationRequests(userId);
+      res.json(requests);
+    } catch (error) {
+      console.error('Erro ao buscar solicitações de verificação:', error);
+      res.status(500).json({ message: "Erro ao buscar solicitações de verificação" });
+    }
+  });
+
+  app.post("/api/verification/requests", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      const requestData = insertVerificationRequestSchema.parse(req.body);
+      
+      const request = await storage.createVerificationRequest({
+        ...requestData,
+        userId
+      });
+      
+      res.status(201).json(request);
+    } catch (error) {
+      console.error('Erro ao criar solicitação de verificação:', error);
+      res.status(400).json({ message: "Erro ao criar solicitação de verificação" });
+    }
+  });
+
+  app.patch("/api/verification/requests/:id", requireAuth, async (req, res) => {
+    try {
+      const requestId = parseInt(req.params.id);
+      const { status, rejectionReason } = req.body;
+      const reviewerId = req.user!.id;
+      
+      const updatedRequest = await storage.updateVerificationRequest(
+        requestId,
+        status,
+        reviewerId,
+        rejectionReason
+      );
+      
+      if (!updatedRequest) {
+        return res.status(404).json({ message: "Solicitação não encontrada" });
+      }
+      
+      res.json(updatedRequest);
+    } catch (error) {
+      console.error('Erro ao atualizar solicitação de verificação:', error);
+      res.status(400).json({ message: "Erro ao atualizar solicitação de verificação" });
     }
   });
 

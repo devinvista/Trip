@@ -14,6 +14,10 @@ export const users = pgTable("users", {
   languages: text("languages").array(),
   interests: text("interests").array(),
   travelStyle: text("travel_style"),
+  isVerified: boolean("is_verified").default(false).notNull(), // User verification status
+  verificationMethod: text("verification_method"), // email, phone, document, etc.
+  averageRating: numeric("average_rating", { precision: 3, scale: 2 }).default("0.00"), // Average rating from other users
+  totalRatings: integer("total_ratings").default(0).notNull(), // Total number of ratings received
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -83,6 +87,45 @@ export const expenseSplits = pgTable("expense_splits", {
   amount: numeric("amount", { precision: 10, scale: 2 }).notNull(), // How much this user owes for this expense
   paid: boolean("paid").default(false).notNull(),
   settledAt: timestamp("settled_at"),
+});
+
+// User ratings - for rating travel companions
+export const userRatings = pgTable("user_ratings", {
+  id: serial("id").primaryKey(),
+  tripId: integer("trip_id").notNull().references(() => trips.id),
+  ratedUserId: integer("rated_user_id").notNull().references(() => users.id), // User being rated
+  raterUserId: integer("rater_user_id").notNull().references(() => users.id), // User giving the rating
+  rating: integer("rating").notNull(), // 1-5 stars
+  comment: text("comment"), // Optional comment
+  categories: jsonb("categories"), // { reliability: 5, friendliness: 4, communication: 5, etc. }
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Destination ratings - for rating destinations
+export const destinationRatings = pgTable("destination_ratings", {
+  id: serial("id").primaryKey(),
+  destination: text("destination").notNull(), // Destination name (e.g., "Paris, França")
+  userId: integer("user_id").notNull().references(() => users.id), // User who rated
+  tripId: integer("trip_id").references(() => trips.id), // Optional: trip this rating is from
+  rating: integer("rating").notNull(), // 1-5 stars
+  comment: text("comment"), // Optional comment
+  categories: jsonb("categories"), // { attractions: 5, food: 4, safety: 5, value: 3, etc. }
+  photos: text("photos").array(), // Array of photo URLs
+  visitDate: timestamp("visit_date"), // When they visited
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// User verification requests
+export const verificationRequests = pgTable("verification_requests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  verificationType: text("verification_type").notNull(), // email, phone, document, social_media
+  verificationData: jsonb("verification_data"), // Store verification info (phone, document images, etc.)
+  status: text("status").default("pending").notNull(), // pending, approved, rejected
+  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed
+  rejectionReason: text("rejection_reason"), // If rejected, why
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -170,6 +213,53 @@ export const insertExpenseSplitSchema = createInsertSchema(expenseSplits).omit({
 
 export type InsertExpense = z.infer<typeof insertExpenseSchema>;
 export type InsertExpenseSplit = z.infer<typeof insertExpenseSplitSchema>;
+
+// Rating types
+export type UserRating = typeof userRatings.$inferSelect;
+export type DestinationRating = typeof destinationRatings.$inferSelect;
+export type VerificationRequest = typeof verificationRequests.$inferSelect;
+
+// Rating insert schemas
+export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  rating: z.number().min(1).max(5),
+  categories: z.object({
+    reliability: z.number().min(1).max(5).optional(),
+    friendliness: z.number().min(1).max(5).optional(),
+    communication: z.number().min(1).max(5).optional(),
+    punctuality: z.number().min(1).max(5).optional(),
+    cleanliness: z.number().min(1).max(5).optional(),
+  }).optional(),
+});
+
+export const insertDestinationRatingSchema = createInsertSchema(destinationRatings).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  rating: z.number().min(1).max(5),
+  categories: z.object({
+    attractions: z.number().min(1).max(5).optional(),
+    food: z.number().min(1).max(5).optional(),
+    safety: z.number().min(1).max(5).optional(),
+    value: z.number().min(1).max(5).optional(),
+    transportation: z.number().min(1).max(5).optional(),
+    accommodation: z.number().min(1).max(5).optional(),
+  }).optional(),
+});
+
+export const insertVerificationRequestSchema = createInsertSchema(verificationRequests).omit({
+  id: true,
+  submittedAt: true,
+  reviewedAt: true,
+  reviewedBy: true,
+  status: true,
+});
+
+export type InsertUserRating = z.infer<typeof insertUserRatingSchema>;
+export type InsertDestinationRating = z.infer<typeof insertDestinationRatingSchema>;
+export type InsertVerificationRequest = z.infer<typeof insertVerificationRequestSchema>;
 
 // Budget breakdown interface (simplified for budget base)
 export interface BudgetBreakdown {
