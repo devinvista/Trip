@@ -130,15 +130,15 @@ export default function ChatPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-4 md:py-6 max-w-7xl">
+      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 md:py-6 max-w-7xl">
         {/* Modern Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
           <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 md:p-6">
+            <CardContent className="p-3 sm:p-4 md:p-6">
               <div className="flex items-start gap-4">
                 <Button 
                   variant="ghost" 
@@ -206,7 +206,7 @@ export default function ChatPage() {
           </Card>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {/* Enhanced Chat Window */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -217,7 +217,7 @@ export default function ChatPage() {
             <ChatWindow 
               tripId={tripId!} 
               participants={trip.participants || []}
-              className="h-[calc(100vh-280px)] md:h-[calc(100vh-320px)] min-h-[500px]"
+              className="h-[calc(100vh-200px)] sm:h-[calc(100vh-240px)] md:h-[calc(100vh-280px)] lg:h-[calc(100vh-320px)] min-h-[400px] sm:min-h-[500px]"
             />
           </motion.div>
 
