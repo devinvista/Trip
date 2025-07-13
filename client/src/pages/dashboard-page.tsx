@@ -631,67 +631,85 @@ export default function DashboardPage() {
                       )}
                     </div>
 
-                    {/* Action Buttons - Clean & Modern */}
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      {/* Primary Action */}
-                      <Link href={`/trip/${trip.id}`} className="flex-1">
+                    {/* Action Buttons - Responsive & Clean */}
+                    <div className="flex flex-col gap-2">
+                      {/* Primary Action - Full width on mobile */}
+                      <Link href={`/trip/${trip.id}`} className="w-full">
                         <Button 
                           size="sm" 
                           className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0 transition-colors duration-200"
                         >
-                          <Eye className="h-4 w-4 mr-2" />
-                          <span className="hidden sm:inline">Ver Detalhes</span>
-                          <span className="sm:hidden">Detalhes</span>
+                          <Eye className="h-3 w-3 mr-1.5" />
+                          <span className="text-xs">Ver Detalhes</span>
                         </Button>
                       </Link>
                       
-                      {/* Secondary Actions */}
-                      <div className="flex gap-2">
-                        <Link href={`/chat/${trip.id}`} className="flex-1 sm:flex-none">
+                      {/* Secondary Actions - Two rows on mobile for better spacing */}
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {/* Chat always visible */}
+                        <Link href={`/chat/${trip.id}`} className="w-full">
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-200"
+                            className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-200"
                           >
-                            <MessageCircle className="h-4 w-4 mr-1" />
-                            <span className="hidden sm:inline">Chat</span>
-                            <span className="sm:hidden">Chat</span>
+                            <MessageCircle className="h-3 w-3 mr-1" />
+                            <span className="text-xs">Chat</span>
                           </Button>
                         </Link>
                         
-                        {/* Botão editar apenas para criadores */}
-                        {trip.creatorId === user?.id && (
-                          <Link href={`/edit-trip/${trip.id}`} className="flex-1 sm:flex-none">
+                        {/* Conditional buttons based on user role */}
+                        {trip.creatorId === user?.id ? (
+                          <Link href={`/edit-trip/${trip.id}`} className="w-full">
                             <Button 
                               size="sm" 
                               variant="outline"
-                              className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-200"
+                              className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-200"
                             >
-                              <Settings className="h-4 w-4 mr-1" />
-                              <span className="hidden sm:inline">Editar</span>
-                              <span className="sm:hidden">Editar</span>
+                              <Settings className="h-3 w-3 mr-1" />
+                              <span className="text-xs">Editar</span>
                             </Button>
                           </Link>
+                        ) : (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="w-full text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700 hover:border-red-400 transition-colors duration-200"
+                            onClick={() => {
+                              if (window.confirm(`Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`)) {
+                                quitTripMutation.mutate(trip.id);
+                              }
+                            }}
+                            disabled={quitTripMutation.isPending}
+                          >
+                            {quitTripMutation.isPending ? (
+                              <>
+                                <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
+                                <span className="text-xs">...</span>
+                              </>
+                            ) : (
+                              <>
+                                <X className="h-3 w-3 mr-1" />
+                                <span className="text-xs">Sair</span>
+                              </>
+                            )}
+                          </Button>
                         )}
-                        
-                        {/* Botão desistir para criadores (com aviso especial) e participantes */}
+                      </div>
+                      
+                      {/* Cancel button for creators - separate row */}
+                      {trip.creatorId === user?.id && (
                         <Button 
                           size="sm" 
                           variant="outline"
-                          className="flex-1 sm:flex-none text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700 hover:border-red-400 transition-colors duration-200"
+                          className="w-full text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700 hover:border-red-400 transition-colors duration-200"
                           onClick={() => {
-                            const isCreator = trip.creatorId === user?.id;
                             const hasOtherParticipants = trip.currentParticipants > 1;
-                            
                             let confirmMessage = '';
-                            if (isCreator) {
-                              if (hasOtherParticipants) {
-                                confirmMessage = `Como criador da viagem "${trip.title}", ao desistir você transferirá a organização para o participante mais antigo. Confirma?`;
-                              } else {
-                                confirmMessage = `Como criador da viagem "${trip.title}" sem outros participantes, ao desistir a viagem será excluída permanentemente. Confirma?`;
-                              }
+                            if (hasOtherParticipants) {
+                              confirmMessage = `Como criador da viagem "${trip.title}", ao cancelar você transferirá a organização para o participante mais antigo. Confirma?`;
                             } else {
-                              confirmMessage = `Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`;
+                              confirmMessage = `Como criador da viagem "${trip.title}" sem outros participantes, ao cancelar a viagem será excluída permanentemente. Confirma?`;
                             }
                             
                             if (window.confirm(confirmMessage)) {
@@ -703,18 +721,16 @@ export default function DashboardPage() {
                           {quitTripMutation.isPending ? (
                             <>
                               <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
-                              <span className="hidden sm:inline">Saindo...</span>
-                              <span className="sm:hidden">...</span>
+                              <span className="text-xs">Cancelando...</span>
                             </>
                           ) : (
                             <>
-                              <X className="h-4 w-4 mr-1" />
-                              <span className="hidden sm:inline">{trip.creatorId === user?.id ? 'Cancelar' : 'Desistir'}</span>
-                              <span className="sm:hidden">{trip.creatorId === user?.id ? 'Cancelar' : 'Sair'}</span>
+                              <X className="h-3 w-3 mr-1" />
+                              <span className="text-xs">Cancelar Viagem</span>
                             </>
                           )}
                         </Button>
-                      </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
