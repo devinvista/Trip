@@ -10,6 +10,7 @@ import { Plane, Users, DollarSign, Calendar, MapPin, Shield, Star, TrendingUp, H
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
+import { AnimatedPreloader } from "@/components/ui/animated-preloader";
 
 // Featured destinations with beautiful imagery
 const featuredDestinations = [
@@ -63,164 +64,22 @@ const featuredDestinations = [
   }
 ];
 
-// PartiuTrip Interactive Globe Component - Inspired by the preloader
-const CommunityLighthouseSVG = ({ className = "" }: { className?: string }) => (
+// PartiuTrip Interactive Travel Animation Component
+const TravelAnimation = ({ className = "" }: { className?: string }) => (
   <div className={`relative ${className}`}>
-    {/* Interactive Globe Container */}
+    {/* Main Animation Container */}
     <div className="relative w-full h-full flex items-center justify-center">
-      <svg 
-        viewBox="0 0 400 400" 
-        className="w-full h-full"
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Subtle Background Glow */}
-        <circle cx="200" cy="200" r="180" fill="url(#backgroundGlow)" opacity="0.1" />
-        
-        {/* Globe with Realistic Earth Colors */}
-        <circle cx="200" cy="200" r="100" fill="url(#earthGradient)" stroke="url(#earthBorder)" strokeWidth="2" />
-        
-        {/* Continent Shapes - More realistic */}
-        <g fill="#22c55e" opacity="0.9">
-          {/* South America */}
-          <path d="M180 220 Q175 210 180 200 Q185 190 190 200 Q195 220 190 240 Q185 250 180 245 Q175 235 180 220 Z" />
-          
-          {/* North America */}
-          <path d="M170 160 Q180 150 190 160 Q200 170 195 180 Q185 190 175 185 Q165 175 170 160 Z" />
-          
-          {/* Europe/Africa */}
-          <path d="M210 150 Q220 140 230 150 Q235 160 230 170 Q225 190 220 210 Q215 230 210 225 Q205 205 210 150 Z" />
-          
-          {/* Asia */}
-          <path d="M240 160 Q260 150 270 160 Q275 170 270 180 Q265 190 255 185 Q245 175 240 160 Z" />
-          
-          {/* Australia */}
-          <path d="M250 250 Q260 245 270 250 Q275 260 270 265 Q260 270 250 265 Q245 255 250 250 Z" />
-        </g>
-
-        {/* Orbital Rings - Enhanced */}
-        <g className="animate-pulse">
-          <ellipse cx="200" cy="200" rx="120" ry="25" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.6" strokeDasharray="8,4" />
-          <ellipse cx="200" cy="200" rx="140" ry="30" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.4" strokeDasharray="6,6" />
-          <ellipse cx="200" cy="200" rx="160" ry="35" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.2" strokeDasharray="4,8" />
-        </g>
-
-        {/* Primary Airplane - Golden */}
-        <g className="animate-spin" style={{transformOrigin: '200px 200px', animationDuration: '10s'}}>
-          <g transform="translate(320, 200)">
-            <g className="hover:scale-110 transition-transform duration-300">
-              {/* Airplane Body */}
-              <ellipse cx="0" cy="0" rx="14" ry="4" fill="#fbbf24" />
-              
-              {/* Wings */}
-              <ellipse cx="-3" cy="0" rx="10" ry="3" fill="#f59e0b" />
-              <rect x="-10" y="-1.5" width="20" height="3" fill="#fbbf24" rx="1.5" />
-              
-              {/* Tail */}
-              <path d="M-12 0 L-18 -4 L-14 0 L-18 4 Z" fill="#f59e0b" />
-              
-              {/* Cockpit */}
-              <circle cx="8" cy="0" r="2" fill="#1e40af" opacity="0.8" />
-              
-              {/* Propeller Animation */}
-              <g className="animate-spin" style={{animationDuration: '0.1s'}}>
-                <rect x="12" y="-4" width="2" height="8" fill="#fbbf24" rx="1" />
-                <rect x="12" y="-1" width="2" height="2" fill="#f59e0b" />
-              </g>
-            </g>
-          </g>
-        </g>
-
-        {/* Secondary Airplane - Smaller, Counter-clockwise */}
-        <g className="animate-spin" style={{transformOrigin: '200px 200px', animationDuration: '15s', animationDirection: 'reverse'}}>
-          <g transform="translate(80, 230)">
-            <g className="hover:scale-110 transition-transform duration-300">
-              {/* Smaller Airplane Body */}
-              <ellipse cx="0" cy="0" rx="10" ry="3" fill="#fbbf24" />
-              
-              {/* Wings */}
-              <ellipse cx="-2" cy="0" rx="7" ry="2" fill="#f59e0b" />
-              <rect x="-7" y="-1" width="14" height="2" fill="#fbbf24" rx="1" />
-              
-              {/* Tail */}
-              <path d="M-8 0 L-12 -3 L-10 0 L-12 3 Z" fill="#f59e0b" />
-              
-              {/* Propeller */}
-              <g className="animate-spin" style={{animationDuration: '0.08s'}}>
-                <rect x="8" y="-3" width="1.5" height="6" fill="#fbbf24" rx="0.5" />
-              </g>
-            </g>
-          </g>
-        </g>
-
-        {/* Travel Connection Lines */}
-        <g stroke="#fbbf24" strokeWidth="1" opacity="0.3" fill="none">
-          <path d="M180 220 Q200 180 240 160" strokeDasharray="4,4" className="animate-pulse" />
-          <path d="M170 160 Q200 140 250 250" strokeDasharray="3,3" className="animate-pulse" style={{animationDelay: '0.5s'}} />
-          <path d="M210 150 Q180 180 250 250" strokeDasharray="2,2" className="animate-pulse" style={{animationDelay: '1s'}} />
-        </g>
-
-        {/* Floating Travel Icons - Enhanced */}
-        <g className="animate-pulse">
-          {/* Suitcase */}
-          <g transform="translate(100, 120)" className="hover:scale-125 transition-transform duration-300 cursor-pointer">
-            <rect x="0" y="0" width="18" height="14" fill="#fbbf24" rx="3" />
-            <rect x="2" y="2" width="14" height="10" fill="#f59e0b" rx="2" />
-            <circle cx="9" cy="7" r="1.5" fill="#fbbf24" />
-            <rect x="8" y="0" width="2" height="3" fill="#f59e0b" rx="1" />
-          </g>
-          
-          {/* Camera */}
-          <g transform="translate(300, 120)" className="hover:scale-125 transition-transform duration-300 cursor-pointer" style={{animationDelay: '0.5s'}}>
-            <rect x="0" y="0" width="16" height="12" fill="#fbbf24" rx="3" />
-            <circle cx="8" cy="6" r="4" fill="#1e40af" />
-            <circle cx="8" cy="6" r="3" fill="#fbbf24" />
-            <circle cx="8" cy="6" r="1" fill="#1e40af" />
-            <rect x="2" y="2" width="3" height="2" fill="#f59e0b" rx="1" />
-          </g>
-          
-          {/* Compass */}
-          <g transform="translate(80, 300)" className="hover:scale-125 transition-transform duration-300 cursor-pointer" style={{animationDelay: '1s'}}>
-            <circle cx="10" cy="10" r="10" fill="#fbbf24" />
-            <circle cx="10" cy="10" r="8" fill="#1e40af" />
-            <path d="M10 2 L12 10 L10 18 L8 10 Z" fill="#fbbf24" />
-            <circle cx="10" cy="10" r="2" fill="#f59e0b" />
-          </g>
-          
-          {/* Map */}
-          <g transform="translate(300, 300)" className="hover:scale-125 transition-transform duration-300 cursor-pointer" style={{animationDelay: '1.5s'}}>
-            <rect x="0" y="0" width="20" height="14" fill="#fbbf24" rx="2" />
-            <path d="M2 2 L10 8 L18 2 L18 12 L2 12 Z" fill="#1e40af" />
-            <circle cx="6" cy="6" r="1" fill="#f59e0b" />
-            <circle cx="14" cy="8" r="1" fill="#f59e0b" />
-          </g>
-        </g>
-
-        {/* Gradient Definitions */}
-        <defs>
-          <radialGradient id="backgroundGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#fbbf24" />
-            <stop offset="100%" stopColor="#f59e0b" />
-          </radialGradient>
-          
-          <radialGradient id="earthGradient" cx="40%" cy="30%" r="70%">
-            <stop offset="0%" stopColor="#60a5fa" />
-            <stop offset="40%" stopColor="#3b82f6" />
-            <stop offset="80%" stopColor="#1d4ed8" />
-            <stop offset="100%" stopColor="#1e3a8a" />
-          </radialGradient>
-          
-          <linearGradient id="earthBorder" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fbbf24" />
-            <stop offset="50%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#fbbf24" />
-          </linearGradient>
-        </defs>
-      </svg>
+      {/* Animated Preloader with Custom Styling */}
+      <div className="relative">
+        <AnimatedPreloader 
+          message=""
+          className="transform scale-110"
+        />
+      </div>
     </div>
     
-    {/* Interactive Elements Below Globe */}
-    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+    {/* Interactive Elements Below Animation */}
+    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center">
       <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-yellow-200/50">
         <p className="text-sm font-medium bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
           Conectando Viajantes pelo Mundo
@@ -452,14 +311,14 @@ export default function HomePage() {
                     transition: { duration: 0.3 }
                   }}
                 >
-                  <CommunityLighthouseSVG className="w-full h-full" />
+                  <TravelAnimation className="w-full h-full" />
                 </motion.div>
 
-                {/* Floating Action Buttons */}
+                {/* Floating Action Buttons around Preloader */}
                 <motion.div
-                  className="absolute top-16 left-8 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg cursor-pointer group"
+                  className="absolute top-12 left-12 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
                   animate={{
-                    y: [0, -15, 0],
+                    y: [0, -20, 0],
                     rotate: [0, 10, 0],
                   }}
                   transition={{
@@ -468,22 +327,22 @@ export default function HomePage() {
                     ease: "easeInOut"
                   }}
                   whileHover={{
-                    scale: 1.1,
+                    scale: 1.15,
                     rotate: 15,
                     transition: { duration: 0.2 }
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Users className="w-5 h-5 text-yellow-600 group-hover:text-yellow-500 transition-colors" />
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                    Comunidade
+                  <Users className="w-6 h-6 text-yellow-600 group-hover:text-yellow-500 transition-colors" />
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Comunidade Verificada
                   </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute bottom-16 right-8 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg cursor-pointer group"
+                  className="absolute bottom-12 right-12 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
                   animate={{
-                    y: [0, 15, 0],
+                    y: [0, 20, 0],
                     scale: [1, 1.05, 1],
                   }}
                   transition={{
@@ -492,23 +351,23 @@ export default function HomePage() {
                     ease: "easeInOut"
                   }}
                   whileHover={{
-                    scale: 1.1,
+                    scale: 1.15,
                     rotate: -15,
                     transition: { duration: 0.2 }
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <DollarSign className="w-5 h-5 text-green-600 group-hover:text-green-500 transition-colors" />
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                    Economize
+                  <DollarSign className="w-6 h-6 text-green-600 group-hover:text-green-500 transition-colors" />
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Economize até 65%
                   </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute top-32 right-12 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg cursor-pointer group"
+                  className="absolute top-28 right-8 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
                   animate={{
-                    x: [0, 10, 0],
-                    y: [0, -10, 0],
+                    x: [0, 15, 0],
+                    y: [0, -15, 0],
                   }}
                   transition={{
                     duration: 5,
@@ -516,23 +375,22 @@ export default function HomePage() {
                     ease: "easeInOut"
                   }}
                   whileHover={{
-                    scale: 1.1,
+                    scale: 1.15,
                     transition: { duration: 0.2 }
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Heart className="w-5 h-5 text-blue-600 group-hover:text-blue-500 transition-colors" />
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                    Experiências
+                  <Heart className="w-6 h-6 text-blue-600 group-hover:text-blue-500 transition-colors" />
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Experiências Únicas
                   </div>
                 </motion.div>
 
-                {/* Interactive Stats Floating Around */}
                 <motion.div
-                  className="absolute bottom-8 left-12 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg px-3 py-2 shadow-lg"
+                  className="absolute bottom-28 left-8 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
                   animate={{
-                    x: [0, 8, 0],
-                    y: [0, -8, 0],
+                    x: [0, -15, 0],
+                    y: [0, 15, 0],
                   }}
                   transition={{
                     duration: 7,
@@ -540,21 +398,26 @@ export default function HomePage() {
                     ease: "easeInOut"
                   }}
                   whileHover={{
-                    scale: 1.05,
+                    scale: 1.15,
                     transition: { duration: 0.2 }
                   }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <div className="text-xs font-bold">85+ Destinos</div>
+                  <Globe className="w-6 h-6 text-indigo-600 group-hover:text-indigo-500 transition-colors" />
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    85+ Destinos
+                  </div>
                 </motion.div>
 
+                {/* Animated Stats Badges */}
                 <motion.div
-                  className="absolute top-8 right-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg px-3 py-2 shadow-lg"
+                  className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full px-4 py-2 shadow-lg"
                   animate={{
-                    x: [0, -8, 0],
-                    y: [0, 8, 0],
+                    y: [0, -10, 0],
+                    scale: [1, 1.02, 1],
                   }}
                   transition={{
-                    duration: 6,
+                    duration: 4,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
@@ -563,7 +426,26 @@ export default function HomePage() {
                     transition: { duration: 0.2 }
                   }}
                 >
-                  <div className="text-xs font-bold">65% Economia</div>
+                  <div className="text-sm font-bold">2.8k+ Viajantes</div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full px-4 py-2 shadow-lg"
+                  animate={{
+                    y: [0, 10, 0],
+                    scale: [1, 1.02, 1],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <div className="text-sm font-bold">1.2k+ Experiências</div>
                 </motion.div>
               </div>
             </motion.div>
