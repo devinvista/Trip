@@ -300,12 +300,12 @@ export default function SearchPage() {
           {/* Background Image Gallery */}
           <div className="absolute inset-0 opacity-5">
             <div className="grid grid-cols-6 h-full">
-              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
-              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1502780402662-acc01917a4d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
-              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1618083443000-a5de0cdfce95?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
-              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1504457047772-da14c3b4e0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
-              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1599408089853-52e21e74c637?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
-              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516442719524-a603408c90cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1483729558449-99ef09a8c325?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544718865-4c8eff1f3f8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516012669313-c1c15b8b6b13?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
             </div>
           </div>
 
@@ -352,42 +352,18 @@ export default function SearchPage() {
             >
               <div className="flex justify-center items-center gap-4 mb-4">
                 <div className="flex -space-x-2">
-                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
-                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1502780402662-acc01917a4d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
-                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1618083443000-a5de0cdfce95?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
-                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1504457047772-da14c3b4e0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
-                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1599408089853-52e21e74c637?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1483729558449-99ef09a8c325?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544718865-4c8eff1f3f8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
                   <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-gray-100 flex items-center justify-center text-gray-600 text-sm font-semibold">
                     +80
                   </div>
                 </div>
                 <div className="text-sm text-gray-600 font-medium">
-                  Paris • Rio • Tokyo • Nova York • Maldivas e muito mais
+                  Rio de Janeiro • Fernando de Noronha • Chapada Diamantina • Pantanal • Bonito e muito mais
                 </div>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
-            >
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900 mb-2">250+</div>
-                <div className="text-sm text-gray-600 font-medium">Viagens Ativas</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900 mb-2">1.2k</div>
-                <div className="text-sm text-gray-600 font-medium">Viajantes</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900 mb-2">85+</div>
-                <div className="text-sm text-gray-600 font-medium">Destinos</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900 mb-2">4.8★</div>
-                <div className="text-sm text-gray-600 font-medium">Avaliação</div>
               </div>
             </motion.div>
           </div>
