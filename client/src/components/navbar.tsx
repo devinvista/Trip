@@ -18,6 +18,7 @@ import {
   TrendingUp,
   Edit3
 } from "lucide-react";
+import logoImage from "@assets/20250712_2357_Logo Barra Superior_remix_01k00v9ycxfb387rqcfedn7vzh_1752375801778.png";
 
 export function Navbar() {
   const { user, logoutMutation, isLoading } = useAuth();
@@ -45,9 +46,12 @@ export function Navbar() {
         <nav className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <Plane className="h-6 w-6 text-primary" />
-              <span className="font-heading font-bold text-2xl text-dark">ViajaJunto</span>
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+              <img 
+                src={logoImage} 
+                alt="PartiuTrip - Viaje Junto, Gaste Menos" 
+                className="h-12 w-auto"
+              />
             </Link>
             
             {/* Loading state */}
@@ -65,9 +69,12 @@ export function Navbar() {
       <nav className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <Plane className="h-6 w-6 text-primary" />
-            <span className="font-heading font-bold text-2xl text-dark">ViajaJunto</span>
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <img 
+              src={logoImage} 
+              alt="PartiuTrip - Viaje Junto, Gaste Menos" 
+              className="h-12 w-auto"
+            />
           </Link>
           
           {user && (
