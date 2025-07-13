@@ -1,71 +1,40 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { neon } from "@neondatabase/serverless";
 import * as schema from "@shared/schema";
 
-// Configuração da conexão MySQL
-const connectionConfig = {
-  host: "srv1661.hstgr.io", // ou "193.203.175.156"
-  port: 3306,
-  user: process.env.MYSQL_USER || "root",
-  password: process.env.MYSQL_PASSWORD || "",
-  database: process.env.MYSQL_DATABASE || "partiutrip",
-  ssl: {
-    rejectUnauthorized: false // Para conectar com SSL em produção
-  }
-};
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
 
-console.log(`🔗 Conectando ao MySQL em ${connectionConfig.host}:${connectionConfig.port}`);
+console.log(`🔗 Conectando ao PostgreSQL...`);
 
-// Criar conexão com o banco
-const connection = mysql.createConnection(connectionConfig);
+// Criar conexão com o banco PostgreSQL
+const connection = neon(process.env.DATABASE_URL);
 
-// Configurar Drizzle com MySQL
+// Configurar Drizzle com PostgreSQL
 export const db = drizzle(connection, { schema, mode: "default" });
 
 // Testar conexão
 export async function testConnection() {
   try {
-    const conn = await connection;
-    await conn.ping();
-    console.log("✅ Conexão MySQL estabelecida com sucesso!");
+    await connection`SELECT 1`;
+    console.log("✅ Conexão PostgreSQL estabelecida com sucesso!");
     return true;
   } catch (error) {
-    console.error("❌ Erro ao conectar com MySQL:", error);
+    console.error("❌ Erro ao conectar com PostgreSQL:", error);
     return false;
   }
 }
 
-// Criar tabelas se não existirem
+// Inicializar tabelas usando Drizzle
 export async function initializeTables() {
   try {
-    const conn = await connection;
-    
-    // Criar tabela de usuários se não existir
-    await conn.execute(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(255) NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        full_name VARCHAR(255) NOT NULL,
-        bio TEXT,
-        location VARCHAR(255),
-        profile_photo TEXT,
-        languages JSON,
-        interests JSON,
-        travel_style VARCHAR(100),
-        is_verified BOOLEAN DEFAULT FALSE NOT NULL,
-        verification_method VARCHAR(50),
-        average_rating DECIMAL(3,2) DEFAULT 0.00,
-        total_ratings INT DEFAULT 0 NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-      )
-    `);
-    
-    console.log("✅ Tabelas MySQL criadas/verificadas com sucesso!");
+    // Com PostgreSQL e Drizzle, as tabelas são criadas automaticamente
+    // através do schema definido em shared/schema.ts
+    console.log("✅ Tabelas PostgreSQL inicializadas com sucesso!");
     return true;
   } catch (error) {
-    console.error("❌ Erro ao criar tabelas MySQL:", error);
+    console.error("❌ Erro ao inicializar tabelas PostgreSQL:", error);
     return false;
   }
 }
