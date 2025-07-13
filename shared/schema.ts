@@ -304,6 +304,40 @@ export const activityReviews = pgTable("activity_reviews", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Activity Budget Proposals - Multiple budget options per activity
+export const activityBudgetProposals = pgTable("activity_budget_proposals", {
+  id: serial("id").primaryKey(),
+  activityId: integer("activity_id").notNull().references(() => activities.id),
+  createdBy: integer("created_by").notNull().references(() => users.id),
+  title: text("title").notNull(), // "Opção Básica", "Pacote Premium", etc.
+  description: text("description"), // Description of what's included
+  priceType: text("price_type").notNull().default("per_person"), // per_person, per_group
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").default("BRL").notNull(),
+  inclusions: text("inclusions").array(), // What's included in this proposal
+  exclusions: text("exclusions").array(), // What's not included
+  validUntil: timestamp("valid_until"), // Optional expiry date
+  isActive: boolean("is_active").default(true).notNull(),
+  votes: integer("votes").default(0).notNull(), // Community votes for this proposal
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Trip Activities - Links activities to trips with selected budget proposal
+export const tripActivities = pgTable("trip_activities", {
+  id: serial("id").primaryKey(),
+  tripId: integer("trip_id").notNull().references(() => trips.id),
+  activityId: integer("activity_id").notNull().references(() => activities.id),
+  budgetProposalId: integer("budget_proposal_id").notNull().references(() => activityBudgetProposals.id),
+  addedBy: integer("added_by").notNull().references(() => users.id),
+  status: text("status").default("proposed").notNull(), // proposed, approved, rejected
+  participants: integer("participants").notNull().default(1),
+  totalCost: numeric("total_cost", { precision: 10, scale: 2 }).notNull(),
+  scheduledDate: timestamp("scheduled_date"), // When in the trip this activity is scheduled
+  notes: text("notes"), // Additional notes about this activity for the trip
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Activity Bookings/Reservations
 export const activityBookings = pgTable("activity_bookings", {
   id: serial("id").primaryKey(),
@@ -325,6 +359,8 @@ export const activityBookings = pgTable("activity_bookings", {
 export type Activity = typeof activities.$inferSelect;
 export type ActivityReview = typeof activityReviews.$inferSelect;
 export type ActivityBooking = typeof activityBookings.$inferSelect;
+export type ActivityBudgetProposal = typeof activityBudgetProposals.$inferSelect;
+export type TripActivity = typeof tripActivities.$inferSelect;
 
 export const insertActivitySchema = createInsertSchema(activities).omit({
   id: true,
@@ -352,9 +388,30 @@ export const insertActivityBookingSchema = createInsertSchema(activityBookings).
   totalAmount: z.number().positive(),
 });
 
+export const insertActivityBudgetProposalSchema = createInsertSchema(activityBudgetProposals).omit({
+  id: true,
+  votes: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  amount: z.number().positive("Valor deve ser positivo"),
+  title: z.string().min(1, "Título é obrigatório"),
+});
+
+export const insertTripActivitySchema = createInsertSchema(tripActivities).omit({
+  id: true,
+  status: true,
+  createdAt: true,
+}).extend({
+  participants: z.number().min(1),
+  totalCost: z.number().positive(),
+});
+
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
 export type InsertActivityReview = z.infer<typeof insertActivityReviewSchema>;
 export type InsertActivityBooking = z.infer<typeof insertActivityBookingSchema>;
+export type InsertActivityBudgetProposal = z.infer<typeof insertActivityBudgetProposalSchema>;
+export type InsertTripActivity = z.infer<typeof insertTripActivitySchema>;
 
 // Budget breakdown interface (simplified for budget base)
 export interface BudgetBreakdown {

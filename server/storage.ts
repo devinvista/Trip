@@ -636,6 +636,22 @@ export interface IStorage {
   getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]>;
   createActivityBooking(booking: InsertActivityBooking & { userId: number }): Promise<ActivityBooking>;
   updateActivityBooking(id: number, status: string): Promise<ActivityBooking | undefined>;
+
+  // Activity Budget Proposals
+  getActivityBudgetProposals(activityId: number): Promise<(ActivityBudgetProposal & { creator: User })[]>;
+  createActivityBudgetProposal(proposal: InsertActivityBudgetProposal & { createdBy: number }): Promise<ActivityBudgetProposal>;
+  updateActivityBudgetProposal(id: number, updates: Partial<ActivityBudgetProposal>): Promise<ActivityBudgetProposal | undefined>;
+  deleteActivityBudgetProposal(id: number): Promise<boolean>;
+  voteActivityBudgetProposal(id: number, increment: boolean): Promise<ActivityBudgetProposal | undefined>;
+
+  // Trip Activities - Link activities to trips with selected proposals
+  getTripActivities(tripId: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]>;
+  addActivityToTrip(tripActivity: InsertTripActivity & { addedBy: number }): Promise<TripActivity>;
+  updateTripActivity(id: number, updates: Partial<TripActivity>): Promise<TripActivity | undefined>;
+  removeTripActivity(id: number): Promise<boolean>;
+  
+  // Get user trips in same location as activity
+  getUserTripsInLocation(userId: number, location: string): Promise<Trip[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -652,6 +668,8 @@ export class MemStorage implements IStorage {
   private activities: Map<number, Activity>;
   private activityReviews: Map<number, ActivityReview>;
   private activityBookings: Map<number, ActivityBooking>;
+  private activityBudgetProposals: Map<number, ActivityBudgetProposal>;
+  private tripActivities: Map<number, TripActivity>;
   private currentUserId: number;
   private currentTripId: number;
   private currentMessageId: number;
@@ -665,6 +683,8 @@ export class MemStorage implements IStorage {
   private currentActivityId: number;
   private currentActivityReviewId: number;
   private currentActivityBookingId: number;
+  private currentActivityBudgetProposalId: number;
+  private currentTripActivityId: number;
   public sessionStore: session.Store;
 
   // Helper function to remove sensitive information from user objects
@@ -687,6 +707,8 @@ export class MemStorage implements IStorage {
     this.activities = new Map();
     this.activityReviews = new Map();
     this.activityBookings = new Map();
+    this.activityBudgetProposals = new Map();
+    this.tripActivities = new Map();
     this.currentUserId = 1;
     this.currentTripId = 1;
     this.currentMessageId = 1;
@@ -700,6 +722,8 @@ export class MemStorage implements IStorage {
     this.currentActivityId = 1;
     this.currentActivityReviewId = 1;
     this.currentActivityBookingId = 1;
+    this.currentActivityBudgetProposalId = 1;
+    this.currentTripActivityId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
@@ -1538,6 +1562,151 @@ export class MemStorage implements IStorage {
     this.activityBookings.set(id, updatedBooking);
     return updatedBooking;
   }
+
+  // Activity Budget Proposals
+  async getActivityBudgetProposals(activityId: number): Promise<(ActivityBudgetProposal & { creator: User })[]> {
+    const proposals = Array.from(this.activityBudgetProposals.values())
+      .filter(p => p.activityId === activityId && p.isActive)
+      .sort((a, b) => b.votes - a.votes); // Sort by votes descending
+    
+    return proposals.map(proposal => {
+      const creator = this.users.get(proposal.createdBy);
+      return {
+        ...proposal,
+        creator: creator || {} as User
+      };
+    });
+  }
+
+  async createActivityBudgetProposal(proposalData: InsertActivityBudgetProposal & { createdBy: number }): Promise<ActivityBudgetProposal> {
+    const proposal: ActivityBudgetProposal = {
+      id: this.currentActivityBudgetProposalId++,
+      ...proposalData,
+      currency: proposalData.currency || "BRL",
+      isActive: true,
+      votes: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.activityBudgetProposals.set(proposal.id, proposal);
+    return proposal;
+  }
+
+  async updateActivityBudgetProposal(id: number, updates: Partial<ActivityBudgetProposal>): Promise<ActivityBudgetProposal | undefined> {
+    const proposal = this.activityBudgetProposals.get(id);
+    if (!proposal) return undefined;
+    
+    const updatedProposal: ActivityBudgetProposal = {
+      ...proposal,
+      ...updates,
+      updatedAt: new Date(),
+    };
+    
+    this.activityBudgetProposals.set(id, updatedProposal);
+    return updatedProposal;
+  }
+
+  async deleteActivityBudgetProposal(id: number): Promise<boolean> {
+    return this.activityBudgetProposals.delete(id);
+  }
+
+  async voteActivityBudgetProposal(id: number, increment: boolean): Promise<ActivityBudgetProposal | undefined> {
+    const proposal = this.activityBudgetProposals.get(id);
+    if (!proposal) return undefined;
+    
+    const updatedProposal: ActivityBudgetProposal = {
+      ...proposal,
+      votes: increment ? proposal.votes + 1 : Math.max(0, proposal.votes - 1),
+      updatedAt: new Date(),
+    };
+    
+    this.activityBudgetProposals.set(id, updatedProposal);
+    return updatedProposal;
+  }
+
+  // Trip Activities - Link activities to trips with selected proposals
+  async getTripActivities(tripId: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]> {
+    const tripActivities = Array.from(this.tripActivities.values())
+      .filter(ta => ta.tripId === tripId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    return tripActivities.map(tripActivity => {
+      const activity = this.activities.get(tripActivity.activityId);
+      const proposal = this.activityBudgetProposals.get(tripActivity.budgetProposalId);
+      const addedByUser = this.users.get(tripActivity.addedBy);
+      
+      return {
+        ...tripActivity,
+        activity: activity || {} as Activity,
+        proposal: proposal || {} as ActivityBudgetProposal,
+        addedByUser: addedByUser || {} as User
+      };
+    });
+  }
+
+  async addActivityToTrip(tripActivityData: InsertTripActivity & { addedBy: number }): Promise<TripActivity> {
+    const tripActivity: TripActivity = {
+      id: this.currentTripActivityId++,
+      ...tripActivityData,
+      status: "proposed",
+      createdAt: new Date(),
+    };
+    
+    this.tripActivities.set(tripActivity.id, tripActivity);
+    return tripActivity;
+  }
+
+  async updateTripActivity(id: number, updates: Partial<TripActivity>): Promise<TripActivity | undefined> {
+    const tripActivity = this.tripActivities.get(id);
+    if (!tripActivity) return undefined;
+    
+    const updatedTripActivity: TripActivity = {
+      ...tripActivity,
+      ...updates,
+    };
+    
+    this.tripActivities.set(id, updatedTripActivity);
+    return updatedTripActivity;
+  }
+
+  async removeTripActivity(id: number): Promise<boolean> {
+    return this.tripActivities.delete(id);
+  }
+  
+  // Get user trips in same location as activity
+  async getUserTripsInLocation(userId: number, location: string): Promise<Trip[]> {
+    const userTrips = Array.from(this.trips.values())
+      .filter(trip => {
+        // Check if user is creator or participant
+        const isCreator = trip.creatorId === userId;
+        const isParticipant = Array.from(this.tripParticipants.values())
+          .some(p => p.tripId === trip.id && p.userId === userId && p.status === 'accepted');
+        
+        if (!isCreator && !isParticipant) return false;
+        
+        // Check if trip location matches activity location (same city)
+        const tripLocation = trip.destination.toLowerCase();
+        const activityLocation = location.toLowerCase();
+        
+        // Extract city names (before comma if present)
+        const tripCity = tripLocation.split(',')[0].trim();
+        const activityCity = activityLocation.split(',')[0].trim();
+        
+        return tripCity === activityCity || 
+               tripLocation.includes(activityCity) || 
+               activityLocation.includes(tripCity);
+      })
+      .filter(trip => {
+        // Only include future trips or trips in progress
+        const now = new Date();
+        const tripEnd = new Date(trip.endDate);
+        return tripEnd >= now;
+      })
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    
+    return userTrips;
+  }
 }
 
 export const storage = new MemStorage();
@@ -2314,7 +2483,95 @@ async function createSampleActivities() {
       });
     }
 
+    // Create budget proposals for the first few activities
+    if (activities.length >= 3) {
+      // Catamaran proposals
+      await storage.createActivityBudgetProposal({
+        activityId: activities[0].id,
+        title: "Pacote Econômico",
+        description: "Passeio básico de 4 horas incluindo equipamentos de snorkel",
+        totalCost: 120.00,
+        currency: "BRL",
+        duration: "4 horas",
+        minParticipants: 6,
+        maxParticipants: 12,
+        inclusions: ["Equipamentos de snorkel", "Guia bilíngue", "Água e frutas"],
+        exclusions: ["Almoço", "Transporte até o porto"],
+        createdBy: activities[0].createdById
+      });
+
+      await storage.createActivityBudgetProposal({
+        activityId: activities[0].id,
+        title: "Pacote Premium",
+        description: "Passeio completo de 6 horas com almoço e bebidas inclusas",
+        totalCost: 200.00,
+        currency: "BRL",
+        duration: "6 horas",
+        minParticipants: 4,
+        maxParticipants: 8,
+        inclusions: ["Equipamentos de snorkel", "Guia bilíngue", "Almoço completo", "Bebidas", "Frutas"],
+        exclusions: ["Transporte até o porto"],
+        createdBy: secondUser?.id || activities[0].createdById
+      });
+
+      // Trilha proposals
+      await storage.createActivityBudgetProposal({
+        activityId: activities[1].id,
+        title: "Trilha Guiada",
+        description: "Trilha com guia local experiente incluindo café da manhã",
+        totalCost: 80.00,
+        currency: "BRL",
+        duration: "6 horas",
+        minParticipants: 4,
+        maxParticipants: 10,
+        inclusions: ["Guia especializado", "Café da manhã", "Kit lanche", "Seguro"],
+        exclusions: ["Equipamentos pessoais", "Transporte"],
+        createdBy: activities[1].createdById
+      });
+
+      await storage.createActivityBudgetProposal({
+        activityId: activities[1].id,
+        title: "Trilha Autoguiada",
+        description: "Kit com mapa e instruções para trilha independente",
+        totalCost: 35.00,
+        currency: "BRL",
+        duration: "Livre",
+        minParticipants: 2,
+        maxParticipants: 20,
+        inclusions: ["Mapa detalhado", "GPS track", "Kit primeiros socorros"],
+        exclusions: ["Guia", "Alimentação", "Transporte", "Equipamentos"],
+        createdBy: secondUser?.id || activities[1].createdById
+      });
+
+      // Tour gastronômico proposals
+      await storage.createActivityBudgetProposal({
+        activityId: activities[2].id,
+        title: "Tour Completo",
+        description: "Tour gastronômico com 5 paradas e drinks inclusos",
+        totalCost: 150.00,
+        currency: "BRL",
+        duration: "5 horas",
+        minParticipants: 6,
+        maxParticipants: 12,
+        inclusions: ["5 degustações", "Bebidas", "Guia gastronômico", "Transporte entre locais"],
+        exclusions: ["Transporte até ponto de encontro"],
+        createdBy: activities[2].createdById
+      });
+
+      // Add some votes to proposals
+      if (activities.length >= 3) {
+        const proposals = await storage.getActivityBudgetProposals(activities[0].id);
+        if (proposals.length >= 2) {
+          // Vote on premium package
+          await storage.voteActivityBudgetProposal(proposals[1].id, true);
+          await storage.voteActivityBudgetProposal(proposals[1].id, true);
+          await storage.voteActivityBudgetProposal(proposals[1].id, true);
+        }
+      }
+    }
+
     console.log('✅ Atividades de exemplo criadas com sucesso');
+    console.log('✅ Propostas de orçamento criadas com sucesso');
   } catch (error) {
     console.error('❌ Erro ao criar atividades de exemplo:', error);
   }

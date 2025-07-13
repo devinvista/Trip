@@ -19,7 +19,8 @@ import {
   Phone,
   Mail,
   Globe,
-  MessageCircle
+  MessageCircle,
+  Plane
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +34,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { ActivityBudgetProposals } from "@/components/activity-budget-proposals";
+import { AddActivityToTrip } from "@/components/add-activity-to-trip";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -47,7 +51,9 @@ export default function ActivityDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
+  const [showAddToTripDialog, setShowAddToTripDialog] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: activity, isLoading: activityLoading } = useQuery<Activity>({
@@ -309,8 +315,9 @@ export default function ActivityDetailPage() {
 
             {/* Tabs */}
             <Tabs defaultValue="details" className="mb-6">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="details">Detalhes</TabsTrigger>
+                <TabsTrigger value="proposals">Orçamentos</TabsTrigger>
                 <TabsTrigger value="reviews">Avaliações</TabsTrigger>
                 <TabsTrigger value="location">Localização</TabsTrigger>
               </TabsList>
@@ -378,6 +385,12 @@ export default function ActivityDetailPage() {
                       <p className="text-sm text-gray-600">{activity.cancellationPolicy}</p>
                     </div>
                   )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="proposals" className="mt-6">
+                <div className="bg-white rounded-lg border p-6">
+                  <ActivityBudgetProposals activityId={Number(id)} />
                 </div>
               </TabsContent>
 
@@ -492,10 +505,25 @@ export default function ActivityDetailPage() {
 
               <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
                 <DialogTrigger asChild>
-                  <Button className="w-full mb-4 bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full mb-3 bg-blue-600 hover:bg-blue-700">
                     <Calendar className="w-4 h-4 mr-2" />
                     Reservar Agora
                   </Button>
+                </DialogTrigger>
+              </Dialog>
+
+              <Button 
+                onClick={() => setShowAddToTripDialog(true)}
+                variant="outline" 
+                className="w-full mb-4 border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                <Plane className="w-4 h-4 mr-2" />
+                Adicionar à Viagem
+              </Button>
+
+              <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
+                <DialogTrigger asChild>
+                  <div style={{ display: 'none' }}></div>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
@@ -713,6 +741,13 @@ export default function ActivityDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Add to Trip Dialog */}
+      <AddActivityToTrip 
+        activity={activity}
+        isOpen={showAddToTripDialog}
+        onClose={() => setShowAddToTripDialog(false)}
+      />
     </div>
   );
 }

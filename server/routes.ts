@@ -4,7 +4,7 @@ import { createServer, type Server } from "http";
 
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema } from "@shared/schema";
+import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema } from "@shared/schema";
 
 // Middleware para verificar autenticação
 function requireAuth(req: any, res: any, next: any) {
@@ -1066,6 +1066,188 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao atualizar reserva:', error);
       res.status(400).json({ message: "Erro ao atualizar reserva" });
+    }
+  });
+
+  // ===== ACTIVITY BUDGET PROPOSALS ROUTES =====
+  
+  // Get all budget proposals for an activity
+  app.get("/api/activities/:id/proposals", async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const proposals = await storage.getActivityBudgetProposals(activityId);
+      res.json(proposals);
+    } catch (error) {
+      console.error('Erro ao buscar propostas de orçamento:', error);
+      res.status(500).json({ message: "Erro ao buscar propostas de orçamento" });
+    }
+  });
+
+  // Create new budget proposal for activity (requires authentication)
+  app.post("/api/activities/:id/proposals", requireAuth, async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      const proposalData = insertActivityBudgetProposalSchema.parse(req.body);
+      
+      const proposal = await storage.createActivityBudgetProposal({
+        ...proposalData,
+        activityId,
+        createdBy: userId
+      });
+      
+      res.status(201).json(proposal);
+    } catch (error) {
+      console.error('Erro ao criar proposta de orçamento:', error);
+      res.status(400).json({ message: "Erro ao criar proposta de orçamento" });
+    }
+  });
+
+  // Update budget proposal (requires authentication)
+  app.patch("/api/proposals/:id", requireAuth, async (req, res) => {
+    try {
+      const proposalId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedProposal = await storage.updateActivityBudgetProposal(proposalId, updates);
+      
+      if (!updatedProposal) {
+        return res.status(404).json({ message: "Proposta não encontrada" });
+      }
+      
+      res.json(updatedProposal);
+    } catch (error) {
+      console.error('Erro ao atualizar proposta:', error);
+      res.status(400).json({ message: "Erro ao atualizar proposta" });
+    }
+  });
+
+  // Delete budget proposal (requires authentication)
+  app.delete("/api/proposals/:id", requireAuth, async (req, res) => {
+    try {
+      const proposalId = parseInt(req.params.id);
+      const deleted = await storage.deleteActivityBudgetProposal(proposalId);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Proposta não encontrada" });
+      }
+      
+      res.json({ message: "Proposta excluída com sucesso" });
+    } catch (error) {
+      console.error('Erro ao excluir proposta:', error);
+      res.status(400).json({ message: "Erro ao excluir proposta" });
+    }
+  });
+
+  // Vote on budget proposal (requires authentication)
+  app.post("/api/proposals/:id/vote", requireAuth, async (req, res) => {
+    try {
+      const proposalId = parseInt(req.params.id);
+      const { increment } = req.body; // true for upvote, false for downvote
+      
+      const updatedProposal = await storage.voteActivityBudgetProposal(proposalId, increment);
+      
+      if (!updatedProposal) {
+        return res.status(404).json({ message: "Proposta não encontrada" });
+      }
+      
+      res.json(updatedProposal);
+    } catch (error) {
+      console.error('Erro ao votar na proposta:', error);
+      res.status(400).json({ message: "Erro ao votar na proposta" });
+    }
+  });
+
+  // ===== TRIP ACTIVITIES ROUTES =====
+  
+  // Get all activities for a trip
+  app.get("/api/trips/:id/activities", async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const tripActivities = await storage.getTripActivities(tripId);
+      res.json(tripActivities);
+    } catch (error) {
+      console.error('Erro ao buscar atividades da viagem:', error);
+      res.status(500).json({ message: "Erro ao buscar atividades da viagem" });
+    }
+  });
+
+  // Add activity to trip with selected proposal (requires authentication)
+  app.post("/api/trips/:id/activities", requireAuth, async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      const tripActivityData = insertTripActivitySchema.parse(req.body);
+      
+      const tripActivity = await storage.addActivityToTrip({
+        ...tripActivityData,
+        tripId,
+        addedBy: userId
+      });
+      
+      res.status(201).json(tripActivity);
+    } catch (error) {
+      console.error('Erro ao adicionar atividade à viagem:', error);
+      res.status(400).json({ message: "Erro ao adicionar atividade à viagem" });
+    }
+  });
+
+  // Update trip activity (requires authentication)
+  app.patch("/api/trip-activities/:id", requireAuth, async (req, res) => {
+    try {
+      const tripActivityId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedTripActivity = await storage.updateTripActivity(tripActivityId, updates);
+      
+      if (!updatedTripActivity) {
+        return res.status(404).json({ message: "Atividade da viagem não encontrada" });
+      }
+      
+      res.json(updatedTripActivity);
+    } catch (error) {
+      console.error('Erro ao atualizar atividade da viagem:', error);
+      res.status(400).json({ message: "Erro ao atualizar atividade da viagem" });
+    }
+  });
+
+  // Remove activity from trip (requires authentication)
+  app.delete("/api/trip-activities/:id", requireAuth, async (req, res) => {
+    try {
+      const tripActivityId = parseInt(req.params.id);
+      const deleted = await storage.removeTripActivity(tripActivityId);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Atividade da viagem não encontrada" });
+      }
+      
+      res.json({ message: "Atividade removida da viagem com sucesso" });
+    } catch (error) {
+      console.error('Erro ao remover atividade da viagem:', error);
+      res.status(400).json({ message: "Erro ao remover atividade da viagem" });
+    }
+  });
+
+  // Get user trips in same location as activity (for adding activities to trips)
+  app.get("/api/users/:userId/trips-in-location", requireAuth, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { location } = req.query;
+      
+      if (!location) {
+        return res.status(400).json({ message: "Localização é obrigatória" });
+      }
+      
+      // Ensure user can only see their own trips
+      if (userId !== req.user!.id) {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+      
+      const trips = await storage.getUserTripsInLocation(userId, location as string);
+      res.json(trips);
+    } catch (error) {
+      console.error('Erro ao buscar viagens do usuário na localização:', error);
+      res.status(500).json({ message: "Erro ao buscar viagens do usuário" });
     }
   });
 
