@@ -64,7 +64,6 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
       });
       if (!response.ok) throw new Error('Falha ao buscar balanços');
       const data = await response.json();
-      console.log('Balance data fetched:', data);
       return data;
     },
     staleTime: 0, // Always fetch fresh data
@@ -154,17 +153,25 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
   };
 
   const formatCurrency = (amount: number) => {
+    // Ensure amount is a number
+    const numAmount = Number(amount);
+    
+    if (isNaN(numAmount)) {
+      return 'R$ 0,00';
+    }
+    
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    }).format(amount);
+    }).format(numAmount);
   };
 
   // Calculate who owes whom
   const calculateSettlements = () => {
     const settlements: { from: any; to: any; amount: number }[] = [];
-    const creditors = balances.filter(b => b.balance > 0).sort((a, b) => b.balance - a.balance);
-    const debtors = balances.filter(b => b.balance < 0).sort((a, b) => a.balance - b.balance);
+    // Create copies of balances to avoid modifying the original data
+    const creditors = balances.filter(b => b.balance > 0).map(b => ({ ...b })).sort((a, b) => b.balance - a.balance);
+    const debtors = balances.filter(b => b.balance < 0).map(b => ({ ...b })).sort((a, b) => a.balance - b.balance);
 
     let i = 0, j = 0;
     while (i < creditors.length && j < debtors.length) {
@@ -248,6 +255,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                         {balance.balance > 0 && '+ '}
                         {formatCurrency(balance.balance)}
                       </p>
+
                       <p className="text-xs text-gray-500">
                         {balance.balance > 0 ? 'Tem a receber' : balance.balance < 0 ? 'Tem a pagar' : 'Sem pendências'}
                       </p>
