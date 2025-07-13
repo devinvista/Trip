@@ -35,7 +35,8 @@ import {
   ChevronUp,
   Navigation,
   Compass,
-  Zap
+  Zap,
+  Plus
 } from "lucide-react";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
 import { LoadingSpinner } from "@/components/loading-spinner";
