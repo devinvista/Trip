@@ -325,7 +325,7 @@ export default function HomePage() {
                     Encontrar Companheiros
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-2 border-slate-300 text-slate-700 hover:bg-slate-100 backdrop-blur-sm px-8 py-6 rounded-full">
+                <Button asChild size="lg" variant="outline" className="border-2 border-green-300 text-green-700 hover:bg-gradient-to-r hover:from-green-500 hover:to-emerald-500 hover:text-white hover:border-green-500 backdrop-blur-sm px-8 py-6 rounded-full transition-all duration-300">
                   <Link href="/create-trip">
                     <DollarSign className="mr-2 h-5 w-5" />
                     Compartilhar Viagem
