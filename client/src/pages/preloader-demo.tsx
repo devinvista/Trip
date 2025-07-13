@@ -34,7 +34,7 @@ export default function PreloaderDemo() {
           <CardContent className="space-y-6">
             <div className="text-center space-y-4">
               <p className="text-gray-600">
-                Este é o novo preloader do PartiuTrip com um avião circulando o globo terrestre.
+                Este é o novo preloader animado do PartiuTrip usando animação Lottie profissional.
               </p>
               
               <Button 

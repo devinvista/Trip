@@ -276,3 +276,4 @@ Registro de Alterações:
 - 13 de julho de 2025. Atualização das páginas dashboard e busca para usar o novo preloader de viagem - substituído skeleton loading por preloader centralizado com animação de globo e avião
 - 13 de julho de 2025. Criação de página de demonstração do preloader (/preloader-demo) com teste interativo das variantes simple e travel do LoadingSpinner
 - 13 de julho de 2025. Correção do preloader conforme feedback do usuário - avião alterado para cor dourada/ouro (#FFD700) circulando no sentido horário, globo terrestre mantido em azul com continentes verdes, removido segundo avião para simplificar animação
+- 13 de julho de 2025. Integração do preloader Lottie personalizado - substituído preloader CSS/SVG por animação Lottie profissional fornecida pelo usuário, componente LoadingSpinner atualizado para usar lottie-react, melhor qualidade visual e performance
