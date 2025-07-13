@@ -43,14 +43,14 @@ export function Navbar() {
   if (isLoading) {
     return (
       <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-        <nav className="container mx-auto px-4 py-3">
+        <nav className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105">
               <img 
                 src={logoImage} 
                 alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-                className="h-16 w-auto max-w-[280px] object-contain"
+                className="h-20 w-auto max-w-[320px] object-contain"
               />
             </Link>
             
@@ -66,14 +66,14 @@ export function Navbar() {
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-      <nav className="container mx-auto px-4 py-3">
+      <nav className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link href="/" className="flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105">
             <img 
               src={logoImage} 
               alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-              className="h-16 w-auto max-w-[280px] object-contain"
+              className="h-20 w-auto max-w-[320px] object-contain"
             />
           </Link>
           
