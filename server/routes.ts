@@ -563,6 +563,92 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Profile routes
+  app.put("/api/user/profile", requireAuth, async (req, res) => {
+    try {
+      const { fullName, email, bio, location, languages, interests, travelStyle } = req.body;
+      
+      const updatedUser = await storage.updateUser(req.user!.id, {
+        fullName,
+        email,
+        bio,
+        location,
+        languages,
+        interests,
+        travelStyle
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error('Erro ao atualizar perfil:', error);
+      res.status(500).json({ message: "Erro ao atualizar perfil" });
+    }
+  });
+
+  app.get("/api/user/stats", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      // Get user's trips
+      const createdTrips = await storage.getTripsByCreator(userId);
+      const participatingTrips = await storage.getTripsByParticipant(userId);
+      
+      const totalTrips = createdTrips.length + participatingTrips.length;
+      const completedTrips = [...createdTrips, ...participatingTrips].filter(trip => 
+        trip.status === 'completed' || new Date(trip.endDate) < new Date()
+      ).length;
+      
+      // Get travel partners (unique users from all trips)
+      const allTrips = [...createdTrips, ...participatingTrips];
+      const travelPartners = new Set();
+      
+      for (const trip of allTrips) {
+        const participants = await storage.getTripParticipants(trip.id);
+        participants.forEach(p => {
+          if (p.userId !== userId) {
+            travelPartners.add(p.userId);
+          }
+        });
+      }
+      
+      const stats = {
+        totalTrips,
+        completedTrips,
+        travelPartners: travelPartners.size,
+        averageRating: "5.0" // Mock rating for now
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas:', error);
+      res.status(500).json({ message: "Erro ao buscar estatísticas" });
+    }
+  });
+
+  app.get("/api/user/referral", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      // Generate referral code based on user ID
+      const referralCode = `PARTIU${userId.toString().padStart(4, '0')}`;
+      
+      // For now, return empty referred users (would need referral system implementation)
+      const referralData = {
+        code: referralCode,
+        referredUsers: []
+      };
+      
+      res.json(referralData);
+    } catch (error) {
+      console.error('Erro ao buscar dados de indicação:', error);
+      res.status(500).json({ message: "Erro ao buscar dados de indicação" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

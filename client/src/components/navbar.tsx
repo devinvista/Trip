@@ -123,7 +123,7 @@ export function Navbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/perfil" className="flex items-center gap-2 w-full">
+                      <Link href="/profile" className="flex items-center gap-2 w-full">
                         <User className="h-4 w-4" />
                         Meu Perfil
                       </Link>

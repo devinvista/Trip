@@ -14,6 +14,7 @@ import CreateTripPage from "@/pages/create-trip-page";
 import TripDetailPage from "@/pages/trip-detail-page";
 import ChatPage from "@/pages/chat-page";
 import JourneyTrackerPage from "@/pages/journey-tracker-page";
+import ProfilePage from "@/pages/profile";
 
 import NotFound from "@/pages/not-found";
 
@@ -44,6 +45,7 @@ function App() {
               <Route path="/trip/:id" component={TripDetailPage} />
               <Route path="/chat/:tripId" component={ChatPage} />
               <Route path="/journey-tracker" component={JourneyTrackerPage} />
+              <Route path="/profile" component={ProfilePage} />
 
               <Route component={NotFound} />
             </Switch>
