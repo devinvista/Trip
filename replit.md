@@ -260,4 +260,4 @@ Registro de Alterações:
 - 13 de julho de 2025. Implementação de 10 viagens históricas completadas em 2025 (Pantanal, Carnaval Salvador, Mantiqueira, Maragogi, Ouro Preto, Amazônia, Florianópolis, Serra Gaúcha, Lençóis Maranhenses, Caruaru) com Tom participando de todas
 - 13 de julho de 2025. Criação de 4 viagens futuras ambiciosas (Réveillon Copacabana, Patagônia Argentina, Machu Picchu, Safári Quênia) com Tom como criador ou participante
 - 13 de julho de 2025. Diversificação de estilos de viagem e destinos para demonstrar todas as funcionalidades da plataforma - mix de viagens nacionais e internacionais com diferentes orçamentos e durações
-- 13 de julho de 2025. Atualização do logo para nova versão com fundo transparente - substituído por versão atualizada do logo PartiuTrip (1752377252367.png) mantendo altura h-20 e largura máxima 320px
+- 13 de julho de 2025. Atualização do logo para nova versão com fundo transparente - substituído por versão atualizada do logo PartiuTrip (1752377252367.png) com altura h-12 (48px) e largura máxima 220px para tamanho otimizado
