@@ -314,9 +314,9 @@ export default function HomePage() {
                   <TravelAnimation className="w-full h-full" />
                 </motion.div>
 
-                {/* Floating Action Buttons around Preloader */}
+                {/* Floating Action Buttons around Preloader - com z-index corrigido */}
                 <motion.div
-                  className="absolute top-12 left-12 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
+                  className="absolute top-12 left-12 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group z-20"
                   animate={{
                     y: [0, -20, 0],
                     rotate: [0, 10, 0],
@@ -334,13 +334,13 @@ export default function HomePage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Users className="w-6 h-6 text-yellow-600 group-hover:text-yellow-500 transition-colors" />
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-30">
                     Comunidade Verificada
                   </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute bottom-12 right-12 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
+                  className="absolute bottom-12 right-12 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group z-20"
                   animate={{
                     y: [0, 20, 0],
                     scale: [1, 1.05, 1],
@@ -358,13 +358,13 @@ export default function HomePage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <DollarSign className="w-6 h-6 text-green-600 group-hover:text-green-500 transition-colors" />
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-30">
                     Economize até 65%
                   </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute top-28 right-8 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
+                  className="absolute top-28 right-8 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group z-20"
                   animate={{
                     x: [0, 15, 0],
                     y: [0, -15, 0],
@@ -381,13 +381,13 @@ export default function HomePage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Heart className="w-6 h-6 text-blue-600 group-hover:text-blue-500 transition-colors" />
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-30">
                     Experiências Únicas
                   </div>
                 </motion.div>
 
                 <motion.div
-                  className="absolute bottom-28 left-8 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group"
+                  className="absolute bottom-28 left-8 bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg cursor-pointer group z-20"
                   animate={{
                     x: [0, -15, 0],
                     y: [0, 15, 0],
@@ -404,14 +404,14 @@ export default function HomePage() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Globe className="w-6 h-6 text-indigo-600 group-hover:text-indigo-500 transition-colors" />
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-30">
                     85+ Destinos
                   </div>
                 </motion.div>
 
-                {/* Animated Stats Badges */}
+                {/* Animated Stats Badges - com z-index corrigido */}
                 <motion.div
-                  className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full px-4 py-2 shadow-lg"
+                  className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full px-4 py-2 shadow-lg z-20"
                   animate={{
                     y: [0, -10, 0],
                     scale: [1, 1.02, 1],
@@ -430,7 +430,7 @@ export default function HomePage() {
                 </motion.div>
 
                 <motion.div
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full px-4 py-2 shadow-lg"
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full px-4 py-2 shadow-lg z-20"
                   animate={{
                     y: [0, 10, 0],
                     scale: [1, 1.02, 1],
