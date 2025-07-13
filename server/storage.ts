@@ -14,11 +14,11 @@ function getCoverImageForDestination(destination: string, travelStyle?: string):
   // Define specific landmark images for iconic destinations
   const iconicDestinations: { [key: string]: string } = {
     // Marcos icônicos mundiais
-    "cairo": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80", // Pirâmides
-    "egito": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80", // Pirâmides
-    "egypt": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80", // Pirâmides
-    "pirâmides": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80",
-    "pyramids": "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80",
+    "cairo": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80", // Pirâmides do Egito
+    "egito": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80", // Pirâmides do Egito
+    "egypt": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80", // Pirâmides do Egito
+    "pirâmides": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80",
+    "pyramids": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80",
     "roma": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80", // Coliseu
     "coliseu": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
     "rio de janeiro": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80", // Cristo Redentor
@@ -597,6 +597,23 @@ export class MemStorage implements IStorage {
     return updatedTrip;
   }
 
+  // Fix existing trips with broken Egypt images
+  async fixEgyptTrips(): Promise<void> {
+    const trips = Array.from(this.trips.values());
+    const brokenImageUrl = "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80";
+    const newImageUrl = "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80";
+    
+    for (const trip of trips) {
+      if (trip.coverImage === brokenImageUrl && 
+          (trip.destination.toLowerCase().includes('egito') || 
+           trip.destination.toLowerCase().includes('cairo'))) {
+        console.log(`🔧 Corrigindo imagem da viagem do Egito: ${trip.title}`);
+        trip.coverImage = newImageUrl;
+        this.trips.set(trip.id, trip);
+      }
+    }
+  }
+
   async getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]> {
     const participants = Array.from(this.tripParticipants.values())
       .filter(p => p.tripId === tripId);
@@ -903,6 +920,9 @@ async function createDefaultTestUser() {
       
       // Criar viagens padrão para o usuário Tom
       await createDefaultTrips(user);
+      
+      // Corrigir viagens existentes com imagens quebradas do Egito
+      await storage.fixEgyptTrips();
     } else {
       console.log('ℹ️ Usuário de teste já existe: tom');
     }

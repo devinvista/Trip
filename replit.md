@@ -244,3 +244,6 @@ Registro de Alterações:
 - 13 de julho de 2025. Redesign completo dos cards de viagem do dashboard com visual moderno: imagens cover com overlay, badges de status coloridos, barra de progresso de participantes, botões com gradientes, hover effects e melhor hierarquia visual
 - 13 de julho de 2025. Implementação de skeleton loading melhorado para cards de viagem com gradientes e estrutura visual consistente
 - 13 de julho de 2025. Adicionado cálculo automático de custo por pessoa nos cards de viagem e melhorias no estado vazio com call-to-actions mais atraentes
+- 13 de julho de 2025. Corrigido sistema de geração automática de imagens de destino - substituída imagem quebrada das pirâmides por uma funcional, implementada busca inteligente que reconhece "Egito" em português e gera automaticamente imagem das pirâmides
+- 13 de julho de 2025. Implementado sistema de busca normalizada para destinos icônicos - sistema agora detecta automaticamente "Egito", "Cairo", "Egypt" e aplica imagem realista das pirâmides do Egito (photo-1600298881974-6be191ceeda1)
+- 13 de julho de 2025. Adicionados logs detalhados para depuração do sistema de imagens automáticas - sistema mostra no console qual imagem foi selecionada e por que critério (match exato, parcial, fallback)
