@@ -670,9 +670,7 @@ export default function ActivityDetailPage() {
                 </DialogContent>
               </Dialog>
 
-              <Button variant="outline" className="w-full mb-6">
-                Adicionar à viagem
-              </Button>
+              
 
               <Separator className="my-6" />
 
