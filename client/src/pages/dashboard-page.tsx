@@ -242,21 +242,21 @@ export default function DashboardPage() {
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
                 <Link href="/create-trip">
-                  <Button className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  <Button className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <Plus className="h-5 w-5 mr-2" />
                     <span className="font-medium">Criar Viagem</span>
                   </Button>
                 </Link>
                 
                 <Link href="/search">
-                  <Button className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-orange-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  <Button className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <Search className="h-5 w-5 mr-2" />
                     <span className="font-medium">Buscar</span>
                   </Button>
                 </Link>
                 
                 <Link href="/profile">
-                  <Button className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-orange-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  <Button className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <Settings className="h-5 w-5 mr-2" />
                     <span className="font-medium">Perfil</span>
                   </Button>
@@ -264,7 +264,7 @@ export default function DashboardPage() {
                 
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-orange-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative">
+                    <Button className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative">
                       <Bell className="h-5 w-5 mr-2" />
                       <span className="font-medium">Notificações</span>
                       {(upcomingTrips.length > 0 || pendingRequests.length > 0) && (
@@ -507,7 +507,7 @@ export default function DashboardPage() {
                           variant={selectedTimeframe === filter.id ? "default" : "outline"}
                           size="sm"
                           onClick={() => setSelectedTimeframe(filter.id)}
-                          className="gap-1 hover:bg-orange-600 hover:text-white hover:border-orange-600"
+                          className="gap-1"
                         >
                           {filter.label}
                           <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs">
@@ -656,7 +656,7 @@ export default function DashboardPage() {
                       <Link href={`/trip/${trip.id}`} className="flex-1 min-w-0">
                         <Button 
                           size="sm" 
-                          className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-orange-600 text-white border-0"
+                          className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           Ver Detalhes
@@ -667,7 +667,7 @@ export default function DashboardPage() {
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white hover:border-orange-600"
+                          className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
                         >
                           <MessageCircle className="h-4 w-4 mr-1" />
                           Chat
@@ -723,25 +723,25 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <Link href="/create-trip">
-                      <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-orange-600 text-white border-0 px-8 py-3 h-auto">
+                      <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 px-8 py-3 h-auto">
                         <Plus className="h-5 w-5 mr-2" />
                         Criar Nova Viagem
                       </Button>
                     </Link>
                     <Link href="/search">
-                      <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 px-8 py-3 h-auto">
+                      <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 px-8 py-3 h-auto">
                         <Search className="h-5 w-5 mr-2" />
                         Buscar Companheiros
                       </Button>
                     </Link>
                     <Link href="/profile">
-                      <Button variant="outline" className="border-blue-200 text-blue-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 px-8 py-3 h-auto">
+                      <Button variant="outline" className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-8 py-3 h-auto">
                         <Settings className="h-5 w-5 mr-2" />
                         Editar Perfil
                       </Button>
                     </Link>
                     <Link href="/journey-tracker">
-                      <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 px-8 py-3 h-auto">
+                      <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700 px-8 py-3 h-auto">
                         <TrendingUp className="h-5 w-5 mr-2" />
                         Ver Progresso
                       </Button>
