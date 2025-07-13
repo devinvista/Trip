@@ -1063,10 +1063,10 @@ async function createDefaultTestUser() {
       const user = await storage.createUser({
         username: 'tom',
         email: 'tom@teste.com',
-        fullName: 'Tom Teste',
+        fullName: 'Tom Tubin',
         password: hashedPassword,
         bio: 'Usuário de teste padrão',
-        location: 'São Paulo, SP',
+        location: 'Porto Alegre, RS',
         travelStyle: 'urbanas',
         languages: ['Português', 'Inglês'],
         interests: ['Aventura', 'Cultura', 'Gastronomia']
@@ -1085,6 +1085,9 @@ async function createDefaultTestUser() {
     
     // Criar segundo usuário para teste de participação
     await createSecondTestUser();
+    
+    // Criar usuários adicionais e viagens históricas/futuras
+    await createAdditionalTestUsers();
   } catch (error) {
     console.error('❌ Erro ao criar usuário de teste:', error);
   }
@@ -1247,6 +1250,333 @@ async function createDefaultTrips(user: User) {
     console.log('✅ Viagens padrão criadas:', trip1.title, trip2.title, 'e', trip3.title);
   } catch (error) {
     console.error('❌ Erro ao criar viagens padrão:', error);
+  }
+}
+
+// Create additional test users and historical/future trips
+async function createAdditionalTestUsers() {
+  try {
+    // Create additional test users
+    const users = [
+      {
+        username: 'carlos',
+        email: 'carlos@teste.com',
+        fullName: 'Carlos Silva',
+        location: 'Belo Horizonte, MG',
+        travelStyle: 'aventura',
+        languages: ['Português'],
+        interests: ['Montanha', 'Aventura', 'Natureza'],
+        bio: 'Aventureiro apaixonado por trilhas e montanhas'
+      },
+      {
+        username: 'ana',
+        email: 'ana@teste.com',
+        fullName: 'Ana Costa',
+        location: 'Salvador, BA',
+        travelStyle: 'praia',
+        languages: ['Português', 'Inglês'],
+        interests: ['Praia', 'Música', 'Dança'],
+        bio: 'Amo praia, música e conhecer novas culturas'
+      },
+      {
+        username: 'ricardo',
+        email: 'ricardo@teste.com',
+        fullName: 'Ricardo Oliveira',
+        location: 'Curitiba, PR',
+        travelStyle: 'culturais',
+        languages: ['Português', 'Espanhol', 'Francês'],
+        interests: ['História', 'Arquitetura', 'Museus'],
+        bio: 'Historiador e amante da cultura mundial'
+      },
+      {
+        username: 'julia',
+        email: 'julia@teste.com',
+        fullName: 'Julia Mendes',
+        location: 'Fortaleza, CE',
+        travelStyle: 'natureza',
+        languages: ['Português', 'Inglês'],
+        interests: ['Natureza', 'Fotografia', 'Ecoturismo'],
+        bio: 'Bióloga e fotógrafa da natureza'
+      }
+    ];
+
+    // Create users if they don't exist
+    const { scrypt, randomBytes } = await import('crypto');
+    const { promisify } = await import('util');
+    const scryptAsync = promisify(scrypt);
+
+    const createdUsers = [];
+    for (const userData of users) {
+      const existingUser = await storage.getUserByUsername(userData.username);
+      if (!existingUser) {
+        const salt = randomBytes(16).toString("hex");
+        const buf = (await scryptAsync('demo123', salt, 64)) as Buffer;
+        const hashedPassword = `${buf.toString("hex")}.${salt}`;
+
+        const user = await storage.createUser({
+          ...userData,
+          password: hashedPassword
+        });
+        createdUsers.push(user);
+        console.log(`✅ Usuário ${userData.username} criado`);
+      } else {
+        createdUsers.push(existingUser);
+      }
+    }
+
+    // Get Tom user
+    const tomUser = await storage.getUserByUsername('tom');
+    if (!tomUser) return;
+
+    // Create 10 historical trips (completed in 2025)
+    const historicalTrips = [
+      {
+        title: 'Aventura no Pantanal',
+        destination: 'Pantanal, MS',
+        coverImage: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&q=80',
+        startDate: new Date('2025-02-10'),
+        endDate: new Date('2025-02-15'),
+        budget: 2800,
+        maxParticipants: 6,
+        description: 'Safari fotográfico no Pantanal com observação de jacarés, capivaras e onças. Inclui hospedagem em fazenda ecológica.',
+        travelStyle: 'natureza',
+        creatorId: tomUser.id,
+        status: 'completed',
+        participants: [createdUsers[0].id, createdUsers[1].id]
+      },
+      {
+        title: 'Carnaval em Salvador',
+        destination: 'Salvador, BA',
+        coverImage: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80',
+        startDate: new Date('2025-02-20'),
+        endDate: new Date('2025-02-25'),
+        budget: 1800,
+        maxParticipants: 8,
+        description: 'Carnaval em Salvador com trio elétrico, shows e muita festa. Hospedagem no Pelourinho.',
+        travelStyle: 'culturais',
+        creatorId: createdUsers[1].id,
+        status: 'completed',
+        participants: [tomUser.id, createdUsers[2].id]
+      },
+      {
+        title: 'Trilha na Serra da Mantiqueira',
+        destination: 'Mantiqueira, MG',
+        coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+        startDate: new Date('2025-03-15'),
+        endDate: new Date('2025-03-18'),
+        budget: 1400,
+        maxParticipants: 5,
+        description: 'Trilha de 3 dias na Serra da Mantiqueira com acampamento e vistas espetaculares.',
+        travelStyle: 'aventura',
+        creatorId: createdUsers[0].id,
+        status: 'completed',
+        participants: [tomUser.id, createdUsers[3].id]
+      },
+      {
+        title: 'Praias de Maragogi',
+        destination: 'Maragogi, AL',
+        coverImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80',
+        startDate: new Date('2025-04-01'),
+        endDate: new Date('2025-04-07'),
+        budget: 2200,
+        maxParticipants: 6,
+        description: 'Semana nas praias paradisíacas de Maragogi com mergulho nas piscinas naturais.',
+        travelStyle: 'praia',
+        creatorId: tomUser.id,
+        status: 'completed',
+        participants: [createdUsers[1].id, createdUsers[2].id]
+      },
+      {
+        title: 'Cultura em Ouro Preto',
+        destination: 'Ouro Preto, MG',
+        coverImage: 'https://images.unsplash.com/photo-1571104508999-893933ded431?w=800&q=80',
+        startDate: new Date('2025-04-20'),
+        endDate: new Date('2025-04-24'),
+        budget: 1600,
+        maxParticipants: 4,
+        description: 'Turismo histórico em Ouro Preto com visita às igrejas coloniais e museus.',
+        travelStyle: 'culturais',
+        creatorId: createdUsers[2].id,
+        status: 'completed',
+        participants: [tomUser.id, createdUsers[0].id]
+      },
+      {
+        title: 'Amazônia - Manaus',
+        destination: 'Manaus, AM',
+        coverImage: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80',
+        startDate: new Date('2025-05-10'),
+        endDate: new Date('2025-05-16'),
+        budget: 3200,
+        maxParticipants: 8,
+        description: 'Expedição na Amazônia com visita ao encontro das águas e trilhas na floresta.',
+        travelStyle: 'natureza',
+        creatorId: createdUsers[3].id,
+        status: 'completed',
+        participants: [tomUser.id, createdUsers[1].id]
+      },
+      {
+        title: 'Surf em Florianópolis',
+        destination: 'Florianópolis, SC',
+        coverImage: 'https://images.unsplash.com/photo-1574798834391-25b2b7f98b58?w=800&q=80',
+        startDate: new Date('2025-05-25'),
+        endDate: new Date('2025-05-30'),
+        budget: 1900,
+        maxParticipants: 6,
+        description: 'Semana de surf em Floripa com aulas e muito beach life.',
+        travelStyle: 'praia',
+        creatorId: tomUser.id,
+        status: 'completed',
+        participants: [createdUsers[0].id, createdUsers[3].id]
+      },
+      {
+        title: 'Vinícolas na Serra Gaúcha',
+        destination: 'Gramado, RS',
+        coverImage: 'https://images.unsplash.com/photo-1560024966-b4a35a6b8bcc?w=800&q=80',
+        startDate: new Date('2025-06-15'),
+        endDate: new Date('2025-06-20'),
+        budget: 2400,
+        maxParticipants: 5,
+        description: 'Tour pelas vinícolas da Serra Gaúcha com degustação e culinária local.',
+        travelStyle: 'culturais',
+        creatorId: createdUsers[2].id,
+        status: 'completed',
+        participants: [tomUser.id, createdUsers[1].id]
+      },
+      {
+        title: 'Lençóis Maranhenses',
+        destination: 'Lençóis Maranhenses, MA',
+        coverImage: 'https://images.unsplash.com/photo-1629495171936-a5e5bfb3a8be?w=800&q=80',
+        startDate: new Date('2025-07-01'),
+        endDate: new Date('2025-07-06'),
+        budget: 2600,
+        maxParticipants: 7,
+        description: 'Aventura nos Lençóis Maranhenses com passeios de buggy e banho nas lagoas.',
+        travelStyle: 'natureza',
+        creatorId: createdUsers[0].id,
+        status: 'completed',
+        participants: [tomUser.id, createdUsers[2].id, createdUsers[3].id]
+      },
+      {
+        title: 'Festa Junina em Caruaru',
+        destination: 'Caruaru, PE',
+        coverImage: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=800&q=80',
+        startDate: new Date('2025-06-23'),
+        endDate: new Date('2025-06-26'),
+        budget: 1500,
+        maxParticipants: 6,
+        description: 'Maior São João do mundo em Caruaru com forró, quadrilha e comida típica.',
+        travelStyle: 'culturais',
+        creatorId: tomUser.id,
+        status: 'completed',
+        participants: [createdUsers[1].id, createdUsers[2].id]
+      }
+    ];
+
+    // Create historical trips
+    for (const tripData of historicalTrips) {
+      const existingTrip = await storage.getTrips({ destination: tripData.destination });
+      const tripExists = existingTrip.some(t => t.title === tripData.title);
+      
+      if (!tripExists) {
+        const { participants, ...tripInfo } = tripData;
+        const trip = await storage.createTrip({
+          ...tripInfo,
+          budgetBreakdown: {
+            transport: Math.floor(tripInfo.budget * 0.4),
+            accommodation: Math.floor(tripInfo.budget * 0.4),
+            food: Math.floor(tripInfo.budget * 0.2)
+          }
+        });
+
+        // Add participants
+        for (const participantId of participants) {
+          await storage.addTripParticipant(trip.id, participantId);
+        }
+      }
+    }
+
+    // Create 4 future trips
+    const futureTrips = [
+      {
+        title: 'Réveillon em Copacabana',
+        destination: 'Rio de Janeiro, RJ',
+        coverImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80',
+        startDate: new Date('2025-12-29'),
+        endDate: new Date('2026-01-02'),
+        budget: 2800,
+        maxParticipants: 8,
+        description: 'Réveillon em Copacabana com festa na praia e shows.',
+        travelStyle: 'culturais',
+        creatorId: createdUsers[1].id,
+        participants: [tomUser.id, createdUsers[2].id]
+      },
+      {
+        title: 'Patagônia Argentina',
+        destination: 'El Calafate, Argentina',
+        coverImage: 'https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=800&q=80',
+        startDate: new Date('2026-02-15'),
+        endDate: new Date('2026-02-25'),
+        budget: 4200,
+        maxParticipants: 6,
+        description: 'Aventura na Patagônia com glaciares e trekkings épicos.',
+        travelStyle: 'aventura',
+        creatorId: tomUser.id,
+        participants: [createdUsers[0].id, createdUsers[3].id]
+      },
+      {
+        title: 'Machu Picchu',
+        destination: 'Cusco, Peru',
+        coverImage: 'https://images.unsplash.com/photo-1587595431973-160d0d94add1?w=800&q=80',
+        startDate: new Date('2026-03-10'),
+        endDate: new Date('2026-03-17'),
+        budget: 3600,
+        maxParticipants: 5,
+        description: 'Trilha Inca até Machu Picchu com guias locais.',
+        travelStyle: 'culturais',
+        creatorId: createdUsers[2].id,
+        participants: [tomUser.id, createdUsers[1].id]
+      },
+      {
+        title: 'Safári no Quênia',
+        destination: 'Nairobi, Quênia',
+        coverImage: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80',
+        startDate: new Date('2026-04-20'),
+        endDate: new Date('2026-04-30'),
+        budget: 5800,
+        maxParticipants: 4,
+        description: 'Safári fotográfico no Quênia com Big Five e Masai Mara.',
+        travelStyle: 'natureza',
+        creatorId: tomUser.id,
+        participants: [createdUsers[0].id, createdUsers[3].id]
+      }
+    ];
+
+    // Create future trips
+    for (const tripData of futureTrips) {
+      const existingTrip = await storage.getTrips({ destination: tripData.destination });
+      const tripExists = existingTrip.some(t => t.title === tripData.title);
+      
+      if (!tripExists) {
+        const { participants, ...tripInfo } = tripData;
+        const trip = await storage.createTrip({
+          ...tripInfo,
+          budgetBreakdown: {
+            transport: Math.floor(tripInfo.budget * 0.4),
+            accommodation: Math.floor(tripInfo.budget * 0.4),
+            food: Math.floor(tripInfo.budget * 0.2)
+          }
+        });
+
+        // Add participants
+        for (const participantId of participants) {
+          await storage.addTripParticipant(trip.id, participantId);
+        }
+      }
+    }
+
+    console.log('✅ Usuários adicionais e viagens históricas/futuras criadas');
+  } catch (error) {
+    console.error('❌ Erro ao criar usuários e viagens adicionais:', error);
   }
 }
 
