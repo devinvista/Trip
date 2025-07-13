@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TripCard } from "@/components/trip-card";
 import { Plane, Users, DollarSign, Calendar, MapPin, Shield, Star, TrendingUp, Heart, Sparkles, Compass, Navigation, Globe } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -594,83 +595,91 @@ export default function HomePage() {
       </section>
 
       {/* Recent Trips */}
-      <section className="bg-gray-50 dark:bg-gray-900 py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Viagens Recentes</h2>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">Junte-se a uma aventura que está prestes a começar</p>
+      <section className="relative bg-gradient-to-br from-slate-50 via-blue-50/30 to-cyan-50/20 py-20 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-indigo-400 to-cyan-600 rounded-full filter blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-full filter blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-full px-6 py-2 mb-6 border border-white/20">
+              <TrendingUp className="w-5 h-5 text-indigo-500" />
+              <span className="text-sm font-medium text-slate-700">Mais Recentes</span>
             </div>
-            <Button asChild variant="ghost">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+                Viagens Recentes
+              </span>
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Junte-se a uma aventura que está prestes a começar e faça novas amizades
+            </p>
+            <Button asChild className="mt-6 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white border-0 px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all">
               <Link href="/search">
-                Explorar Mais <Heart className="ml-2 h-4 w-4" />
+                <Heart className="mr-2 h-5 w-5" />
+                Explorar Mais Viagens
               </Link>
             </Button>
-          </div>
+          </motion.div>
 
           {isLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3].map((i) => (
-                <Card key={i}>
-                  <Skeleton className="h-48 w-full" />
-                  <CardHeader>
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/2 mt-2" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-20 w-full" />
-                  </CardContent>
-                </Card>
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                >
+                  <Card className="overflow-hidden bg-white/70 backdrop-blur-sm border border-white/40">
+                    <Skeleton className="h-48 w-full" />
+                    <CardContent className="p-6">
+                      <Skeleton className="h-6 w-3/4 mb-3" />
+                      <Skeleton className="h-4 w-1/2 mb-4" />
+                      <Skeleton className="h-20 w-full" />
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {trips?.slice(0, 6).map((trip: any) => (
-                <Card key={trip.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-xl">{trip.title}</CardTitle>
-                        <CardDescription className="flex items-center mt-2">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          {trip.destination}
-                        </CardDescription>
-                      </div>
-                      <Badge variant={trip.travelStyle === "aventura" ? "default" : "secondary"}>
-                        {trip.travelStyle}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{trip.description}</p>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2 text-gray-500" />
-                        <span>{format(new Date(trip.startDate), "dd MMM", { locale: ptBR })}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="w-4 h-4 mr-2 text-gray-500" />
-                        <span>{trip.maxParticipants} pessoas</span>
-                      </div>
-                      <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-2 text-gray-500" />
-                        <span className="font-bold text-green-600">
-                          R$ {Math.round(trip.budget / trip.maxParticipants)}/pessoa
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <Shield className="w-4 h-4 mr-2 text-gray-500" />
-                        <span>Verificado</span>
-                      </div>
-                    </div>
-                    <Button asChild className="w-full mt-4">
-                      <Link href={`/trips/${trip.id}`}>Ver Detalhes</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {trips?.slice(0, 6).map((trip: any, index: number) => (
+                <motion.div
+                  key={trip.id}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <TripCard trip={trip} showActions={true} />
+                </motion.div>
               ))}
             </div>
           )}
+
+          {/* Bottom decoration */}
+          <motion.div 
+            className="text-center mt-16"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            <div className="inline-flex items-center gap-2 text-slate-600">
+              <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-slate-300"></div>
+              <span className="text-sm font-medium">Mais de 500 viagens disponíveis</span>
+              <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-slate-300"></div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
