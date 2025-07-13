@@ -270,3 +270,5 @@ Registro de Alterações:
 - 13 de julho de 2025. Criação de 4 viagens futuras ambiciosas (Réveillon Copacabana, Patagônia Argentina, Machu Picchu, Safári Quênia) com Tom como criador ou participante
 - 13 de julho de 2025. Diversificação de estilos de viagem e destinos para demonstrar todas as funcionalidades da plataforma - mix de viagens nacionais e internacionais com diferentes orçamentos e durações
 - 13 de julho de 2025. Atualização do logo para nova versão com fundo transparente - substituído por versão atualizada do logo PartiuTrip (1752377252367.png) com altura h-12 (48px) e largura máxima 220px para tamanho otimizado
+- 13 de julho de 2025. Migração completa do Replit Agent para ambiente Replit padrão - sistema de avaliações de usuários e destinos implementado, sistema de verificação de usuários adicionado, banco de dados atualizado com novas tabelas (userRatings, destinationRatings, verificationRequests), APIs REST completas para ratings e verificação
+- 13 de julho de 2025. Correção do link do perfil na navbar - alterado de "/perfil" para "/profile" para corresponder à rota correta registrada no App.tsx

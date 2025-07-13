@@ -190,7 +190,7 @@ export function Navbar() {
                           })}
                           
                           <div className="pt-4 border-t mt-4">
-                            <Link href="/perfil">
+                            <Link href="/profile">
                               <Button variant="ghost" className="w-full justify-start gap-3 text-dark hover:text-primary hover:bg-gray-50">
                                 <User className="h-4 w-4" />
                                 Meu Perfil
