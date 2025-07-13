@@ -431,143 +431,196 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {tripsLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
-                <Card key={i} className="animate-pulse">
+                <Card key={i} className="animate-pulse overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300" />
                   <CardContent className="p-6">
-                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
                     <div className="h-4 bg-gray-200 rounded w-full mb-2" />
                     <div className="h-4 bg-gray-200 rounded w-2/3 mb-4" />
-                    <div className="h-8 bg-gray-200 rounded w-1/3" />
+                    <div className="flex gap-2">
+                      <div className="h-8 bg-gray-200 rounded w-16" />
+                      <div className="h-8 bg-gray-200 rounded w-16" />
+                    </div>
                   </CardContent>
                 </Card>
               ))
             ) : !tripsError && getFilteredTrips().length > 0 ? (
               getFilteredTrips().map((trip: any) => (
-                <Card key={trip.id} className="group hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-400">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg text-gray-900 group-hover:text-orange-600 transition-colors">
-                          {trip.title}
-                        </h3>
-                        <p className="text-gray-600 flex items-center gap-2 mt-1">
-                          <MapPin className="h-4 w-4" />
-                          {trip.destination}
-                        </p>
-                      </div>
+                <Card key={trip.id} className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-0 bg-white shadow-md">
+                  {/* Cover Image */}
+                  <div className="relative h-48 bg-gradient-to-br from-orange-400 to-amber-500 overflow-hidden">
+                    {trip.coverImage && (
+                      <img 
+                        src={trip.coverImage} 
+                        alt={trip.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    
+                    {/* Status Badge */}
+                    <div className="absolute top-4 right-4">
+                      {new Date(trip.startDate) > new Date() ? (
+                        <Badge className="bg-green-600 hover:bg-green-700 text-white border-0">
+                          <Clock className="h-3 w-3 mr-1" />
+                          Próxima
+                        </Badge>
+                      ) : new Date(trip.endDate) < new Date() ? (
+                        <Badge className="bg-gray-600 hover:bg-gray-700 text-white border-0">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Concluída
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-0">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          Em Andamento
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Role Badge */}
+                    <div className="absolute top-4 left-4">
                       <Badge 
                         variant={trip.creatorId === user?.id ? "default" : "secondary"}
-                        className="ml-2"
+                        className={trip.creatorId === user?.id ? "bg-orange-600 hover:bg-orange-700 text-white" : "bg-white/90 text-gray-700 hover:bg-white"}
                       >
-                        {trip.creatorId === user?.id ? 'Criada' : 'Participando'}
+                        {trip.creatorId === user?.id ? 'Criada por você' : 'Participando'}
                       </Badge>
                     </div>
-                    
-                    <div className="space-y-2 mb-4">
+
+                    {/* Title overlay */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="font-bold text-xl text-white mb-1 group-hover:text-orange-200 transition-colors">
+                        {trip.title}
+                      </h3>
+                      <p className="text-white/90 flex items-center gap-2 text-sm">
+                        <MapPin className="h-4 w-4" />
+                        {trip.destination}
+                      </p>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-6">
+                    {/* Trip Info */}
+                    <div className="space-y-3 mb-6">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(trip.startDate).toLocaleDateString('pt-BR')} - {new Date(trip.endDate).toLocaleDateString('pt-BR')}
+                        <Calendar className="h-4 w-4 text-orange-500" />
+                        <span className="font-medium">
+                          {new Date(trip.startDate).toLocaleDateString('pt-BR')} - {new Date(trip.endDate).toLocaleDateString('pt-BR')}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Users className="h-4 w-4" />
-                        {trip.currentParticipants}/{trip.maxParticipants} participantes
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Users className="h-4 w-4 text-orange-500" />
+                          <span>{trip.currentParticipants}/{trip.maxParticipants} participantes</span>
+                        </div>
+                        
+                        {/* Participants Progress */}
+                        <div className="flex-1 mx-3">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-gradient-to-r from-orange-500 to-amber-500 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${(trip.currentParticipants / trip.maxParticipants) * 100}%` }}
+                            />
+                          </div>
+                        </div>
                       </div>
+
                       {trip.budget && (
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <DollarSign className="h-4 w-4" />
-                          R$ {trip.budget.toLocaleString()}
+                          <DollarSign className="h-4 w-4 text-orange-500" />
+                          <span className="font-semibold text-orange-600">
+                            R$ {trip.budget.toLocaleString()}
+                          </span>
+                          <span className="text-gray-500">
+                            / R$ {Math.round(trip.budget / trip.maxParticipants).toLocaleString()} por pessoa
+                          </span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-2">
-                        <Link href={`/trip/${trip.id}`}>
-                          <Button size="sm" variant="outline">
-                            <Eye className="h-4 w-4 mr-1" />
-                            Ver
-                          </Button>
-                        </Link>
-                        <Link href={`/chat/${trip.id}`}>
-                          <Button size="sm" variant="outline">
-                            <MessageCircle className="h-4 w-4 mr-1" />
-                            Chat
-                          </Button>
-                        </Link>
-                        {/* Botão desistir apenas para participantes (não organizadores) */}
-                        {trip.creatorId !== user?.id && (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-                            onClick={() => {
-                              if (window.confirm(`Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`)) {
-                                quitTripMutation.mutate(trip.id);
-                              }
-                            }}
-                            disabled={quitTripMutation.isPending}
-                          >
-                            {quitTripMutation.isPending ? (
-                              <>
-                                <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
-                                Saindo...
-                              </>
-                            ) : (
-                              <>
-                                <X className="h-4 w-4 mr-1" />
-                                Desistir
-                              </>
-                            )}
-                          </Button>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {new Date(trip.startDate) > new Date() ? (
-                          <Badge variant="outline" className="text-green-600 border-green-600">
-                            <Clock className="h-3 w-3 mr-1" />
-                            Próxima
-                          </Badge>
-                        ) : new Date(trip.endDate) < new Date() ? (
-                          <Badge variant="outline" className="text-gray-600 border-gray-600">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Concluída
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-blue-600 border-blue-600">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            Em Andamento
-                          </Badge>
-                        )}
-                      </div>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 flex-wrap">
+                      <Link href={`/trip/${trip.id}`} className="flex-1 min-w-0">
+                        <Button 
+                          size="sm" 
+                          className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0"
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver Detalhes
+                        </Button>
+                      </Link>
+                      
+                      <Link href={`/chat/${trip.id}`}>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-1" />
+                          Chat
+                        </Button>
+                      </Link>
+                      
+                      {/* Botão desistir apenas para participantes (não organizadores) */}
+                      {trip.creatorId !== user?.id && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                          onClick={() => {
+                            if (window.confirm(`Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`)) {
+                              quitTripMutation.mutate(trip.id);
+                            }
+                          }}
+                          disabled={quitTripMutation.isPending}
+                        >
+                          {quitTripMutation.isPending ? (
+                            <>
+                              <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
+                              Saindo...
+                            </>
+                          ) : (
+                            <>
+                              <X className="h-4 w-4 mr-1" />
+                              Desistir
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
               ))
             ) : (
-              <Card className="col-span-full">
+              <Card className="col-span-full border-2 border-dashed border-gray-200 bg-gray-50/50">
                 <CardContent className="p-12 text-center">
-                  <div className="mb-4">
-                    <Plane className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  <div className="mb-6">
+                    <div className="w-24 h-24 bg-gradient-to-br from-orange-400 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Plane className="h-12 w-12 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-700 mb-2">
                       Nenhuma viagem encontrada
                     </h3>
-                    <p className="text-gray-600 mb-6">
-                      {selectedTimeframe === 'upcoming' && 'Você não tem viagens próximas planejadas.'}
-                      {selectedTimeframe === 'completed' && 'Você ainda não concluiu nenhuma viagem.'}
-                      {selectedTimeframe === 'in-progress' && 'Você não tem viagens em andamento.'}
-                      {selectedTimeframe === 'all' && 'Você ainda não tem viagens. Que tal criar uma?'}
+                    <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                      {selectedTimeframe === 'upcoming' && 'Você não tem viagens próximas planejadas. Que tal criar uma nova aventura?'}
+                      {selectedTimeframe === 'completed' && 'Você ainda não concluiu nenhuma viagem. Suas próximas aventuras aparecerão aqui.'}
+                      {selectedTimeframe === 'in-progress' && 'Você não tem viagens em andamento. Suas viagens ativas aparecerão aqui.'}
+                      {selectedTimeframe === 'all' && 'Você ainda não tem viagens. Comece sua jornada criando uma nova viagem ou encontre companheiros para aventuras incríveis!'}
                     </p>
                   </div>
-                  <div className="flex justify-center gap-4">
+                  <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <Link href="/create-trip">
-                      <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Criar Viagem
+                      <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 px-8 py-3 h-auto">
+                        <Plus className="h-5 w-5 mr-2" />
+                        Criar Nova Viagem
                       </Button>
                     </Link>
                     <Link href="/search">
-                      <Button variant="outline">
-                        <Search className="h-4 w-4 mr-2" />
-                        Buscar Viagens
+                      <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 px-8 py-3 h-auto">
+                        <Search className="h-5 w-5 mr-2" />
+                        Buscar Companheiros
                       </Button>
                     </Link>
                   </div>
