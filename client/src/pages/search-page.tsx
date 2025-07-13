@@ -304,7 +304,7 @@ export default function SearchPage() {
               <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
               <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
               <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544718865-4c8eff1f3f8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
-              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1600298881974-6be191ceeda1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
               <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516012669313-c1c15b8b6b13?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
             </div>
           </div>
@@ -355,14 +355,14 @@ export default function SearchPage() {
                   <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1483729558449-99ef09a8c325?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
                   <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
                   <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
-                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1544718865-4c8eff1f3f8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
-                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1600298881974-6be191ceeda1?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516012669313-c1c15b8b6b13?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
                   <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-gray-100 flex items-center justify-center text-gray-600 text-sm font-semibold">
                     +80
                   </div>
                 </div>
                 <div className="text-sm text-gray-600 font-medium">
-                  Rio de Janeiro • Fernando de Noronha • Chapada Diamantina • Pantanal • Bonito e muito mais
+                  Rio de Janeiro • Fernando de Noronha • Chapada Diamantina • Pirâmides de Gizé • Bonito e muito mais
                 </div>
               </div>
             </motion.div>
