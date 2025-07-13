@@ -47,7 +47,8 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
       if (!response.ok) throw new Error('Falha ao buscar despesas');
       return response.json();
     },
-    staleTime: 30 * 1000,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnWindowFocus: true,
   });
 
   // Fetch balances
@@ -58,7 +59,8 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
       if (!response.ok) throw new Error('Falha ao buscar balanços');
       return response.json();
     },
-    staleTime: 30 * 1000,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnWindowFocus: true,
   });
 
   // Create expense mutation
@@ -183,6 +185,10 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
         <CardContent>
           {balancesLoading ? (
             <div className="text-center py-4">Carregando saldos...</div>
+          ) : balances.length === 0 ? (
+            <div className="text-center py-4 text-gray-500">
+              Nenhum saldo encontrado. Adicione algumas despesas para ver os saldos.
+            </div>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -191,11 +197,11 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={balance.user.profilePhoto || ""} />
                       <AvatarFallback>
-                        {balance.user.fullName.substring(0, 2).toUpperCase()}
+                        {balance.user.fullName?.substring(0, 2).toUpperCase() || balance.user.username?.substring(0, 2).toUpperCase() || "??"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-medium">{balance.user.fullName}</p>
+                      <p className="font-medium">{balance.user.fullName || balance.user.username}</p>
                       <p className={`text-sm font-semibold ${
                         balance.balance > 0 ? 'text-green-600' : balance.balance < 0 ? 'text-red-600' : 'text-gray-600'
                       }`}>
