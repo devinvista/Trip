@@ -4,7 +4,7 @@ import * as schema from "@shared/schema";
 
 console.log(`🔗 Conectando ao MySQL...`);
 
-// Configuração do banco MySQL
+// Configuração do banco MySQL (srv1661.hstgr.io)
 const connection = mysql.createPool({
   host: 'srv1661.hstgr.io',
   port: 3306,

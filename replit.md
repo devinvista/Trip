@@ -18,13 +18,13 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 ### Arquitetura Backend
 - **Runtime**: Node.js com Express.js
 - **Autenticação**: Passport.js com estratégia local e autenticação baseada em sessão
-- **Armazenamento de Sessão**: Sessões Express com armazenamento PostgreSQL
+- **Armazenamento de Sessão**: Sessões Express com armazenamento MySQL
 - **Segurança de Senha**: Módulo crypto do Node.js com hash scrypt
 - **Design de API**: Endpoints RESTful com respostas JSON
-- **Banco de Dados**: PostgreSQL com Drizzle ORM
+- **Banco de Dados**: MySQL com Drizzle ORM
 
 ### Esquema do Banco de Dados
-A aplicação usa PostgreSQL com as seguintes entidades principais:
+A aplicação usa MySQL com as seguintes entidades principais:
 - **Usuários**: Autenticação, informações de perfil e preferências de viagem
 - **Viagens**: Planos de viagem com destinos, datas, orçamentos e custos compartilhados
 - **Participantes da Viagem**: Relacionamento muitos-para-muitos entre usuários e viagens
@@ -67,7 +67,7 @@ A aplicação usa PostgreSQL com as seguintes entidades principais:
 
 ## Fluxo de Dados
 
-1. **Cadastro/Login de Usuário**: Usuários se autenticam através da estratégia local, sessões são armazenadas no PostgreSQL
+1. **Cadastro/Login de Usuário**: Usuários se autenticam através da estratégia local, sessões são armazenadas no MySQL
 2. **Criação de Viagem**: Usuários autenticados criam viagens com informações de planejamento detalhado
 3. **Descoberta de Viagem**: Usuários pesquisam e filtram viagens baseadas em preferências e compatibilidade
 4. **Solicitações de Participação**: Usuários solicitam participar de viagens, criadores aprovam/rejeitam solicitações
@@ -77,8 +77,8 @@ A aplicação usa PostgreSQL com as seguintes entidades principais:
 ## Dependências Externas
 
 ### Dependências Principais
-- **@neondatabase/serverless**: Driver PostgreSQL para banco de dados Neon
-- **drizzle-orm**: ORM type-safe com dialeto PostgreSQL
+- **mysql2**: Driver MySQL para conexão com banco de dados
+- **drizzle-orm**: ORM type-safe com dialeto MySQL
 - **passport & passport-local**: Middleware de autenticação
 - **@tanstack/react-query**: Gerenciamento de estado do servidor
 - **react-hook-form**: Manipulação de formulários com validação
@@ -104,9 +104,12 @@ A aplicação usa PostgreSQL com as seguintes entidades principais:
 - Artefato único de deploy com servir arquivos estáticos
 
 ### Configuração de Ambiente
-- Conexão com banco de dados via variável de ambiente `DATABASE_URL`
+- Conexão com banco de dados MySQL via variáveis de ambiente:
+  - `DB_USER`: Nome de usuário do banco MySQL
+  - `DB_PASSWORD`: Senha do banco MySQL
+  - `DB_NAME`: Nome do banco de dados
+- Servidor MySQL hospedado em srv1661.hstgr.io
 - Segredo de sessão para segurança de autenticação
-- Neon PostgreSQL como banco de dados de produção
 
 ### Configuração de Desenvolvimento
 - `npm run dev`: Inicia servidor de desenvolvimento com hot reload
@@ -309,3 +312,4 @@ Registro de Alterações:
 - 13 de julho de 2025. Otimização completa dos botões de ação nos cards de viagem - redesign responsivo com layout em colunas para mobile, botões de tamanho adaptativo (text-xs, h-3 w-3), grid system para melhor aproveitamento do espaço, separação lógica entre ações primárias e secundárias, UX otimizada para diferentes papéis de usuário (criador vs participante)
 - 13 de julho de 2025. Modernização completa dos botões da navbar com design profissional e UX/UI excelente - botões de guest navigation com efeitos shimmer, glow, gradientes avançados, escalabilidade hover (scale-105), ícone de seta animado, backdrop blur, bordas dinâmicas e transições suaves de 300-700ms; botões mobile com glow effects, shimmer animations, bordas coloridas e micro-interações refinadas
 - 13 de julho de 2025. Migração completa e bem-sucedida de PostgreSQL para MySQL - banco de dados migrado para servidor MySQL em srv1661.hstgr.io, todos os schemas atualizados para mysqlTable, conexão estabelecida com sucesso, dados de teste carregados, aplicação funcionando corretamente
+- 13 de julho de 2025. Atualização completa da documentação para refletir migração MySQL - replit.md atualizado com arquitetura backend, dependências, configuração de ambiente, criado arquivo MYSQL_MIGRATION.md com documentação detalhada da migração, todos os comentários de código atualizados para MySQL
