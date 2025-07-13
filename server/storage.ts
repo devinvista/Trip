@@ -11,17 +11,173 @@ function getCoverImageForDestination(destination: string, travelStyle?: string):
   // Normalize destination for better matching
   const normalizedDestination = destination.toLowerCase().trim();
   
-  // Define specific landmark images for iconic destinations
+  // Define specific landmark images for iconic destinations - organized like a travel agency
   const iconicDestinations: { [key: string]: string } = {
-    // Marcos icônicos mundiais
+    // EUROPA - Destinos Clássicos
+    "paris": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80", // Torre Eiffel
+    "torre eiffel": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80",
+    "frança": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80",
+    "france": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80",
+    
+    "roma": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80", // Coliseu
+    "rome": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+    "coliseu": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+    "colosseum": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+    "itália": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+    "italy": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+    
+    "londres": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80", // Big Ben
+    "london": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
+    "big ben": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
+    "reino unido": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
+    "england": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
+    
+    "barcelona": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800&q=80", // Sagrada Família
+    "sagrada família": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800&q=80",
+    "espanha": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800&q=80",
+    "spain": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800&q=80",
+    
+    "amsterdam": "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800&q=80", // Canais
+    "holanda": "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800&q=80",
+    "netherlands": "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800&q=80",
+    
+    "berlim": "https://images.unsplash.com/photo-1587330979470-3016b6702d89?w=800&q=80", // Portão de Brandemburgo
+    "berlin": "https://images.unsplash.com/photo-1587330979470-3016b6702d89?w=800&q=80",
+    "alemanha": "https://images.unsplash.com/photo-1587330979470-3016b6702d89?w=800&q=80",
+    "germany": "https://images.unsplash.com/photo-1587330979470-3016b6702d89?w=800&q=80",
+    
+    "atenas": "https://images.unsplash.com/photo-1571045173242-a5a3d06c8f27?w=800&q=80", // Acrópole
+    "athens": "https://images.unsplash.com/photo-1571045173242-a5a3d06c8f27?w=800&q=80",
+    "grécia": "https://images.unsplash.com/photo-1571045173242-a5a3d06c8f27?w=800&q=80",
+    "greece": "https://images.unsplash.com/photo-1571045173242-a5a3d06c8f27?w=800&q=80",
+    "acrópole": "https://images.unsplash.com/photo-1571045173242-a5a3d06c8f27?w=800&q=80",
+    
+    "praga": "https://images.unsplash.com/photo-1596436048549-f4e7e0c9e50c?w=800&q=80", // Ponte Carlos
+    "prague": "https://images.unsplash.com/photo-1596436048549-f4e7e0c9e50c?w=800&q=80",
+    "república checa": "https://images.unsplash.com/photo-1596436048549-f4e7e0c9e50c?w=800&q=80",
+    
+    "viena": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80", // Palácio Schönbrunn
+    "vienna": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+    "áustria": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+    "austria": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+    
+    // ÁSIA - Destinos Exóticos
+    "tokyo": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80", // Shibuya Crossing
+    "tóquio": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
+    "japão": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
+    "japan": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
+    
+    "pequim": "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80", // Cidade Proibida
+    "beijing": "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80",
+    "china": "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80",
+    "cidade proibida": "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&q=80",
+    
+    "dubai": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80", // Burj Khalifa
+    "emirados árabes": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80",
+    "uae": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80",
+    "burj khalifa": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80",
+    
+    "nova délhi": "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80", // Taj Mahal
+    "delhi": "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80",
+    "índia": "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80",
+    "india": "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80",
+    "taj mahal": "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80",
+    
+    "bangkok": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", // Templos
+    "tailândia": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    "thailand": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    
+    // ÁFRICA E ORIENTE MÉDIO
     "cairo": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80", // Pirâmides do Egito
-    "egito": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80", // Pirâmides do Egito
-    "egypt": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80", // Pirâmides do Egito
+    "egito": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80",
+    "egypt": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80",
     "pirâmides": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80",
     "pyramids": "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80",
-    "roma": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80", // Coliseu
-    "coliseu": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+    
+    "marrakech": "https://images.unsplash.com/photo-1517821362941-f5aa9717bb51?w=800&q=80", // Medina
+    "marrocos": "https://images.unsplash.com/photo-1517821362941-f5aa9717bb51?w=800&q=80",
+    "morocco": "https://images.unsplash.com/photo-1517821362941-f5aa9717bb51?w=800&q=80",
+    
+    "cidade do cabo": "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80", // Table Mountain
+    "cape town": "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80",
+    "áfrica do sul": "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80",
+    "south africa": "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=80",
+    
+    // AMÉRICAS - Destinos Icônicos
+    "nova york": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80", // Estátua da Liberdade
+    "new york": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
+    "estátua da liberdade": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
+    "statue of liberty": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
+    
+    "los angeles": "https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=800&q=80", // Hollywood Sign
+    "hollywood": "https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=800&q=80",
+    "california": "https://images.unsplash.com/photo-1580655653885-65763b2597d0?w=800&q=80",
+    
+    "san francisco": "https://images.unsplash.com/photo-1519928917901-d0c2912d0c9b?w=800&q=80", // Golden Gate
+    "golden gate": "https://images.unsplash.com/photo-1519928917901-d0c2912d0c9b?w=800&q=80",
+    
     "rio de janeiro": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80", // Cristo Redentor
+    "cristo redentor": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80",
+    "pão de açúcar": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80",
+    
+    "buenos aires": "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80", // Obelisco
+    "argentina": "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80",
+    
+    "lima": "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80", // Centro Histórico
+    "peru": "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    "machu picchu": "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=800&q=80",
+    
+    // OCEANIA
+    "sydney": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80", // Opera House
+    "austrália": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    "australia": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    "opera house": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    
+    // BRASIL - Destinos Nacionais
+    "são paulo": "https://images.unsplash.com/photo-1541963463532-d68292c34d19?w=800&q=80", // Skyline
+    "salvador": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Pelourinho
+    "fortaleza": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praias
+    "recife": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Marco Zero
+    "porto alegre": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Centro
+    "curitiba": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Parques
+    "belo horizonte": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praça da Liberdade
+    "brasília": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Congresso Nacional
+    "manaus": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80", // Encontro das Águas
+    "florianópolis": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Ponte Hercílio Luz
+    "natal": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Forte dos Reis Magos
+    "joão pessoa": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Ponta do Seixas
+    "maceió": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praia de Pajuçara
+    "aracaju": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Orla de Atalaia
+    "vitória": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Convento da Penha
+    "campo grande": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Mercado Central
+    "cuiabá": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80", // Pantanal
+    "goiânia": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praça Cívica
+    "teresina": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Ponte Estaiada
+    "são luís": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Centro Histórico
+    "macapá": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Fortaleza de São José
+    "belém": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Ver-o-Peso
+    "palmas": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Praça dos Girassóis
+    "porto velho": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Mercado Cultural
+    "rio branco": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Palácio Rio Branco
+    "boa vista": "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80", // Orla Taumanan
+    
+    // DESTINOS DE CRUZEIROS - Experiências Marítimas
+    "mediterrâneo": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "caribe": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "caribbean": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "mediterranean": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "costa mediterrânea": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "ilhas gregas": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "fjords noruegueses": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "alasca": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "alaska": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "costa do báltico": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "ilhas canárias": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "cruzeiro transatlântico": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "costa brasileira": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "costa argentina": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "ilhas do caribe": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
+    "mar do norte": "https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg", // Cruzeiro
     "rio": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80",
     "paris": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80", // Torre Eiffel
     "torre eiffel": "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80",
