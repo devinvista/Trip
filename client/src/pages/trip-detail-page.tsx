@@ -83,40 +83,33 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 
   // Função para determinar o gradiente baseado nos dias restantes
   const getGradientClasses = (days: number) => {
-    if (days <= 1) {
-      // Vermelho intenso - urgente (até 1 dia)
+    if (days <= 7) {
+      // Vermelho intenso - urgente (até 7 dias)
       return {
         gradient: "from-red-600 via-red-500 to-orange-500",
         textAccent: "text-red-100",
         iconAccent: "text-red-100"
       };
-    } else if (days <= 7) {
-      // Laranja - próximo (até 1 semana)
+    } else if (days <= 30) {
+      // Laranja - próximo (até 30 dias)
       return {
         gradient: "from-orange-500 via-amber-500 to-yellow-500",
         textAccent: "text-orange-100",
         iconAccent: "text-orange-100"
       };
-    } else if (days <= 30) {
-      // Azul/roxo - médio prazo (até 1 mês)
-      return {
-        gradient: "from-blue-600 via-purple-600 to-indigo-600",
-        textAccent: "text-blue-100",
-        iconAccent: "text-blue-100"
-      };
     } else if (days <= 90) {
-      // Verde/azul - planejamento (até 3 meses)
+      // Verde/azul - médio prazo (até 90 dias)
       return {
         gradient: "from-emerald-600 via-teal-600 to-cyan-600",
         textAccent: "text-emerald-100",
         iconAccent: "text-emerald-100"
       };
     } else {
-      // Roxo/rosa - longo prazo (mais de 3 meses)
+      // Azul/roxo - planejamento (mais de 90 dias)
       return {
-        gradient: "from-purple-600 via-pink-600 to-rose-600",
-        textAccent: "text-purple-100",
-        iconAccent: "text-purple-100"
+        gradient: "from-blue-600 via-purple-600 to-indigo-600",
+        textAccent: "text-blue-100",
+        iconAccent: "text-blue-100"
       };
     }
   };
