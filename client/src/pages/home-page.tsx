@@ -857,7 +857,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Plane className="h-8 w-8 text-yellow-400" />
-                <span className="font-heading font-bold text-2xl bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">PartiuTrip</span>
+                <span className="font-heading font-bold text-2xl bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Viajar Juntos</span>
               </div>
               <p className="text-slate-400 leading-relaxed">
                 Conectamos viajantes, reduzimos custos e criamos experiências inesquecíveis ao redor do mundo.
@@ -890,10 +890,10 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Destinos Populares</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Europa</span></li>
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Ásia</span></li>
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">América do Sul</span></li>
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Oceania</span></li>
+                <li><Link href="/search?region=europa" className="hover:text-yellow-400 transition-colors">Europa</Link></li>
+                <li><Link href="/search?region=asia" className="hover:text-yellow-400 transition-colors">Ásia</Link></li>
+                <li><Link href="/search?region=america" className="hover:text-yellow-400 transition-colors">América do Sul</Link></li>
+                <li><Link href="/search?region=oceania" className="hover:text-yellow-400 transition-colors">Oceania</Link></li>
               </ul>
             </div>
 
@@ -901,8 +901,8 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Suporte</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Central de Ajuda</span></li>
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Segurança</span></li>
+                <li><Link href="/profile" className="hover:text-yellow-400 transition-colors">Central de Ajuda</Link></li>
+                <li><Link href="/profile" className="hover:text-yellow-400 transition-colors">Segurança</Link></li>
                 <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Termos de Uso</span></li>
                 <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Privacidade</span></li>
               </ul>
@@ -927,7 +927,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col md:flex-row justify-between items-center text-slate-400 text-sm">
-              <p>&copy; 2025 ViajaJunto. Todos os direitos reservados.</p>
+              <p>&copy; 2025 Viajar Juntos. Todos os direitos reservados.</p>
               <div className="flex items-center gap-2 mt-4 md:mt-0">
                 <Shield className="w-4 h-4" />
                 <span>Plataforma segura e verificada</span>
