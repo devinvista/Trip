@@ -483,48 +483,7 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          {/* Quick Actions */}
-          <div className="mb-6">
-            <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold text-orange-800 flex items-center gap-2">
-                  <Star className="h-5 w-5" />
-                  Ações Rápidas
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Link href="/create-trip">
-                    <Button className="w-full h-16 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 flex flex-col items-center gap-1">
-                      <Plus className="h-6 w-6" />
-                      <span className="text-sm font-medium">Nova Viagem</span>
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/search">
-                    <Button className="w-full h-16 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 flex flex-col items-center gap-1">
-                      <Search className="h-6 w-6" />
-                      <span className="text-sm font-medium">Buscar Viagens</span>
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/profile">
-                    <Button className="w-full h-16 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 flex flex-col items-center gap-1">
-                      <Settings className="h-6 w-6" />
-                      <span className="text-sm font-medium">Editar Perfil</span>
-                    </Button>
-                  </Link>
-                  
-                  <Link href="/journey-tracker">
-                    <Button className="w-full h-16 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 flex flex-col items-center gap-1">
-                      <TrendingUp className="h-6 w-6" />
-                      <span className="text-sm font-medium">Meu Progresso</span>
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          
 
           {/* Activity Filter */}
           <div className="mb-6">
