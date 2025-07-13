@@ -85,15 +85,17 @@ export default function ProfilePage() {
   });
 
   // Fetch user stats
-  const { data: userStats, isLoading: statsLoading } = useQuery({
+  const { data: userStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["/api/user/stats"],
-    enabled: !!user
+    enabled: !!user,
+    retry: 1
   });
 
   // Fetch referral code and referred users
-  const { data: referralData, isLoading: referralLoading } = useQuery({
+  const { data: referralData, isLoading: referralLoading, error: referralError } = useQuery({
     queryKey: ["/api/user/referral"],
-    enabled: !!user
+    enabled: !!user,
+    retry: 1
   });
 
   const updateProfileMutation = useMutation({
@@ -140,6 +142,17 @@ export default function ProfilePage() {
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase();
   };
+
+  // Debug logging
+  console.log("Profile Debug:", {
+    user: user?.username,
+    userStats,
+    referralData,
+    statsLoading,
+    referralLoading,
+    statsError: statsError?.message,
+    referralError: referralError?.message
+  });
 
   if (!user) {
     return (
