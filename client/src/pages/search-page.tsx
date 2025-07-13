@@ -291,14 +291,26 @@ export default function SearchPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        {/* Modern Clean Hero Section */}
+        {/* Modern Hero Section with Destination Gallery */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative mb-12 bg-white rounded-2xl shadow-sm border border-gray-100"
+          className="relative mb-12 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
         >
+          {/* Background Image Gallery */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="grid grid-cols-6 h-full">
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1502780402662-acc01917a4d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1618083443000-a5de0cdfce95?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1504457047772-da14c3b4e0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1599408089853-52e21e74c637?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+              <div className="bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1516442719524-a603408c90cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80)'}}></div>
+            </div>
+          </div>
+
           {/* Clean Content */}
-          <div className="px-8 py-12 text-center">
+          <div className="relative z-10 px-8 py-12 text-center">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -326,10 +338,34 @@ export default function SearchPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto"
+              className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
             >
               Conecte-se com viajantes que compartilham seus interesses e descubra experiências inesquecíveis ao redor do mundo
             </motion.p>
+
+            {/* Destination Preview Gallery */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="mb-8"
+            >
+              <div className="flex justify-center items-center gap-4 mb-4">
+                <div className="flex -space-x-2">
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1502780402662-acc01917a4d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1618083443000-a5de0cdfce95?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1504457047772-da14c3b4e0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1599408089853-52e21e74c637?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80)'}}></div>
+                  <div className="w-12 h-12 rounded-full border-2 border-white shadow-lg bg-gray-100 flex items-center justify-center text-gray-600 text-sm font-semibold">
+                    +80
+                  </div>
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  Paris • Rio • Tokyo • Nova York • Maldivas e muito mais
+                </div>
+              </div>
+            </motion.div>
             
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
