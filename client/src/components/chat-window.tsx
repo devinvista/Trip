@@ -172,7 +172,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages Area */}
-        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-gray-50/30 to-white/30">
+        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-gray-50/30 to-white/30 max-h-[calc(100vh-400px)]">
           <div className="space-y-4">
             {messages.length === 0 ? (
               <motion.div
