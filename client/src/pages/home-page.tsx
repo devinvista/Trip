@@ -63,7 +63,7 @@ const featuredDestinations = [
   }
 ];
 
-// Community Connection SVG Component inspired by shared experiences
+// PartiuTrip Travel Globe SVG Component - Inspired by the logo
 const CommunityLighthouseSVG = ({ className = "" }: { className?: string }) => (
   <svg 
     viewBox="0 0 400 600" 
@@ -71,110 +71,146 @@ const CommunityLighthouseSVG = ({ className = "" }: { className?: string }) => (
     fill="none" 
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Ocean Base with Waves */}
-    <path 
-      d="M0 580 Q100 570 200 580 Q300 590 400 580 L400 600 L0 600 Z" 
-      fill="url(#oceanGradient)" 
-      className="animate-wave"
-    />
+    {/* Space Background with Stars */}
+    <rect width="400" height="600" fill="url(#spaceGradient)" />
+    
+    {/* Twinkling Stars */}
+    <circle cx="80" cy="80" r="1.5" fill="#FFD700" className="animate-pulse" />
+    <circle cx="320" cy="60" r="1" fill="#FFD700" className="animate-pulse" style={{animationDelay: '0.5s'}} />
+    <circle cx="60" cy="140" r="1.5" fill="#FFD700" className="animate-pulse" style={{animationDelay: '1s'}} />
+    <circle cx="350" cy="120" r="1" fill="#FFD700" className="animate-pulse" style={{animationDelay: '1.5s'}} />
+    <circle cx="100" cy="200" r="1.5" fill="#FFD700" className="animate-pulse" style={{animationDelay: '2s'}} />
+    <circle cx="330" cy="180" r="1" fill="#FFD700" className="animate-pulse" style={{animationDelay: '2.5s'}} />
 
-    {/* Island Base */}
-    <ellipse cx="200" cy="580" rx="80" ry="20" fill="url(#islandGradient)" />
-
-    {/* Lighthouse Base - Modern Tower */}
-    <rect x="175" y="420" width="50" height="160" fill="url(#lighthouseGradient)" rx="6"/>
-
-    {/* Lighthouse Segments - Representing Community Levels */}
-    <rect x="180" y="440" width="40" height="6" fill="#fbbf24" opacity="0.8" />
-    <rect x="180" y="460" width="40" height="6" fill="#10b981" opacity="0.8" />
-    <rect x="180" y="480" width="40" height="6" fill="#3b82f6" opacity="0.8" />
-    <rect x="180" y="500" width="40" height="6" fill="#8b5cf6" opacity="0.8" />
-
-    {/* Community Platform at Top */}
-    <rect x="160" y="400" width="80" height="25" fill="url(#platformGradient)" rx="8"/>
-
-    {/* Connection Beams - Multiple directions representing community reach */}
-    <g className="animate-pulse">
-      <path 
-        d="M200 400 L80 250 L200 385 L150 250 Z" 
-        fill="url(#lightBeam1)" 
-        opacity="0.4"
-      />
-      <path 
-        d="M200 400 L320 250 L200 385 L250 250 Z" 
-        fill="url(#lightBeam2)" 
-        opacity="0.4"
-      />
-      <path 
-        d="M200 400 L200 200 L185 385 L215 385 Z" 
-        fill="url(#lightBeam3)" 
-        opacity="0.5"
-      />
+    {/* Central Earth Globe - Dark Blue */}
+    <circle cx="200" cy="350" r="120" fill="url(#globeGradient)" />
+    
+    {/* Continents on Globe - Simplified shapes */}
+    <g fill="#1e40af" opacity="0.8">
+      {/* North America */}
+      <path d="M140 280 Q150 270 160 280 Q170 285 165 295 Q155 300 145 295 Q135 285 140 280 Z" />
+      
+      {/* South America */}
+      <path d="M155 320 Q160 310 165 320 Q170 340 165 360 Q160 370 155 365 Q150 350 155 320 Z" />
+      
+      {/* Europe/Africa */}
+      <path d="M200 270 Q210 265 220 270 Q225 280 220 290 Q215 310 210 330 Q205 350 200 345 Q195 325 200 270 Z" />
+      
+      {/* Asia */}
+      <path d="M230 280 Q250 275 260 285 Q255 295 250 300 Q240 305 235 300 Q225 290 230 280 Z" />
+      
+      {/* Australia */}
+      <path d="M245 380 Q255 375 265 380 Q260 390 250 385 Q240 385 245 380 Z" />
     </g>
 
-    {/* Central Community Hub */}
-    <circle cx="200" cy="390" r="12" fill="#fbbf24" className="animate-pulse" />
-    <circle cx="200" cy="390" r="18" fill="#fbbf24" opacity="0.3" className="animate-ping" />
+    {/* Globe Orbital Rings - Representing Flight Paths */}
+    <ellipse cx="200" cy="350" rx="140" ry="30" fill="none" stroke="#FFD700" strokeWidth="2" opacity="0.3" />
+    <ellipse cx="200" cy="350" rx="160" ry="40" fill="none" stroke="#FFD700" strokeWidth="1" opacity="0.2" />
+    <ellipse cx="200" cy="350" rx="180" ry="50" fill="none" stroke="#FFD700" strokeWidth="1" opacity="0.1" />
 
-    {/* People Icons Around Lighthouse - Representing Community */}
-    <circle cx="120" cy="380" r="8" fill="#10b981" className="animate-pulse" style={{animationDelay: '0.5s'}} />
-    <circle cx="120" cy="375" r="4" fill="#065f46" />
-    <rect x="116" y="383" width="8" height="12" fill="#065f46" rx="2" />
+    {/* Golden Airplane - Circling the Globe */}
+    <g className="animate-spin" style={{transformOrigin: '200px 350px', animationDuration: '8s'}}>
+      <g transform="translate(340, 350)">
+        {/* Airplane Body */}
+        <ellipse cx="0" cy="0" rx="12" ry="3" fill="#FFD700" />
+        
+        {/* Wings */}
+        <ellipse cx="-2" cy="0" rx="8" ry="2" fill="#FFA500" />
+        <rect x="-8" y="-1" width="16" height="2" fill="#FFD700" rx="1" />
+        
+        {/* Tail */}
+        <path d="M-10 0 L-15 -3 L-12 0 L-15 3 Z" fill="#FFA500" />
+        
+        {/* Propeller */}
+        <circle cx="10" cy="0" r="1" fill="#FFD700" />
+        <rect x="9" y="-3" width="2" height="6" fill="#FFD700" rx="1" className="animate-spin" style={{animationDuration: '0.2s'}} />
+      </g>
+    </g>
 
-    <circle cx="280" cy="370" r="8" fill="#3b82f6" className="animate-pulse" style={{animationDelay: '1s'}} />
-    <circle cx="280" cy="365" r="4" fill="#1e3a8a" />
-    <rect x="276" y="373" width="8" height="12" fill="#1e3a8a" rx="2" />
+    {/* Secondary Airplane - Smaller, different orbital path */}
+    <g className="animate-spin" style={{transformOrigin: '200px 350px', animationDuration: '12s', animationDirection: 'reverse'}}>
+      <g transform="translate(80, 380)">
+        {/* Smaller Airplane Body */}
+        <ellipse cx="0" cy="0" rx="8" ry="2" fill="#FFD700" />
+        
+        {/* Wings */}
+        <ellipse cx="-1" cy="0" rx="6" ry="1.5" fill="#FFA500" />
+        <rect x="-6" y="-0.5" width="12" height="1" fill="#FFD700" rx="0.5" />
+        
+        {/* Tail */}
+        <path d="M-6 0 L-10 -2 L-8 0 L-10 2 Z" fill="#FFA500" />
+        
+        {/* Propeller */}
+        <circle cx="6" cy="0" r="0.5" fill="#FFD700" />
+        <rect x="5.5" y="-2" width="1" height="4" fill="#FFD700" rx="0.5" className="animate-spin" style={{animationDuration: '0.15s'}} />
+      </g>
+    </g>
 
-    <circle cx="150" cy="350" r="8" fill="#8b5cf6" className="animate-pulse" style={{animationDelay: '1.5s'}} />
-    <circle cx="150" cy="345" r="4" fill="#581c87" />
-    <rect x="146" y="353" width="8" height="12" fill="#581c87" rx="2" />
+    {/* Travel Connections - Lines connecting different destinations */}
+    <g stroke="#FFD700" strokeWidth="1" opacity="0.4" fill="none" className="animate-pulse">
+      <path d="M140 280 Q200 250 260 285" strokeDasharray="5,5" />
+      <path d="M155 320 Q200 300 245 380" strokeDasharray="3,3" />
+      <path d="M200 270 Q180 320 155 320" strokeDasharray="4,4" />
+    </g>
 
-    <circle cx="250" cy="340" r="8" fill="#f59e0b" className="animate-pulse" style={{animationDelay: '2s'}} />
-    <circle cx="250" cy="335" r="4" fill="#92400e" />
-    <rect x="246" y="343" width="8" height="12" fill="#92400e" rx="2" />
+    {/* Floating Travel Icons Around Globe */}
+    <g className="animate-pulse">
+      {/* Suitcase */}
+      <g transform="translate(120, 250)">
+        <rect x="0" y="0" width="16" height="12" fill="#FFD700" rx="2" />
+        <rect x="2" y="2" width="12" height="8" fill="#FFA500" rx="1" />
+        <circle cx="8" cy="6" r="1" fill="#FFD700" />
+      </g>
+      
+      {/* Camera */}
+      <g transform="translate(280, 280)" style={{animationDelay: '0.5s'}}>
+        <rect x="0" y="0" width="14" height="10" fill="#FFD700" rx="2" />
+        <circle cx="7" cy="5" r="3" fill="#1e40af" />
+        <circle cx="7" cy="5" r="2" fill="#FFD700" />
+      </g>
+      
+      {/* Compass */}
+      <g transform="translate(100, 420)" style={{animationDelay: '1s'}}>
+        <circle cx="8" cy="8" r="8" fill="#FFD700" />
+        <circle cx="8" cy="8" r="6" fill="#1e40af" />
+        <path d="M8 2 L10 8 L8 14 L6 8 Z" fill="#FFD700" />
+      </g>
+      
+      {/* Map */}
+      <g transform="translate(300, 420)" style={{animationDelay: '1.5s'}}>
+        <rect x="0" y="0" width="18" height="12" fill="#FFD700" rx="1" />
+        <path d="M2 2 L8 6 L14 2 L16 10 L2 10 Z" fill="#1e40af" />
+      </g>
+    </g>
 
-    {/* Connection Lines Between People */}
-    <line x1="120" y1="380" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
-    <line x1="280" y1="370" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
-    <line x1="150" y1="350" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
-    <line x1="250" y1="340" x2="200" y2="390" stroke="#fbbf24" strokeWidth="2" opacity="0.6" className="animate-pulse" />
-
-    {/* Stars representing destinations/dreams */}
-    <circle cx="100" cy="100" r="2" fill="#fbbf24" className="animate-star-twinkle" />
-    <circle cx="300" cy="80" r="1.5" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '0.5s'}} />
-    <circle cx="350" cy="120" r="1" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '1s'}} />
-    <circle cx="80" cy="60" r="1.5" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '1.5s'}} />
-    <circle cx="200" cy="50" r="2" fill="#fbbf24" className="animate-star-twinkle" style={{animationDelay: '2s'}} />
+    {/* PartiuTrip Logo Text Effect */}
+    <text x="200" y="520" textAnchor="middle" className="text-2xl font-bold" fill="url(#textGradient)">
+      PartiuTrip
+    </text>
+    
+    {/* Subtitle */}
+    <text x="200" y="545" textAnchor="middle" className="text-sm" fill="#FFD700" opacity="0.8">
+      Conectando Viajantes pelo Mundo
+    </text>
 
     {/* Definitions */}
     <defs>
-      <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id="spaceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#0f172a" />
+        <stop offset="50%" stopColor="#1e293b" />
+        <stop offset="100%" stopColor="#334155" />
+      </linearGradient>
+      
+      <radialGradient id="globeGradient" cx="50%" cy="30%" r="70%">
         <stop offset="0%" stopColor="#3b82f6" />
-        <stop offset="100%" stopColor="#1e40af" />
-      </linearGradient>
-      <linearGradient id="islandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#065f46" />
-        <stop offset="100%" stopColor="#064e3b" />
-      </linearGradient>
-      <linearGradient id="lighthouseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#f8fafc" />
-        <stop offset="100%" stopColor="#e2e8f0" />
-      </linearGradient>
-      <linearGradient id="platformGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#fbbf24" />
-        <stop offset="100%" stopColor="#f59e0b" />
-      </linearGradient>
-      <linearGradient id="lightBeam1" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#10b981" />
-        <stop offset="100%" stopColor="#059669" />
-      </linearGradient>
-      <linearGradient id="lightBeam2" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#3b82f6" />
-        <stop offset="100%" stopColor="#2563eb" />
-      </linearGradient>
-      <linearGradient id="lightBeam3" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#fbbf24" />
-        <stop offset="100%" stopColor="#f59e0b" />
+        <stop offset="60%" stopColor="#1e40af" />
+        <stop offset="100%" stopColor="#1e3a8a" />
+      </radialGradient>
+      
+      <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#FFD700" />
+        <stop offset="50%" stopColor="#FFA500" />
+        <stop offset="100%" stopColor="#FF8C00" />
       </linearGradient>
     </defs>
   </svg>
