@@ -474,128 +474,116 @@ export default function TripDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
-        {/* Countdown Section */}
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-6"
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8"
         >
-          <CountdownTimer targetDate={trip.startDate} />
-        </motion.div>
-
-        {/* Cover Image Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8"
-        >
-          <div className="relative rounded-2xl overflow-hidden shadow-xl">
-            {/* Cover Image */}
-            <div className="relative h-56 bg-gradient-to-br from-blue-500 to-purple-600">
-              {trip.coverImage && (
-                <img 
-                  src={trip.coverImage}
-                  alt={`Imagem da viagem: ${trip.title}`}
-                  className="w-full h-full object-cover"
+          {/* Cover Image */}
+          <div className="relative h-48 lg:h-56">
+            {trip.coverImage && (
+              <img 
+                src={trip.coverImage}
+                alt={`Imagem da viagem: ${trip.title}`}
+                className="w-full h-full object-cover"
+              />
+            )}
+            <div className="absolute inset-0 bg-black/30" />
+            
+            {/* Cover Image Edit Button */}
+            {isCreator && (
+              <div className="absolute top-4 right-4">
+                <CoverImageSelector
+                  currentImage={trip.coverImage}
+                  destination={trip.destination}
+                  onImageSelect={(imageUrl) => updateCoverImageMutation.mutate(imageUrl)}
+                  trigger={
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      disabled={updateCoverImageMutation.isPending}
+                    >
+                      <Camera className="w-4 h-4 mr-2" />
+                      {updateCoverImageMutation.isPending ? "Alterando..." : "Alterar"}
+                    </Button>
+                  }
                 />
-              )}
-              <div className="absolute inset-0 bg-black/40 shadow-inner" style={{
-                boxShadow: 'inset 0 0 60px rgba(0,0,0,0.3), inset 0 -100px 80px rgba(0,0,0,0.4)'
-              }} />
-              
-              {/* Cover Image Edit Button (only for trip creator) */}
-              {isCreator && (
-                <div className="absolute top-4 right-4">
-                  <CoverImageSelector
-                    currentImage={trip.coverImage}
-                    destination={trip.destination}
-                    onImageSelect={(imageUrl) => updateCoverImageMutation.mutate(imageUrl)}
-                    trigger={
-                      <Button 
-                        variant="secondary" 
-                        size="sm"
-                        disabled={updateCoverImageMutation.isPending}
-                      >
-                        <Camera className="w-4 h-4 mr-2" />
-                        {updateCoverImageMutation.isPending ? "Alterando..." : "Alterar Imagem"}
-                      </Button>
-                    }
-                  />
-                </div>
-              )}
-              
-              {/* Trip Title and Info Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                <h1 className="font-bold text-4xl mb-3">{trip.title || "Viagem sem título"}</h1>
-                <div className="flex items-center gap-6 text-blue-100">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    <span className="text-lg">{trip.destination}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    <span className="text-lg">
-                      {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
-                    </span>
-                  </div>
-                </div>
               </div>
+            )}
+            
+            {/* Countdown Timer */}
+            <div className="absolute top-4 left-4">
+              <CountdownTimer targetDate={trip.startDate} />
             </div>
           </div>
-        </motion.div>
-
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-8"
-        >
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 lg:p-8 shadow-xl">
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-6">
-              <div className="flex flex-wrap gap-2 lg:gap-3">
-                <Badge className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs lg:text-sm">
-                  {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
-                </Badge>
-                <Badge variant="outline" className="bg-white/50 text-xs lg:text-sm">
-                  {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
-                </Badge>
-                <Badge variant="outline" className="bg-white/50 text-xs lg:text-sm">
-                  {trip.currentParticipants}/{trip.maxParticipants} participantes
-                </Badge>
+          
+          {/* Content */}
+          <div className="p-6">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+              <div className="space-y-4">
+                <div>
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+                    {trip.title || "Viagem sem título"}
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>{trip.destination}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span>
+                        {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      <span>{trip.currentParticipants}/{trip.maxParticipants} participantes</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant={trip.status === 'open' ? 'default' : 'secondary'}>
+                      {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
+                    </Badge>
+                    <Badge variant="outline">
+                      {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
+                    </Badge>
+                  </div>
+                </div>
+                
+                <TripStatistics trip={trip} plannedActivities={plannedActivities} />
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-2 lg:gap-3">
+              <div className="flex gap-3 lg:flex-col lg:w-40">
                 <Button 
-                  variant="secondary" 
+                  variant="outline" 
                   size="sm"
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
                     toast({ title: "Link copiado!", description: "O link da viagem foi copiado para a área de transferência." });
                   }}
-                  className="text-xs lg:text-sm"
+                  className="flex-1 lg:flex-none"
                 >
-                  <Share2 className="h-3 w-3 lg:h-4 lg:w-4 mr-2" />
+                  <Share2 className="h-4 w-4 mr-2" />
                   Compartilhar
                 </Button>
                 {(isParticipant || isCreator) && (
-                  <Button variant="secondary" asChild size="sm" className="text-xs lg:text-sm">
+                  <Button asChild size="sm" className="flex-1 lg:flex-none">
                     <a href={`/chat/${trip.id}`}>
-                      <MessageCircle className="h-3 w-3 lg:h-4 lg:w-4 mr-2" />
+                      <MessageCircle className="h-4 w-4 mr-2" />
                       Chat
                     </a>
                   </Button>
                 )}
               </div>
             </div>
-
-            <TripStatistics trip={trip} plannedActivities={plannedActivities} />
           </div>
         </motion.div>
 
@@ -608,64 +596,62 @@ export default function TripDetailPage() {
             className="lg:col-span-2 order-2 lg:order-1"
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="flex w-full bg-gradient-to-r from-slate-50 to-blue-50 backdrop-blur-sm rounded-xl p-1 shadow-md border border-slate-200">
+              <TabsList className="grid w-full grid-cols-4 bg-gray-100 rounded-lg p-1">
                 <TabsTrigger 
                   value="overview" 
-                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
                 >
-                  <Sparkles className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Visão Geral</span>
-                  <span className="sm:hidden truncate">Visão</span>
+                  <Star className="h-4 w-4" />
+                  <span className="hidden sm:inline">Visão Geral</span>
+                  <span className="sm:hidden">Visão</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="activities" 
-                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
                 >
-                  <Camera className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                  <span className="truncate">Atividades</span>
+                  <Target className="h-4 w-4" />
+                  <span>Atividades</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="expenses" 
-                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
                 >
-                  <DollarSign className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                  <span className="truncate">Despesas</span>
+                  <DollarSign className="h-4 w-4" />
+                  <span>Despesas</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="participants" 
-                  className="flex-1 flex items-center justify-center gap-1 md:gap-2 px-1 md:px-2 py-2 md:py-3 rounded-lg font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/60 text-slate-700 text-xs md:text-sm"
+                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
                 >
-                  <Users className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                  <span className="hidden sm:inline truncate">Participantes</span>
-                  <span className="sm:hidden truncate">Pessoas</span>
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Participantes</span>
+                  <span className="sm:hidden">Pessoas</span>
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="overview" className="space-y-4 lg:space-y-6">
+              <TabsContent value="overview" className="space-y-6">
                 {/* Description */}
-                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Star className="h-5 w-5 text-yellow-500" />
+                <Card className="bg-white shadow-sm border border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
                       Sobre a Viagem
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 leading-relaxed text-sm lg:text-base">
+                    <p className="text-gray-700 leading-relaxed">
                       {trip.description || "Descrição não disponível"}
                     </p>
                   </CardContent>
                 </Card>
 
                 {/* Budget Breakdown */}
-                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
+                <Card className="bg-white shadow-sm border border-gray-200">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-green-500" />
-                        Orçamento Detalhado
+                        <span className="text-lg font-semibold text-gray-900">Orçamento Detalhado</span>
                         {!(isCreator || isParticipant) && (
-                          <Badge variant="outline" className="text-xs ml-2">
+                          <Badge variant="outline" className="text-xs">
                             Somente Visualização
                           </Badge>
                         )}
@@ -686,26 +672,26 @@ export default function TripDetailPage() {
                         <>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {Object.entries(trip.budgetBreakdown).map(([category, amount]) => (
-                              <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <span className="text-xs md:text-sm font-medium text-gray-700 capitalize">
+                              <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <span className="text-sm font-medium text-gray-700">
                                   {budgetCategories[category as keyof typeof budgetCategories] || category}
                                 </span>
-                                <span className="font-bold text-gray-900 text-xs md:text-sm">
+                                <span className="font-semibold text-gray-900 tabular-nums">
                                   R$ {amount.toLocaleString('pt-BR')}
                                 </span>
                               </div>
                             ))}
                           </div>
                           
-                          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
                             <div className="flex justify-between items-center">
-                              <span className="text-lg font-semibold text-blue-900">Total</span>
-                              <span className="text-xl font-bold text-blue-900">
+                              <span className="text-base font-semibold text-gray-900">Total</span>
+                              <span className="text-xl font-bold text-gray-900 tabular-nums">
                                 R$ {trip.budget.toLocaleString('pt-BR')}
                               </span>
                             </div>
-                            <div className="mt-2 text-sm text-blue-700">
-                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} custo estimado por pessoa
+                            <div className="mt-2 text-sm text-gray-600">
+                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
                             </div>
                           </div>
                         </>
@@ -717,17 +703,17 @@ export default function TripDetailPage() {
                               Orçamento Total: R$ {trip.budget.toLocaleString('pt-BR')}
                             </p>
                             <p className="text-sm text-gray-600">
-                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} custo estimado por pessoa
+                              R$ {(trip.budget / trip.maxParticipants).toLocaleString('pt-BR')} por pessoa
                             </p>
                             <p className="text-xs text-gray-500 mt-4">
-                              Detalhamento não disponível ainda
+                              Detalhamento não disponível
                             </p>
                           </div>
                         </div>
                       )}
                       
                       {!(isCreator || isParticipant) && canJoin && (
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                           <div className="text-center">
                             <p className="text-sm text-blue-700 mb-2">
                               Participe da viagem para ajudar no planejamento do orçamento!
@@ -743,11 +729,10 @@ export default function TripDetailPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="activities" className="space-y-4 lg:space-y-6">
-                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Target className="h-5 w-5 text-blue-500" />
+              <TabsContent value="activities" className="space-y-6">
+                <Card className="bg-white shadow-sm border border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
                       Atividades Planejadas
                     </CardTitle>
                   </CardHeader>
@@ -816,11 +801,10 @@ export default function TripDetailPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="expenses" className="space-y-4 lg:space-y-6">
-                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <DollarSign className="h-5 w-5 text-green-500" />
+              <TabsContent value="expenses" className="space-y-6">
+                <Card className="bg-white shadow-sm border border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
                       Gestão de Despesas
                     </CardTitle>
                   </CardHeader>
@@ -846,11 +830,10 @@ export default function TripDetailPage() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="participants" className="space-y-4 lg:space-y-6">
-                <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Users className="h-5 w-5 text-purple-500" />
+              <TabsContent value="participants" className="space-y-6">
+                <Card className="bg-white shadow-sm border border-gray-200">
+                  <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
                       Participantes ({trip.participants?.length || 0})
                     </CardTitle>
                   </CardHeader>
@@ -949,12 +932,12 @@ export default function TripDetailPage() {
           >
 
             {/* Action Buttons */}
-            <Card className="bg-white/80 backdrop-blur-sm shadow-lg lg:sticky lg:top-4">
-              <CardContent className="p-3 lg:p-4 space-y-3">
+            <Card className="bg-white shadow-sm border border-gray-200 lg:sticky lg:top-4">
+              <CardContent className="p-4 space-y-3">
                 {canJoin && (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+                      <Button className="w-full">
                         <Heart className="h-4 w-4 mr-2" />
                         Solicitar Participação
                       </Button>
@@ -985,7 +968,7 @@ export default function TripDetailPage() {
                 {isParticipant && !isCreator && (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-lg">
+                      <Button variant="destructive" className="w-full">
                         <X className="h-4 w-4 mr-2" />
                         Desistir da Viagem
                       </Button>
@@ -1000,12 +983,13 @@ export default function TripDetailPage() {
                           <Button 
                             onClick={() => quitTripMutation.mutate()}
                             disabled={quitTripMutation.isPending}
-                            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-lg"
+                            variant="destructive"
+                            className="flex-1"
                           >
                             {quitTripMutation.isPending ? "Saindo..." : "Confirmar Saída"}
                           </Button>
                           <DialogTrigger asChild>
-                            <Button variant="outline" className="flex-1 border-gray-300 hover:bg-gray-50">
+                            <Button variant="outline" className="flex-1">
                               Cancelar
                             </Button>
                           </DialogTrigger>
