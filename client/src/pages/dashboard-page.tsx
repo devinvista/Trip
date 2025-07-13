@@ -241,35 +241,37 @@ export default function DashboardPage() {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 w-full lg:w-auto">
                 <Link href="/create-trip">
-                  <Button className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <Plus className="h-5 w-5 mr-2" />
-                    <span className="font-medium">Criar Viagem</span>
+                  <Button className="w-full h-10 sm:h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                    <span className="font-medium text-sm sm:text-base hidden sm:inline">Criar Viagem</span>
+                    <span className="font-medium text-sm sm:hidden">Nova</span>
                   </Button>
                 </Link>
                 
                 <Link href="/search">
-                  <Button className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <Search className="h-5 w-5 mr-2" />
-                    <span className="font-medium">Buscar</span>
+                  <Button className="w-full h-10 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                    <span className="font-medium text-sm sm:text-base">Buscar</span>
                   </Button>
                 </Link>
                 
                 <Link href="/profile">
-                  <Button className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                    <Settings className="h-5 w-5 mr-2" />
-                    <span className="font-medium">Perfil</span>
+                  <Button className="w-full h-10 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Settings className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                    <span className="font-medium text-sm sm:text-base">Perfil</span>
                   </Button>
                 </Link>
                 
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative">
-                      <Bell className="h-5 w-5 mr-2" />
-                      <span className="font-medium">Notificações</span>
+                    <Button className="w-full h-10 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative">
+                      <Bell className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                      <span className="font-medium text-sm sm:text-base hidden sm:inline">Notificações</span>
+                      <span className="font-medium text-sm sm:hidden">Avisos</span>
                       {(upcomingTrips.length > 0 || pendingRequests.length > 0) && (
-                        <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 text-xs bg-red-500 hover:bg-red-600 text-white border-0 rounded-full flex items-center justify-center">
+                        <Badge className="absolute -top-2 -right-2 w-4 h-4 sm:w-5 sm:h-5 p-0 text-xs bg-red-500 hover:bg-red-600 text-white border-0 rounded-full flex items-center justify-center">
                           {upcomingTrips.length + pendingRequests.length}
                         </Badge>
                       )}
@@ -641,81 +643,90 @@ export default function DashboardPage() {
                       )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 flex-wrap">
-                      <Link href={`/trip/${trip.id}`} className="flex-1 min-w-0">
+                    {/* Action Buttons - Responsive Design */}
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      {/* Primary Action - Full width on mobile, flex-1 on desktop */}
+                      <Link href={`/trip/${trip.id}`} className="flex-1">
                         <Button 
                           size="sm" 
                           className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0"
                         >
                           <Eye className="h-4 w-4 mr-2" />
-                          Ver Detalhes
+                          <span className="hidden sm:inline">Ver Detalhes</span>
+                          <span className="sm:hidden">Detalhes</span>
                         </Button>
                       </Link>
                       
-                      <Link href={`/chat/${trip.id}`}>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                        >
-                          <MessageCircle className="h-4 w-4 mr-1" />
-                          Chat
-                        </Button>
-                      </Link>
-                      
-                      {/* Botão editar apenas para criadores */}
-                      {trip.creatorId === user?.id && (
-                        <Link href={`/edit-trip/${trip.id}`}>
+                      {/* Secondary Actions - Stacked on mobile, side by side on desktop */}
+                      <div className="flex gap-2">
+                        <Link href={`/chat/${trip.id}`} className="flex-1 sm:flex-none">
                           <Button 
                             size="sm" 
-                            variant="outline"
-                            className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                            variant="outline" 
+                            className="w-full sm:w-auto border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
                           >
-                            <Settings className="h-4 w-4 mr-1" />
-                            Editar
+                            <MessageCircle className="h-4 w-4 mr-1" />
+                            <span className="hidden sm:inline">Chat</span>
+                            <span className="sm:hidden">Chat</span>
                           </Button>
                         </Link>
-                      )}
-                      
-                      {/* Botão desistir para criadores (com aviso especial) e participantes */}
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
-                        onClick={() => {
-                          const isCreator = trip.creatorId === user?.id;
-                          const hasOtherParticipants = trip.currentParticipants > 1;
-                          
-                          let confirmMessage = '';
-                          if (isCreator) {
-                            if (hasOtherParticipants) {
-                              confirmMessage = `Como criador da viagem "${trip.title}", ao desistir você transferirá a organização para o participante mais antigo. Confirma?`;
-                            } else {
-                              confirmMessage = `Como criador da viagem "${trip.title}" sem outros participantes, ao desistir a viagem será excluída permanentemente. Confirma?`;
-                            }
-                          } else {
-                            confirmMessage = `Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`;
-                          }
-                          
-                          if (window.confirm(confirmMessage)) {
-                            quitTripMutation.mutate(trip.id);
-                          }
-                        }}
-                        disabled={quitTripMutation.isPending}
-                      >
-                        {quitTripMutation.isPending ? (
-                          <>
-                            <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
-                            Saindo...
-                          </>
-                        ) : (
-                          <>
-                            <X className="h-4 w-4 mr-1" />
-                            {trip.creatorId === user?.id ? 'Cancelar' : 'Desistir'}
-                          </>
+                        
+                        {/* Botão editar apenas para criadores */}
+                        {trip.creatorId === user?.id && (
+                          <Link href={`/edit-trip/${trip.id}`} className="flex-1 sm:flex-none">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="w-full sm:w-auto border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                            >
+                              <Settings className="h-4 w-4 mr-1" />
+                              <span className="hidden sm:inline">Editar</span>
+                              <span className="sm:hidden">Editar</span>
+                            </Button>
+                          </Link>
                         )}
-                      </Button>
+                        
+                        {/* Botão desistir para criadores (com aviso especial) e participantes */}
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="flex-1 sm:flex-none text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                          onClick={() => {
+                            const isCreator = trip.creatorId === user?.id;
+                            const hasOtherParticipants = trip.currentParticipants > 1;
+                            
+                            let confirmMessage = '';
+                            if (isCreator) {
+                              if (hasOtherParticipants) {
+                                confirmMessage = `Como criador da viagem "${trip.title}", ao desistir você transferirá a organização para o participante mais antigo. Confirma?`;
+                              } else {
+                                confirmMessage = `Como criador da viagem "${trip.title}" sem outros participantes, ao desistir a viagem será excluída permanentemente. Confirma?`;
+                              }
+                            } else {
+                              confirmMessage = `Tem certeza que deseja sair da viagem "${trip.title}"? Esta ação não pode ser desfeita.`;
+                            }
+                            
+                            if (window.confirm(confirmMessage)) {
+                              quitTripMutation.mutate(trip.id);
+                            }
+                          }}
+                          disabled={quitTripMutation.isPending}
+                        >
+                          {quitTripMutation.isPending ? (
+                            <>
+                              <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin mr-1" />
+                              <span className="hidden sm:inline">Saindo...</span>
+                              <span className="sm:hidden">...</span>
+                            </>
+                          ) : (
+                            <>
+                              <X className="h-4 w-4 mr-1" />
+                              <span className="hidden sm:inline">{trip.creatorId === user?.id ? 'Cancelar' : 'Desistir'}</span>
+                              <span className="sm:hidden">{trip.creatorId === user?.id ? 'Cancelar' : 'Sair'}</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -737,29 +748,33 @@ export default function DashboardPage() {
                       {selectedTimeframe === 'all' && 'Você ainda não tem viagens. Comece sua jornada criando uma nova viagem ou encontre companheiros para aventuras incríveis!'}
                     </p>
                   </div>
-                  <div className="flex flex-col sm:flex-row justify-center gap-4">
-                    <Link href="/create-trip">
-                      <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 px-8 py-3 h-auto">
-                        <Plus className="h-5 w-5 mr-2" />
-                        Criar Nova Viagem
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+                    <Link href="/create-trip" className="w-full sm:w-auto">
+                      <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 px-6 sm:px-8 py-3 h-auto">
+                        <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                        <span className="hidden sm:inline">Criar Nova Viagem</span>
+                        <span className="sm:hidden">Nova Viagem</span>
                       </Button>
                     </Link>
-                    <Link href="/search">
-                      <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 px-8 py-3 h-auto">
-                        <Search className="h-5 w-5 mr-2" />
-                        Buscar Companheiros
+                    <Link href="/search" className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full sm:w-auto border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 px-6 sm:px-8 py-3 h-auto">
+                        <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                        <span className="hidden sm:inline">Buscar Companheiros</span>
+                        <span className="sm:hidden">Buscar</span>
                       </Button>
                     </Link>
-                    <Link href="/profile">
-                      <Button variant="outline" className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-8 py-3 h-auto">
-                        <Settings className="h-5 w-5 mr-2" />
-                        Editar Perfil
+                    <Link href="/profile" className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full sm:w-auto border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-6 sm:px-8 py-3 h-auto">
+                        <Settings className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                        <span className="hidden sm:inline">Editar Perfil</span>
+                        <span className="sm:hidden">Perfil</span>
                       </Button>
                     </Link>
-                    <Link href="/journey-tracker">
-                      <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700 px-8 py-3 h-auto">
-                        <TrendingUp className="h-5 w-5 mr-2" />
-                        Ver Progresso
+                    <Link href="/journey-tracker" className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full sm:w-auto border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700 px-6 sm:px-8 py-3 h-auto">
+                        <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                        <span className="hidden sm:inline">Ver Progresso</span>
+                        <span className="sm:hidden">Progresso</span>
                       </Button>
                     </Link>
                   </div>
