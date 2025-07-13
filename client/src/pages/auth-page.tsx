@@ -100,10 +100,6 @@ export default function AuthPage() {
               />
             </div>
             <p className="text-gray-600">Conecte-se com viajantes como você</p>
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800 font-medium">Usuário de teste:</p>
-              <p className="text-sm text-blue-700">Usuário: <strong>tom</strong> | Senha: <strong>demo123</strong></p>
-            </div>
           </div>
 
           <Tabs defaultValue="login" className="w-full">
