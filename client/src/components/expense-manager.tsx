@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Plus, Receipt, DollarSign, Users, Calculator, TrendingDown, TrendingUp, Check, X } from "lucide-react";
+import { Plus, Receipt, DollarSign, Users, Calculator, TrendingDown, TrendingUp, Check, X, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
@@ -52,7 +52,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
   });
 
   // Fetch balances
-  const { data: balances = [], isLoading: balancesLoading, error: balancesError } = useQuery({
+  const { data: balances = [], isLoading: balancesLoading, error: balancesError, refetch: refetchBalances } = useQuery({
     queryKey: ['/api/trips', tripId, 'balances'],
     queryFn: async () => {
       const response = await fetch(`/api/trips/${tripId}/balances`);
@@ -61,6 +61,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
     },
     staleTime: 0, // Always fetch fresh data
     refetchOnWindowFocus: true,
+    refetchInterval: 5000, // Refresh every 5 seconds
   });
 
   // Create expense mutation
@@ -186,9 +187,19 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
       {/* Balance Summary */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5" />
-            Resumo de Saldos
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calculator className="h-5 w-5" />
+              Resumo de Saldos
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => refetchBalances()}
+              disabled={balancesLoading}
+            >
+              <RefreshCw className={`h-4 w-4 ${balancesLoading ? 'animate-spin' : ''}`} />
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
