@@ -350,7 +350,7 @@ export default function SearchPage() {
               className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
             >
               <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold text-yellow-300 mb-1">250+</div>
+                <div className="text-3xl font-bold text-blue-200 mb-1">250+</div>
                 <div className="text-sm text-blue-100">Viagens Planejadas</div>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
@@ -358,11 +358,11 @@ export default function SearchPage() {
                 <div className="text-sm text-blue-100">Viajantes Ativos</div>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold text-purple-300 mb-1">85+</div>
+                <div className="text-3xl font-bold text-blue-400 mb-1">85+</div>
                 <div className="text-sm text-blue-100">Destinos Únicos</div>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold text-green-300 mb-1">4.8★</div>
+                <div className="text-3xl font-bold text-cyan-300 mb-1">4.8★</div>
                 <div className="text-sm text-blue-100">Experiências</div>
               </div>
             </motion.div>
