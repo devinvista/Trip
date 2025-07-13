@@ -18,7 +18,7 @@ import {
   TrendingUp,
   Edit3
 } from "lucide-react";
-import logoImage from "@assets/20250712_2357_Logo Barra Superior_remix_01k00v9ycxfb387rqcfedn7vzh_1752375801778.png";
+import logoImage from "@assets/20250712_2357_Logo Barra Superior_remix_01k00v9ycxfb387rqcfedn7vzh_1752376124838.png";
 
 export function Navbar() {
   const { user, logoutMutation, isLoading } = useAuth();
@@ -50,7 +50,7 @@ export function Navbar() {
               <img 
                 src={logoImage} 
                 alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-                className="h-12 w-auto"
+                className="h-10 w-auto max-w-[200px] object-contain"
               />
             </Link>
             
@@ -73,7 +73,7 @@ export function Navbar() {
             <img 
               src={logoImage} 
               alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-              className="h-12 w-auto"
+              className="h-10 w-auto max-w-[200px] object-contain"
             />
           </Link>
           
