@@ -292,7 +292,7 @@ export default function HomePage() {
               >
                 <h1 className="text-6xl md:text-7xl font-bold text-slate-800 leading-tight">
                   <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
-                    Viajar Juntos
+                    Viaje Junto,
                   </span>
                   <br />
                   <span className="text-slate-800">
@@ -705,7 +705,7 @@ export default function HomePage() {
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
-                Por que escolher Viajar Juntos?
+                Por que escolher PartiuTrip?
               </span>
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
@@ -857,7 +857,7 @@ export default function HomePage() {
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Plane className="h-8 w-8 text-yellow-400" />
-                <span className="font-heading font-bold text-2xl bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Viajar Juntos</span>
+                <span className="font-heading font-bold text-2xl bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">PartiuTrip</span>
               </div>
               <p className="text-slate-400 leading-relaxed">
                 Conectamos viajantes, reduzimos custos e criamos experiências inesquecíveis ao redor do mundo.
@@ -927,7 +927,7 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col md:flex-row justify-between items-center text-slate-400 text-sm">
-              <p>&copy; 2025 Viajar Juntos. Todos os direitos reservados.</p>
+              <p>&copy; 2025 PartiuTrip. Todos os direitos reservados.</p>
               <div className="flex items-center gap-2 mt-4 md:mt-0">
                 <Shield className="w-4 h-4" />
                 <span>Plataforma segura e verificada</span>
