@@ -87,6 +87,13 @@ export default function ProfilePage() {
   // Fetch user stats
   const { data: userStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["/api/user/stats"],
+    queryFn: async () => {
+      const response = await fetch("/api/user/stats", {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch stats');
+      return response.json();
+    },
     enabled: !!user,
     retry: 1
   });
@@ -94,6 +101,13 @@ export default function ProfilePage() {
   // Fetch referral code and referred users
   const { data: referralData, isLoading: referralLoading, error: referralError } = useQuery({
     queryKey: ["/api/user/referral"],
+    queryFn: async () => {
+      const response = await fetch("/api/user/referral", {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch referral data');
+      return response.json();
+    },
     enabled: !!user,
     retry: 1
   });
