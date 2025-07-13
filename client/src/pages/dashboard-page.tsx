@@ -474,25 +474,37 @@ export default function DashboardPage() {
             {/* Simple Filter Tabs */}
             <div className="flex gap-1 p-1 bg-slate-100 rounded-lg overflow-x-auto">
               {[
-                { id: 'all', label: 'Todas', count: allTrips.length },
-                { id: 'upcoming', label: 'Próximas', count: upcomingTrips.length },
-                { id: 'in-progress', label: 'Em Andamento', count: inProgressTrips.length },
-                { id: 'completed', label: 'Concluídas', count: completedTrips.length }
+                { id: 'all', label: 'Todas', count: allTrips.length, color: 'blue' },
+                { id: 'upcoming', label: 'Próximas', count: upcomingTrips.length, color: 'emerald' },
+                { id: 'in-progress', label: 'Em Andamento', count: inProgressTrips.length, color: 'orange' },
+                { id: 'completed', label: 'Concluídas', count: completedTrips.length, color: 'slate' }
               ].map(filter => (
                 <button
                   key={filter.id}
                   onClick={() => setSelectedTimeframe(filter.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap min-w-0 ${
                     selectedTimeframe === filter.id
                       ? 'bg-white text-slate-900 shadow-sm'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
                   }`}
                 >
-                  <span>{filter.label}</span>
-                  <span className={`px-1.5 py-0.5 rounded text-xs ${
+                  <span className="truncate">{filter.label}</span>
+                  <span className={`px-1 sm:px-1.5 py-0.5 rounded text-xs font-semibold flex-shrink-0 ${
                     selectedTimeframe === filter.id
-                      ? 'bg-slate-100 text-slate-700'
-                      : 'bg-slate-200 text-slate-600'
+                      ? filter.color === 'blue' 
+                        ? 'bg-blue-100 text-blue-700'
+                        : filter.color === 'emerald'
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : filter.color === 'orange'
+                        ? 'bg-orange-100 text-orange-700'
+                        : 'bg-slate-100 text-slate-700'
+                      : filter.color === 'blue'
+                      ? 'bg-blue-200 text-blue-800'
+                      : filter.color === 'emerald'
+                      ? 'bg-emerald-200 text-emerald-800'
+                      : filter.color === 'orange'
+                      ? 'bg-orange-200 text-orange-800'
+                      : 'bg-slate-200 text-slate-700'
                   }`}>
                     {filter.count}
                   </span>
