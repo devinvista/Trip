@@ -375,113 +375,87 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {/* Stats Dashboard */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Stats Dashboard - Modern Clean Design */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
             {/* Total de Viagens */}
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <CardContent className="p-6 relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
-                    <Briefcase className="h-8 w-8 text-white drop-shadow-sm" />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-blue-100 text-sm font-medium">Total de</p>
-                    <p className="text-white/90 text-xs">Viagens</p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-4xl font-bold text-white drop-shadow-sm">{allTrips.length}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-green-500/20 backdrop-blur-sm p-1.5 rounded-full">
-                      <TrendingUp className="h-3 w-3 text-green-300" />
+            <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/60">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-50 p-2.5 rounded-xl group-hover:bg-blue-100 transition-colors duration-200">
+                      <Briefcase className="h-5 w-5 text-blue-600" />
                     </div>
-                    <span className="text-blue-100 text-sm">+{createdTrips.length} criadas por você</span>
+                    <div>
+                      <p className="text-2xl font-bold text-slate-900">{allTrips.length}</p>
+                      <p className="text-sm text-slate-600 font-medium">Total de Viagens</p>
+                    </div>
+                  </div>
+                  <div className="bg-green-50 px-2.5 py-1.5 rounded-full">
+                    <p className="text-xs font-semibold text-green-700">+{createdTrips.length} suas</p>
                   </div>
                 </div>
-                {/* Decorative element */}
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
 
             {/* Próximas Viagens */}
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-green-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <CardContent className="p-6 relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
-                    <Clock className="h-8 w-8 text-white drop-shadow-sm" />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-emerald-100 text-sm font-medium">Próximas</p>
-                    <p className="text-white/90 text-xs">Viagens</p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-4xl font-bold text-white drop-shadow-sm">{upcomingTrips.length}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-green-500/20 backdrop-blur-sm p-1.5 rounded-full">
-                      <CheckCircle className="h-3 w-3 text-green-300" />
+            <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300/60">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-emerald-50 p-2.5 rounded-xl group-hover:bg-emerald-100 transition-colors duration-200">
+                      <Clock className="h-5 w-5 text-emerald-600" />
                     </div>
-                    <span className="text-emerald-100 text-sm">Bem planejadas</span>
+                    <div>
+                      <p className="text-2xl font-bold text-slate-900">{upcomingTrips.length}</p>
+                      <p className="text-sm text-slate-600 font-medium">Próximas Viagens</p>
+                    </div>
+                  </div>
+                  <div className="bg-emerald-50 px-2.5 py-1.5 rounded-full">
+                    <p className="text-xs font-semibold text-emerald-700">Planejadas</p>
                   </div>
                 </div>
-                {/* Decorative element */}
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
 
             {/* Companheiros */}
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <CardContent className="p-6 relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
-                    <Users className="h-8 w-8 text-white drop-shadow-sm" />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-purple-100 text-sm font-medium">Total de</p>
-                    <p className="text-white/90 text-xs">Companheiros</p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-4xl font-bold text-white drop-shadow-sm">{totalParticipants}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-yellow-500/20 backdrop-blur-sm p-1.5 rounded-full">
-                      <Star className="h-3 w-3 text-yellow-300" />
+            <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-violet-300/60">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-violet-50 p-2.5 rounded-xl group-hover:bg-violet-100 transition-colors duration-200">
+                      <Users className="h-5 w-5 text-violet-600" />
                     </div>
-                    <span className="text-purple-100 text-sm">Ótimas conexões</span>
+                    <div>
+                      <p className="text-2xl font-bold text-slate-900">{totalParticipants}</p>
+                      <p className="text-sm text-slate-600 font-medium">Companheiros</p>
+                    </div>
+                  </div>
+                  <div className="bg-amber-50 px-2.5 py-1.5 rounded-full flex items-center gap-1">
+                    <Star className="h-3 w-3 text-amber-600" />
+                    <p className="text-xs font-semibold text-amber-700">Conexões</p>
                   </div>
                 </div>
-                {/* Decorative element */}
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
 
             {/* Orçamento Total */}
-            <Card className="group relative overflow-hidden bg-gradient-to-br from-orange-500 to-amber-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <CardContent className="p-6 relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
-                    <DollarSign className="h-8 w-8 text-white drop-shadow-sm" />
-                  </div>
-                  <div className="text-right">
-                    <p className="text-orange-100 text-sm font-medium">Orçamento</p>
-                    <p className="text-white/90 text-xs">Total</p>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-4xl font-bold text-white drop-shadow-sm">R$ {totalBudget.toLocaleString()}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-green-500/20 backdrop-blur-sm p-1.5 rounded-full">
-                      <TrendingUp className="h-3 w-3 text-green-300" />
+            <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-orange-300/60">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-orange-50 p-2.5 rounded-xl group-hover:bg-orange-100 transition-colors duration-200">
+                      <DollarSign className="h-5 w-5 text-orange-600" />
                     </div>
-                    <span className="text-orange-100 text-sm">Dentro do planejado</span>
+                    <div>
+                      <p className="text-xl font-bold text-slate-900">R$ {totalBudget.toLocaleString()}</p>
+                      <p className="text-sm text-slate-600 font-medium">Orçamento Total</p>
+                    </div>
+                  </div>
+                  <div className="bg-green-50 px-2.5 py-1.5 rounded-full flex items-center gap-1">
+                    <TrendingUp className="h-3 w-3 text-green-600" />
+                    <p className="text-xs font-semibold text-green-700">No plano</p>
                   </div>
                 </div>
-                {/* Decorative element */}
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
           </div>
@@ -549,32 +523,32 @@ export default function DashboardPage() {
               </div>
             ) : !tripsError && getFilteredTrips().length > 0 ? (
               getFilteredTrips().map((trip: any) => (
-                <Card key={trip.id} className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-0 bg-white shadow-md">
+                <Card key={trip.id} className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-slate-200/60 bg-white shadow-sm">
                   {/* Cover Image */}
-                  <div className="relative h-48 bg-gradient-to-br from-orange-400 to-amber-500 overflow-hidden">
+                  <div className="relative h-44 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
                     {trip.coverImage && (
                       <img 
                         src={trip.coverImage} 
                         alt={trip.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
                     
                     {/* Status Badge */}
-                    <div className="absolute top-4 right-4">
+                    <div className="absolute top-3 right-3">
                       {new Date(trip.startDate) > new Date() ? (
-                        <Badge className="bg-green-600 hover:bg-green-700 text-white border-0">
+                        <Badge className="bg-emerald-500/90 backdrop-blur-sm hover:bg-emerald-600 text-white border-0 shadow-sm">
                           <Clock className="h-3 w-3 mr-1" />
                           Próxima
                         </Badge>
                       ) : new Date(trip.endDate) < new Date() ? (
-                        <Badge className="bg-gray-600 hover:bg-gray-700 text-white border-0">
+                        <Badge className="bg-slate-500/90 backdrop-blur-sm hover:bg-slate-600 text-white border-0 shadow-sm">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Concluída
                         </Badge>
                       ) : (
-                        <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-0">
+                        <Badge className="bg-blue-500/90 backdrop-blur-sm hover:bg-blue-600 text-white border-0 shadow-sm">
                           <AlertCircle className="h-3 w-3 mr-1" />
                           Em Andamento
                         </Badge>
@@ -582,48 +556,49 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Role Badge */}
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-3 left-3">
                       <Badge 
-                        variant={trip.creatorId === user?.id ? "default" : "secondary"}
-                        className={trip.creatorId === user?.id ? "bg-orange-600 hover:bg-orange-700 text-white" : "bg-white/90 text-gray-700 hover:bg-white"}
+                        className={trip.creatorId === user?.id 
+                          ? "bg-orange-500/90 backdrop-blur-sm hover:bg-orange-600 text-white border-0 shadow-sm" 
+                          : "bg-white/90 backdrop-blur-sm text-slate-700 hover:bg-white border-0 shadow-sm"}
                       >
                         {trip.creatorId === user?.id ? 'Criada por você' : 'Participando'}
                       </Badge>
                     </div>
 
                     {/* Title overlay */}
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="font-bold text-xl text-white mb-1 group-hover:text-orange-200 transition-colors">
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <h3 className="font-bold text-lg text-white mb-1 group-hover:text-orange-200 transition-colors drop-shadow-sm">
                         {trip.title}
                       </h3>
-                      <p className="text-white/90 flex items-center gap-2 text-sm">
-                        <MapPin className="h-4 w-4" />
+                      <p className="text-white/90 flex items-center gap-2 text-sm drop-shadow-sm">
+                        <MapPin className="h-3.5 w-3.5" />
                         {trip.destination}
                       </p>
                     </div>
                   </div>
 
-                  <CardContent className="p-6">
+                  <CardContent className="p-5">
                     {/* Trip Info */}
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 text-orange-500" />
+                    <div className="space-y-3 mb-5">
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <Calendar className="h-4 w-4 text-blue-500" />
                         <span className="font-medium">
                           {new Date(trip.startDate).toLocaleDateString('pt-BR')} - {new Date(trip.endDate).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Users className="h-4 w-4 text-orange-500" />
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <Users className="h-4 w-4 text-blue-500" />
                           <span>{trip.currentParticipants}/{trip.maxParticipants} participantes</span>
                         </div>
                         
                         {/* Participants Progress */}
                         <div className="flex-1 mx-3">
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-slate-200 rounded-full h-1.5">
                             <div 
-                              className="bg-gradient-to-r from-orange-500 to-amber-500 h-2 rounded-full transition-all duration-300"
+                              className="bg-gradient-to-r from-blue-500 to-blue-600 h-1.5 rounded-full transition-all duration-300"
                               style={{ width: `${(trip.currentParticipants / trip.maxParticipants) * 100}%` }}
                             />
                           </div>
@@ -631,25 +606,25 @@ export default function DashboardPage() {
                       </div>
 
                       {trip.budget && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <DollarSign className="h-4 w-4 text-orange-500" />
-                          <span className="font-semibold text-orange-600">
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <DollarSign className="h-4 w-4 text-blue-500" />
+                          <span className="font-semibold text-slate-900">
                             R$ {trip.budget.toLocaleString()}
                           </span>
-                          <span className="text-gray-500">
+                          <span className="text-slate-500">
                             / R$ {Math.round(trip.budget / trip.maxParticipants).toLocaleString()} por pessoa
                           </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Action Buttons - Responsive Design */}
+                    {/* Action Buttons - Clean & Modern */}
                     <div className="flex flex-col sm:flex-row gap-2">
-                      {/* Primary Action - Full width on mobile, flex-1 on desktop */}
+                      {/* Primary Action */}
                       <Link href={`/trip/${trip.id}`} className="flex-1">
                         <Button 
                           size="sm" 
-                          className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0 transition-colors duration-200"
                         >
                           <Eye className="h-4 w-4 mr-2" />
                           <span className="hidden sm:inline">Ver Detalhes</span>
@@ -657,13 +632,13 @@ export default function DashboardPage() {
                         </Button>
                       </Link>
                       
-                      {/* Secondary Actions - Stacked on mobile, side by side on desktop */}
+                      {/* Secondary Actions */}
                       <div className="flex gap-2">
                         <Link href={`/chat/${trip.id}`} className="flex-1 sm:flex-none">
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="w-full sm:w-auto border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                            className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-200"
                           >
                             <MessageCircle className="h-4 w-4 mr-1" />
                             <span className="hidden sm:inline">Chat</span>
@@ -677,7 +652,7 @@ export default function DashboardPage() {
                             <Button 
                               size="sm" 
                               variant="outline"
-                              className="w-full sm:w-auto border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                              className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-200"
                             >
                               <Settings className="h-4 w-4 mr-1" />
                               <span className="hidden sm:inline">Editar</span>
@@ -690,7 +665,7 @@ export default function DashboardPage() {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          className="flex-1 sm:flex-none text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                          className="flex-1 sm:flex-none text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700 hover:border-red-400 transition-colors duration-200"
                           onClick={() => {
                             const isCreator = trip.creatorId === user?.id;
                             const hasOtherParticipants = trip.currentParticipants > 1;
