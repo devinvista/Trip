@@ -147,7 +147,7 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 }
 
 // Trip Statistics Component
-function TripStatistics({ trip }: { trip: any }) {
+function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedActivities?: PlannedActivity[] }) {
   const stats = useMemo(() => {
     const totalBudget = trip.budget || 0;
     const perPerson = trip.maxParticipants > 0 ? totalBudget / trip.maxParticipants : 0;
@@ -210,24 +210,32 @@ function TripStatistics({ trip }: { trip: any }) {
         </CardContent>
       </Card>
 
-      {/* Duração Card */}
-      <Card className="group bg-white/95 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      {/* Duração Card - Destacado */}
+      <Card className="group bg-gradient-to-br from-blue-500 to-cyan-600 border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105">
         <CardContent className="p-5 lg:p-6">
           <div className="flex items-center justify-between mb-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl shadow-lg">
+            <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
               <Calendar className="h-5 w-5 text-white" />
             </div>
             <div className="text-right">
-              <div className="text-2xl lg:text-3xl font-bold text-gray-900">
+              <div className="text-2xl lg:text-3xl font-bold text-white">
                 {stats.duration}
               </div>
-              <div className="text-xs font-medium text-blue-600 mt-1">
+              <div className="text-xs font-medium text-blue-100 mt-1">
                 {stats.daysUntil > 0 ? `Em ${stats.daysUntil} dias` : 'Viagem iniciada'}
               </div>
             </div>
           </div>
-          <div className="text-sm font-medium text-gray-600">
-            {stats.duration === 1 ? 'Dia' : 'Dias'} de Viagem
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium text-white/90">
+              {stats.duration === 1 ? 'Dia' : 'Dias'} de Viagem
+            </div>
+            {plannedActivities.length > 0 && (
+              <div className="flex items-center gap-1 text-white/80 text-xs">
+                <Target className="h-3 w-3" />
+                <span>{plannedActivities.length} atividades</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -599,7 +607,7 @@ export default function TripDetailPage() {
               </div>
             </div>
 
-            <TripStatistics trip={trip} />
+            <TripStatistics trip={trip} plannedActivities={plannedActivities} />
           </div>
         </motion.div>
 
