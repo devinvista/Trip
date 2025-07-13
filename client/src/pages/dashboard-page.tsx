@@ -482,30 +482,7 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Link href="/create-trip">
-                      <Button size="sm" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nova Viagem
-                      </Button>
-                    </Link>
-                    <Link href="/search">
-                      <Button variant="outline" size="sm" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700">
-                        <Search className="h-4 w-4 mr-2" />
-                        Buscar Viagens
-                      </Button>
-                    </Link>
-                    <Button variant="outline" size="sm" className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
-                      <Bell className="h-4 w-4 mr-2" />
-                      Notificações
-                    </Button>
-                    <Link href="/journey-tracker">
-                      <Button variant="outline" size="sm" className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700">
-                        <TrendingUp className="h-4 w-4 mr-2" />
-                        Progresso
-                      </Button>
-                    </Link>
-                  </div>
+                  
                 </div>
               </CardContent>
             </Card>
