@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { OnboardingTour, useOnboardingTour } from "@/components/onboarding-tour";
 import { WelcomeBanner } from "@/components/welcome-banner";
@@ -239,25 +240,100 @@ export default function DashboardPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2 flex-wrap">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
                 <Link href="/create-trip">
-                  <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Criar Viagem
+                  <Button className="w-full h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Plus className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Criar Viagem</span>
                   </Button>
                 </Link>
+                
                 <Link href="/search">
-                  <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700">
-                    <Search className="h-4 w-4 mr-2" />
-                    Buscar Viagens
+                  <Button className="w-full h-12 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Search className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Buscar</span>
                   </Button>
                 </Link>
+                
                 <Link href="/profile">
-                  <Button variant="outline" size="sm">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Perfil
+                  <Button className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <Settings className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Perfil</span>
                   </Button>
                 </Link>
+                
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 relative">
+                      <Bell className="h-5 w-5 mr-2" />
+                      <span className="font-medium">Notificações</span>
+                      {(upcomingTrips.length > 0 || pendingRequests.length > 0) && (
+                        <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 text-xs bg-red-500 hover:bg-red-600 text-white border-0 rounded-full flex items-center justify-center">
+                          {upcomingTrips.length + pendingRequests.length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0" align="start">
+                    <div className="bg-white rounded-lg shadow-lg border">
+                      <div className="px-4 py-3 border-b bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                        <h3 className="font-semibold flex items-center gap-2">
+                          <Bell className="h-4 w-4" />
+                          Notificações
+                        </h3>
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {upcomingTrips.length === 0 && pendingRequests.length === 0 ? (
+                          <div className="p-4 text-center text-gray-500">
+                            <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                            <p>Nenhuma notificação</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            {upcomingTrips.slice(0, 3).map((trip: any) => (
+                              <div key={trip.id} className="p-3 hover:bg-gray-50 border-b last:border-b-0">
+                                <div className="flex items-start gap-3">
+                                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <div className="flex-1">
+                                    <p className="font-medium text-sm text-gray-900">{trip.title}</p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                      Viagem em {Math.ceil((new Date(trip.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
+                                    </p>
+                                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                                      <Calendar className="h-3 w-3" />
+                                      {new Date(trip.startDate).toLocaleDateString('pt-BR')}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            {pendingRequests.map((request: any) => (
+                              <div key={request.id} className="p-3 hover:bg-gray-50 border-b last:border-b-0">
+                                <div className="flex items-start gap-3">
+                                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <div className="flex-1">
+                                    <p className="font-medium text-sm text-gray-900">Solicitação pendente</p>
+                                    <p className="text-xs text-gray-600 mt-1">
+                                      {request.trip?.title}
+                                    </p>
+                                    <p className="text-xs text-gray-500">Aguardando aprovação</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {(upcomingTrips.length > 3 || pendingRequests.length > 0) && (
+                        <div className="px-4 py-3 border-t bg-gray-50">
+                          <Button size="sm" variant="outline" className="w-full text-xs">
+                            Ver todas as notificações
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </div>
