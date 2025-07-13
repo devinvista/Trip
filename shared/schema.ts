@@ -396,6 +396,8 @@ export const insertActivityBudgetProposalSchema = createInsertSchema(activityBud
 }).extend({
   amount: z.number().positive("Valor deve ser positivo"),
   title: z.string().min(1, "Título é obrigatório"),
+  inclusions: z.array(z.string()).optional(),
+  exclusions: z.array(z.string()).optional(),
 });
 
 export const insertTripActivitySchema = createInsertSchema(tripActivities).omit({

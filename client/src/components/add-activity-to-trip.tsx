@@ -35,11 +35,9 @@ type ActivityBudgetProposal = {
   activityId: number;
   title: string;
   description: string;
-  totalCost: number;
+  amount: number;
   currency: string;
-  duration: string;
-  minParticipants: number;
-  maxParticipants: number;
+  priceType: string;
   inclusions: string[];
   exclusions: string[];
   votes: number;
@@ -87,12 +85,32 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
         throw new Error('Selecione uma viagem e proposta');
       }
 
+      const selectedTrip = userTrips?.find(trip => trip.id === selectedTripId);
+      if (!selectedTrip) {
+        throw new Error('Viagem não encontrada');
+      }
+
+      // Calcular o custo total baseado no tipo de preço e número de participantes
+      const participants = selectedTrip.maxParticipants || 1;
+      const totalCost = selectedProposal.priceType === "per_person" 
+        ? selectedProposal.amount * participants
+        : selectedProposal.amount;
+
+      console.log('🔍 Calculando custo da atividade:', {
+        proposalAmount: selectedProposal.amount,
+        priceType: selectedProposal.priceType,
+        participants,
+        totalCost
+      });
+
       const response = await fetch(`/api/trips/${selectedTripId}/activities`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           activityId: activity.id,
           budgetProposalId: selectedProposal.id,
+          participants,
+          totalCost,
           notes: `Atividade adicionada: ${activity.title} - ${selectedProposal.title}`
         })
       });
@@ -328,18 +346,26 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
                   </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span>Custo Total:</span>
-                      <span className="font-semibold text-green-600">
-                        R$ {selectedProposal.totalCost.toFixed(2)}
+                      <span>Valor Base:</span>
+                      <span className="font-semibold text-blue-600">
+                        R$ {selectedProposal.amount.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Duração:</span>
-                      <span>{selectedProposal.duration}</span>
+                      <span>Tipo de Preço:</span>
+                      <span className="capitalize">{selectedProposal.priceType === "per_person" ? "Por Pessoa" : "Por Grupo"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Participantes:</span>
-                      <span>{selectedProposal.minParticipants}-{selectedProposal.maxParticipants}</span>
+                      <span>{selectedTrip.maxParticipants}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2">
+                      <span className="font-semibold">Custo Total:</span>
+                      <span className="font-semibold text-green-600">
+                        R$ {(selectedProposal.priceType === "per_person" 
+                          ? selectedProposal.amount * selectedTrip.maxParticipants
+                          : selectedProposal.amount).toFixed(2)}
+                      </span>
                     </div>
                   </div>
                   
@@ -365,8 +391,15 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
               <p className="text-sm text-blue-800">
                 A atividade <strong>{activity.title}</strong> será adicionada à viagem{' '}
                 <strong>{selectedTrip.title}</strong> com a proposta <strong>{selectedProposal.title}</strong>{' '}
-                no valor de <strong>R$ {selectedProposal.totalCost.toFixed(2)}</strong>.
+                no valor de <strong>R$ {(selectedProposal.priceType === "per_person" 
+                  ? selectedProposal.amount * selectedTrip.maxParticipants
+                  : selectedProposal.amount).toFixed(2)}</strong>.
               </p>
+              <div className="mt-2 text-xs text-blue-700">
+                <span className="font-medium">Detalhes:</span> {selectedProposal.priceType === "per_person" 
+                  ? `R$ ${selectedProposal.amount.toFixed(2)} por pessoa × ${selectedTrip.maxParticipants} participantes`
+                  : `R$ ${selectedProposal.amount.toFixed(2)} valor fixo por grupo`}
+              </div>
             </div>
 
             <div className="flex justify-end gap-3">

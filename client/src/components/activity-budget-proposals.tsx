@@ -135,9 +135,15 @@ export function ActivityBudgetProposals({
     
     const processedData = {
       ...data,
-      inclusions: typeof inclusions === 'string' ? inclusions.split('\n').filter(Boolean) : inclusions,
-      exclusions: typeof exclusions === 'string' ? exclusions.split('\n').filter(Boolean) : exclusions,
+      inclusions: typeof inclusions === 'string' 
+        ? inclusions.split('\n').filter(Boolean) 
+        : (Array.isArray(inclusions) ? inclusions : []),
+      exclusions: typeof exclusions === 'string' 
+        ? exclusions.split('\n').filter(Boolean) 
+        : (Array.isArray(exclusions) ? exclusions : []),
     };
+    
+    console.log('🔍 Dados processados para envio:', processedData);
     
     createProposal.mutate(processedData);
   };
