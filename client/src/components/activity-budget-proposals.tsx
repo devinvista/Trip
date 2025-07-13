@@ -217,7 +217,10 @@ export function ActivityBudgetProposals({
                               type="number" 
                               step="0.01"
                               {...field}
-                              onChange={e => field.onChange(parseFloat(e.target.value))}
+                              onChange={e => {
+                                const value = e.target.value;
+                                field.onChange(value === '' ? 0 : parseFloat(value) || 0);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -398,10 +401,10 @@ export function ActivityBudgetProposals({
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-green-600">
-                      R$ {proposal.totalCost.toFixed(2)}
+                      R$ {proposal.amount?.toFixed(2) || '0.00'}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {proposal.currency}
+                    <div className="text-sm text-gray-500 capitalize">
+                      {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
                     </div>
                   </div>
                 </div>
@@ -409,18 +412,15 @@ export function ActivityBudgetProposals({
               <CardContent>
                 <p className="text-gray-700 mb-3">{proposal.description}</p>
                 
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="h-4 w-4 text-gray-500" />
-                    <span>{proposal.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Users className="h-4 w-4 text-gray-500" />
-                    <span>{proposal.minParticipants}-{proposal.maxParticipants} pessoas</span>
-                  </div>
+                <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <DollarSign className="h-4 w-4 text-gray-500" />
-                    <span>R$ {(proposal.totalCost / proposal.maxParticipants).toFixed(2)}/pessoa</span>
+                    <span>R$ {proposal.amount?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Badge variant="outline" className="capitalize">
+                      {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
+                    </Badge>
                   </div>
                 </div>
 
