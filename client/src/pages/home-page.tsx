@@ -292,7 +292,7 @@ export default function HomePage() {
               >
                 <h1 className="text-6xl md:text-7xl font-bold text-slate-800 leading-tight">
                   <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
-                    Viaje Junto
+                    Viajar Juntos
                   </span>
                   <br />
                   <span className="text-slate-800">
@@ -684,50 +684,117 @@ export default function HomePage() {
       </section>
 
       {/* Features Section with Icons */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">Por que escolher ViajaJunto?</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="text-center hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="w-10 h-10 text-green-600" />
-              </div>
-              <CardTitle>Economize até 60%</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Divida hospedagem, transporte e passeios. Viaje mais gastando menos!
-              </CardDescription>
-            </CardContent>
-          </Card>
+      <section className="relative py-24 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-20 left-20 w-80 h-80 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full filter blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full filter blur-3xl"></div>
+        </div>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-10 h-10 text-blue-600" />
-              </div>
-              <CardTitle>Comunidade Verificada</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Perfis autenticados, avaliações reais e sistema de reputação confiável.
-              </CardDescription>
-            </CardContent>
-          </Card>
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm rounded-full px-6 py-2 mb-6 border border-white/20">
+              <Star className="w-5 h-5 text-amber-500" />
+              <span className="text-sm font-medium text-slate-700">Vantagens Exclusivas</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+                Por que escolher Viajar Juntos?
+              </span>
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Descubra como nossa plataforma transforma a forma de viajar, conectando pessoas e criando experiências inesquecíveis
+            </p>
+          </motion.div>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-10 h-10 text-purple-600" />
-              </div>
-              <CardTitle>Experiências Únicas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription>
-                Viva aventuras autênticas e faça amizades que duram para sempre.
-              </CardDescription>
-            </CardContent>
-          </Card>
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <Card className="group text-center bg-white/80 backdrop-blur-sm border border-white/40 hover:bg-white/95 hover:shadow-2xl hover:scale-105 transition-all duration-500 h-full">
+                <CardHeader className="pb-4">
+                  <motion.div 
+                    className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300"
+                    whileHover={{ rotate: [0, -10, 10, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <DollarSign className="w-12 h-12 text-white" />
+                  </motion.div>
+                  <CardTitle className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    Economize até 65%
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-600 text-base leading-relaxed">
+                    Divida hospedagem, transporte e passeios. Viaje mais gastando menos com nossa inteligente divisão de custos!
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <Card className="group text-center bg-white/80 backdrop-blur-sm border border-white/40 hover:bg-white/95 hover:shadow-2xl hover:scale-105 transition-all duration-500 h-full">
+                <CardHeader className="pb-4">
+                  <motion.div 
+                    className="w-24 h-24 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300"
+                    whileHover={{ rotate: [0, -10, 10, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Users className="w-12 h-12 text-white" />
+                  </motion.div>
+                  <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    Comunidade Verificada
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-600 text-base leading-relaxed">
+                    Perfis autenticados, avaliações reais e sistema de reputação confiável para viagens seguras e divertidas.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <Card className="group text-center bg-white/80 backdrop-blur-sm border border-white/40 hover:bg-white/95 hover:shadow-2xl hover:scale-105 transition-all duration-500 h-full">
+                <CardHeader className="pb-4">
+                  <motion.div 
+                    className="w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300"
+                    whileHover={{ rotate: [0, -10, 10, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Heart className="w-12 h-12 text-white" />
+                  </motion.div>
+                  <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Experiências Únicas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-600 text-base leading-relaxed">
+                    Viva aventuras autênticas e faça amizades que duram para sempre com companheiros de viagem compatíveis.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </div>
       </section>
 
