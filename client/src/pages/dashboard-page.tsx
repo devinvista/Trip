@@ -288,75 +288,111 @@ export default function DashboardPage() {
 
           {/* Stats Dashboard */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-blue-600 text-sm font-medium">Total de Viagens</p>
-                    <p className="text-3xl font-bold text-blue-700">{allTrips.length}</p>
+            {/* Total de Viagens */}
+            <Card className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <CardContent className="p-6 relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
+                    <Briefcase className="h-8 w-8 text-white drop-shadow-sm" />
                   </div>
-                  <div className="bg-blue-500 bg-opacity-20 p-3 rounded-full">
-                    <Briefcase className="h-6 w-6 text-blue-600" />
+                  <div className="text-right">
+                    <p className="text-blue-100 text-sm font-medium">Total de</p>
+                    <p className="text-white/90 text-xs">Viagens</p>
                   </div>
                 </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-gray-600">+{createdTrips.length} criadas</span>
+                <div className="space-y-2">
+                  <p className="text-4xl font-bold text-white drop-shadow-sm">{allTrips.length}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-green-500/20 backdrop-blur-sm p-1.5 rounded-full">
+                      <TrendingUp className="h-3 w-3 text-green-300" />
+                    </div>
+                    <span className="text-blue-100 text-sm">+{createdTrips.length} criadas por você</span>
+                  </div>
                 </div>
+                {/* Decorative element */}
+                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-green-600 text-sm font-medium">Próximas Viagens</p>
-                    <p className="text-3xl font-bold text-green-700">{upcomingTrips.length}</p>
+            {/* Próximas Viagens */}
+            <Card className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-green-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <CardContent className="p-6 relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
+                    <Clock className="h-8 w-8 text-white drop-shadow-sm" />
                   </div>
-                  <div className="bg-green-500 bg-opacity-20 p-3 rounded-full">
-                    <Clock className="h-6 w-6 text-green-600" />
+                  <div className="text-right">
+                    <p className="text-emerald-100 text-sm font-medium">Próximas</p>
+                    <p className="text-white/90 text-xs">Viagens</p>
                   </div>
                 </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-gray-600">Bem planejadas</span>
+                <div className="space-y-2">
+                  <p className="text-4xl font-bold text-white drop-shadow-sm">{upcomingTrips.length}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-green-500/20 backdrop-blur-sm p-1.5 rounded-full">
+                      <CheckCircle className="h-3 w-3 text-green-300" />
+                    </div>
+                    <span className="text-emerald-100 text-sm">Bem planejadas</span>
+                  </div>
                 </div>
+                {/* Decorative element */}
+                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-purple-600 text-sm font-medium">Companheiros</p>
-                    <p className="text-3xl font-bold text-purple-700">{totalParticipants}</p>
+            {/* Companheiros */}
+            <Card className="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <CardContent className="p-6 relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
+                    <Users className="h-8 w-8 text-white drop-shadow-sm" />
                   </div>
-                  <div className="bg-purple-500 bg-opacity-20 p-3 rounded-full">
-                    <Users className="h-6 w-6 text-purple-600" />
+                  <div className="text-right">
+                    <p className="text-purple-100 text-sm font-medium">Total de</p>
+                    <p className="text-white/90 text-xs">Companheiros</p>
                   </div>
                 </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm text-gray-600">Ótimas conexões</span>
+                <div className="space-y-2">
+                  <p className="text-4xl font-bold text-white drop-shadow-sm">{totalParticipants}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-yellow-500/20 backdrop-blur-sm p-1.5 rounded-full">
+                      <Star className="h-3 w-3 text-yellow-300" />
+                    </div>
+                    <span className="text-purple-100 text-sm">Ótimas conexões</span>
+                  </div>
                 </div>
+                {/* Decorative element */}
+                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-orange-600 text-sm font-medium">Orçamento Total</p>
-                    <p className="text-3xl font-bold text-orange-700">R$ {totalBudget.toLocaleString()}</p>
+            {/* Orçamento Total */}
+            <Card className="group relative overflow-hidden bg-gradient-to-br from-orange-500 to-amber-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <CardContent className="p-6 relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl group-hover:bg-white/30 transition-all duration-300">
+                    <DollarSign className="h-8 w-8 text-white drop-shadow-sm" />
                   </div>
-                  <div className="bg-orange-500 bg-opacity-20 p-3 rounded-full">
-                    <DollarSign className="h-6 w-6 text-orange-600" />
+                  <div className="text-right">
+                    <p className="text-orange-100 text-sm font-medium">Orçamento</p>
+                    <p className="text-white/90 text-xs">Total</p>
                   </div>
                 </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-gray-600">Dentro do planejado</span>
+                <div className="space-y-2">
+                  <p className="text-4xl font-bold text-white drop-shadow-sm">R$ {totalBudget.toLocaleString()}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-green-500/20 backdrop-blur-sm p-1.5 rounded-full">
+                      <TrendingUp className="h-3 w-3 text-green-300" />
+                    </div>
+                    <span className="text-orange-100 text-sm">Dentro do planejado</span>
+                  </div>
                 </div>
+                {/* Decorative element */}
+                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
               </CardContent>
             </Card>
           </div>
