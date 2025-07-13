@@ -10,7 +10,6 @@ import { Plane, Users, DollarSign, Calendar, MapPin, Shield, Star, TrendingUp, H
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 
 // Featured destinations with beautiful imagery
 const featuredDestinations = [
@@ -182,8 +181,6 @@ const CommunityLighthouseSVG = ({ className = "" }: { className?: string }) => (
 );
 
 export default function HomePage() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
   // Fetch recent trips
   const { data: trips, isLoading } = useQuery({
     queryKey: ["/api/trips"],
@@ -193,15 +190,6 @@ export default function HomePage() {
       return res.json();
     }
   });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
@@ -250,15 +238,7 @@ export default function HomePage() {
           style={{ top: '30%', right: '30%' }}
         />
 
-        {/* Parallax Cursor Effect */}
-        <motion.div
-          className="absolute w-2 h-2 bg-yellow-400 rounded-full pointer-events-none z-40"
-          animate={{
-            x: mousePosition.x - 4,
-            y: mousePosition.y - 4,
-          }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
+
       </div>
 
       {/* Hero Section - Lighthouse Theme */}
