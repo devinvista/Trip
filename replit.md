@@ -235,3 +235,5 @@ Registro de Alterações:
 - 13 de julho de 2025. Reestruturação completa das categorias de orçamento - "atividades" excluída do orçamento base, categorias relacionadas agrupadas (combustível, estacionamento, pedágios em "transporte"), sistema simplificado com 6 categorias principais
 - 13 de julho de 2025. Implementação do editor de orçamento com modal interativo - criadores de viagem podem editar orçamento total ou detalhado por categoria, validação automática e cálculo por pessoa
 - 13 de julho de 2025. Separação clara entre categorias de orçamento base (6 categorias) e categorias de despesas compartilhadas (16+ categorias) para maior flexibilidade e organização
+- 13 de julho de 2025. Migração completa do Replit Agent para ambiente Replit padrão bem-sucedida - todos os componentes funcionando corretamente, autenticação configurada, dados de teste carregados
+- 13 de julho de 2025. Simplificação da categoria de transporte no orçamento - alterada de "Transporte (Passagens, Combustível, Pedágios, Estacionamento)" para apenas "Transporte" para melhor usabilidade

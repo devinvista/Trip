@@ -238,7 +238,7 @@ export const expenseCategories = {
 
 // Budget categories (for budget breakdown - excludes activities)
 export const budgetCategories = {
-  transport: "Transporte (Passagens, Combustível, Pedágios, Estacionamento)",
+  transport: "Transporte",
   accommodation: "Hospedagem",
   food: "Alimentação",
   insurance: "Seguro e Documentos (Seguros, Vistos)",
