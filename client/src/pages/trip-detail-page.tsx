@@ -684,14 +684,7 @@ export default function TripDetailPage() {
                             {Object.entries(trip.budgetBreakdown).map(([category, amount]) => (
                               <div key={category} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                 <span className="text-xs md:text-sm font-medium text-gray-700 capitalize">
-                                  {category === 'transport' ? 'Transporte' :
-                                   category === 'accommodation' ? 'Hospedagem' :
-                                   category === 'food' ? 'Alimentação' :
-                                   category === 'activities' ? 'Atividades' :
-                                   category === 'shopping' ? 'Compras' :
-                                   category === 'insurance' ? 'Seguro' :
-                                   category === 'visas' ? 'Vistos' :
-                                   category === 'other' ? 'Outros' : category}
+                                  {expenseCategories[category as keyof typeof expenseCategories] || category}
                                 </span>
                                 <span className="font-bold text-gray-900 text-xs md:text-sm">
                                   R$ {amount.toLocaleString('pt-BR')}

@@ -180,6 +180,15 @@ export interface BudgetBreakdown {
   shopping?: number;
   insurance?: number;
   visas?: number;
+  entertainment?: number;
+  medical?: number;
+  communication?: number;
+  tips?: number;
+  souvenirs?: number;
+  parking?: number;
+  fuel?: number;
+  tolls?: number;
+  emergency?: number;
   other?: number;
 }
 
@@ -226,6 +235,15 @@ export const expenseCategories = {
   shopping: "Compras",
   insurance: "Seguro",
   visas: "Vistos",
+  entertainment: "Entretenimento",
+  medical: "Saúde e Medicamentos",
+  communication: "Comunicação",
+  tips: "Gorjetas",
+  souvenirs: "Lembranças",
+  parking: "Estacionamento",
+  fuel: "Combustível",
+  tolls: "Pedágios",
+  emergency: "Emergências",
   other: "Outros"
 } as const;
 
