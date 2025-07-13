@@ -116,12 +116,12 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 
   if (isPast) {
     return (
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-4 md:p-6 text-white shadow-xl">
-        <div className="flex items-center justify-center gap-3">
-          <Trophy className="h-6 w-6 md:h-8 md:w-8 text-amber-100" />
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg p-3 md:p-4 text-white shadow-lg max-w-sm">
+        <div className="flex items-center justify-center gap-2">
+          <Trophy className="h-5 w-5 md:h-6 md:w-6 text-amber-100" />
           <div className="text-center">
-            <h2 className="text-lg md:text-2xl font-bold">Viagem Concluída!</h2>
-            <p className="text-amber-100 text-sm md:text-base">Esperamos que tenha sido incrível!</p>
+            <h2 className="text-sm md:text-base font-bold">Viagem Concluída!</h2>
+            <p className="text-amber-100 text-xs">Esperamos que tenha sido incrível!</p>
           </div>
         </div>
       </div>
@@ -131,52 +131,52 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
   const gradientConfig = getGradientClasses(timeLeft.days);
 
   return (
-    <div className={`bg-gradient-to-r ${gradientConfig.gradient} rounded-2xl p-4 md:p-6 text-white shadow-xl transition-all duration-1000`}>
+    <div className={`bg-gradient-to-r ${gradientConfig.gradient} rounded-lg p-3 md:p-4 text-white shadow-lg transition-all duration-1000 max-w-sm`}>
       <div className="text-center">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <Timer className={`h-6 w-6 md:h-8 md:w-8 ${gradientConfig.iconAccent}`} />
-          <h2 className="text-lg md:text-2xl font-bold">Contagem Regressiva</h2>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Timer className={`h-4 w-4 md:h-5 md:w-5 ${gradientConfig.iconAccent}`} />
+          <h2 className="text-sm md:text-base font-bold">Contagem Regressiva</h2>
         </div>
-        <div className="grid grid-cols-4 gap-2 md:gap-4 max-w-xs md:max-w-md mx-auto">
+        <div className="grid grid-cols-4 gap-1.5 md:gap-2 max-w-xs mx-auto">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 md:p-2 border border-white/30"
           >
-            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.days}</div>
-            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Dias</div>
+            <div className="text-sm md:text-xl font-bold text-white">{timeLeft.days}</div>
+            <div className={`text-xs ${gradientConfig.textAccent}`}>Dias</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 md:p-2 border border-white/30"
           >
-            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.hours}</div>
-            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Horas</div>
+            <div className="text-sm md:text-xl font-bold text-white">{timeLeft.hours}</div>
+            <div className={`text-xs ${gradientConfig.textAccent}`}>Horas</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 md:p-2 border border-white/30"
           >
-            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.minutes}</div>
-            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Min</div>
+            <div className="text-sm md:text-xl font-bold text-white">{timeLeft.minutes}</div>
+            <div className={`text-xs ${gradientConfig.textAccent}`}>Min</div>
           </motion.div>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="bg-white/20 backdrop-blur-sm rounded-xl p-2 md:p-4 border border-white/30"
+            className="bg-white/20 backdrop-blur-sm rounded-lg p-1.5 md:p-2 border border-white/30"
           >
-            <div className="text-xl md:text-3xl font-bold text-white">{timeLeft.seconds}</div>
-            <div className={`text-xs md:text-sm ${gradientConfig.textAccent}`}>Seg</div>
+            <div className="text-sm md:text-xl font-bold text-white">{timeLeft.seconds}</div>
+            <div className={`text-xs ${gradientConfig.textAccent}`}>Seg</div>
           </motion.div>
         </div>
-        <p className={`mt-4 ${gradientConfig.textAccent} text-xs md:text-sm`}>
-          Faltam {timeLeft.days} dias para a sua aventura começar!
+        <p className={`mt-2 ${gradientConfig.textAccent} text-xs`}>
+          Faltam {timeLeft.days} dias para sua aventura!
         </p>
       </div>
     </div>
