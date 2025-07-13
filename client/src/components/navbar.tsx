@@ -85,7 +85,7 @@ export function Navbar() {
                           active
                             ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/25" 
                             : item.highlight
-                            ? "text-blue-600 hover:text-blue-600 hover:bg-blue-50 border border-blue-200"
+                            ? "text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg hover:shadow-blue-500/25 border border-blue-200 hover:border-transparent"
                             : "text-slate-600 hover:text-blue-600 hover:bg-blue-50"
                         }`}
                       data-tour={item.tourData}
