@@ -63,157 +63,171 @@ const featuredDestinations = [
   }
 ];
 
-// PartiuTrip Travel Globe SVG Component - Inspired by the logo
+// PartiuTrip Interactive Globe Component - Inspired by the preloader
 const CommunityLighthouseSVG = ({ className = "" }: { className?: string }) => (
-  <svg 
-    viewBox="0 0 400 600" 
-    className={className}
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* Space Background with Stars */}
-    <rect width="400" height="600" fill="url(#spaceGradient)" />
+  <div className={`relative ${className}`}>
+    {/* Interactive Globe Container */}
+    <div className="relative w-full h-full flex items-center justify-center">
+      <svg 
+        viewBox="0 0 400 400" 
+        className="w-full h-full"
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Subtle Background Glow */}
+        <circle cx="200" cy="200" r="180" fill="url(#backgroundGlow)" opacity="0.1" />
+        
+        {/* Globe with Realistic Earth Colors */}
+        <circle cx="200" cy="200" r="100" fill="url(#earthGradient)" stroke="url(#earthBorder)" strokeWidth="2" />
+        
+        {/* Continent Shapes - More realistic */}
+        <g fill="#22c55e" opacity="0.9">
+          {/* South America */}
+          <path d="M180 220 Q175 210 180 200 Q185 190 190 200 Q195 220 190 240 Q185 250 180 245 Q175 235 180 220 Z" />
+          
+          {/* North America */}
+          <path d="M170 160 Q180 150 190 160 Q200 170 195 180 Q185 190 175 185 Q165 175 170 160 Z" />
+          
+          {/* Europe/Africa */}
+          <path d="M210 150 Q220 140 230 150 Q235 160 230 170 Q225 190 220 210 Q215 230 210 225 Q205 205 210 150 Z" />
+          
+          {/* Asia */}
+          <path d="M240 160 Q260 150 270 160 Q275 170 270 180 Q265 190 255 185 Q245 175 240 160 Z" />
+          
+          {/* Australia */}
+          <path d="M250 250 Q260 245 270 250 Q275 260 270 265 Q260 270 250 265 Q245 255 250 250 Z" />
+        </g>
+
+        {/* Orbital Rings - Enhanced */}
+        <g className="animate-pulse">
+          <ellipse cx="200" cy="200" rx="120" ry="25" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.6" strokeDasharray="8,4" />
+          <ellipse cx="200" cy="200" rx="140" ry="30" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.4" strokeDasharray="6,6" />
+          <ellipse cx="200" cy="200" rx="160" ry="35" fill="none" stroke="#fbbf24" strokeWidth="1" opacity="0.2" strokeDasharray="4,8" />
+        </g>
+
+        {/* Primary Airplane - Golden */}
+        <g className="animate-spin" style={{transformOrigin: '200px 200px', animationDuration: '10s'}}>
+          <g transform="translate(320, 200)">
+            <g className="hover:scale-110 transition-transform duration-300">
+              {/* Airplane Body */}
+              <ellipse cx="0" cy="0" rx="14" ry="4" fill="#fbbf24" />
+              
+              {/* Wings */}
+              <ellipse cx="-3" cy="0" rx="10" ry="3" fill="#f59e0b" />
+              <rect x="-10" y="-1.5" width="20" height="3" fill="#fbbf24" rx="1.5" />
+              
+              {/* Tail */}
+              <path d="M-12 0 L-18 -4 L-14 0 L-18 4 Z" fill="#f59e0b" />
+              
+              {/* Cockpit */}
+              <circle cx="8" cy="0" r="2" fill="#1e40af" opacity="0.8" />
+              
+              {/* Propeller Animation */}
+              <g className="animate-spin" style={{animationDuration: '0.1s'}}>
+                <rect x="12" y="-4" width="2" height="8" fill="#fbbf24" rx="1" />
+                <rect x="12" y="-1" width="2" height="2" fill="#f59e0b" />
+              </g>
+            </g>
+          </g>
+        </g>
+
+        {/* Secondary Airplane - Smaller, Counter-clockwise */}
+        <g className="animate-spin" style={{transformOrigin: '200px 200px', animationDuration: '15s', animationDirection: 'reverse'}}>
+          <g transform="translate(80, 230)">
+            <g className="hover:scale-110 transition-transform duration-300">
+              {/* Smaller Airplane Body */}
+              <ellipse cx="0" cy="0" rx="10" ry="3" fill="#fbbf24" />
+              
+              {/* Wings */}
+              <ellipse cx="-2" cy="0" rx="7" ry="2" fill="#f59e0b" />
+              <rect x="-7" y="-1" width="14" height="2" fill="#fbbf24" rx="1" />
+              
+              {/* Tail */}
+              <path d="M-8 0 L-12 -3 L-10 0 L-12 3 Z" fill="#f59e0b" />
+              
+              {/* Propeller */}
+              <g className="animate-spin" style={{animationDuration: '0.08s'}}>
+                <rect x="8" y="-3" width="1.5" height="6" fill="#fbbf24" rx="0.5" />
+              </g>
+            </g>
+          </g>
+        </g>
+
+        {/* Travel Connection Lines */}
+        <g stroke="#fbbf24" strokeWidth="1" opacity="0.3" fill="none">
+          <path d="M180 220 Q200 180 240 160" strokeDasharray="4,4" className="animate-pulse" />
+          <path d="M170 160 Q200 140 250 250" strokeDasharray="3,3" className="animate-pulse" style={{animationDelay: '0.5s'}} />
+          <path d="M210 150 Q180 180 250 250" strokeDasharray="2,2" className="animate-pulse" style={{animationDelay: '1s'}} />
+        </g>
+
+        {/* Floating Travel Icons - Enhanced */}
+        <g className="animate-pulse">
+          {/* Suitcase */}
+          <g transform="translate(100, 120)" className="hover:scale-125 transition-transform duration-300 cursor-pointer">
+            <rect x="0" y="0" width="18" height="14" fill="#fbbf24" rx="3" />
+            <rect x="2" y="2" width="14" height="10" fill="#f59e0b" rx="2" />
+            <circle cx="9" cy="7" r="1.5" fill="#fbbf24" />
+            <rect x="8" y="0" width="2" height="3" fill="#f59e0b" rx="1" />
+          </g>
+          
+          {/* Camera */}
+          <g transform="translate(300, 120)" className="hover:scale-125 transition-transform duration-300 cursor-pointer" style={{animationDelay: '0.5s'}}>
+            <rect x="0" y="0" width="16" height="12" fill="#fbbf24" rx="3" />
+            <circle cx="8" cy="6" r="4" fill="#1e40af" />
+            <circle cx="8" cy="6" r="3" fill="#fbbf24" />
+            <circle cx="8" cy="6" r="1" fill="#1e40af" />
+            <rect x="2" y="2" width="3" height="2" fill="#f59e0b" rx="1" />
+          </g>
+          
+          {/* Compass */}
+          <g transform="translate(80, 300)" className="hover:scale-125 transition-transform duration-300 cursor-pointer" style={{animationDelay: '1s'}}>
+            <circle cx="10" cy="10" r="10" fill="#fbbf24" />
+            <circle cx="10" cy="10" r="8" fill="#1e40af" />
+            <path d="M10 2 L12 10 L10 18 L8 10 Z" fill="#fbbf24" />
+            <circle cx="10" cy="10" r="2" fill="#f59e0b" />
+          </g>
+          
+          {/* Map */}
+          <g transform="translate(300, 300)" className="hover:scale-125 transition-transform duration-300 cursor-pointer" style={{animationDelay: '1.5s'}}>
+            <rect x="0" y="0" width="20" height="14" fill="#fbbf24" rx="2" />
+            <path d="M2 2 L10 8 L18 2 L18 12 L2 12 Z" fill="#1e40af" />
+            <circle cx="6" cy="6" r="1" fill="#f59e0b" />
+            <circle cx="14" cy="8" r="1" fill="#f59e0b" />
+          </g>
+        </g>
+
+        {/* Gradient Definitions */}
+        <defs>
+          <radialGradient id="backgroundGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#fbbf24" />
+            <stop offset="100%" stopColor="#f59e0b" />
+          </radialGradient>
+          
+          <radialGradient id="earthGradient" cx="40%" cy="30%" r="70%">
+            <stop offset="0%" stopColor="#60a5fa" />
+            <stop offset="40%" stopColor="#3b82f6" />
+            <stop offset="80%" stopColor="#1d4ed8" />
+            <stop offset="100%" stopColor="#1e3a8a" />
+          </radialGradient>
+          
+          <linearGradient id="earthBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fbbf24" />
+            <stop offset="50%" stopColor="#f59e0b" />
+            <stop offset="100%" stopColor="#fbbf24" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
     
-    {/* Twinkling Stars */}
-    <circle cx="80" cy="80" r="1.5" fill="#FFD700" className="animate-pulse" />
-    <circle cx="320" cy="60" r="1" fill="#FFD700" className="animate-pulse" style={{animationDelay: '0.5s'}} />
-    <circle cx="60" cy="140" r="1.5" fill="#FFD700" className="animate-pulse" style={{animationDelay: '1s'}} />
-    <circle cx="350" cy="120" r="1" fill="#FFD700" className="animate-pulse" style={{animationDelay: '1.5s'}} />
-    <circle cx="100" cy="200" r="1.5" fill="#FFD700" className="animate-pulse" style={{animationDelay: '2s'}} />
-    <circle cx="330" cy="180" r="1" fill="#FFD700" className="animate-pulse" style={{animationDelay: '2.5s'}} />
-
-    {/* Central Earth Globe - Dark Blue */}
-    <circle cx="200" cy="350" r="120" fill="url(#globeGradient)" />
-    
-    {/* Continents on Globe - Simplified shapes */}
-    <g fill="#1e40af" opacity="0.8">
-      {/* North America */}
-      <path d="M140 280 Q150 270 160 280 Q170 285 165 295 Q155 300 145 295 Q135 285 140 280 Z" />
-      
-      {/* South America */}
-      <path d="M155 320 Q160 310 165 320 Q170 340 165 360 Q160 370 155 365 Q150 350 155 320 Z" />
-      
-      {/* Europe/Africa */}
-      <path d="M200 270 Q210 265 220 270 Q225 280 220 290 Q215 310 210 330 Q205 350 200 345 Q195 325 200 270 Z" />
-      
-      {/* Asia */}
-      <path d="M230 280 Q250 275 260 285 Q255 295 250 300 Q240 305 235 300 Q225 290 230 280 Z" />
-      
-      {/* Australia */}
-      <path d="M245 380 Q255 375 265 380 Q260 390 250 385 Q240 385 245 380 Z" />
-    </g>
-
-    {/* Globe Orbital Rings - Representing Flight Paths */}
-    <ellipse cx="200" cy="350" rx="140" ry="30" fill="none" stroke="#FFD700" strokeWidth="2" opacity="0.3" />
-    <ellipse cx="200" cy="350" rx="160" ry="40" fill="none" stroke="#FFD700" strokeWidth="1" opacity="0.2" />
-    <ellipse cx="200" cy="350" rx="180" ry="50" fill="none" stroke="#FFD700" strokeWidth="1" opacity="0.1" />
-
-    {/* Golden Airplane - Circling the Globe */}
-    <g className="animate-spin" style={{transformOrigin: '200px 350px', animationDuration: '8s'}}>
-      <g transform="translate(340, 350)">
-        {/* Airplane Body */}
-        <ellipse cx="0" cy="0" rx="12" ry="3" fill="#FFD700" />
-        
-        {/* Wings */}
-        <ellipse cx="-2" cy="0" rx="8" ry="2" fill="#FFA500" />
-        <rect x="-8" y="-1" width="16" height="2" fill="#FFD700" rx="1" />
-        
-        {/* Tail */}
-        <path d="M-10 0 L-15 -3 L-12 0 L-15 3 Z" fill="#FFA500" />
-        
-        {/* Propeller */}
-        <circle cx="10" cy="0" r="1" fill="#FFD700" />
-        <rect x="9" y="-3" width="2" height="6" fill="#FFD700" rx="1" className="animate-spin" style={{animationDuration: '0.2s'}} />
-      </g>
-    </g>
-
-    {/* Secondary Airplane - Smaller, different orbital path */}
-    <g className="animate-spin" style={{transformOrigin: '200px 350px', animationDuration: '12s', animationDirection: 'reverse'}}>
-      <g transform="translate(80, 380)">
-        {/* Smaller Airplane Body */}
-        <ellipse cx="0" cy="0" rx="8" ry="2" fill="#FFD700" />
-        
-        {/* Wings */}
-        <ellipse cx="-1" cy="0" rx="6" ry="1.5" fill="#FFA500" />
-        <rect x="-6" y="-0.5" width="12" height="1" fill="#FFD700" rx="0.5" />
-        
-        {/* Tail */}
-        <path d="M-6 0 L-10 -2 L-8 0 L-10 2 Z" fill="#FFA500" />
-        
-        {/* Propeller */}
-        <circle cx="6" cy="0" r="0.5" fill="#FFD700" />
-        <rect x="5.5" y="-2" width="1" height="4" fill="#FFD700" rx="0.5" className="animate-spin" style={{animationDuration: '0.15s'}} />
-      </g>
-    </g>
-
-    {/* Travel Connections - Lines connecting different destinations */}
-    <g stroke="#FFD700" strokeWidth="1" opacity="0.4" fill="none" className="animate-pulse">
-      <path d="M140 280 Q200 250 260 285" strokeDasharray="5,5" />
-      <path d="M155 320 Q200 300 245 380" strokeDasharray="3,3" />
-      <path d="M200 270 Q180 320 155 320" strokeDasharray="4,4" />
-    </g>
-
-    {/* Floating Travel Icons Around Globe */}
-    <g className="animate-pulse">
-      {/* Suitcase */}
-      <g transform="translate(120, 250)">
-        <rect x="0" y="0" width="16" height="12" fill="#FFD700" rx="2" />
-        <rect x="2" y="2" width="12" height="8" fill="#FFA500" rx="1" />
-        <circle cx="8" cy="6" r="1" fill="#FFD700" />
-      </g>
-      
-      {/* Camera */}
-      <g transform="translate(280, 280)" style={{animationDelay: '0.5s'}}>
-        <rect x="0" y="0" width="14" height="10" fill="#FFD700" rx="2" />
-        <circle cx="7" cy="5" r="3" fill="#1e40af" />
-        <circle cx="7" cy="5" r="2" fill="#FFD700" />
-      </g>
-      
-      {/* Compass */}
-      <g transform="translate(100, 420)" style={{animationDelay: '1s'}}>
-        <circle cx="8" cy="8" r="8" fill="#FFD700" />
-        <circle cx="8" cy="8" r="6" fill="#1e40af" />
-        <path d="M8 2 L10 8 L8 14 L6 8 Z" fill="#FFD700" />
-      </g>
-      
-      {/* Map */}
-      <g transform="translate(300, 420)" style={{animationDelay: '1.5s'}}>
-        <rect x="0" y="0" width="18" height="12" fill="#FFD700" rx="1" />
-        <path d="M2 2 L8 6 L14 2 L16 10 L2 10 Z" fill="#1e40af" />
-      </g>
-    </g>
-
-    {/* PartiuTrip Logo Text Effect */}
-    <text x="200" y="520" textAnchor="middle" className="text-2xl font-bold" fill="url(#textGradient)">
-      PartiuTrip
-    </text>
-    
-    {/* Subtitle */}
-    <text x="200" y="545" textAnchor="middle" className="text-sm" fill="#FFD700" opacity="0.8">
-      Conectando Viajantes pelo Mundo
-    </text>
-
-    {/* Definitions */}
-    <defs>
-      <linearGradient id="spaceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#0f172a" />
-        <stop offset="50%" stopColor="#1e293b" />
-        <stop offset="100%" stopColor="#334155" />
-      </linearGradient>
-      
-      <radialGradient id="globeGradient" cx="50%" cy="30%" r="70%">
-        <stop offset="0%" stopColor="#3b82f6" />
-        <stop offset="60%" stopColor="#1e40af" />
-        <stop offset="100%" stopColor="#1e3a8a" />
-      </radialGradient>
-      
-      <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#FFD700" />
-        <stop offset="50%" stopColor="#FFA500" />
-        <stop offset="100%" stopColor="#FF8C00" />
-      </linearGradient>
-    </defs>
-  </svg>
+    {/* Interactive Elements Below Globe */}
+    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+      <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-yellow-200/50">
+        <p className="text-sm font-medium bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+          Conectando Viajantes pelo Mundo
+        </p>
+      </div>
+    </div>
+  </div>
 );
 
 export default function HomePage() {
@@ -399,88 +413,159 @@ export default function HomePage() {
               </motion.div>
             </motion.div>
 
-            {/* Right Content - Lighthouse */}
+            {/* Right Content - Interactive Globe */}
             <motion.div
               className="relative h-96 lg:h-[600px] flex items-center justify-center"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              {/* Lighthouse Container with Glow */}
-              <div className="relative">
+              {/* Interactive Globe Container */}
+              <div className="relative w-full h-full max-w-lg">
+                {/* Background Glow Effect */}
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-yellow-400/30 to-orange-400/30 rounded-full blur-3xl"
+                  className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full blur-3xl"
                   animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.3, 1],
+                    opacity: [0.2, 0.5, 0.2],
                   }}
                   transition={{
-                    duration: 4,
+                    duration: 5,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
                 />
 
+                {/* Globe Component */}
                 <motion.div
-                  className="relative z-10"
+                  className="relative z-10 w-full h-full"
                   animate={{
-                    y: [0, -10, 0],
+                    y: [0, -8, 0],
                   }}
                   transition={{
                     duration: 6,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.3 }
+                  }}
                 >
-                  <CommunityLighthouseSVG className="w-80 h-96 lg:w-96 lg:h-[500px]" />
+                  <CommunityLighthouseSVG className="w-full h-full" />
+                </motion.div>
+
+                {/* Floating Action Buttons */}
+                <motion.div
+                  className="absolute top-16 left-8 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg cursor-pointer group"
+                  animate={{
+                    y: [0, -15, 0],
+                    rotate: [0, 10, 0],
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  whileHover={{
+                    scale: 1.1,
+                    rotate: 15,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Users className="w-5 h-5 text-yellow-600 group-hover:text-yellow-500 transition-colors" />
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                    Comunidade
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute bottom-16 right-8 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg cursor-pointer group"
+                  animate={{
+                    y: [0, 15, 0],
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  whileHover={{
+                    scale: 1.1,
+                    rotate: -15,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <DollarSign className="w-5 h-5 text-green-600 group-hover:text-green-500 transition-colors" />
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                    Economize
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute top-32 right-12 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg cursor-pointer group"
+                  animate={{
+                    x: [0, 10, 0],
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  whileHover={{
+                    scale: 1.1,
+                    transition: { duration: 0.2 }
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Heart className="w-5 h-5 text-blue-600 group-hover:text-blue-500 transition-colors" />
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                    Experiências
+                  </div>
+                </motion.div>
+
+                {/* Interactive Stats Floating Around */}
+                <motion.div
+                  className="absolute bottom-8 left-12 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg px-3 py-2 shadow-lg"
+                  animate={{
+                    x: [0, 8, 0],
+                    y: [0, -8, 0],
+                  }}
+                  transition={{
+                    duration: 7,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <div className="text-xs font-bold">85+ Destinos</div>
+                </motion.div>
+
+                <motion.div
+                  className="absolute top-8 right-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg px-3 py-2 shadow-lg"
+                  animate={{
+                    x: [0, -8, 0],
+                    y: [0, 8, 0],
+                  }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.2 }
+                  }}
+                >
+                  <div className="text-xs font-bold">65% Economia</div>
                 </motion.div>
               </div>
-
-              {/* Floating Community Elements */}
-              <motion.div
-                className="absolute top-20 left-10 bg-white/10 backdrop-blur-sm rounded-full p-3"
-                animate={{
-                  y: [0, -20, 0],
-                  rotate: [0, 360],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <Users className="w-6 h-6 text-yellow-400" />
-              </motion.div>
-
-              <motion.div
-                className="absolute bottom-20 right-10 bg-white/10 backdrop-blur-sm rounded-full p-3"
-                animate={{
-                  y: [0, 20, 0],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <DollarSign className="w-6 h-6 text-green-400" />
-              </motion.div>
-
-              <motion.div
-                className="absolute top-40 right-20 bg-white/10 backdrop-blur-sm rounded-full p-3"
-                animate={{
-                  x: [0, 15, 0],
-                  y: [0, -15, 0],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <Heart className="w-6 h-6 text-blue-400" />
-              </motion.div>
             </motion.div>
           </div>
         </div>
