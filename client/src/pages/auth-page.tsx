@@ -92,9 +92,12 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Plane className="h-8 w-8 text-primary" />
-              <span className="font-bold text-2xl text-dark">ViajaJunto</span>
+            <div className="flex items-center justify-center mb-4">
+              <img 
+                src="/attached_assets/20250713_0013_Logo com Fundo Transparente_remix_01k00w7vt0fg184dm3z41h2sk1_1752377564947.png" 
+                alt="PartilTrip Logo" 
+                className="h-16 w-auto"
+              />
             </div>
             <p className="text-gray-600">Conecte-se com viajantes como você</p>
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
