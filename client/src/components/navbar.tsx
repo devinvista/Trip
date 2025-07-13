@@ -18,7 +18,7 @@ import {
   TrendingUp,
   Edit3
 } from "lucide-react";
-import logoImage from "@assets/20250712_2357_Logo Barra Superior_remix_01k00v9ycxfb387rqcfedn7vzh_1752376124838.png";
+import logoImage from "@assets/20250713_0013_Logo com Fundo Transparente_remix_01k00w7vt0fg184dm3z41h2sk1_1752376609362.png";
 
 export function Navbar() {
   const { user, logoutMutation, isLoading } = useAuth();

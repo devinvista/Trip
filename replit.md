@@ -254,6 +254,7 @@ Registro de Alterações:
 - 13 de julho de 2025. Migração final e bem-sucedida do Replit Agent para ambiente Replit padrão - todas as funcionalidades preservadas, autenticação híbrida funcionando, dados de teste carregados, servidor Express rodando corretamente na porta 5000
 - 13 de julho de 2025. Implementação completa da página de perfil com design moderno e UX excelente - edição de dados pessoais, estatísticas de viagem, sistema de código de indicação, lista de amigos indicados, APIs backend para perfil/estatísticas/indicações
 - 13 de julho de 2025. Atualização do logo da barra superior - substituído ícone de avião + texto "ViajaJunto" pelo logo completo "PartiuTrip" com fundo transparente, altura h-10 e largura máxima 200px para melhor visualização
+- 13 de julho de 2025. Atualização final do logo da navbar - implementado novo logo com fundo transparente otimizado para melhor contraste e visualização na barra superior
 - 13 de julho de 2025. Atualização do usuário Tom para "Tom Tubin" de "Porto Alegre, RS" e criação de sistema robusto de dados de teste com 4 usuários adicionais (carlos, ana, ricardo, julia)
 - 13 de julho de 2025. Implementação de 10 viagens históricas completadas em 2025 (Pantanal, Carnaval Salvador, Mantiqueira, Maragogi, Ouro Preto, Amazônia, Florianópolis, Serra Gaúcha, Lençóis Maranhenses, Caruaru) com Tom participando de todas
 - 13 de julho de 2025. Criação de 4 viagens futuras ambiciosas (Réveillon Copacabana, Patagônia Argentina, Machu Picchu, Safári Quênia) com Tom como criador ou participante
