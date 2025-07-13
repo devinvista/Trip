@@ -959,7 +959,7 @@ async function createMariaTripsWithTomAsParticipant(maria: User) {
       coverImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80',
       startDate: new Date('2025-09-10'),
       endDate: new Date('2025-09-15'),
-      budget: 1800,
+      budget: 1600,
       maxParticipants: 4,
       description: 'Descubra o Rio de Janeiro! Praias de Copacabana e Ipanema, Cristo Redentor, Pão de Açúcar, e muito mais. Inclui hospedagem em Copacabana e passeios culturais.',
       travelStyle: 'praia',
@@ -967,8 +967,7 @@ async function createMariaTripsWithTomAsParticipant(maria: User) {
       budgetBreakdown: {
         transport: 400,
         accommodation: 800,
-        food: 400,
-        activities: 200
+        food: 400
       },
       creatorId: maria.id
     });
@@ -1002,7 +1001,7 @@ async function createDefaultTrips(user: User) {
       coverImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
       startDate: new Date('2025-08-15'),
       endDate: new Date('2025-08-22'),
-      budget: 2500,
+      budget: 2100,
       maxParticipants: 6,
       description: 'Aventura incrível na Chapada Diamantina! Vamos explorar cachoeiras, fazer trilhas e acampar sob as estrelas. Inclui visitas ao Poço Azul, Cachoeira da Fumaça e Vale do Pati.',
       travelStyle: 'aventura',
@@ -1011,8 +1010,7 @@ async function createDefaultTrips(user: User) {
       budgetBreakdown: {
         transport: 800,
         accommodation: 600,
-        food: 700,
-        activities: 400
+        food: 700
       }
     });
 
@@ -1043,7 +1041,7 @@ async function createDefaultTrips(user: User) {
       coverImage: 'https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg',
       startDate: new Date('2025-09-20'),
       endDate: new Date('2025-09-27'),
-      budget: 3500,
+      budget: 3300,
       maxParticipants: 8,
       description: 'Cruzeiro de luxo pelo Mediterrâneo visitando Roma, Barcelona, Marselha e Nápoles. Inclui todas as refeições a bordo, entretenimento e excursões nos portos.',
       travelStyle: 'cruzeiros',
@@ -1052,8 +1050,7 @@ async function createDefaultTrips(user: User) {
       budgetBreakdown: {
         transport: 1500,
         accommodation: 1200,
-        food: 600,
-        activities: 200
+        food: 600
       }
     });
 

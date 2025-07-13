@@ -176,7 +176,6 @@ export interface BudgetBreakdown {
   transport?: number;
   accommodation?: number;
   food?: number;
-  activities?: number;
   shopping?: number;
   insurance?: number;
   visas?: number;
