@@ -458,7 +458,7 @@ export default function TripDetailPage() {
         >
           <div className="relative rounded-2xl overflow-hidden shadow-xl">
             {/* Cover Image */}
-            <div className="relative h-96 bg-gradient-to-br from-blue-500 to-purple-600">
+            <div className="relative h-56 bg-gradient-to-br from-blue-500 to-purple-600">
               {trip.coverImage && (
                 <img 
                   src={trip.coverImage}
