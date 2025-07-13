@@ -252,7 +252,7 @@ export default function HomePage() {
 
         {/* Parallax Cursor Effect */}
         <motion.div
-          className="absolute w-2 h-2 bg-yellow-400 rounded-full pointer-events-none z-50"
+          className="absolute w-2 h-2 bg-yellow-400 rounded-full pointer-events-none z-40"
           animate={{
             x: mousePosition.x - 4,
             y: mousePosition.y - 4,
@@ -850,8 +850,8 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white border-t border-slate-800">
-        <div className="container mx-auto px-4 py-16">
+      <footer className="relative z-50 bg-slate-900 text-white border-t border-slate-800">
+        <div className="container mx-auto px-4 py-16 relative z-10">
           <div className="grid md:grid-cols-4 gap-8">
             {/* Brand Section */}
             <div className="space-y-4">
@@ -879,10 +879,10 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Plataforma</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link href="/search" className="hover:text-yellow-400 transition-colors">Buscar Viagens</Link></li>
-                <li><Link href="/create-trip" className="hover:text-yellow-400 transition-colors">Criar Viagem</Link></li>
-                <li><Link href="/dashboard" className="hover:text-yellow-400 transition-colors">Meu Painel</Link></li>
-                <li><Link href="/auth" className="hover:text-yellow-400 transition-colors">Cadastrar-se</Link></li>
+                <li><Link href="/search" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Buscar Viagens</Link></li>
+                <li><Link href="/create-trip" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Criar Viagem</Link></li>
+                <li><Link href="/dashboard" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Meu Painel</Link></li>
+                <li><Link href="/auth" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Cadastrar-se</Link></li>
               </ul>
             </div>
 
@@ -890,10 +890,10 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Destinos Populares</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link href="/search?region=europa" className="hover:text-yellow-400 transition-colors">Europa</Link></li>
-                <li><Link href="/search?region=asia" className="hover:text-yellow-400 transition-colors">Ásia</Link></li>
-                <li><Link href="/search?region=america" className="hover:text-yellow-400 transition-colors">América do Sul</Link></li>
-                <li><Link href="/search?region=oceania" className="hover:text-yellow-400 transition-colors">Oceania</Link></li>
+                <li><Link href="/search?region=europa" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Europa</Link></li>
+                <li><Link href="/search?region=asia" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Ásia</Link></li>
+                <li><Link href="/search?region=america" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">América do Sul</Link></li>
+                <li><Link href="/search?region=oceania" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Oceania</Link></li>
               </ul>
             </div>
 
@@ -901,8 +901,8 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Suporte</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link href="/profile" className="hover:text-yellow-400 transition-colors">Central de Ajuda</Link></li>
-                <li><Link href="/profile" className="hover:text-yellow-400 transition-colors">Segurança</Link></li>
+                <li><Link href="/profile" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Central de Ajuda</Link></li>
+                <li><Link href="/profile" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Segurança</Link></li>
                 <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Termos de Uso</span></li>
                 <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Privacidade</span></li>
               </ul>
