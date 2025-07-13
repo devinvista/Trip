@@ -274,7 +274,7 @@ export default function HomePage() {
             >
               {/* Badge */}
               <motion.div
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/30 to-indigo-500/30 backdrop-blur-sm rounded-full border border-slate-300/30 text-slate-700"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/80 to-red-500/80 backdrop-blur-sm rounded-full border border-orange-300/50 text-white shadow-lg shadow-orange-500/25"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
