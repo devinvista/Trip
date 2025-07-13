@@ -291,89 +291,67 @@ export default function SearchPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        {/* Hero Section with Lighthouse Theme */}
+        {/* Modern Clean Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-3xl mb-12 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white"
+          className="relative mb-12 bg-white rounded-2xl shadow-sm border border-gray-100"
         >
-          {/* Background Elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-indigo-700/20 to-purple-800/20"></div>
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl"></div>
-          </div>
-          
-          {/* Lighthouse SVG with Animation */}
-          <motion.div 
-            className="absolute right-8 bottom-8 opacity-40"
-            animate={{ 
-              scale: [1, 1.05, 1],
-              opacity: [0.4, 0.6, 0.4]
-            }}
-            transition={{ 
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          >
-            <svg width="120" height="160" viewBox="0 0 120 160" className="text-yellow-200">
-              {/* Lighthouse Base */}
-              <rect x="45" y="140" width="30" height="15" fill="currentColor" opacity="0.8"/>
-              {/* Lighthouse Body */}
-              <polygon points="48,140 52,20 68,20 72,140" fill="currentColor" opacity="0.6"/>
-              {/* Lighthouse Stripes */}
-              <rect x="48" y="30" width="24" height="4" fill="white" opacity="0.4"/>
-              <rect x="48" y="50" width="24" height="4" fill="white" opacity="0.4"/>
-              <rect x="48" y="70" width="24" height="4" fill="white" opacity="0.4"/>
-              <rect x="48" y="90" width="24" height="4" fill="white" opacity="0.4"/>
-              <rect x="48" y="110" width="24" height="4" fill="white" opacity="0.4"/>
-              <rect x="48" y="130" width="24" height="4" fill="white" opacity="0.4"/>
-              {/* Lighthouse Top */}
-              <rect x="46" y="15" width="28" height="8" fill="currentColor" opacity="0.8"/>
-              {/* Light Beam */}
-              <polygon points="60,20 30,5 30,35" fill="yellow" opacity="0.3"/>
-              <polygon points="60,20 90,5 90,35" fill="yellow" opacity="0.2"/>
-              {/* Light Source */}
-              <circle cx="60" cy="19" r="3" fill="yellow" opacity="0.8"/>
-            </svg>
-          </motion.div>
-
-          {/* Content */}
-          <div className="relative z-10 px-8 py-8 text-center">
-            
+          {/* Clean Content */}
+          <div className="px-8 py-12 text-center">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mb-6"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium mb-6">
+                <Search className="h-4 w-4" />
+                Encontre sua próxima aventura
+              </div>
+            </motion.div>
             
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-4xl font-bold mb-6 bg-gradient-to-r from-yellow-200 via-white to-blue-200 bg-clip-text text-transparent leading-tight"
+              transition={{ delay: 0.2 }}
+              className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight"
             >
-              Descubra destinos únicos e conecte-se com companheiros de viagem que compartilham seus sonhos
+              Descubra <span className="text-blue-600">destinos únicos</span>
+              <br />
+              com companheiros ideais
             </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto"
+            >
+              Conecte-se com viajantes que compartilham seus interesses e descubra experiências inesquecíveis ao redor do mundo
+            </motion.p>
             
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
+              className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
             >
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold text-blue-200 mb-1">250+</div>
-                <div className="text-sm text-blue-100">Viagens Planejadas</div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-2">250+</div>
+                <div className="text-sm text-gray-600 font-medium">Viagens Ativas</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold text-blue-300 mb-1">1.2k</div>
-                <div className="text-sm text-blue-100">Viajantes Ativos</div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-2">1.2k</div>
+                <div className="text-sm text-gray-600 font-medium">Viajantes</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold text-blue-400 mb-1">85+</div>
-                <div className="text-sm text-blue-100">Destinos Únicos</div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-2">85+</div>
+                <div className="text-sm text-gray-600 font-medium">Destinos</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold text-cyan-300 mb-1">4.8★</div>
-                <div className="text-sm text-blue-100">Experiências</div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-900 mb-2">4.8★</div>
+                <div className="text-sm text-gray-600 font-medium">Avaliação</div>
               </div>
             </motion.div>
           </div>
