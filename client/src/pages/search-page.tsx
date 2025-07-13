@@ -70,24 +70,55 @@ const budgetRanges = [
   { id: 'budget-5', label: 'Acima de R$ 5.000', value: 10000, color: 'bg-red-100 text-red-800' },
 ];
 
-const dateFilters = [
-  { id: 'next-week', label: 'Próxima Semana', icon: Clock, color: 'bg-emerald-100 text-emerald-800' },
-  { id: 'next-two-weeks', label: 'Próximas 2 Semanas', icon: Clock, color: 'bg-blue-100 text-blue-800' },
-  { id: 'next-month', label: 'Próximo Mês', icon: Calendar, color: 'bg-purple-100 text-purple-800' },
-  { id: 'next-three-months', label: 'Próximos 3 Meses', icon: Calendar, color: 'bg-orange-100 text-orange-800' },
-  { id: 'jan-2025', label: 'Janeiro 2025', icon: Calendar, color: 'bg-cyan-100 text-cyan-800' },
-  { id: 'feb-2025', label: 'Fevereiro 2025', icon: Calendar, color: 'bg-pink-100 text-pink-800' },
-  { id: 'mar-2025', label: 'Março 2025', icon: Calendar, color: 'bg-green-100 text-green-800' },
-  { id: 'apr-2025', label: 'Abril 2025', icon: Calendar, color: 'bg-yellow-100 text-yellow-800' },
-  { id: 'may-2025', label: 'Maio 2025', icon: Calendar, color: 'bg-red-100 text-red-800' },
-  { id: 'jun-2025', label: 'Junho 2025', icon: Calendar, color: 'bg-indigo-100 text-indigo-800' },
-  { id: 'jul-2025', label: 'Julho 2025', icon: Calendar, color: 'bg-teal-100 text-teal-800' },
-  { id: 'aug-2025', label: 'Agosto 2025', icon: Calendar, color: 'bg-purple-100 text-purple-800' },
-  { id: 'sep-2025', label: 'Setembro 2025', icon: Calendar, color: 'bg-blue-100 text-blue-800' },
-  { id: 'oct-2025', label: 'Outubro 2025', icon: Calendar, color: 'bg-orange-100 text-orange-800' },
-  { id: 'nov-2025', label: 'Novembro 2025', icon: Calendar, color: 'bg-gray-100 text-gray-800' },
-  { id: 'dec-2025', label: 'Dezembro 2025', icon: Calendar, color: 'bg-red-100 text-red-800' },
-];
+// Generate dynamic date filters: current month + next 15 months
+const generateDateFilters = () => {
+  const now = new Date();
+  const quickFilters = [
+    { id: 'next-week', label: 'Próxima Semana', icon: Clock, color: 'bg-emerald-100 text-emerald-800' },
+    { id: 'next-two-weeks', label: 'Próximas 2 Semanas', icon: Clock, color: 'bg-blue-100 text-blue-800' },
+    { id: 'next-month', label: 'Próximo Mês', icon: Calendar, color: 'bg-purple-100 text-purple-800' },
+    { id: 'next-three-months', label: 'Próximos 3 Meses', icon: Calendar, color: 'bg-orange-100 text-orange-800' },
+  ];
+
+  const monthNames = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  const colors = [
+    'bg-cyan-100 text-cyan-800', 'bg-pink-100 text-pink-800', 'bg-green-100 text-green-800',
+    'bg-yellow-100 text-yellow-800', 'bg-red-100 text-red-800', 'bg-indigo-100 text-indigo-800',
+    'bg-teal-100 text-teal-800', 'bg-purple-100 text-purple-800', 'bg-blue-100 text-blue-800',
+    'bg-orange-100 text-orange-800', 'bg-gray-100 text-gray-800', 'bg-rose-100 text-rose-800',
+    'bg-emerald-100 text-emerald-800', 'bg-amber-100 text-amber-800', 'bg-lime-100 text-lime-800',
+    'bg-violet-100 text-violet-800'
+  ];
+
+  const monthFilters = [];
+  let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  for (let i = 0; i < 16; i++) {
+    const month = currentDate.getMonth();
+    const year = currentDate.getFullYear();
+    const monthName = monthNames[month];
+    
+    monthFilters.push({
+      id: `${month}-${year}`,
+      label: `${monthName} ${year}`,
+      icon: Calendar,
+      color: colors[i % colors.length],
+      month,
+      year
+    });
+
+    // Move to next month
+    currentDate.setMonth(currentDate.getMonth() + 1);
+  }
+
+  return [...quickFilters, ...monthFilters];
+};
+
+const dateFilters = generateDateFilters();
 
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -143,31 +174,14 @@ export default function SearchPage() {
           start: startOfToday,
           end: new Date(startOfToday.getTime() + 90 * 24 * 60 * 60 * 1000)
         };
-      case 'jan-2025':
-        return { start: new Date(2025, 0, 1), end: new Date(2025, 0, 31) };
-      case 'feb-2025':
-        return { start: new Date(2025, 1, 1), end: new Date(2025, 1, 28) };
-      case 'mar-2025':
-        return { start: new Date(2025, 2, 1), end: new Date(2025, 2, 31) };
-      case 'apr-2025':
-        return { start: new Date(2025, 3, 1), end: new Date(2025, 3, 30) };
-      case 'may-2025':
-        return { start: new Date(2025, 4, 1), end: new Date(2025, 4, 31) };
-      case 'jun-2025':
-        return { start: new Date(2025, 5, 1), end: new Date(2025, 5, 30) };
-      case 'jul-2025':
-        return { start: new Date(2025, 6, 1), end: new Date(2025, 6, 31) };
-      case 'aug-2025':
-        return { start: new Date(2025, 7, 1), end: new Date(2025, 7, 31) };
-      case 'sep-2025':
-        return { start: new Date(2025, 8, 1), end: new Date(2025, 8, 30) };
-      case 'oct-2025':
-        return { start: new Date(2025, 9, 1), end: new Date(2025, 9, 31) };
-      case 'nov-2025':
-        return { start: new Date(2025, 10, 1), end: new Date(2025, 10, 30) };
-      case 'dec-2025':
-        return { start: new Date(2025, 11, 1), end: new Date(2025, 11, 31) };
       default:
+        // Handle dynamic month filters (format: "month-year")
+        const monthFilter = dateFilters.find(filter => filter.id === filterId);
+        if (monthFilter && 'month' in monthFilter && 'year' in monthFilter) {
+          const startDate = new Date(monthFilter.year, monthFilter.month, 1);
+          const endDate = new Date(monthFilter.year, monthFilter.month + 1, 0); // Last day of the month
+          return { start: startDate, end: endDate };
+        }
         return null;
     }
   };
