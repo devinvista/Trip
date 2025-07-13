@@ -239,15 +239,25 @@ export default function DashboardPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configurações
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Notificações
-                </Button>
+              <div className="flex gap-2 flex-wrap">
+                <Link href="/create-trip">
+                  <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Criar Viagem
+                  </Button>
+                </Link>
+                <Link href="/search">
+                  <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700">
+                    <Search className="h-4 w-4 mr-2" />
+                    Buscar Viagens
+                  </Button>
+                </Link>
+                <Link href="/profile">
+                  <Button variant="outline" size="sm">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Perfil
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -397,6 +407,49 @@ export default function DashboardPage() {
             </Card>
           </div>
 
+          {/* Quick Actions */}
+          <div className="mb-6">
+            <Card className="bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg font-bold text-orange-800 flex items-center gap-2">
+                  <Star className="h-5 w-5" />
+                  Ações Rápidas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Link href="/create-trip">
+                    <Button className="w-full h-16 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 flex flex-col items-center gap-1">
+                      <Plus className="h-6 w-6" />
+                      <span className="text-sm font-medium">Nova Viagem</span>
+                    </Button>
+                  </Link>
+                  
+                  <Link href="/search">
+                    <Button className="w-full h-16 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 flex flex-col items-center gap-1">
+                      <Search className="h-6 w-6" />
+                      <span className="text-sm font-medium">Buscar Viagens</span>
+                    </Button>
+                  </Link>
+                  
+                  <Link href="/profile">
+                    <Button className="w-full h-16 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 flex flex-col items-center gap-1">
+                      <Settings className="h-6 w-6" />
+                      <span className="text-sm font-medium">Editar Perfil</span>
+                    </Button>
+                  </Link>
+                  
+                  <Link href="/journey-tracker">
+                    <Button className="w-full h-16 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 flex flex-col items-center gap-1">
+                      <TrendingUp className="h-6 w-6" />
+                      <span className="text-sm font-medium">Meu Progresso</span>
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Activity Filter */}
           <div className="mb-6">
             <Card>
@@ -429,17 +482,27 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Link href="/create-trip">
-                      <Button size="sm">
+                      <Button size="sm" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0">
                         <Plus className="h-4 w-4 mr-2" />
                         Nova Viagem
                       </Button>
                     </Link>
                     <Link href="/search">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700">
                         <Search className="h-4 w-4 mr-2" />
                         Buscar Viagens
+                      </Button>
+                    </Link>
+                    <Button variant="outline" size="sm" className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700">
+                      <Bell className="h-4 w-4 mr-2" />
+                      Notificações
+                    </Button>
+                    <Link href="/journey-tracker">
+                      <Button variant="outline" size="sm" className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700">
+                        <TrendingUp className="h-4 w-4 mr-2" />
+                        Progresso
                       </Button>
                     </Link>
                   </div>
@@ -657,6 +720,18 @@ export default function DashboardPage() {
                       <Button variant="outline" className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 px-8 py-3 h-auto">
                         <Search className="h-5 w-5 mr-2" />
                         Buscar Companheiros
+                      </Button>
+                    </Link>
+                    <Link href="/profile">
+                      <Button variant="outline" className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-8 py-3 h-auto">
+                        <Settings className="h-5 w-5 mr-2" />
+                        Editar Perfil
+                      </Button>
+                    </Link>
+                    <Link href="/journey-tracker">
+                      <Button variant="outline" className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700 px-8 py-3 h-auto">
+                        <TrendingUp className="h-5 w-5 mr-2" />
+                        Ver Progresso
                       </Button>
                     </Link>
                   </div>
