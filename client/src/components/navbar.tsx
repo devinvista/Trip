@@ -42,21 +42,21 @@ export function Navbar() {
   // Don't render navigation items if still loading
   if (isLoading) {
     return (
-      <header className="bg-white shadow-lg sticky top-0 z-50">
-        <nav className="container mx-auto px-4 py-3">
+      <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+        <nav className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <Link href="/" className="flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105">
               <img 
                 src={logoImage} 
                 alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-                className="h-10 w-auto max-w-[200px] object-contain"
+                className="h-12 w-auto max-w-[220px] object-contain"
               />
             </Link>
             
             {/* Loading state */}
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="w-9 h-9 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full animate-pulse ring-2 ring-blue-50"></div>
             </div>
           </div>
         </nav>
@@ -65,32 +65,32 @@ export function Navbar() {
   }
 
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50">
-      <nav className="container mx-auto px-4 py-3">
+    <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+      <nav className="container mx-auto px-4 py-2">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center hover:opacity-80 transition-all duration-300 hover:scale-105">
             <img 
               src={logoImage} 
               alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-              className="h-10 w-auto max-w-[200px] object-contain"
+              className="h-12 w-auto max-w-[220px] object-contain"
             />
           </Link>
           
           {user && (
             <>
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-6">
+              <div className="hidden md:flex items-center space-x-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   return (
                     <Link 
                       key={item.href} 
                       href={item.href} 
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium ${
                           isActive(item.href) 
-                            ? "bg-primary text-white" 
-                            : "text-dark hover:text-primary hover:bg-gray-50"
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md" 
+                            : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
                         }`}
                       data-tour={item.tourData}
                     >
@@ -105,14 +105,14 @@ export function Navbar() {
               <div className="flex items-center space-x-3">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-100">
-                      <Avatar className="w-8 h-8">
+                    <Button variant="ghost" className="flex items-center space-x-2 hover:bg-blue-50 rounded-lg px-3 py-2 transition-all duration-200">
+                      <Avatar className="w-9 h-9 ring-2 ring-blue-100">
                         <AvatarImage src={user?.profilePhoto || ""} />
-                        <AvatarFallback>
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-500 text-white font-semibold">
                           {user?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="hidden sm:block font-medium text-dark">
+                      <span className="hidden sm:block font-medium text-gray-700">
                         {user?.fullName?.split(' ')[0]}
                       </span>
                     </Button>
@@ -220,14 +220,12 @@ export function Navbar() {
           {!user && (
             <div className="flex items-center space-x-3">
               <Link href="/auth">
-                <Button variant="ghost" className="text-dark hover:bg-[#02132D] relative overflow-hidden group">
-                  <span className="group-hover:bg-gradient-to-r group-hover:from-yellow-400 group-hover:via-orange-400 group-hover:to-red-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
-                    Entrar
-                  </span>
+                <Button variant="ghost" className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg px-4 py-2 font-medium transition-all duration-200">
+                  Entrar
                 </Button>
               </Link>
               <Link href="/auth">
-                <Button className="bg-primary hover:bg-primary/90">
+                <Button className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                   Cadastrar
                 </Button>
               </Link>
