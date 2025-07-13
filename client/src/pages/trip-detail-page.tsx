@@ -46,6 +46,7 @@ import { expenseCategories, BudgetBreakdown } from "@shared/schema";
 import { BudgetVisualization } from "@/components/budget-visualization";
 import { ExpenseManager } from "@/components/expense-manager";
 import { CoverImageSelector } from "@/components/cover-image-selector";
+import { BudgetEditor } from "@/components/budget-editor";
 
 // Countdown Timer Component
 function CountdownTimer({ targetDate }: { targetDate: string }) {
@@ -666,13 +667,23 @@ export default function TripDetailPage() {
                 {/* Budget Breakdown */}
                 <Card className="bg-white/80 backdrop-blur-sm shadow-lg">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-green-500" />
-                      Orçamento Detalhado
-                      {!(isCreator || isParticipant) && (
-                        <Badge variant="outline" className="text-xs ml-2">
-                          Somente Visualização
-                        </Badge>
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-green-500" />
+                        Orçamento Detalhado
+                        {!(isCreator || isParticipant) && (
+                          <Badge variant="outline" className="text-xs ml-2">
+                            Somente Visualização
+                          </Badge>
+                        )}
+                      </div>
+                      {isCreator && (
+                        <BudgetEditor
+                          tripId={parseInt(id!)}
+                          currentBudget={trip.budget}
+                          currentBudgetBreakdown={trip.budgetBreakdown}
+                          maxParticipants={trip.maxParticipants}
+                        />
                       )}
                     </CardTitle>
                   </CardHeader>

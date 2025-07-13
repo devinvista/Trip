@@ -172,6 +172,34 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Update trip budget
+  app.patch("/api/trips/:id/budget", requireAuth, async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const { budget, budgetBreakdown } = req.body;
+      
+      if (!budget || budget <= 0) {
+        return res.status(400).json({ message: "Orçamento deve ser um valor positivo" });
+      }
+      
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+      
+      // Only trip creator can update budget
+      if (trip.creatorId !== req.user!.id) {
+        return res.status(403).json({ message: "Apenas o criador da viagem pode alterar o orçamento" });
+      }
+      
+      const updatedTrip = await storage.updateTrip(tripId, { budget, budgetBreakdown });
+      res.json(updatedTrip);
+    } catch (error) {
+      console.error('Erro ao atualizar orçamento da viagem:', error);
+      res.status(500).json({ message: "Erro ao atualizar orçamento da viagem" });
+    }
+  });
+
   // Trip request routes
   app.post("/api/trips/:id/request", requireAuth, async (req, res) => {
     try {
