@@ -220,39 +220,47 @@ export function Navbar() {
                           </div>
                         </div>
 
-                        {/* Navigation */}
-                        <nav className="flex-1 py-6 space-y-1">
-                          <div className="space-y-1">
+                        {/* Navigation - Modern Design */}
+                        <nav className="flex-1 py-6 space-y-2">
+                          <div className="space-y-2">
                             {navItems.map((item) => {
                               const Icon = item.icon;
                               const active = isActive(item.href);
                               
                               return (
-                                <Link key={item.href} href={item.href}>
+                                <Link key={item.href} href={item.href} className="group">
                                   <Button 
                                     variant="ghost"
-                                    className={`w-full justify-start gap-3 h-12 rounded-xl transition-all duration-300 ${
+                                    className={`relative w-full justify-start gap-3 h-12 rounded-xl transition-all duration-300 border group-hover:scale-[1.02] overflow-hidden ${
                                       active
-                                        ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg" 
+                                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg border-blue-500/20 hover:shadow-xl" 
                                         : item.highlight
-                                        ? "text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 border border-blue-200 hover:border-transparent"
-                                        : "text-slate-700 hover:text-blue-600 hover:bg-blue-50"
+                                        ? "text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 border border-blue-200 hover:border-transparent hover:shadow-md"
+                                        : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/80 border-transparent hover:border-blue-100 hover:shadow-md"
                                     }`}
                                     data-tour={item.tourData}
                                   >
-                                    <Icon className={`h-5 w-5 ${active ? 'text-white' : ''}`} />
+                                    <Icon className={`h-5 w-5 transition-colors duration-300 ${active ? 'text-white' : ''}`} />
                                     <span className="font-medium">{item.label}</span>
+                                    {active && (
+                                      <>
+                                        {/* Glow effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 rounded-xl blur-xl -z-10"></div>
+                                        {/* Shimmer effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                      </>
+                                    )}
                                   </Button>
                                 </Link>
                               );
                             })}
                           </div>
                           
-                          {/* Profile & Logout */}
-                          <div className="pt-6 border-t border-slate-100 space-y-1">
-                            <Link href="/profile">
-                              <Button variant="ghost" className="w-full justify-start gap-3 h-12 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50">
-                                <User className="h-5 w-5" />
+                          {/* Profile & Logout - Modern Design */}
+                          <div className="pt-6 border-t border-slate-100 space-y-2">
+                            <Link href="/profile" className="group">
+                              <Button variant="ghost" className="w-full justify-start gap-3 h-12 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50/80 border border-transparent hover:border-blue-100 hover:shadow-md transition-all duration-300 group-hover:scale-[1.02]">
+                                <User className="h-5 w-5 transition-colors duration-300" />
                                 <span className="font-medium">Meu Perfil</span>
                               </Button>
                             </Link>
@@ -260,9 +268,9 @@ export function Navbar() {
                             <Button 
                               variant="ghost" 
                               onClick={handleLogout}
-                              className="w-full justify-start gap-3 h-12 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="group w-full justify-start gap-3 h-12 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50/80 border border-transparent hover:border-red-100 hover:shadow-md transition-all duration-300 group-hover:scale-[1.02]"
                             >
-                              <LogOut className="h-5 w-5" />
+                              <LogOut className="h-5 w-5 transition-colors duration-300" />
                               <span className="font-medium">Sair</span>
                             </Button>
                           </div>
@@ -275,17 +283,30 @@ export function Navbar() {
             </>
           )}
 
-          {/* Guest Navigation */}
+          {/* Guest Navigation - Modern & Professional */}
           {!user && (
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <Link href="/auth">
-                <Button variant="ghost" className="text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl px-3 sm:px-4 py-2 font-medium transition-all duration-200 text-sm">
-                  Entrar
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/auth" className="group">
+                <Button 
+                  variant="ghost" 
+                  className="relative text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl px-4 sm:px-6 py-2.5 font-medium transition-all duration-300 text-sm backdrop-blur-sm border border-transparent hover:border-blue-100 hover:shadow-md group-hover:scale-105"
+                >
+                  <span className="relative z-10">Entrar</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
                 </Button>
               </Link>
-              <Link href="/auth">
-                <Button className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium px-4 sm:px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm">
-                  Cadastrar
+              <Link href="/auth" className="group">
+                <Button className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-700 text-white font-semibold px-5 sm:px-8 py-2.5 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 text-sm group-hover:scale-105 border border-blue-500/20 overflow-hidden">
+                  <span className="relative z-10 flex items-center gap-2">
+                    Cadastrar
+                    <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl blur-xl -z-10"></div>
                 </Button>
               </Link>
             </div>
