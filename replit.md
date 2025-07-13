@@ -226,3 +226,6 @@ Registro de Alterações:
 - 12 de julho de 2025. Migração completa do Replit Agent para ambiente Replit padrão
 - 12 de julho de 2025. Documentação traduzida para português brasileiro e nome do projeto alterado para PartiuTrip
 - 12 de julho de 2025. Verificação de segurança e boas práticas implementadas na migração
+- 13 de julho de 2025. Migração bem-sucedida do Replit Agent para ambiente Replit padrão - todas as dependências instaladas, servidor funcionando, autenticação configurada
+- 13 de julho de 2025. Reduzida altura da imagem cover na página de detalhes da viagem em 40% (h-96 → h-56) para melhor proporção visual
+- 13 de julho de 2025. Redesign completo dos cards de estatísticas da viagem (TripStatistics) com visual moderno e clean: ícones em gradiente, efeitos hover, melhor hierarquia visual e animações sutis
