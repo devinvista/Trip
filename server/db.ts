@@ -1,27 +1,33 @@
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import * as schema from "@shared/schema";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required");
-}
+console.log(`🔗 Conectando ao MySQL...`);
 
-console.log(`🔗 Conectando ao PostgreSQL...`);
+// Configuração do banco MySQL
+const connection = mysql.createPool({
+  host: 'srv1661.hstgr.io',
+  port: 3306,
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'partiutrip',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  ssl: false
+});
 
-// Criar conexão com o banco PostgreSQL
-const connection = neon(process.env.DATABASE_URL);
-
-// Configurar Drizzle com PostgreSQL
+// Configurar Drizzle com MySQL
 export const db = drizzle(connection, { schema, mode: "default" });
 
 // Testar conexão
 export async function testConnection() {
   try {
-    await connection`SELECT 1`;
-    console.log("✅ Conexão PostgreSQL estabelecida com sucesso!");
+    await connection.execute("SELECT 1");
+    console.log("✅ Conexão MySQL estabelecida com sucesso!");
     return true;
   } catch (error) {
-    console.error("❌ Erro ao conectar com PostgreSQL:", error);
+    console.error("❌ Erro ao conectar com MySQL:", error);
     return false;
   }
 }
@@ -29,12 +35,12 @@ export async function testConnection() {
 // Inicializar tabelas usando Drizzle
 export async function initializeTables() {
   try {
-    // Com PostgreSQL e Drizzle, as tabelas são criadas automaticamente
+    // Com MySQL e Drizzle, as tabelas são criadas automaticamente
     // através do schema definido em shared/schema.ts
-    console.log("✅ Tabelas PostgreSQL inicializadas com sucesso!");
+    console.log("✅ Tabelas MySQL inicializadas com sucesso!");
     return true;
   } catch (error) {
-    console.error("❌ Erro ao inicializar tabelas PostgreSQL:", error);
+    console.error("❌ Erro ao inicializar tabelas MySQL:", error);
     return false;
   }
 }

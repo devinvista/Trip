@@ -1,9 +1,9 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, numeric, varchar } from "drizzle-orm/pg-core";
+import { mysqlTable, text, int, boolean, timestamp, json, decimal, varchar } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+export const users = mysqlTable("users", {
+  id: int("id").primaryKey().autoincrement(),
   username: varchar("username", { length: 255 }).notNull().unique(),
   password: text("password").notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
@@ -16,23 +16,23 @@ export const users = pgTable("users", {
   travelStyle: varchar("travel_style", { length: 100 }),
   isVerified: boolean("is_verified").default(false).notNull(), // User verification status
   verificationMethod: varchar("verification_method", { length: 50 }), // email, phone, document, etc.
-  averageRating: numeric("average_rating", { precision: 3, scale: 2 }).default("0.00"), // Average rating from other users
-  totalRatings: integer("total_ratings").default(0).notNull(), // Total number of ratings received
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("0.00"), // Average rating from other users
+  totalRatings: int("total_ratings").default(0).notNull(), // Total number of ratings received
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const trips = pgTable("trips", {
-  id: serial("id").primaryKey(),
-  creatorId: integer("creator_id").notNull().references(() => users.id),
+export const trips = mysqlTable("trips", {
+  id: int("id").primaryKey().autoincrement(),
+  creatorId: int("creator_id").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),
   destination: varchar("destination", { length: 255 }).notNull(),
   coverImage: text("cover_image"), // URL for trip cover image
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
-  budget: integer("budget"), // Now optional - total estimated budget
+  budget: int("budget"), // Now optional - total estimated budget
   budgetBreakdown: json("budget_breakdown"), // JSON object with expense categories
-  maxParticipants: integer("max_participants").notNull(),
-  currentParticipants: integer("current_participants").default(1).notNull(),
+  maxParticipants: int("max_participants").notNull(),
+  currentParticipants: int("current_participants").default(1).notNull(),
   description: text("description").notNull(),
   travelStyle: varchar("travel_style", { length: 100 }).notNull(),
   sharedCosts: json("shared_costs"),
@@ -41,37 +41,37 @@ export const trips = pgTable("trips", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const tripParticipants = pgTable("trip_participants", {
-  id: serial("id").primaryKey(),
-  tripId: integer("trip_id").notNull().references(() => trips.id),
-  userId: integer("user_id").notNull().references(() => users.id),
+export const tripParticipants = mysqlTable("trip_participants", {
+  id: int("id").primaryKey().autoincrement(),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  userId: int("user_id").notNull().references(() => users.id),
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, accepted, rejected
   joinedAt: timestamp("joined_at").defaultNow().notNull(),
 });
 
-export const messages = pgTable("messages", {
-  id: serial("id").primaryKey(),
-  tripId: integer("trip_id").notNull().references(() => trips.id),
-  senderId: integer("sender_id").notNull().references(() => users.id),
+export const messages = mysqlTable("messages", {
+  id: int("id").primaryKey().autoincrement(),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  senderId: int("sender_id").notNull().references(() => users.id),
   content: text("content").notNull(),
   sentAt: timestamp("sent_at").defaultNow().notNull(),
 });
 
-export const tripRequests = pgTable("trip_requests", {
-  id: serial("id").primaryKey(),
-  tripId: integer("trip_id").notNull().references(() => trips.id),
-  userId: integer("user_id").notNull().references(() => users.id),
+export const tripRequests = mysqlTable("trip_requests", {
+  id: int("id").primaryKey().autoincrement(),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  userId: int("user_id").notNull().references(() => users.id),
   message: text("message"),
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, accepted, rejected
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Expenses table for trip cost splitting
-export const expenses = pgTable("expenses", {
-  id: serial("id").primaryKey(),
-  tripId: integer("trip_id").notNull().references(() => trips.id),
-  paidBy: integer("paid_by").notNull().references(() => users.id),
-  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+export const expenses = mysqlTable("expenses", {
+  id: int("id").primaryKey().autoincrement(),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  paidBy: int("paid_by").notNull().references(() => users.id),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   description: text("description").notNull(),
   category: varchar("category", { length: 100 }).notNull().default("other"),
   receipt: text("receipt"), // URL or base64 encoded image
@@ -80,34 +80,34 @@ export const expenses = pgTable("expenses", {
 });
 
 // Expense splits - who owes what for each expense
-export const expenseSplits = pgTable("expense_splits", {
-  id: serial("id").primaryKey(),
-  expenseId: integer("expense_id").notNull().references(() => expenses.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(), // How much this user owes for this expense
+export const expenseSplits = mysqlTable("expense_splits", {
+  id: int("id").primaryKey().autoincrement(),
+  expenseId: int("expense_id").notNull().references(() => expenses.id),
+  userId: int("user_id").notNull().references(() => users.id),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // How much this user owes for this expense
   paid: boolean("paid").default(false).notNull(),
   settledAt: timestamp("settled_at"),
 });
 
 // User ratings - for rating travel companions
-export const userRatings = pgTable("user_ratings", {
-  id: serial("id").primaryKey(),
-  tripId: integer("trip_id").notNull().references(() => trips.id),
-  ratedUserId: integer("rated_user_id").notNull().references(() => users.id), // User being rated
-  raterUserId: integer("rater_user_id").notNull().references(() => users.id), // User giving the rating
-  rating: integer("rating").notNull(), // 1-5 stars
+export const userRatings = mysqlTable("user_ratings", {
+  id: int("id").primaryKey().autoincrement(),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  ratedUserId: int("rated_user_id").notNull().references(() => users.id), // User being rated
+  raterUserId: int("rater_user_id").notNull().references(() => users.id), // User giving the rating
+  rating: int("rating").notNull(), // 1-5 stars
   comment: text("comment"), // Optional comment
   categories: json("categories"), // { reliability: 5, friendliness: 4, communication: 5, etc. }
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Destination ratings - for rating destinations
-export const destinationRatings = pgTable("destination_ratings", {
-  id: serial("id").primaryKey(),
+export const destinationRatings = mysqlTable("destination_ratings", {
+  id: int("id").primaryKey().autoincrement(),
   destination: varchar("destination", { length: 255 }).notNull(), // Destination name (e.g., "Paris, França")
-  userId: integer("user_id").notNull().references(() => users.id), // User who rated
-  tripId: integer("trip_id").references(() => trips.id), // Optional: trip this rating is from
-  rating: integer("rating").notNull(), // 1-5 stars
+  userId: int("user_id").notNull().references(() => users.id), // User who rated
+  tripId: int("trip_id").references(() => trips.id), // Optional: trip this rating is from
+  rating: int("rating").notNull(), // 1-5 stars
   comment: text("comment"), // Optional comment
   categories: json("categories"), // { attractions: 5, food: 4, safety: 5, value: 3, etc. }
   photos: json("photos"), // Array of photo URLs
@@ -116,15 +116,15 @@ export const destinationRatings = pgTable("destination_ratings", {
 });
 
 // User verification requests
-export const verificationRequests = pgTable("verification_requests", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
+export const verificationRequests = mysqlTable("verification_requests", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("user_id").notNull().references(() => users.id),
   verificationType: varchar("verification_type", { length: 100 }).notNull(), // email, phone, document, social_media
   verificationData: json("verification_data"), // Store verification info (phone, document images, etc.)
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, approved, rejected
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
   reviewedAt: timestamp("reviewed_at"),
-  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed
+  reviewedBy: int("reviewed_by").references(() => users.id), // Admin who reviewed
   rejectionReason: text("rejection_reason"), // If rejected, why
 });
 
@@ -262,18 +262,18 @@ export type InsertDestinationRating = z.infer<typeof insertDestinationRatingSche
 export type InsertVerificationRequest = z.infer<typeof insertVerificationRequestSchema>;
 
 // Activities System - TripAdvisor-style activities
-export const activities = pgTable("activities", {
-  id: serial("id").primaryKey(),
+export const activities = mysqlTable("activities", {
+  id: int("id").primaryKey().autoincrement(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
   location: varchar("location", { length: 255 }).notNull(), // cidade, país
   category: varchar("category", { length: 100 }).notNull(), // sightseeing, food, adventure, culture, etc.
   priceType: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group, free
-  priceAmount: numeric("price_amount", { precision: 10, scale: 2 }), // null for free activities
+  priceAmount: decimal("price_amount", { precision: 10, scale: 2 }), // null for free activities
   duration: varchar("duration", { length: 100 }), // "2 hours", "full day", etc.
   difficultyLevel: varchar("difficulty_level", { length: 50 }).default("easy"), // easy, moderate, challenging
-  minParticipants: integer("min_participants").default(1).notNull(),
-  maxParticipants: integer("max_participants"),
+  minParticipants: int("min_participants").default(1).notNull(),
+  maxParticipants: int("max_participants"),
   languages: json("languages"), // Available languages
   inclusions: json("inclusions"), // What's included
   exclusions: json("exclusions"), // What's not included
@@ -282,70 +282,70 @@ export const activities = pgTable("activities", {
   contactInfo: json("contact_info"), // { email, phone, website, whatsapp }
   images: json("images"), // Array of image URLs
   coverImage: text("cover_image").notNull(), // Main image
-  averageRating: numeric("average_rating", { precision: 3, scale: 2 }).default("0.00"),
-  totalRatings: integer("total_ratings").default(0).notNull(),
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("0.00"),
+  totalRatings: int("total_ratings").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
-  createdById: integer("created_by_id").references(() => users.id), // Who added this activity
+  createdById: int("created_by_id").references(() => users.id), // Who added this activity
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Activity Reviews/Ratings
-export const activityReviews = pgTable("activity_reviews", {
-  id: serial("id").primaryKey(),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  rating: integer("rating").notNull(), // 1-5 stars
+export const activityReviews = mysqlTable("activity_reviews", {
+  id: int("id").primaryKey().autoincrement(),
+  activityId: int("activity_id").notNull().references(() => activities.id),
+  userId: int("user_id").notNull().references(() => users.id),
+  rating: int("rating").notNull(), // 1-5 stars
   review: text("review"), // Optional review text
   photos: json("photos"), // Optional review photos
   visitDate: timestamp("visit_date"), // When they participated
-  helpfulVotes: integer("helpful_votes").default(0).notNull(), // How many found this helpful
+  helpfulVotes: int("helpful_votes").default(0).notNull(), // How many found this helpful
   isVerified: boolean("is_verified").default(false).notNull(), // Verified purchase/participation
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Activity Budget Proposals - Multiple budget options per activity
-export const activityBudgetProposals = pgTable("activity_budget_proposals", {
-  id: serial("id").primaryKey(),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  createdBy: integer("created_by").notNull().references(() => users.id),
+export const activityBudgetProposals = mysqlTable("activity_budget_proposals", {
+  id: int("id").primaryKey().autoincrement(),
+  activityId: int("activity_id").notNull().references(() => activities.id),
+  createdBy: int("created_by").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(), // "Opção Básica", "Pacote Premium", etc.
   description: text("description"), // Description of what's included
   priceType: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group
-  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 10 }).default("BRL").notNull(),
   inclusions: json("inclusions"), // What's included in this proposal
   exclusions: json("exclusions"), // What's not included
   validUntil: timestamp("valid_until"), // Optional expiry date
   isActive: boolean("is_active").default(true).notNull(),
-  votes: integer("votes").default(0).notNull(), // Community votes for this proposal
+  votes: int("votes").default(0).notNull(), // Community votes for this proposal
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Trip Activities - Links activities to trips with selected budget proposal
-export const tripActivities = pgTable("trip_activities", {
-  id: serial("id").primaryKey(),
-  tripId: integer("trip_id").notNull().references(() => trips.id),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  budgetProposalId: integer("budget_proposal_id").notNull().references(() => activityBudgetProposals.id),
-  addedBy: integer("added_by").notNull().references(() => users.id),
+export const tripActivities = mysqlTable("trip_activities", {
+  id: int("id").primaryKey().autoincrement(),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  activityId: int("activity_id").notNull().references(() => activities.id),
+  budgetProposalId: int("budget_proposal_id").notNull().references(() => activityBudgetProposals.id),
+  addedBy: int("added_by").notNull().references(() => users.id),
   status: varchar("status", { length: 50 }).default("proposed").notNull(), // proposed, approved, rejected
-  participants: integer("participants").notNull().default(1),
-  totalCost: numeric("total_cost", { precision: 10, scale: 2 }).notNull(),
+  participants: int("participants").notNull().default(1),
+  totalCost: decimal("total_cost", { precision: 10, scale: 2 }).notNull(),
   scheduledDate: timestamp("scheduled_date"), // When in the trip this activity is scheduled
   notes: text("notes"), // Additional notes about this activity for the trip
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Activity Bookings/Reservations
-export const activityBookings = pgTable("activity_bookings", {
-  id: serial("id").primaryKey(),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  tripId: integer("trip_id").references(() => trips.id), // Optional: if booked for a specific trip
-  participants: integer("participants").notNull(),
-  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
+export const activityBookings = mysqlTable("activity_bookings", {
+  id: int("id").primaryKey().autoincrement(),
+  activityId: int("activity_id").notNull().references(() => activities.id),
+  userId: int("user_id").notNull().references(() => users.id),
+  tripId: int("trip_id").references(() => trips.id), // Optional: if booked for a specific trip
+  participants: int("participants").notNull(),
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   bookingDate: timestamp("booking_date").notNull(), // When activity will happen
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, confirmed, cancelled, completed
   contactName: text("contact_name").notNull(),
