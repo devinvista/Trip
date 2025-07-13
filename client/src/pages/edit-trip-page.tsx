@@ -46,7 +46,10 @@ export default function EditTripPage() {
   // Fetch trip data
   const { data: trip, isLoading: tripLoading, error: tripError } = useQuery({
     queryKey: ['/api/trips', tripId],
-    queryFn: () => apiRequest(`/api/trips/${tripId}`),
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/trips/${tripId}`);
+      return response.json();
+    },
     enabled: !!tripId
   });
 
@@ -80,11 +83,8 @@ export default function EditTripPage() {
   // Update trip mutation
   const updateTripMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest(`/api/trips/${tripId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      const response = await apiRequest('PATCH', `/api/trips/${tripId}`, data);
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -107,9 +107,8 @@ export default function EditTripPage() {
   // Delete trip mutation
   const deleteTripMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest(`/api/trips/${tripId}`, {
-        method: 'DELETE'
-      });
+      const response = await apiRequest('DELETE', `/api/trips/${tripId}`);
+      return response.json();
     },
     onSuccess: () => {
       toast({
