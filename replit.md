@@ -275,3 +275,4 @@ Registro de Alterações:
 - 13 de julho de 2025. Implementação do preloader customizado com avião circulando globo terrestre - criado LoadingSpinner com variante "travel" inspirada no logo do site, incluindo globo com continentes, dois aviões circulando em direções opostas, linhas orbitais animadas e texto personalizado "Preparando sua viagem"
 - 13 de julho de 2025. Atualização das páginas dashboard e busca para usar o novo preloader de viagem - substituído skeleton loading por preloader centralizado com animação de globo e avião
 - 13 de julho de 2025. Criação de página de demonstração do preloader (/preloader-demo) com teste interativo das variantes simple e travel do LoadingSpinner
+- 13 de julho de 2025. Correção do preloader conforme feedback do usuário - avião alterado para cor dourada/ouro (#FFD700) circulando no sentido horário, globo terrestre mantido em azul com continentes verdes, removido segundo avião para simplificar animação
