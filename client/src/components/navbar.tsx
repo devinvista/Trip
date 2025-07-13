@@ -30,7 +30,6 @@ export function Navbar() {
     { href: "/search", label: "Buscar Viagens", icon: Search, tourData: "search-button" },
     { href: "/create-trip", label: "Criar Viagem", icon: Plus, tourData: "create-button" },
     { href: "/journey-tracker", label: "Progresso", icon: TrendingUp },
-    { href: "/collaborative-editing", label: "Edição Colaborativa", icon: Edit3 },
   ];
 
   const isActive = (href: string) => location === href || location.startsWith(href);
