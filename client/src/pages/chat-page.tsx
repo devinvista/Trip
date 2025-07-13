@@ -206,12 +206,13 @@ export default function ChatPage() {
           </Card>
         </motion.div>
 
-        <div className="space-y-4">
-          {/* Enhanced Chat Window - Full width */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+          {/* Enhanced Chat Window */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
+            className="lg:col-span-3 order-2 lg:order-1"
           >
             <ChatWindow 
               tripId={tripId!} 
@@ -220,12 +221,12 @@ export default function ChatPage() {
             />
           </motion.div>
 
-          {/* Enhanced Sidebar - Below chat */}
+          {/* Enhanced Sidebar */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="space-y-4"
+            className="lg:col-span-1 order-1 lg:order-2 space-y-4"
           >
             {/* Participants List */}
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
