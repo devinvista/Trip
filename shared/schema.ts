@@ -215,24 +215,14 @@ export const activityCategories = {
   other: { label: "Outros", icon: "📋" }
 } as const;
 
-// Expense category labels
+// Expense category labels (same as budget categories but includes activities)
 export const expenseCategories = {
   transport: "Transporte",
-  accommodation: "Hospedagem", 
+  accommodation: "Hospedagem",
   food: "Alimentação",
   activities: "Atividades",
-  shopping: "Compras",
-  insurance: "Seguro",
-  visas: "Vistos",
-  entertainment: "Entretenimento",
-  medical: "Saúde e Medicamentos",
-  communication: "Comunicação",
-  tips: "Gorjetas",
-  souvenirs: "Lembranças",
-  parking: "Estacionamento",
-  fuel: "Combustível",
-  tolls: "Pedágios",
-  emergency: "Emergências",
+  insurance: "Seguro e Documentos (Seguros, Vistos)",
+  medical: "Saúde e Emergências",
   other: "Outros"
 } as const;
 

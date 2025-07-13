@@ -237,3 +237,4 @@ Registro de Alterações:
 - 13 de julho de 2025. Separação clara entre categorias de orçamento base (6 categorias) e categorias de despesas compartilhadas (16+ categorias) para maior flexibilidade e organização
 - 13 de julho de 2025. Migração completa do Replit Agent para ambiente Replit padrão bem-sucedida - todos os componentes funcionando corretamente, autenticação configurada, dados de teste carregados
 - 13 de julho de 2025. Simplificação da categoria de transporte no orçamento - alterada de "Transporte (Passagens, Combustível, Pedágios, Estacionamento)" para apenas "Transporte" para melhor usabilidade
+- 13 de julho de 2025. Unificação das categorias de despesas com as categorias de orçamento - sistema de gestão e divisão de despesas agora usa as mesmas 6 categorias do orçamento (transport, accommodation, food, activities, insurance, medical, other) garantindo consistência
