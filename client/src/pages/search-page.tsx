@@ -385,40 +385,7 @@ export default function SearchPage() {
           </div>
         </motion.div>
 
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="mb-8"
-        >
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Zap className="h-5 w-5 text-indigo-500" />
-                <h3 className="text-lg font-semibold">Ações Rápidas</h3>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button 
-                  onClick={() => window.location.href = '/activities'}
-                  variant="outline"
-                  className="flex-1 min-w-[200px] h-12 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Explorar Atividades
-                </Button>
-                <Button 
-                  onClick={() => window.location.href = '/create-trip'}
-                  variant="outline"
-                  className="flex-1 min-w-[200px] h-12 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 hover:from-blue-100 hover:to-cyan-100 transition-all duration-300"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Criar Nova Viagem
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        
 
         {/* Main Search Bar */}
         <motion.div
