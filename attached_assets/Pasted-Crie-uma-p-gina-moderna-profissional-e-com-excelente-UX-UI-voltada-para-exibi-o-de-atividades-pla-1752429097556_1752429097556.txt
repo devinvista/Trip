@@ -1,0 +1,85 @@
+Crie uma página moderna, profissional e com excelente UX/UI, voltada para exibição de atividades planejadas (como passeios, eventos ou experiências) da plataforma, inspirada no estilo do TripAdvisor.com.br; que serão buscadas e inseridas na viagem na aba "atividades"
+
+🎨 Objetivo da Página
+
+Apresentar atividades planejadas aos usuários, permitindo fácil visualização, avaliação e decisão. A página deve equilibrar estética moderna com alta usabilidade, adaptável a dispositivos móveis e desktop.
+✅ Requisitos Funcionais
+
+    Lista de Atividades Planejadas
+
+        Nome da atividade
+
+        Imagem destacada
+
+        Localização (cidade/país ou mapa embutido)
+
+        Valor (preço por pessoa ou por grupo)
+
+    Sistema de Avaliação
+
+        Avaliação por estrelas (1 a 5), visível ao lado do título
+
+        Número de avaliações
+
+        Média de avaliações com ícone visual (estilo TripAdvisor)
+
+    Filtros e Ordenação
+
+        Filtros por: preço, tipo de atividade, localização, avaliação
+
+        Ordenação por: mais bem avaliadas, mais recentes, menor preço, etc.
+
+    Card de Atividade (UX-focused)
+    Cada atividade deve ser exibida em um card visual limpo e atrativo, contendo:
+
+        Imagem em destaque
+
+        Título da atividade
+
+        Pequena descrição (máx. 150 caracteres)
+
+        Preço
+
+        Avaliação (estrelinhas)
+
+        Botão "Ver detalhes" ou "acrescentar na viagem"
+
+    Página de Detalhes (link ao clicar no card)
+
+        Galeria de imagens
+
+        Descrição completa da atividade
+
+        Comentários de usuários
+
+        Botão "Reservar agora"
+
+    Design/Estilo
+
+        Paleta de cores clara, moderna e agradável
+
+        Tipografia legível e amigável
+
+        Ícones suaves e visuais intuitivos
+
+        Estilo semelhante ao TripAdvisor, mas com identidade própria
+
+        Compatível com dark mode (opcional)
+
+🛠️ Requisitos Técnicos
+
+    Layout responsivo (mobile-first)
+
+    Estrutura HTML5 + CSS3 moderna (ou com frameworks como Tailwind, Bootstrap ou equivalente)
+
+    Integração com backend via API para carregamento dinâmico de dados (mock se necessário)
+
+    Carregamento rápido e otimizações de performance (lazy load de imagens, compressão)
+
+🔍 Inspirações
+
+    TripAdvisor - Atividades
+
+    Airbnb - Experiências
+
+    GetYourGuide
