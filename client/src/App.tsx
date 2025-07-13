@@ -16,6 +16,7 @@ import TripDetailPage from "@/pages/trip-detail-page";
 import ChatPage from "@/pages/chat-page";
 import JourneyTrackerPage from "@/pages/journey-tracker-page";
 import ProfilePage from "@/pages/profile";
+import PreloaderDemo from "@/pages/preloader-demo";
 
 import NotFound from "@/pages/not-found";
 
@@ -48,6 +49,7 @@ function App() {
               <Route path="/chat/:tripId" component={ChatPage} />
               <Route path="/journey-tracker" component={JourneyTrackerPage} />
               <Route path="/profile" component={ProfilePage} />
+              <Route path="/preloader-demo" component={PreloaderDemo} />
 
               <Route component={NotFound} />
             </Switch>

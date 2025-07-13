@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useToast } from "@/hooks/use-toast";
 import { OnboardingTour, useOnboardingTour } from "@/components/onboarding-tour";
 import { WelcomeBanner } from "@/components/welcome-banner";
+import { LoadingSpinner } from "@/components/loading-spinner";
 import { 
   Briefcase, 
   Users, 
@@ -541,20 +542,9 @@ export default function DashboardPage() {
           {/* Trips Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {tripsLoading ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <Card key={i} className="animate-pulse overflow-hidden">
-                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300" />
-                  <CardContent className="p-6">
-                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
-                    <div className="h-4 bg-gray-200 rounded w-full mb-2" />
-                    <div className="h-4 bg-gray-200 rounded w-2/3 mb-4" />
-                    <div className="flex gap-2">
-                      <div className="h-8 bg-gray-200 rounded w-16" />
-                      <div className="h-8 bg-gray-200 rounded w-16" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+              <div className="col-span-full flex items-center justify-center min-h-[300px]">
+                <LoadingSpinner variant="travel" size="lg" />
+              </div>
             ) : !tripsError && getFilteredTrips().length > 0 ? (
               getFilteredTrips().map((trip: any) => (
                 <Card key={trip.id} className="group hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden border-0 bg-white shadow-md">

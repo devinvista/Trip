@@ -38,6 +38,7 @@ import {
   Zap
 } from "lucide-react";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
+import { LoadingSpinner } from "@/components/loading-spinner";
 import { motion, AnimatePresence } from "framer-motion";
 
 const continents = [
@@ -664,10 +665,8 @@ export default function SearchPage() {
             {/* Results Grid */}
             <div className="space-y-6">
               {isLoading ? (
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <TripCardSkeleton key={i} />
-                  ))}
+                <div className="flex items-center justify-center min-h-[400px]">
+                  <LoadingSpinner variant="travel" size="lg" />
                 </div>
               ) : sortedTrips.length > 0 ? (
                 <motion.div 
