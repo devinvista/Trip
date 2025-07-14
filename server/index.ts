@@ -68,16 +68,6 @@ async function fixUserVerificationStatus() {
 }
 
 (async () => {
-  // Testar conexão MySQL e inicializar tabelas
-  console.log("🔗 Testando conexão MySQL...");
-  await testConnection();
-  console.log("🏗️ Inicializando tabelas MySQL...");
-  await initializeTables();
-  
-  // Fix user verification status
-  console.log("🔧 Corrigindo status de verificação dos usuários...");
-  await fixUserVerificationStatus();
-  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -108,4 +98,16 @@ async function fixUserVerificationStatus() {
   }, () => {
     log(`serving on port ${port}`);
   });
+
+  // Initialize database in background after server starts
+  (async () => {
+    console.log("🔗 Testando conexão MySQL...");
+    await testConnection();
+    console.log("🏗️ Inicializando tabelas MySQL...");
+    await initializeTables();
+    
+    // Fix user verification status
+    console.log("🔧 Corrigindo status de verificação dos usuários...");
+    await fixUserVerificationStatus();
+  })().catch(console.error);
 })();
