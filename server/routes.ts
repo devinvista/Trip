@@ -594,11 +594,17 @@ export function registerRoutes(app: Express): Server {
     try {
       const tripId = parseInt(req.params.id);
       
-      // Verify user is a participant of the trip
+      // Verify user is a participant or creator of the trip
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+      
       const participants = await storage.getTripParticipants(tripId);
       const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
+      const isCreator = trip.creatorId === req.user!.id;
       
-      if (!isParticipant) {
+      if (!isParticipant && !isCreator) {
         return res.status(403).json({ message: "Acesso negado" });
       }
       
