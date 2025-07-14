@@ -163,7 +163,15 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
             <Badge variant="secondary" className="bg-blue-100 text-blue-700">
               {messages.length} mensagens
             </Badge>
-            <Button variant="ghost" size="sm" className="hidden md:flex">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="hidden md:flex"
+              onClick={() => {
+                // Função para abrir menu de opções do chat
+                console.log("Abrir menu de opções do chat");
+              }}
+            >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </div>
@@ -337,6 +345,10 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                   variant="ghost"
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-blue-50"
+                  onClick={() => {
+                    // Função para abrir seletor de emoji
+                    console.log("Abrir seletor de emoji");
+                  }}
                 >
                   <Smile className="h-4 w-4 text-gray-500" />
                 </Button>
@@ -345,6 +357,10 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                   variant="ghost"
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-blue-50"
+                  onClick={() => {
+                    // Função para upload de imagem
+                    console.log("Abrir seletor de imagem");
+                  }}
                 >
                   <Image className="h-4 w-4 text-gray-500" />
                 </Button>
@@ -360,6 +376,10 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                   variant="ghost"
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-blue-50 hidden md:flex"
+                  onClick={() => {
+                    // Função para adicionar anexos
+                    console.log("Abrir opções de anexos");
+                  }}
                 >
                   <Plus className="h-4 w-4 text-gray-500" />
                 </Button>
@@ -368,6 +388,10 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                   variant="ghost"
                   size="sm"
                   className="h-8 w-8 p-0 hover:bg-blue-50 hidden md:flex"
+                  onClick={() => {
+                    // Função para gravação de áudio
+                    console.log("Iniciar gravação de áudio");
+                  }}
                 >
                   <Mic className="h-4 w-4 text-gray-500" />
                 </Button>
