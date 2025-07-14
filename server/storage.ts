@@ -691,7 +691,8 @@ export class MemStorage implements IStorage {
   public sessionStore: session.Store;
 
   // Helper function to remove sensitive information from user objects
-  private sanitizeUser(user: User): Omit<User, 'password'> {
+  private sanitizeUser(user: User | undefined): Omit<User, 'password'> | undefined {
+    if (!user) return undefined;
     const { password, ...sanitizedUser } = user;
     return sanitizedUser;
   }
@@ -962,9 +963,16 @@ export class MemStorage implements IStorage {
       .filter(p => p.tripId === tripId);
 
     return participants.map(p => {
-      const user = this.users.get(p.userId)!;
-      return { ...p, user: this.sanitizeUser(user) as User };
-    });
+      const user = this.users.get(p.userId);
+      const sanitizedUser = this.sanitizeUser(user);
+      if (!sanitizedUser) {
+        console.warn(`⚠️ Removendo participante órfão ${p.userId} da viagem ${tripId}`);
+        // Remove orphaned participant
+        this.tripParticipants.delete(p.id);
+        return null;
+      }
+      return { ...p, user: sanitizedUser as User };
+    }).filter(p => p !== null) as (TripParticipant & { user: User })[];
   }
 
   async addTripParticipant(tripId: number, userId: number): Promise<TripParticipant> {
@@ -977,17 +985,19 @@ export class MemStorage implements IStorage {
       joinedAt: new Date()
     };
 
-    this.tripParticipants.set(`${tripId}-${userId}`, participant);
+    this.tripParticipants.set(id, participant);
     return participant;
   }
 
   async updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined> {
-    const key = `${tripId}-${userId}`;
-    const participant = this.tripParticipants.get(key);
+    // Find participant by tripId and userId
+    const participant = Array.from(this.tripParticipants.values())
+      .find(p => p.tripId === tripId && p.userId === userId);
+    
     if (!participant) return undefined;
 
     const updatedParticipant = { ...participant, status };
-    this.tripParticipants.set(key, updatedParticipant);
+    this.tripParticipants.set(participant.id, updatedParticipant);
     return updatedParticipant;
   }
 
@@ -995,8 +1005,13 @@ export class MemStorage implements IStorage {
     const trip = this.trips.get(tripId);
     if (!trip) return;
 
-    const key = `${tripId}-${userId}`;
-    this.tripParticipants.delete(key);
+    // Find and remove participant by tripId and userId
+    const participant = Array.from(this.tripParticipants.values())
+      .find(p => p.tripId === tripId && p.userId === userId);
+    
+    if (participant) {
+      this.tripParticipants.delete(participant.id);
+    }
 
     // Get remaining participants after removal
     const participants = await this.getTripParticipants(tripId);
