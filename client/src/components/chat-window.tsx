@@ -144,48 +144,48 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
   };
 
   return (
-    <Card className={`flex flex-col bg-white/80 backdrop-blur-sm border-0 shadow-lg ${className}`}>
-      <CardHeader className="pb-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
+    <Card className={`flex flex-col bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg rounded-xl ${className}`}>
+      <CardHeader className="pb-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-gray-50 shadow-sm">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-              <MessageCircle className="h-5 w-5 text-white" />
+            <div className="w-11 h-11 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <MessageCircle className="h-6 w-6 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-semibold text-gray-900">Chat da Viagem</span>
-              <div className="flex items-center gap-2 text-xs text-gray-600">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>{participants.length || 0} participantes online</span>
+              <span className="text-lg font-semibold text-slate-800">Chat da Viagem</span>
+              <div className="flex items-center gap-2 text-xs text-slate-600">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm"></div>
+                <span className="font-medium">{participants.length || 0} participantes online</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="bg-blue-50 text-blue-700 border border-blue-200 shadow-sm px-3 py-1">
               {messages.length} mensagens
             </Badge>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="hidden md:flex"
+              className="hidden md:flex hover:bg-slate-100 rounded-lg transition-colors duration-200 p-2"
               onClick={() => {
                 // Função para abrir menu de opções do chat
                 console.log("Abrir menu de opções do chat");
               }}
             >
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-4 w-4 text-slate-600" />
             </Button>
           </div>
         </CardTitle>
       </CardHeader>
 
       {/* Participants Section - Fixed outside scroll area */}
-      <div className="border-b border-gray-100 bg-gradient-to-b from-gray-50/30 to-white/30 p-4">
+      <div className="border-b border-slate-200 bg-gradient-to-b from-slate-50/50 to-white/50 p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium text-gray-900">Participantes</span>
+            <span className="text-sm font-medium text-slate-800">Participantes</span>
           </div>
-          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+          <Badge variant="secondary" className="text-xs bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
             {participants.length || 1}
           </Badge>
         </div>
