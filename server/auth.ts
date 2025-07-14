@@ -133,12 +133,24 @@ export function setupAuth(app: Express) {
   // Estratégia local
   passport.use(new LocalStrategy(
     {
-      usernameField: 'username',
+      usernameField: 'identifier',
       passwordField: 'password'
     },
-    async (username, password, done) => {
+    async (identifier, password, done) => {
       try {
-        const user = await storage.getUserByUsername(username);
+        // Tenta buscar o usuário por username, email ou telefone
+        let user = await storage.getUserByUsername(identifier);
+        
+        if (!user) {
+          user = await storage.getUserByEmail(identifier);
+        }
+        
+        if (!user) {
+          // Remove formatação do telefone para busca
+          const cleanPhone = identifier.replace(/\D/g, '');
+          user = await storage.getUserByPhone(cleanPhone);
+        }
+        
         if (!user) {
           return done(null, false, { message: 'Usuário não encontrado' });
         }

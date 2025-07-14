@@ -6,7 +6,7 @@ import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 
 interface LoginData {
-  username: string;
+  identifier: string;
   password: string;
 }
 

@@ -33,7 +33,7 @@ const formatPhoneNumber = (value: string) => {
 };
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Nome de usuário é obrigatório"),
+  identifier: z.string().min(1, "Usuário, email ou telefone é obrigatório"),
   password: z.string().min(1, "Senha é obrigatória"),
 });
 
@@ -56,7 +56,7 @@ export default function AuthPage() {
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      identifier: "",
       password: "",
     },
   });
@@ -147,14 +147,14 @@ export default function AuthPage() {
                     <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                       <FormField
                         control={loginForm.control}
-                        name="username"
+                        name="identifier"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-700 font-medium">Nome de usuário</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Usuário, Email ou Telefone</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                                <Input placeholder="Seu nome de usuário" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
+                                <Input placeholder="Digite seu usuário, email ou telefone" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                               </div>
                             </FormControl>
                             <FormMessage />
