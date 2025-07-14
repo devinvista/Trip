@@ -391,7 +391,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="bg-green-50 px-2.5 py-1.5 rounded-full">
-                    <p className="text-xs font-semibold text-green-700">+{createdTrips.length} suas</p>
+                    <p className="text-xs font-semibold text-green-700">+{createdTrips.length}</p>
                   </div>
                 </div>
               </CardContent>
@@ -411,7 +411,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="bg-emerald-50 px-2.5 py-1.5 rounded-full">
-                    <p className="text-xs font-semibold text-emerald-700">Planejadas</p>
+                    <p className="text-xs font-semibold text-emerald-700">+{upcomingTrips.length}</p>
                   </div>
                 </div>
               </CardContent>
@@ -432,7 +432,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="bg-amber-50 px-2.5 py-1.5 rounded-full flex items-center gap-1">
                     <Star className="h-3 w-3 text-amber-600" />
-                    <p className="text-xs font-semibold text-amber-700">Conexões</p>
+                    <p className="text-xs font-semibold text-amber-700">+{totalParticipants}</p>
                   </div>
                 </div>
               </CardContent>
@@ -453,7 +453,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="bg-green-50 px-2.5 py-1.5 rounded-full flex items-center gap-1">
                     <TrendingUp className="h-3 w-3 text-green-600" />
-                    <p className="text-xs font-semibold text-green-700">No plano</p>
+                    <p className="text-xs font-semibold text-green-700">R$ {totalBudget.toLocaleString()}</p>
                   </div>
                 </div>
               </CardContent>
