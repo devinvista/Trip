@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { 
   User, 
@@ -29,9 +30,32 @@ import {
   UserPlus,
   Star,
   Calendar,
-  Plane
+  Plane,
+  Luggage,
+  Compass,
+  Map,
+  Trophy,
+  Shield,
+  Target,
+  TrendingUp,
+  DollarSign,
+  MessageCircle,
+  Zap,
+  Globe,
+  ChevronRight,
+  ExternalLink,
+  Gift,
+  Crown,
+  Sparkles,
+  ThumbsUp,
+  Settings,
+  Share,
+  Mail,
+  MessageSquare,
+  WhatsApp
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { motion } from "framer-motion";
 
 // Função para formatação de telefone (xx) xxxxx-xxxx
 const formatPhoneNumber = (value: string) => {
@@ -196,21 +220,527 @@ export default function ProfilePage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">Meu Perfil</h1>
-          <p className="text-slate-600">Gerencie suas informações pessoais e configurações</p>
-        </div>
+  // Funções auxiliares para o novo design
+  const getTravelerLevel = (completedTrips: number) => {
+    if (completedTrips >= 20) return { level: "Embaixador", color: "from-orange-500 to-red-500", progress: 100 };
+    if (completedTrips >= 10) return { level: "Explorador", color: "from-blue-500 to-cyan-500", progress: (completedTrips - 10) / 10 * 100 };
+    if (completedTrips >= 5) return { level: "Aventureiro", color: "from-green-500 to-emerald-500", progress: (completedTrips - 5) / 5 * 100 };
+    return { level: "Iniciante", color: "from-gray-500 to-gray-600", progress: completedTrips / 5 * 100 };
+  };
 
-        <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile">Perfil</TabsTrigger>
-            <TabsTrigger value="referral">Indicações</TabsTrigger>
-            <TabsTrigger value="stats">Estatísticas</TabsTrigger>
+  const getAchievements = () => {
+    const achievements = [];
+    const completed = userStats?.completedTrips || 0;
+    
+    if (completed >= 2) achievements.push({ name: "Globetrotter", icon: Globe, description: "2+ viagens completadas", color: "text-blue-500" });
+    if (completed >= 5) achievements.push({ name: "Aventureiro", icon: Compass, description: "5+ viagens completadas", color: "text-green-500" });
+    if (completed >= 10) achievements.push({ name: "Explorador", icon: Map, description: "10+ viagens completadas", color: "text-purple-500" });
+    if (userStats?.travelPartners >= 5) achievements.push({ name: "Social Traveler", icon: Users, description: "5+ conexões de viagem", color: "text-orange-500" });
+    
+    return achievements;
+  };
+
+  const shareOnWhatsApp = () => {
+    const message = `Olá! Estou usando o PartiuTrip para encontrar companheiros de viagem e economizar nos custos. Use meu código ${referralData?.code} e ganhe 10% de desconto na sua primeira viagem! https://partiutrip.com`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+  };
+
+  const shareByEmail = () => {
+    const subject = "Convite PartiuTrip - Viaje junto e economize!";
+    const body = `Olá!\n\nEstou usando o PartiuTrip para encontrar companheiros de viagem e economizar nos custos. É uma plataforma incrível onde você pode compartilhar viagens com pessoas que têm os mesmos interesses!\n\nUse meu código ${referralData?.code} e ganhe 10% de desconto na sua primeira viagem.\n\nAcesse: https://partiutrip.com\n\nVamos viajar juntos!`;
+    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+  };
+
+  return (
+    <div className="min-h-screen" style={{ background: '#F5F9FC' }}>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Header Moderno do Perfil */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative mb-8"
+        >
+          {/* Banner dinâmico com mosaico de destinos */}
+          <div className="relative h-48 rounded-2xl overflow-hidden mb-6"
+               style={{ 
+                 backgroundImage: `linear-gradient(45deg, #1B2B49 0%, #41B6FF 50%, #FFA500 100%)`,
+                 backgroundSize: 'cover'
+               }}>
+            <div className="absolute inset-0 bg-black/20"></div>
+            
+            {/* Elementos de viagem flutuantes */}
+            <div className="absolute top-4 right-4 flex gap-2">
+              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                <Plane className="h-5 w-5 text-white" />
+              </div>
+              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                <Luggage className="h-5 w-5 text-white" />
+              </div>
+              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                <Compass className="h-5 w-5 text-white" />
+              </div>
+            </div>
+            
+            {/* Avatar interativo com bordas gradientes pulsantes */}
+            <div className="absolute -bottom-12 left-8">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full animate-pulse"></div>
+                <Avatar className="relative h-24 w-24 border-4 border-white shadow-xl">
+                  <AvatarFallback 
+                    className="text-white text-xl font-bold"
+                    style={{ background: 'linear-gradient(135deg, #1B2B49 0%, #41B6FF 100%)' }}
+                  >
+                    {getInitials(user.fullName)}
+                  </AvatarFallback>
+                </Avatar>
+                
+                {/* Medalha flutuante com nível do viajante */}
+                <div className="absolute -bottom-2 -right-2">
+                  <div className={`px-2 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-lg`}>
+                    {getTravelerLevel(userStats?.completedTrips || 0).level}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Informações do perfil */}
+          <div className="ml-8 mt-8">
+            <h1 className="text-3xl font-bold mb-2" style={{ color: '#1B2B49' }}>
+              {user.fullName}
+            </h1>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
+                <MapPin className="h-4 w-4" />
+                <span>{user.location}</span>
+              </div>
+              <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
+                <Star className="h-4 w-4" />
+                <span>{userStats?.averageRating || '5.0'} ⭐</span>
+              </div>
+            </div>
+            
+            {/* Bio editável */}
+            <p className="text-gray-600 max-w-2xl mb-4">
+              {user.bio || "Aventureiro em busca de novas experiências e conexões incríveis!"}
+            </p>
+            
+            {/* Estilos de viagem preferidos */}
+            <div className="flex flex-wrap gap-2">
+              {user.travelStyles?.map((style) => (
+                <Badge key={style} variant="secondary" className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800">
+                  {travelStyles.find(s => s.value === style)?.label}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        <Tabs defaultValue="stats" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-5 h-14 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
+            <TabsTrigger value="stats" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl">
+              <Award className="h-4 w-4 mr-2" />
+              Estatísticas
+            </TabsTrigger>
+            <TabsTrigger value="partiuamigos" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-xl">
+              <Gift className="h-4 w-4 mr-2" />
+              PartiuAmigos
+            </TabsTrigger>
+            <TabsTrigger value="connections" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-xl">
+              <Users className="h-4 w-4 mr-2" />
+              Conexões
+            </TabsTrigger>
+            <TabsTrigger value="achievements" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white rounded-xl">
+              <Trophy className="h-4 w-4 mr-2" />
+              Conquistas
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-500 data-[state=active]:to-gray-600 data-[state=active]:text-white rounded-xl">
+              <Settings className="h-4 w-4 mr-2" />
+              Configurações
+            </TabsTrigger>
           </TabsList>
+
+          {/* Aba de Estatísticas */}
+          <TabsContent value="stats" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Total de Viagens */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: '#AAB0B7' }}>Total de Viagens</p>
+                        <p className="text-3xl font-bold" style={{ color: '#1B2B49' }}>
+                          {userStats?.totalTrips || 0}
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500">
+                        <Plane className="h-6 w-6 text-white" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Viagens Concluídas */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: '#AAB0B7' }}>Concluídas</p>
+                        <p className="text-3xl font-bold" style={{ color: '#1B2B49' }}>
+                          {userStats?.completedTrips || 0}
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500">
+                        <Check className="h-6 w-6 text-white" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Parceiros de Viagem */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: '#AAB0B7' }}>Parceiros</p>
+                        <p className="text-3xl font-bold" style={{ color: '#1B2B49' }}>
+                          {userStats?.travelPartners || 0}
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500">
+                        <Users className="h-6 w-6 text-white" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Avaliação Média */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: '#AAB0B7' }}>Avaliação</p>
+                        <p className="text-3xl font-bold" style={{ color: '#1B2B49' }}>
+                          {userStats?.averageRating || '5.0'}
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500">
+                        <Star className="h-6 w-6 text-white" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Progresso do Nível */}
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                  <Crown className="h-5 w-5" />
+                  Progresso do Viajante
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium" style={{ color: '#AAB0B7' }}>
+                      Nível Atual: {getTravelerLevel(userStats?.completedTrips || 0).level}
+                    </span>
+                    <span className="text-sm" style={{ color: '#AAB0B7' }}>
+                      {userStats?.completedTrips || 0} / {userStats?.completedTrips >= 20 ? 20 : userStats?.completedTrips >= 10 ? 20 : userStats?.completedTrips >= 5 ? 10 : 5} viagens
+                    </span>
+                  </div>
+                  <Progress 
+                    value={getTravelerLevel(userStats?.completedTrips || 0).progress} 
+                    className="h-3"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba do Programa PartiuAmigos */}
+          <TabsContent value="partiuamigos" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Código de Indicação */}
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                    <Gift className="h-5 w-5" />
+                    Código de Indicação
+                  </CardTitle>
+                  <CardDescription>
+                    Compartilhe e ganhe benefícios exclusivos
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl text-center">
+                      <div className="text-2xl font-bold text-white tracking-wider">
+                        {referralData?.code || "LOADING..."}
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={copyReferralCode}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        {copiedCode ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                        {copiedCode ? 'Copiado!' : 'Copiar'}
+                      </Button>
+                      <Button
+                        onClick={shareOnWhatsApp}
+                        className="flex-1 bg-green-500 hover:bg-green-600"
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        WhatsApp
+                      </Button>
+                      <Button
+                        onClick={shareByEmail}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <Mail className="h-4 w-4 mr-2" />
+                        Email
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Sistema de Recompensas */}
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                    <Sparkles className="h-5 w-5" />
+                    Sistema de Recompensas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span className="text-sm font-medium">Iniciante</span>
+                      </div>
+                      <span className="text-xs text-gray-500">0-4 indicações</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm font-medium">Explorador</span>
+                      </div>
+                      <span className="text-xs text-gray-500">5-9 indicações</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                        <span className="text-sm font-medium">Embaixador</span>
+                      </div>
+                      <span className="text-xs text-gray-500">10+ indicações</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Amigos Indicados */}
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                  <Users className="h-5 w-5" />
+                  Amigos Indicados ({referralData?.referredUsers?.length || 0})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {referralData?.referredUsers?.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {referralData.referredUsers.map((friend: any) => (
+                      <div key={friend.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <Avatar className="h-10 w-10 bg-gradient-to-br from-blue-500 to-cyan-500">
+                          <AvatarFallback className="text-white">
+                            {getInitials(friend.fullName)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">{friend.fullName}</div>
+                          <div className="text-sm text-gray-500">
+                            Entrou em {new Date(friend.createdAt).toLocaleDateString('pt-BR')}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <UserPlus className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500 mb-2">Nenhum amigo indicado ainda</p>
+                    <p className="text-sm text-gray-400">Compartilhe seu código e comece a ganhar recompensas!</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba de Conexões */}
+          <TabsContent value="connections" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Minha Rede */}
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                    <Users className="h-5 w-5" />
+                    Minha Rede de Viagem
+                  </CardTitle>
+                  <CardDescription>
+                    Conecte-se com companheiros de viagem
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500 mb-2">Sua rede está crescendo!</p>
+                    <p className="text-sm text-gray-400">
+                      {userStats?.travelPartners || 0} conexões de viagem
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Convites para Viagem */}
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                    <MessageCircle className="h-5 w-5" />
+                    Convites Ativos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <MessageCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500 mb-2">Nenhum convite ativo</p>
+                    <p className="text-sm text-gray-400">
+                      Seus próximos convites aparecerão aqui
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Aba de Conquistas */}
+          <TabsContent value="achievements" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {getAchievements().map((achievement, index) => (
+                <motion.div
+                  key={achievement.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`p-3 rounded-full ${achievement.color.replace('text-', 'bg-')}/20`}>
+                          <achievement.icon className={`h-8 w-8 ${achievement.color}`} />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg" style={{ color: '#1B2B49' }}>
+                            {achievement.name}
+                          </h3>
+                          <p className="text-sm" style={{ color: '#AAB0B7' }}>
+                            {achievement.description}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+              
+              {/* Conquistas Bloqueadas */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg opacity-50">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-full bg-gray-200">
+                        <DollarSign className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-400">Economista</h3>
+                        <p className="text-sm text-gray-400">
+                          Economize R$1000+ em viagens
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Gamificação e Níveis */}
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                  <Zap className="h-5 w-5" />
+                  Sistema de Pontuação
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {(userStats?.completedTrips || 0) * 100}
+                    </div>
+                    <div className="text-sm text-gray-600">Pontos XP</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">
+                      {getTravelerLevel(userStats?.completedTrips || 0).level}
+                    </div>
+                    <div className="text-sm text-gray-600">Nível Atual</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600">
+                      {getAchievements().length}
+                    </div>
+                    <div className="text-sm text-gray-600">Conquistas</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">

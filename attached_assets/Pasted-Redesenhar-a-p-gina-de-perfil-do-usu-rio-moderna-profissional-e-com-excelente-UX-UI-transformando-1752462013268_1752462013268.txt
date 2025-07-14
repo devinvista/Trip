@@ -1,0 +1,36 @@
+Redesenhar a página de perfil do usuário  moderna, profissional e com excelente UX/UI, transformando-a em um hub interativo de conexões, recompensas e personalização, alinhado ao conceito de viagens compartilhadas do PartiuTrip.
+Identidade Visual:
+Paleta de Cores Institucionais
+Azul Escuro	#1B2B49	Títulos, texto principal, fundos escuros
+Azul Claro	#41B6FF	Ícones, destaques, botões
+Laranja Vibrante	#FFA500	Ação, CTA, botões, ícone do avião
+Branco Gelo	#F5F9FC	Fundo clean, áreas neutras
+Cinza Metálico	#AAB0B7	Fundo institucional, bordas, divisores
+Elementos de viagem: Ícones de avião, mala, bússola e mapa integrados
+Efeitos "glassmorphism" para cards
+Estrutura da Página:
+[Header] → [Seção Estatísticas] → [Programa PartiuAmigos] → [Conexões] → [Preferências] → [Conquistas]
+Elementos-Chave
+1. Cabeçalho do Perfil
+Avatar interativo:Bordas gradientes pulsantes;Medalha flutuante com "Nível do Viajante" (baseado em viagens concluídas)
+Banner dinâmico:Mosaico automático de fotos de destinos visitados
+Overlay com bio editável e estilo de viagem preferido
+2. Programa PartiuAmigos (Novo)
+Código de Indicação:Display em destaque: PARTIU-{USUARIO}{ID} (ex: PARTIU-TOM42)
+Sistema de Recompensas:
+Barra de progresso visual: Selos de status: "Iniciante", "Explorador", "Embaixador"
+Compartilhamento Inteligente:Botões pré-formatados para WhatsApp/Email com mensagem personalizada
+3. Área de Conexões
+Abas interativas:Amigos Convidados: Cards com status (Pendente/Aceito) + data do convite
+Minha Rede: Grid de amigos com filtro de busca + contador de viagens juntos
+Cards de Amigos:Badge "Viagem Ativa Juntos" quando relevante;Botão "Convidar para Viagem" com lista de planos disponíveis
+4. Gamificação de Viagens
+Conquistas Temáticas:;"Globetrotter": +2 países visitados;"Economista": R$1000+ economizados;"Social Traveler": 10+ conexões
+Sistema de Níveis:Barra de XP com animação ao completar objetivos
+Recompensas: Descontos em parceiros + prioridade em buscas
+5. Personalização Avançada
+Mapa de Calor:Visualização de destinos visitados (ícones de pinos coloridos);
+Editor de Preferências:Sliders para "Orçamento Ideal" e "Tamanho de Grupo";Tags interativas: "Aventura", "Luxo", "Mochilão"
+
+Resultado Esperado:
+Um perfil que transforma dados do usuário em uma experiência imersiva, incentivando expansão de rede e fidelização através de recompensas tangíveis relacionadas a viagens.
