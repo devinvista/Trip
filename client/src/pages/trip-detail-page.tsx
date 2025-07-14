@@ -190,13 +190,19 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
     const perPerson = trip.maxParticipants > 0 ? totalBudget / trip.maxParticipants : 0;
     const daysUntil = differenceInDays(new Date(trip.startDate), new Date());
     const duration = differenceInDays(new Date(trip.endDate), new Date(trip.startDate));
+    
+    // Calculate real participants count from actual participants list
+    const realParticipants = trip.participants ? 
+      trip.participants.filter((p: any) => p.status === 'accepted').length : 
+      trip.currentParticipants || 1;
 
     return {
       totalBudget,
       perPerson,
       daysUntil: Math.max(0, daysUntil),
       duration: Math.max(1, duration),
-      occupancy: (trip.currentParticipants / trip.maxParticipants) * 100
+      realParticipants,
+      occupancy: (realParticipants / trip.maxParticipants) * 100
     };
   }, [trip]);
 
@@ -230,7 +236,7 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
             <div className="text-xs sm:text-sm font-medium text-gray-600">Participantes</div>
           </div>
           <div className="text-base sm:text-lg font-bold text-gray-900">
-            {trip.currentParticipants}/{trip.maxParticipants}
+            {stats.realParticipants}/{trip.maxParticipants}
           </div>
           <div className="text-xs text-purple-600">
             {Math.round(stats.occupancy)}% ocupação
@@ -476,7 +482,10 @@ export default function TripDetailPage() {
     );
   }
 
-  const canJoin = !isCreator && !isParticipant && trip.currentParticipants < trip.maxParticipants;
+  const realParticipants = trip.participants ? 
+    trip.participants.filter((p: any) => p.status === 'accepted').length : 
+    trip.currentParticipants || 1;
+  const canJoin = !isCreator && !isParticipant && realParticipants < trip.maxParticipants;
 
   const travelStyleLabels: { [key: string]: string } = {
     praia: "Praia",
@@ -560,7 +569,7 @@ export default function TripDetailPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      <span>{trip.currentParticipants}/{trip.maxParticipants} participantes</span>
+                      <span>{trip.participants ? trip.participants.filter((p: any) => p.status === 'accepted').length : trip.currentParticipants}/{trip.maxParticipants} participantes</span>
                     </div>
                   </div>
                   
