@@ -118,6 +118,8 @@ export default function ProfilePage() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
   const [showCoverUpload, setShowCoverUpload] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -256,9 +258,6 @@ export default function ProfilePage() {
     const body = `Olá!\n\nEstou usando o PartiuTrip para encontrar companheiros de viagem e economizar nos custos. É uma plataforma incrível onde você pode compartilhar viagens com pessoas que têm os mesmos interesses!\n\nUse meu código ${referralData?.code} e ganhe acesso à plataforma também.\n\nAcesse: https://partiutrip.com\n\nVamos viajar juntos!`;
     window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
-
-  const avatarInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
