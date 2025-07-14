@@ -18,7 +18,9 @@ import {
   DollarSign,
   Award,
   Plus,
-  ChevronRight
+  ChevronRight,
+  Target,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +29,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
 import { activityCategories } from "@shared/schema";
 import type { Activity } from "@shared/schema";
@@ -41,6 +45,7 @@ interface ActivityFilters {
   difficulty: string;
   rating: string;
   sortBy: string;
+  onlyMyTrips: boolean;
 }
 
 const PRICE_RANGES = [
@@ -68,6 +73,7 @@ const SORT_OPTIONS = [
 ];
 
 export default function ActivitiesPage() {
+  const { user } = useAuth();
   const [filters, setFilters] = useState<ActivityFilters>({
     search: "",
     category: "all",
@@ -77,6 +83,7 @@ export default function ActivitiesPage() {
     difficulty: "all",
     rating: "all",
     sortBy: "rating",
+    onlyMyTrips: false,
   });
 
   const [searchInput, setSearchInput] = useState("");
@@ -98,6 +105,18 @@ export default function ActivitiesPage() {
     setFilters(prev => ({ ...prev, search: debouncedSearch }));
   }, [debouncedSearch]);
 
+  // Fetch user's trips to filter activities by destination
+  const { data: userTrips = [] } = useQuery({
+    queryKey: ["/api/user/trips"],
+    queryFn: async () => {
+      if (!user) return [];
+      const response = await fetch("/api/user/trips");
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!user,
+  });
+
   const { data: activities, isLoading, isFetching } = useQuery<Activity[]>({
     queryKey: ["/api/activities", filters],
     queryFn: async () => {
@@ -117,7 +136,7 @@ export default function ActivitiesPage() {
     },
   });
 
-  const updateFilter = (key: keyof ActivityFilters, value: string) => {
+  const updateFilter = (key: keyof ActivityFilters, value: string | boolean) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
@@ -149,11 +168,33 @@ export default function ActivitiesPage() {
       : formatted;
   };
 
+  // Get user trip destinations for filtering
+  const userTripDestinations = useMemo(() => {
+    if (!userTrips || !user) return new Set();
+    return new Set(userTrips.map((trip: any) => trip.destination));
+  }, [userTrips, user]);
+
+  // Filter activities based on user's trip destinations
+  const filteredActivities = useMemo(() => {
+    if (!activities) return [];
+    
+    if (filters.onlyMyTrips && user) {
+      return activities.filter(activity => {
+        const activityCity = activity.location.split(',')[0].trim();
+        return Array.from(userTripDestinations).some(destination => 
+          destination.includes(activityCity) || activityCity.includes(destination)
+        );
+      });
+    }
+    
+    return activities;
+  }, [activities, filters.onlyMyTrips, userTripDestinations, user]);
+
   // Group activities by city/destination
   const groupedActivities = useMemo(() => {
-    if (!activities) return {};
+    if (!filteredActivities) return {};
     
-    const grouped = activities.reduce((acc, activity) => {
+    const grouped = filteredActivities.reduce((acc, activity) => {
       const city = activity.location.split(',')[0].trim();
       if (!acc[city]) acc[city] = [];
       acc[city].push(activity);
@@ -161,6 +202,20 @@ export default function ActivitiesPage() {
     }, {} as Record<string, Activity[]>);
     
     return grouped;
+  }, [filteredActivities]);
+
+  // Get suggestions based on most popular and best-rated activities
+  const suggestedActivities = useMemo(() => {
+    if (!activities) return [];
+    
+    // Sort by rating and popularity (total ratings)
+    const sorted = [...activities].sort((a, b) => {
+      const aScore = Number(a.averageRating) * Math.log(a.totalRatings + 1);
+      const bScore = Number(b.averageRating) * Math.log(b.totalRatings + 1);
+      return bScore - aScore;
+    });
+    
+    return sorted.slice(0, 6); // Top 6 suggestions
   }, [activities]);
 
   const cities = Object.keys(groupedActivities).sort();
@@ -178,9 +233,9 @@ export default function ActivitiesPage() {
     <div className="min-h-screen bg-[#F5F9FC]">
       {/* Modern Header with Institutional Colors */}
       <div className="bg-white shadow-sm border-b border-[#AAB0B7]/20">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-6">
               <Link to="/search">
                 <Button variant="ghost" size="sm" className="text-[#1B2B49] hover:bg-[#41B6FF]/10">
                   <ArrowLeft className="w-4 h-4 mr-2" />
@@ -189,16 +244,16 @@ export default function ActivitiesPage() {
               </Link>
               
               <div>
-                <h1 className="text-3xl font-bold text-[#1B2B49] mb-2">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#1B2B49] mb-1 md:mb-2">
                   Atividades e Experiências
                 </h1>
-                <p className="text-[#AAB0B7] text-lg">
-                  Descubra experiências incríveis para sua viagem • {activities?.length || 0} atividades disponíveis
+                <p className="text-[#AAB0B7] text-sm md:text-lg">
+                  Descubra experiências incríveis para sua viagem • {filteredActivities?.length || 0} atividades disponíveis
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 self-end sm:self-auto">
               <Button 
                 variant="outline" 
                 size="sm"
@@ -206,6 +261,9 @@ export default function ActivitiesPage() {
                 className="border-[#AAB0B7]/30 hover:bg-[#41B6FF]/10"
               >
                 {viewMode === "grid" ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+                <span className="hidden sm:inline ml-2">
+                  {viewMode === "grid" ? "Lista" : "Grade"}
+                </span>
               </Button>
               
               <Button 
@@ -221,6 +279,61 @@ export default function ActivitiesPage() {
           </div>
         </div>
       </div>
+
+      {/* Suggestions Section */}
+      {suggestedActivities.length > 0 && (
+        <div className="bg-white border-b border-[#AAB0B7]/20">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-[#FFA500]" />
+                <h2 className="text-lg font-semibold text-[#1B2B49]">Sugestões para Você</h2>
+                <Badge variant="outline" className="bg-[#FFA500]/10 text-[#FFA500] border-[#FFA500]/20">
+                  Mais escolhidas
+                </Badge>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              {suggestedActivities.map((activity) => (
+                <Link key={activity.id} to={`/activities/${activity.id}`}>
+                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
+                    <div className="relative">
+                      <img
+                        src={activity.coverImage}
+                        alt={activity.title}
+                        className="w-full h-24 object-cover rounded-t-lg"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
+                          <Star className="w-3 h-3 fill-[#FFA500] text-[#FFA500]" />
+                          <span className="text-xs font-medium">{Number(activity.averageRating).toFixed(1)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <CardContent className="p-3">
+                      <h3 className="font-medium text-sm line-clamp-2 text-[#1B2B49] mb-1">
+                        {activity.title}
+                      </h3>
+                      <p className="text-xs text-[#AAB0B7] mb-2">
+                        {activity.location.split(',')[0]}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-[#1B2B49]">
+                          {formatPrice(activity.priceType, activity.priceAmount)}
+                        </span>
+                        <Badge variant="secondary" className="text-xs">
+                          {activityCategories[activity.category as keyof typeof activityCategories]?.icon}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Popular Categories Section */}
       <div className="bg-white border-b border-[#AAB0B7]/20">
@@ -277,9 +390,9 @@ export default function ActivitiesPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-8 bg-white rounded-xl border border-[#AAB0B7]/20 p-6 shadow-sm"
+            className="mb-8 bg-white rounded-xl border border-[#AAB0B7]/20 p-4 md:p-6 shadow-sm"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               <div>
                 <label className="block text-sm font-medium text-[#1B2B49] mb-3">
                   Categoria
@@ -365,6 +478,27 @@ export default function ActivitiesPage() {
                 </Select>
               </div>
             </div>
+
+            {/* Special Filters */}
+            {user && (
+              <div className="mt-6 pt-4 border-t border-[#AAB0B7]/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-[#41B6FF]" />
+                    <label className="text-sm font-medium text-[#1B2B49]">
+                      Apenas destinos das minhas viagens
+                    </label>
+                  </div>
+                  <Switch
+                    checked={filters.onlyMyTrips}
+                    onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
+                  />
+                </div>
+                <p className="text-xs text-[#AAB0B7] mt-1">
+                  Mostra apenas atividades nos destinos onde você tem viagens planejadas
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -389,9 +523,9 @@ export default function ActivitiesPage() {
                 </div>
 
                 {/* Activities Grid */}
-                <div className={`grid gap-6 ${
+                <div className={`grid gap-4 md:gap-6 ${
                   viewMode === "grid" 
-                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" 
                     : "grid-cols-1"
                 }`}>
                   {groupedActivities[city].map((activity) => (
@@ -432,12 +566,12 @@ export default function ActivitiesPage() {
                           )}
                         </div>
 
-                        <CardHeader className="pb-3">
+                        <CardHeader className="pb-3 p-4 md:p-6">
                           <div className="flex items-start justify-between">
-                            <h3 className="font-semibold text-lg line-clamp-2 text-[#1B2B49]">
+                            <h3 className="font-semibold text-base md:text-lg line-clamp-2 text-[#1B2B49]">
                               {activity.title}
                             </h3>
-                            <div className="flex items-center gap-1 ml-2">
+                            <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                               <Star className="w-4 h-4 fill-[#FFA500] text-[#FFA500]" />
                               <span className="text-sm font-medium text-[#1B2B49]">
                                 {Number(activity.averageRating).toFixed(1)}
@@ -448,10 +582,10 @@ export default function ActivitiesPage() {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-4 text-sm text-[#AAB0B7]">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-[#AAB0B7]">
                             <div className="flex items-center gap-1">
                               <MapPin className="w-4 h-4" />
-                              {activity.location}
+                              <span className="truncate">{activity.location}</span>
                             </div>
                             {activity.duration && (
                               <div className="flex items-center gap-1">
@@ -462,41 +596,41 @@ export default function ActivitiesPage() {
                           </div>
                         </CardHeader>
 
-                        <CardContent>
+                        <CardContent className="p-4 md:p-6">
                           <p className="text-[#AAB0B7] text-sm mb-4 line-clamp-3">
                             {activity.description}
                           </p>
 
-                          {/* Multiple Budget Options */}
+                          {/* Multiple Budget Options - Mobile Optimized */}
                           <div className="mb-4">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-3">
                               <DollarSign className="w-4 h-4 text-[#41B6FF]" />
                               <span className="text-sm font-medium text-[#1B2B49]">Opções de Orçamento</span>
                             </div>
-                            <div className="space-y-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                               <div className="flex items-center justify-between p-2 bg-[#F5F9FC] rounded-lg">
-                                <span className="text-sm">Básica</span>
-                                <span className="text-sm font-medium text-[#1B2B49]">
+                                <span className="text-xs sm:text-sm">Básica</span>
+                                <span className="text-xs sm:text-sm font-medium text-[#1B2B49]">
                                   {formatPrice(activity.priceType, activity.priceAmount)}
                                 </span>
                               </div>
                               <div className="flex items-center justify-between p-2 bg-[#F5F9FC] rounded-lg">
-                                <span className="text-sm">Completa</span>
-                                <span className="text-sm font-medium text-[#1B2B49]">
+                                <span className="text-xs sm:text-sm">Completa</span>
+                                <span className="text-xs sm:text-sm font-medium text-[#1B2B49]">
                                   {formatPrice(activity.priceType, (activity.priceAmount || 0) * 1.5)}
                                 </span>
                               </div>
                               <div className="flex items-center justify-between p-2 bg-[#F5F9FC] rounded-lg">
-                                <span className="text-sm">Premium</span>
-                                <span className="text-sm font-medium text-[#1B2B49]">
+                                <span className="text-xs sm:text-sm">Premium</span>
+                                <span className="text-xs sm:text-sm font-medium text-[#1B2B49]">
                                   {formatPrice(activity.priceType, (activity.priceAmount || 0) * 2)}
                                 </span>
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex items-center gap-2 flex-wrap">
                               {activity.difficultyLevel && (
                                 <Badge variant="outline" className="text-xs border-[#AAB0B7]/30">
                                   {activity.difficultyLevel === "easy" && "Fácil"}
@@ -512,11 +646,11 @@ export default function ActivitiesPage() {
 
                             <div className="flex gap-2">
                               <Link to={`/activities/${activity.id}`}>
-                                <Button size="sm" variant="outline" className="border-[#AAB0B7]/30 hover:bg-[#41B6FF]/10">
+                                <Button size="sm" variant="outline" className="border-[#AAB0B7]/30 hover:bg-[#41B6FF]/10 text-xs sm:text-sm">
                                   Ver detalhes
                                 </Button>
                               </Link>
-                              <Button size="sm" className="bg-[#41B6FF] hover:bg-[#41B6FF]/90 text-white">
+                              <Button size="sm" className="bg-[#41B6FF] hover:bg-[#41B6FF]/90 text-white text-xs sm:text-sm">
                                 <Plus className="w-4 h-4 mr-1" />
                                 Adicionar
                               </Button>
@@ -552,6 +686,7 @@ export default function ActivitiesPage() {
                   difficulty: "all",
                   rating: "all",
                   sortBy: "rating",
+                  onlyMyTrips: false,
                 });
                 setSearchInput("");
               }}
