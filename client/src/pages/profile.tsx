@@ -59,7 +59,7 @@ const profileSchema = z.object({
   location: z.string().min(2, "Localização deve ter pelo menos 2 caracteres"),
   languages: z.array(z.string()).min(1, "Selecione pelo menos um idioma"),
   interests: z.array(z.string()).min(1, "Selecione pelo menos um interesse"),
-  travelStyle: z.enum(["praia", "neve", "cruzeiros", "natureza", "culturais", "aventura", "urbanas", "parques"])
+  travelStyles: z.array(z.enum(["praia", "neve", "cruzeiros", "natureza", "culturais", "aventura", "urbanas", "parques"])).min(1, "Selecione pelo menos um estilo de viagem")
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -100,7 +100,7 @@ export default function ProfilePage() {
       location: user?.location || "",
       languages: user?.languages || [],
       interests: user?.interests || [],
-      travelStyle: user?.travelStyle || "aventura"
+      travelStyles: user?.travelStyles || []
     }
   });
 
@@ -325,23 +325,27 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <Label>Estilo de Viagem</Label>
-                      <Select
-                        value={form.watch("travelStyle")}
-                        onValueChange={(value) => form.setValue("travelStyle", value as any)}
-                        disabled={!isEditing}
-                      >
-                        <SelectTrigger className={!isEditing ? "bg-slate-50" : ""}>
-                          <SelectValue placeholder="Selecione seu estilo" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {travelStyles.map((style) => (
-                            <SelectItem key={style.value} value={style.value}>
-                              {style.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Label>Estilos de Viagem</Label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {travelStyles.map((style) => (
+                          <Badge
+                            key={style.value}
+                            variant={form.watch("travelStyles")?.includes(style.value) ? "default" : "outline"}
+                            className={`cursor-pointer ${!isEditing ? "pointer-events-none" : ""}`}
+                            onClick={() => {
+                              if (!isEditing) return;
+                              const current = form.watch("travelStyles") || [];
+                              if (current.includes(style.value)) {
+                                form.setValue("travelStyles", current.filter(s => s !== style.value));
+                              } else {
+                                form.setValue("travelStyles", [...current, style.value]);
+                              }
+                            }}
+                          >
+                            {style.label}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
 
                     <div>
@@ -464,6 +468,23 @@ export default function ProfilePage() {
                           {interest}
                         </Badge>
                       ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Plane className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-medium">Estilos de Viagem:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {user.travelStyles?.map((style) => {
+                        const styleLabel = travelStyles.find(s => s.value === style)?.label || style;
+                        return (
+                          <Badge key={style} variant="secondary" className="text-xs">
+                            {styleLabel}
+                          </Badge>
+                        );
+                      })}
                     </div>
                   </div>
 

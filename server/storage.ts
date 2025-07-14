@@ -1747,7 +1747,7 @@ async function createDefaultTestUser() {
         password: hashedPassword,
         bio: 'Usuário de teste padrão',
         location: 'Porto Alegre, RS',
-        travelStyle: 'urbanas',
+        travelStyles: ['urbanas', 'aventura', 'culturais'],
         languages: ['Português', 'Inglês'],
         interests: ['Aventura', 'Cultura', 'Gastronomia']
       });
@@ -1802,7 +1802,7 @@ async function createSecondTestUser() {
         password: hashedPassword,
         bio: 'Usuária de teste para participação',
         location: 'Rio de Janeiro, RJ',
-        travelStyle: 'praia',
+        travelStyles: ['praia', 'culturais'],
         languages: ['Português', 'Espanhol'],
         interests: ['Praia', 'Cultura', 'Fotografia']
       });
@@ -1948,7 +1948,7 @@ async function createAdditionalTestUsers() {
         fullName: 'Carlos Silva',
         phone: '(31) 99999-3333',
         location: 'Belo Horizonte, MG',
-        travelStyle: 'aventura',
+        travelStyles: ['aventura', 'natureza'],
         languages: ['Português'],
         interests: ['Montanha', 'Aventura', 'Natureza'],
         bio: 'Aventureiro apaixonado por trilhas e montanhas'
@@ -1959,7 +1959,7 @@ async function createAdditionalTestUsers() {
         fullName: 'Ana Costa',
         phone: '(71) 99999-4444',
         location: 'Salvador, BA',
-        travelStyle: 'praia',
+        travelStyles: ['praia', 'culturais'],
         languages: ['Português', 'Inglês'],
         interests: ['Praia', 'Música', 'Dança'],
         bio: 'Amo praia, música e conhecer novas culturas'
@@ -1970,7 +1970,7 @@ async function createAdditionalTestUsers() {
         fullName: 'Ricardo Oliveira',
         phone: '(41) 99999-5555',
         location: 'Curitiba, PR',
-        travelStyle: 'culturais',
+        travelStyles: ['culturais', 'urbanas'],
         languages: ['Português', 'Espanhol', 'Francês'],
         interests: ['História', 'Arquitetura', 'Museus'],
         bio: 'Historiador e amante da cultura mundial'
@@ -1981,7 +1981,7 @@ async function createAdditionalTestUsers() {
         fullName: 'Julia Mendes',
         phone: '(85) 99999-6666',
         location: 'Fortaleza, CE',
-        travelStyle: 'natureza',
+        travelStyles: ['natureza', 'aventura'],
         languages: ['Português', 'Inglês'],
         interests: ['Natureza', 'Fotografia', 'Ecoturismo'],
         bio: 'Bióloga e fotógrafa da natureza'

@@ -14,7 +14,7 @@ export const users = mysqlTable("users", {
   profilePhoto: text("profile_photo"),
   languages: json("languages"),
   interests: json("interests"),
-  travelStyle: varchar("travel_style", { length: 100 }),
+  travelStyles: json("travel_styles"), // Array of travel styles
   isVerified: boolean("is_verified").default(false).notNull(), // User verification status
   verificationMethod: varchar("verification_method", { length: 50 }), // email, phone, document, etc.
   averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("0.00"), // Average rating from other users
@@ -139,7 +139,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   location: true,
   languages: true,
   interests: true,
-  travelStyle: true,
+  travelStyles: true,
 }).extend({
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
 });

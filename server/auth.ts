@@ -20,7 +20,7 @@ declare global {
       profilePhoto?: string;
       languages?: string[];
       interests?: string[];
-      travelStyle?: string;
+      travelStyles?: string[];
     }
   }
 }
