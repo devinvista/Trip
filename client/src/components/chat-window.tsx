@@ -231,7 +231,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
         {/* Messages Area */}
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
-            <div className="p-4 min-h-full">
+            <div className="p-4 min-h-full bg-[#ffffff]">
               <div className="space-y-4">
             {messages.length === 0 ? (
               <motion.div
