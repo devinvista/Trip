@@ -2,6 +2,7 @@ import { db } from "./db";
 import { users, trips, tripParticipants, messages, activities, activityReviews } from "../shared/schema";
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
+import { sql } from "drizzle-orm";
 
 const asyncScrypt = promisify(scrypt);
 
@@ -12,9 +13,18 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 export async function createSimpleSeedData() {
+  console.log("🌱 Criando dados simples de teste...");
+
   try {
-    console.log("🌱 Iniciando seed data simplificado...");
-    
+    // Verificar se o banco está limpo
+    const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
+    if (userCount.count > 0) {
+      console.log("⚠️ Banco não está vazio. Executando reset...");
+      const { resetDatabase } = await import("./reset-database");
+      await resetDatabase();
+      console.log("✅ Reset concluído, continuando com seed...");
+    }
+
     const hashedPassword = await hashPassword("demo123");
 
     // Create 5 users
@@ -128,7 +138,7 @@ export async function createSimpleSeedData() {
       const [insertResult] = await db.insert(trips).values(tripData);
       tripIds.push(insertResult.insertId);
       console.log(`✅ Viagem criada: ${tripData.title} (ID: ${insertResult.insertId})`);
-      
+
       // Add creator as participant
       await db.insert(tripParticipants).values({
         tripId: insertResult.insertId,
@@ -147,7 +157,7 @@ export async function createSimpleSeedData() {
       status: "accepted", 
       joinedAt: new Date()
     });
-    
+
     // Carlos joins both trips
     await db.insert(tripParticipants).values({
       tripId: tripIds[0],
@@ -251,7 +261,7 @@ export async function createSimpleSeedData() {
     }
 
     console.log("✅ Seed data simplificado criado com sucesso!");
-    
+
   } catch (error) {
     console.error("❌ Erro ao criar seed data:", error);
     throw error;

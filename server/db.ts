@@ -32,6 +32,12 @@ export async function testConnection() {
   }
 }
 
+// Reset completo do banco
+export async function resetDatabase() {
+  const { resetDatabase: resetDB } = await import("./reset-database");
+  return await resetDB();
+}
+
 // Inicializar tabelas usando Drizzle
 export async function initializeTables() {
   try {
