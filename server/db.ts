@@ -135,7 +135,8 @@ export async function initializeTables() {
         description VARCHAR(255) NOT NULL,
         amount DECIMAL(10,2) NOT NULL,
         category VARCHAR(100) NOT NULL,
-        receipt_url TEXT,
+        receipt TEXT,
+        settled_at TIMESTAMP NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
         FOREIGN KEY (paid_by) REFERENCES users(id) ON DELETE CASCADE
@@ -150,6 +151,7 @@ export async function initializeTables() {
         user_id INT NOT NULL,
         amount DECIMAL(10,2) NOT NULL,
         paid BOOLEAN DEFAULT FALSE NOT NULL,
+        settled_at TIMESTAMP NULL,
         FOREIGN KEY (expense_id) REFERENCES expenses(id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
