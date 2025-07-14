@@ -774,13 +774,6 @@ export default function DashboardPage() {
                         <span className="sm:hidden">Perfil</span>
                       </Button>
                     </Link>
-                    <Link href="/journey-tracker" className="w-full sm:w-auto">
-                      <Button variant="outline" className="w-full sm:w-auto border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700 px-6 sm:px-8 py-3 h-auto">
-                        <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                        <span className="hidden sm:inline">Ver Progresso</span>
-                        <span className="sm:hidden">Progresso</span>
-                      </Button>
-                    </Link>
                   </div>
                 </CardContent>
               </Card>
