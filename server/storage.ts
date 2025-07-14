@@ -3,7 +3,7 @@ import { fixCreatorsAsParticipants } from "./fix-creators-as-participants";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { db, testConnection } from "./db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc, asc, gte, lte, ne, like } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -790,77 +790,129 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { 
-      ...insertUser, 
-      id, 
-      profilePhoto: null,
-      bio: insertUser.bio || null,
-      location: insertUser.location || null,
-      languages: insertUser.languages || null,
-      interests: insertUser.interests || null,
-      travelStyle: insertUser.travelStyle || null,
-      isVerified: false,
-      verificationMethod: null,
-      averageRating: "0.00",
-      totalRatings: 0,
-      createdAt: new Date() 
-    };
-    this.users.set(id, user);
-    return user;
+    try {
+      const result = await db.insert(users).values({
+        ...insertUser,
+        profilePhoto: null,
+        bio: insertUser.bio || null,
+        location: insertUser.location || null,
+        languages: insertUser.languages || null,
+        interests: insertUser.interests || null,
+        travelStyle: insertUser.travelStyle || null,
+        isVerified: false,
+        verificationMethod: null,
+        averageRating: "0.00",
+        totalRatings: 0,
+        createdAt: new Date() 
+      });
+      
+      // Get the created user
+      const [user] = await db.select().from(users).where(eq(users.id, result[0].insertId));
+      return user;
+    } catch (error) {
+      console.error('❌ Erro ao criar usuário no MySQL:', error);
+      throw error;
+    }
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
-    const user = this.users.get(id);
-    if (!user) return undefined;
-
-    const updatedUser = { ...user, ...updates };
-    this.users.set(id, updatedUser);
-    return updatedUser;
+    try {
+      await db.update(users).set(updates).where(eq(users.id, id));
+      const [updatedUser] = await db.select().from(users).where(eq(users.id, id));
+      return updatedUser;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar usuário no MySQL:', error);
+      return undefined;
+    }
   }
 
   async getTrip(id: number): Promise<Trip | undefined> {
-    return this.trips.get(id);
+    try {
+      const [trip] = await db.select().from(trips).where(eq(trips.id, id));
+      return trip;
+    } catch (error) {
+      console.error('❌ Erro ao buscar viagem no MySQL:', error);
+      return undefined;
+    }
   }
 
   async getTripsByCreator(creatorId: number): Promise<Trip[]> {
-    return Array.from(this.trips.values()).filter(trip => trip.creatorId === creatorId);
+    try {
+      const creatorTrips = await db.select().from(trips).where(eq(trips.creatorId, creatorId));
+      return creatorTrips;
+    } catch (error) {
+      console.error('❌ Erro ao buscar viagens do criador no MySQL:', error);
+      return [];
+    }
   }
 
   async getTripsByParticipant(userId: number): Promise<Trip[]> {
-    const participantTrips = Array.from(this.tripParticipants.values())
-      .filter(p => p.userId === userId && p.status === 'accepted')
-      .map(p => this.trips.get(p.tripId))
-      .filter((trip): trip is Trip => trip !== undefined)
-      .filter(trip => trip.creatorId !== userId); // Excluir viagens onde o usuário é o criador
+    try {
+      const participantTrips = await db.select({
+        id: trips.id,
+        title: trips.title,
+        destination: trips.destination,
+        coverImage: trips.coverImage,
+        startDate: trips.startDate,
+        endDate: trips.endDate,
+        budget: trips.budget,
+        maxParticipants: trips.maxParticipants,
+        description: trips.description,
+        travelStyle: trips.travelStyle,
+        creatorId: trips.creatorId,
+        status: trips.status,
+        budgetBreakdown: trips.budgetBreakdown,
+        currentParticipants: trips.currentParticipants,
+        sharedCosts: trips.sharedCosts,
+        createdAt: trips.createdAt
+      })
+      .from(trips)
+      .innerJoin(tripParticipants, eq(tripParticipants.tripId, trips.id))
+      .where(and(
+        eq(tripParticipants.userId, userId),
+        eq(tripParticipants.status, 'accepted'),
+        ne(trips.creatorId, userId) // Excluir viagens onde o usuário é o criador
+      ));
 
-    return participantTrips;
+      return participantTrips;
+    } catch (error) {
+      console.error('❌ Erro ao buscar viagens do participante no MySQL:', error);
+      return [];
+    }
   }
 
   async getTrips(filters?: { destination?: string; startDate?: Date; endDate?: Date; budget?: number; travelStyle?: string }): Promise<Trip[]> {
-    let allTrips = Array.from(this.trips.values()).filter(trip => trip.status === 'open');
+    try {
+      let query = db.select().from(trips).where(eq(trips.status, 'open'));
 
-    if (filters) {
-      if (filters.destination) {
-        allTrips = allTrips.filter(trip => 
-          trip.destination.toLowerCase().includes(filters.destination!.toLowerCase())
-        );
+      if (filters) {
+        const conditions = [eq(trips.status, 'open')];
+        
+        if (filters.destination) {
+          conditions.push(like(trips.destination, `%${filters.destination}%`));
+        }
+        if (filters.startDate) {
+          conditions.push(gte(trips.startDate, filters.startDate));
+        }
+        if (filters.endDate) {
+          conditions.push(lte(trips.endDate, filters.endDate));
+        }
+        if (filters.budget) {
+          conditions.push(lte(trips.budget, filters.budget));
+        }
+        if (filters.travelStyle) {
+          conditions.push(eq(trips.travelStyle, filters.travelStyle));
+        }
+
+        query = db.select().from(trips).where(and(...conditions));
       }
-      if (filters.startDate) {
-        allTrips = allTrips.filter(trip => trip.startDate >= filters.startDate!);
-      }
-      if (filters.endDate) {
-        allTrips = allTrips.filter(trip => trip.endDate <= filters.endDate!);
-      }
-      if (filters.budget) {
-        allTrips = allTrips.filter(trip => (trip.budget || 0) <= filters.budget!);
-      }
-      if (filters.travelStyle) {
-        allTrips = allTrips.filter(trip => trip.travelStyle === filters.travelStyle);
-      }
+
+      const allTrips = await query.orderBy(desc(trips.createdAt));
+      return allTrips;
+    } catch (error) {
+      console.error('❌ Erro ao buscar viagens no MySQL:', error);
+      return [];
     }
-
-    return allTrips.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   async createTrip(tripData: InsertTrip & { creatorId: number }): Promise<Trip> {
@@ -879,111 +931,58 @@ export class MemStorage implements IStorage {
         createdAt: new Date()
       };
 
-      // Fallback to memory storage - MySQL implementation has issues with insertId
-      const id = this.currentTripId++;
-      
-      const trip: Trip = { 
-        ...tripData, 
-        id, 
-        coverImage,
-        budget: tripData.budget ?? null,
-        budgetBreakdown: tripData.budgetBreakdown || null,
-        currentParticipants: 1,
-        status: 'open',
-        sharedCosts: tripData.sharedCosts || null,
-        createdAt: new Date() 
-      };
-      this.trips.set(id, trip);
+      const result = await db.insert(trips).values(tripToInsert);
+      const tripId = result[0].insertId;
 
-      console.log(`✅ Viagem criada em memória com ID ${id}: ${trip.title}`);
+      // Get the created trip
+      const [trip] = await db.select().from(trips).where(eq(trips.id, tripId));
+
+      console.log(`✅ Viagem criada no MySQL com ID ${tripId}: ${trip.title}`);
 
       // Add creator as participant
-      await this.addTripParticipant(id, tripData.creatorId);
+      await this.addTripParticipant(tripId, tripData.creatorId);
 
       return trip;
     } catch (error) {
       console.error('❌ Erro ao criar viagem no MySQL:', error);
-      
-      // Fallback to memory storage if MySQL fails
-      const id = this.currentTripId++;
-      
-      const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination, tripData.travelStyle);
-      
-      const trip: Trip = { 
-        ...tripData, 
-        id, 
-        coverImage,
-        budget: tripData.budget ?? null,
-        budgetBreakdown: tripData.budgetBreakdown || null,
-        currentParticipants: 1,
-        status: 'open',
-        sharedCosts: tripData.sharedCosts || null,
-        createdAt: new Date() 
-      };
-      this.trips.set(id, trip);
-
-      // Add creator as participant
-      await this.addTripParticipant(id, tripData.creatorId);
-
-      return trip;
+      throw error;
     }
   }
 
   async updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined> {
-    const trip = this.trips.get(id);
-    if (!trip) return undefined;
-
-    const updatedTrip = { ...trip, ...updates };
-    this.trips.set(id, updatedTrip);
-    return updatedTrip;
+    try {
+      await db.update(trips).set(updates).where(eq(trips.id, id));
+      const [updatedTrip] = await db.select().from(trips).where(eq(trips.id, id));
+      return updatedTrip;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar viagem no MySQL:', error);
+      return undefined;
+    }
   }
 
   async deleteTrip(id: number): Promise<boolean> {
-    const trip = this.trips.get(id);
-    if (!trip) return false;
-
-    // Remove all associated data
-    // Remove participants
-    const participantKeys = Array.from(this.tripParticipants.keys()).filter(key => {
-      const participant = this.tripParticipants.get(key);
-      return participant?.tripId === id;
-    });
-    participantKeys.forEach(key => this.tripParticipants.delete(key));
-
-    // Remove messages
-    const messageKeys = Array.from(this.messages.keys()).filter(msgId => {
-      const message = this.messages.get(msgId);
-      return message?.tripId === id;
-    });
-    messageKeys.forEach(msgId => this.messages.delete(msgId));
-
-    // Remove trip requests
-    const requestKeys = Array.from(this.tripRequests.keys()).filter(reqId => {
-      const request = this.tripRequests.get(reqId);
-      return request?.tripId === id;
-    });
-    requestKeys.forEach(reqId => this.tripRequests.delete(reqId));
-
-    // Remove expenses and expense splits
-    const expenseKeys = Array.from(this.expenses.keys()).filter(expId => {
-      const expense = this.expenses.get(expId);
-      return expense?.tripId === id;
-    });
-    expenseKeys.forEach(expId => {
-      // Remove associated expense splits first
-      const splitKeys = Array.from(this.expenseSplits.keys()).filter(splitId => {
-        const split = this.expenseSplits.get(splitId);
-        return split?.expenseId === expId;
-      });
-      splitKeys.forEach(splitId => this.expenseSplits.delete(splitId));
+    try {
+      // Remove all associated data using MySQL cascading
+      await db.delete(trips).where(eq(trips.id, id));
       
-      // Remove expense
-      this.expenses.delete(expId);
-    });
-
-    // Finally remove the trip
-    this.trips.delete(id);
-    return true;
+      // The foreign key constraints should handle cascading deletes
+      // But let's manually clean up to be safe
+      await db.delete(tripParticipants).where(eq(tripParticipants.tripId, id));
+      await db.delete(messages).where(eq(messages.tripId, id));
+      await db.delete(tripRequests).where(eq(tripRequests.tripId, id));
+      
+      // Remove expenses and their splits
+      const tripExpenses = await db.select().from(expenses).where(eq(expenses.tripId, id));
+      for (const expense of tripExpenses) {
+        await db.delete(expenseSplits).where(eq(expenseSplits.expenseId, expense.id));
+      }
+      await db.delete(expenses).where(eq(expenses.tripId, id));
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao deletar viagem no MySQL:', error);
+      return false;
+    }
   }
 
   // Fix existing trips with broken Egypt images
@@ -1049,77 +1048,88 @@ export class MemStorage implements IStorage {
   }
 
   async addTripParticipant(tripId: number, userId: number): Promise<TripParticipant> {
-    // Check if participant already exists in memory
-    const existingParticipant = Array.from(this.tripParticipants.values())
-      .find(p => p.tripId === tripId && p.userId === userId);
+    try {
+      // Check if participant already exists in MySQL
+      const existingParticipant = await db.select()
+        .from(tripParticipants)
+        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)))
+        .limit(1);
 
-    if (existingParticipant) {
-      console.log(`ℹ️ Participante ${userId} já existe na viagem ${tripId}`);
-      return existingParticipant;
+      if (existingParticipant.length > 0) {
+        console.log(`ℹ️ Participante ${userId} já existe na viagem ${tripId}`);
+        return existingParticipant[0];
+      }
+
+      const result = await db.insert(tripParticipants).values({
+        tripId,
+        userId,
+        status: 'accepted',
+        joinedAt: new Date()
+      });
+
+      const [participant] = await db.select().from(tripParticipants).where(eq(tripParticipants.id, result[0].insertId));
+      
+      console.log(`✅ Participante ${userId} adicionado à viagem ${tripId} no MySQL`);
+      return participant;
+    } catch (error) {
+      console.error('❌ Erro ao adicionar participante no MySQL:', error);
+      throw error;
     }
-
-    const id = this.currentParticipantId++;
-    const participant: TripParticipant = {
-      id,
-      tripId,
-      userId,
-      status: 'accepted',
-      joinedAt: new Date()
-    };
-
-    this.tripParticipants.set(id, participant);
-    console.log(`✅ Participante ${userId} adicionado à viagem ${tripId} em memória`);
-    return participant;
   }
 
   async updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined> {
-    // Find participant by tripId and userId
-    const participant = Array.from(this.tripParticipants.values())
-      .find(p => p.tripId === tripId && p.userId === userId);
-    
-    if (!participant) return undefined;
+    try {
+      await db.update(tripParticipants)
+        .set({ status })
+        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
 
-    const updatedParticipant = { ...participant, status };
-    this.tripParticipants.set(participant.id, updatedParticipant);
-    return updatedParticipant;
+      const [updatedParticipant] = await db.select()
+        .from(tripParticipants)
+        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
+
+      return updatedParticipant;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar participante no MySQL:', error);
+      return undefined;
+    }
   }
 
   async removeTripParticipant(tripId: number, userId: number): Promise<void> {
-    const trip = this.trips.get(tripId);
-    if (!trip) return;
+    try {
+      const trip = await this.getTrip(tripId);
+      if (!trip) return;
 
-    // Find and remove participant by tripId and userId
-    const participant = Array.from(this.tripParticipants.values())
-      .find(p => p.tripId === tripId && p.userId === userId);
-    
-    if (participant) {
-      this.tripParticipants.delete(participant.id);
-    }
+      // Remove participant from MySQL
+      await db.delete(tripParticipants)
+        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
 
-    // Get remaining participants after removal
-    const participants = await this.getTripParticipants(tripId);
-    const activeParticipants = participants.filter(p => p.status === 'accepted');
-    
-    if (activeParticipants.length === 0) {
-      // No participants left, delete the trip completely
-      await this.deleteTrip(tripId);
-      console.log(`❌ Viagem ${tripId} cancelada - sem participantes restantes`);
-    } else {
-      // Check if removed user was the creator
-      if (trip.creatorId === userId) {
-        // Transfer organizer role to oldest active participant (first one in the list)
-        const newOrganizer = activeParticipants[0];
-        await this.updateTrip(tripId, { 
-          creatorId: newOrganizer.userId,
-          currentParticipants: activeParticipants.length
-        });
-        console.log(`✅ Organização da viagem ${tripId} transferida para usuário ${newOrganizer.user.username}`);
+      // Get remaining participants after removal
+      const participants = await this.getTripParticipants(tripId);
+      const activeParticipants = participants.filter(p => p.status === 'accepted');
+      
+      if (activeParticipants.length === 0) {
+        // No participants left, delete the trip completely
+        await this.deleteTrip(tripId);
+        console.log(`❌ Viagem ${tripId} cancelada - sem participantes restantes`);
       } else {
-        // Just update participant count
-        await this.updateTrip(tripId, { 
-          currentParticipants: activeParticipants.length
-        });
+        // Check if removed user was the creator
+        if (trip.creatorId === userId) {
+          // Transfer organizer role to oldest active participant (first one in the list)
+          const newOrganizer = activeParticipants[0];
+          await this.updateTrip(tripId, { 
+            creatorId: newOrganizer.userId,
+            currentParticipants: activeParticipants.length
+          });
+          console.log(`✅ Organização da viagem ${tripId} transferida para usuário ${newOrganizer.user.username}`);
+        } else {
+          // Just update participant count
+          await this.updateTrip(tripId, { 
+            currentParticipants: activeParticipants.length
+          });
+        }
       }
+    } catch (error) {
+      console.error('❌ Erro ao remover participante no MySQL:', error);
     }
   }
 
