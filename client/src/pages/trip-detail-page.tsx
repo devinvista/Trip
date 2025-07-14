@@ -499,10 +499,10 @@ export default function TripDetailPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8"
+          className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-4"
         >
           {/* Cover Image */}
-          <div className="relative h-48 lg:h-56">
+          <div className="relative h-32 lg:h-40">
             {trip.coverImage && (
               <img 
                 src={trip.coverImage}
@@ -540,14 +540,14 @@ export default function TripDetailPage() {
           </div>
           
           {/* Content */}
-          <div className="p-6">
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-              <div className="space-y-4">
+          <div className="p-4">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+              <div className="space-y-3">
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
                     {trip.title || "Viagem sem título"}
                   </h1>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-3">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
                       <span>{trip.destination}</span>
@@ -564,7 +564,7 @@ export default function TripDetailPage() {
                     </div>
                   </div>
                   
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-2">
                     <Badge variant={trip.status === 'open' ? 'default' : 'secondary'}>
                       {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
                     </Badge>
@@ -577,7 +577,7 @@ export default function TripDetailPage() {
                 <TripStatistics trip={trip} plannedActivities={plannedActivities} />
               </div>
               
-              <div className="flex gap-3 lg:flex-col lg:w-40">
+              <div className="flex gap-2 lg:flex-col lg:w-32">
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -603,15 +603,15 @@ export default function TripDetailPage() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 lg:gap-4">
           {/* Main Content */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-2 order-2 lg:order-1"
+            className="lg:col-span-3 order-2 lg:order-1"
           >
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
               <TabsList className="grid w-full grid-cols-4 bg-gray-100 rounded-lg p-1">
                 <TabsTrigger 
                   value="overview" 
@@ -944,12 +944,12 @@ export default function TripDetailPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-4 lg:space-y-6 order-1 lg:order-2"
+            className="space-y-3 lg:space-y-4 order-1 lg:order-2"
           >
 
             {/* Action Buttons */}
             <Card className="bg-white shadow-sm border border-gray-200 lg:sticky lg:top-4">
-              <CardContent className="p-4 space-y-3">
+              <CardContent className="p-3 space-y-2">
                 {canJoin && (
                   <Dialog>
                     <DialogTrigger asChild>
@@ -1024,49 +1024,49 @@ export default function TripDetailPage() {
                   Resumo Financeiro
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-6">
+              <CardContent className="p-4">
+                <div className="space-y-4">
                   {/* Budget Items */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                       <div className="flex items-center gap-3">
                         <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
                         <span className="text-sm font-medium text-gray-700">Orçamento Base</span>
                       </div>
-                      <span className="text-base font-semibold text-gray-900 tabular-nums">
+                      <span className="text-sm font-semibold text-gray-900 tabular-nums">
                         R$ {(trip.budget || 0).toLocaleString('pt-BR')}
                       </span>
                     </div>
                     
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                    <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                       <div className="flex items-center gap-3">
                         <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
                         <span className="text-sm font-medium text-gray-700">Atividades</span>
                       </div>
-                      <span className="text-base font-semibold text-gray-900 tabular-nums">
+                      <span className="text-sm font-semibold text-gray-900 tabular-nums">
                         R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
                       </span>
                     </div>
                     
-                    <div className="flex items-center justify-between py-4 bg-gray-50 -mx-6 px-6 mt-4">
+                    <div className="flex items-center justify-between py-3 bg-gray-50 -mx-4 px-4 mt-3">
                       <div className="flex items-center gap-3">
                         <div className="w-2 h-2 bg-gray-800 rounded-full"></div>
-                        <span className="text-base font-semibold text-gray-900">Total</span>
+                        <span className="text-sm font-semibold text-gray-900">Total</span>
                       </div>
-                      <span className="text-xl font-bold text-gray-900 tabular-nums">
+                      <span className="text-base font-bold text-gray-900 tabular-nums">
                         R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
                       </span>
                     </div>
                   </div>
 
                   {/* Cost per Person */}
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                    <div className="text-center space-y-2">
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                    <div className="text-center space-y-1">
                       <div className="flex items-center justify-center gap-2">
                         <Users className="h-4 w-4 text-blue-600" />
                         <span className="text-sm font-medium text-blue-900">Custo Individual</span>
                       </div>
-                      <div className="text-2xl font-bold text-blue-900 tabular-nums">
+                      <div className="text-lg font-bold text-blue-900 tabular-nums">
                         R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
                       </div>
                       <div className="text-xs text-blue-700">

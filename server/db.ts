@@ -8,9 +8,9 @@ console.log(`🔗 Conectando ao MySQL...`);
 const connection = mysql.createPool({
   host: 'srv1661.hstgr.io',
   port: 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'partiutrip',
+  user: 'u905571261_trip',
+  password: 'Dracarys23@',
+  database: 'u905571261_trip',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
