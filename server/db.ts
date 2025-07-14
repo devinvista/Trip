@@ -204,60 +204,7 @@ export async function initializeTables() {
       )
     `);
 
-    // Create activities table
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS activities (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
-        description TEXT NOT NULL,
-        location VARCHAR(255) NOT NULL,
-        category VARCHAR(100) NOT NULL,
-        price_range VARCHAR(50) NOT NULL,
-        difficulty VARCHAR(50) NOT NULL,
-        duration VARCHAR(50) NOT NULL,
-        min_participants INT NOT NULL,
-        max_participants INT NOT NULL,
-        image_url TEXT,
-        contact_info JSON,
-        created_by_id INT NOT NULL,
-        average_rating DECIMAL(3,2) DEFAULT 0.00,
-        total_reviews INT DEFAULT 0 NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
-      )
-    `);
 
-    // Create activity_reviews table
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS activity_reviews (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        activity_id INT NOT NULL,
-        user_id INT NOT NULL,
-        rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
-        comment TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        UNIQUE KEY unique_activity_review (activity_id, user_id)
-      )
-    `);
-
-    // Create activity_bookings table
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS activity_bookings (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        activity_id INT NOT NULL,
-        user_id INT NOT NULL,
-        participants INT NOT NULL,
-        booking_date TIMESTAMP NOT NULL,
-        status VARCHAR(50) DEFAULT 'pending' NOT NULL,
-        total_amount DECIMAL(10,2),
-        notes TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-      )
-    `);
 
     console.log("✅ Todas as tabelas criadas com sucesso!");
     
@@ -269,6 +216,81 @@ export async function initializeTables() {
       await connection.execute("DELETE FROM activity_reviews");
       await connection.execute("DELETE FROM activity_bookings");
       await connection.execute("DELETE FROM activities");
+      
+      // Drop and recreate activities table to ensure correct schema
+      await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
+      await connection.execute("DROP TABLE IF EXISTS activities");
+      await connection.execute("DROP TABLE IF EXISTS activity_reviews");
+      await connection.execute("DROP TABLE IF EXISTS activity_bookings");
+      await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
+      
+      // Recreate activities table with correct schema
+      await connection.execute(`
+        CREATE TABLE activities (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          title VARCHAR(255) NOT NULL,
+          description TEXT NOT NULL,
+          location VARCHAR(255) NOT NULL,
+          category VARCHAR(100) NOT NULL,
+          price_type VARCHAR(50) NOT NULL DEFAULT 'per_person',
+          price_amount DECIMAL(10,2),
+          duration VARCHAR(100),
+          difficulty_level VARCHAR(50) DEFAULT 'easy',
+          min_participants INT DEFAULT 1 NOT NULL,
+          max_participants INT,
+          languages JSON,
+          inclusions JSON,
+          exclusions JSON,
+          requirements JSON,
+          cancellation_policy TEXT,
+          contact_info JSON,
+          images JSON,
+          cover_image TEXT NOT NULL,
+          average_rating DECIMAL(3,2) DEFAULT 0.00,
+          total_ratings INT DEFAULT 0 NOT NULL,
+          is_active BOOLEAN DEFAULT TRUE NOT NULL,
+          created_by_id INT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+          FOREIGN KEY (created_by_id) REFERENCES users(id)
+        )
+      `);
+
+      // Recreate activity_reviews table
+      await connection.execute(`
+        CREATE TABLE activity_reviews (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          activity_id INT NOT NULL,
+          user_id INT NOT NULL,
+          rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+          review TEXT,
+          photos JSON,
+          visit_date TIMESTAMP,
+          helpful_votes INT DEFAULT 0 NOT NULL,
+          is_verified BOOLEAN DEFAULT FALSE NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
+
+      // Recreate activity_bookings table
+      await connection.execute(`
+        CREATE TABLE activity_bookings (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          activity_id INT NOT NULL,
+          user_id INT NOT NULL,
+          participants INT NOT NULL,
+          booking_date TIMESTAMP NOT NULL,
+          status VARCHAR(50) DEFAULT 'pending' NOT NULL,
+          total_amount DECIMAL(10,2),
+          notes TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
+      
       await connection.execute("DELETE FROM expense_splits");
       await connection.execute("DELETE FROM expenses");
       await connection.execute("DELETE FROM messages");

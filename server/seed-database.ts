@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { users, trips, tripParticipants, messages, activities, activityReviews, expenses, expenseSplits } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { scrypt } from "crypto";
 import { promisify } from "util";
 
@@ -179,7 +179,9 @@ export async function seedDatabase() {
   console.log("👥 Criando 10 usuários...");
   const createdUsers = [];
   for (const userData of usersData) {
-    const [user] = await db.insert(users).values(userData).returning();
+    await db.insert(users).values(userData);
+    // Get the created user
+    const [user] = await db.select().from(users).where(eq(users.username, userData.username));
     createdUsers.push(user);
     console.log(`✅ Usuário criado: ${user.username}`);
   }
@@ -194,12 +196,13 @@ export async function seedDatabase() {
       description: "Trilha desafiadora com vista panorâmica da cidade maravilhosa",
       location: "Rio de Janeiro, RJ",
       category: "Aventura",
-      priceRange: "R$ 50-100",
-      difficulty: "Médio",
+      priceType: "per_person",
+      priceAmount: "75.00",
       duration: "4-6 horas",
+      difficultyLevel: "moderate",
       minParticipants: 2,
       maxParticipants: 12,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(21) 99999-1111", email: "trilha@rioadventure.com" },
       createdById: createdUsers[0].id
     },
@@ -208,12 +211,13 @@ export async function seedDatabase() {
       description: "Passeio relaxante com vista para o Cristo Redentor e Pão de Açúcar",
       location: "Rio de Janeiro, RJ",
       category: "Aquático",
-      priceRange: "R$ 80-150",
-      difficulty: "Fácil",
+      priceType: "per_person",
+      priceAmount: "115.00",
       duration: "3-4 horas",
+      difficultyLevel: "easy",
       minParticipants: 4,
       maxParticipants: 20,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(21) 99999-2222", email: "passeios@baiaguanabara.com" },
       createdById: createdUsers[1].id
     },
@@ -224,12 +228,13 @@ export async function seedDatabase() {
       description: "Degustação de iguarias paulistanas no famoso Mercadão",
       location: "São Paulo, SP",
       category: "Gastronomia",
-      priceRange: "R$ 60-120",
-      difficulty: "Fácil",
+      priceType: "per_person",
+      priceAmount: "90.00",
       duration: "2-3 horas",
+      difficultyLevel: "easy",
       minParticipants: 3,
       maxParticipants: 15,
-      imageUrl: "https://images.unsplash.com/photo-1567306301408-9b74779a11af?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1567306301408-9b74779a11af?w=800&q=80",
       contactInfo: { phone: "(11) 99999-3333", email: "tours@mercadao.com" },
       createdById: createdUsers[2].id
     },
@@ -238,12 +243,13 @@ export async function seedDatabase() {
       description: "Tour cultural pelo acervo do Museu de Arte de São Paulo",
       location: "São Paulo, SP",
       category: "Cultural",
-      priceRange: "R$ 40-80",
-      difficulty: "Fácil",
+      priceType: "per_person",
+      priceAmount: "60.00",
       duration: "2-3 horas",
+      difficultyLevel: "easy",
       minParticipants: 5,
       maxParticipants: 20,
-      imageUrl: "https://images.unsplash.com/photo-1567306301408-9b74779a11af?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1567306301408-9b74779a11af?w=800&q=80",
       contactInfo: { phone: "(11) 99999-4444", email: "cultura@masp.com" },
       createdById: createdUsers[3].id
     },
@@ -254,12 +260,13 @@ export async function seedDatabase() {
       description: "Aprenda a surfar com instrutores qualificados na famosa praia",
       location: "Florianópolis, SC",
       category: "Aquático",
-      priceRange: "R$ 80-150",
-      difficulty: "Médio",
+      priceType: "per_person",
+      priceAmount: "115.00",
       duration: "3-4 horas",
+      difficultyLevel: "moderate",
       minParticipants: 2,
       maxParticipants: 8,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(48) 99999-5555", email: "surf@joaquina.com" },
       createdById: createdUsers[4].id
     },
@@ -270,12 +277,13 @@ export async function seedDatabase() {
       description: "Trilha até uma das cachoeiras mais impressionantes da Chapada",
       location: "Chapada Diamantina, BA",
       category: "Ecoturismo",
-      priceRange: "R$ 100-200",
-      difficulty: "Difícil",
+      priceType: "per_person",
+      priceAmount: "150.00",
       duration: "6-8 horas",
+      difficultyLevel: "challenging",
       minParticipants: 4,
       maxParticipants: 12,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(75) 99999-6666", email: "trilhas@chapada.com" },
       createdById: createdUsers[5].id
     },
@@ -286,12 +294,13 @@ export async function seedDatabase() {
       description: "Observe e fotografe a fauna local em seu habitat natural",
       location: "Pantanal, MT",
       category: "Ecoturismo",
-      priceRange: "R$ 200-400",
-      difficulty: "Fácil",
+      priceType: "per_person",
+      priceAmount: "300.00",
       duration: "5-6 horas",
+      difficultyLevel: "easy",
       minParticipants: 3,
       maxParticipants: 10,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(65) 99999-7777", email: "safari@pantanal.com" },
       createdById: createdUsers[6].id
     },
@@ -302,12 +311,13 @@ export async function seedDatabase() {
       description: "Mergulho com snorkel em águas cristalinas repletas de vida marinha",
       location: "Fernando de Noronha, PE",
       category: "Aquático",
-      priceRange: "R$ 150-300",
-      difficulty: "Médio",
+      priceType: "per_person",
+      priceAmount: "225.00",
       duration: "4-5 horas",
+      difficultyLevel: "moderate",
       minParticipants: 4,
       maxParticipants: 12,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(81) 99999-8888", email: "mergulho@noronha.com" },
       createdById: createdUsers[7].id
     },
@@ -318,12 +328,13 @@ export async function seedDatabase() {
       description: "Flutuação em águas cristalinas com peixes coloridos",
       location: "Bonito, MS",
       category: "Aquático",
-      priceRange: "R$ 120-250",
-      difficulty: "Fácil",
+      priceType: "per_person",
+      priceAmount: "185.00",
       duration: "3-4 horas",
+      difficultyLevel: "easy",
       minParticipants: 2,
       maxParticipants: 15,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(67) 99999-9999", email: "flutuacao@bonito.com" },
       createdById: createdUsers[8].id
     },
@@ -334,12 +345,13 @@ export async function seedDatabase() {
       description: "Viagem panorâmica pelos cenários montanhosos da região",
       location: "Campos do Jordão, SP",
       category: "Turismo",
-      priceRange: "R$ 60-120",
-      difficulty: "Fácil",
+      priceType: "per_person",
+      priceAmount: "90.00",
       duration: "2-3 horas",
+      difficultyLevel: "easy",
       minParticipants: 1,
       maxParticipants: 50,
-      imageUrl: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
       contactInfo: { phone: "(12) 99999-0000", email: "trem@camposjordao.com" },
       createdById: createdUsers[9].id
     }
@@ -348,7 +360,9 @@ export async function seedDatabase() {
   // Insert activities
   const createdActivities = [];
   for (const activityData of activitiesData) {
-    const [activity] = await db.insert(activities).values(activityData).returning();
+    await db.insert(activities).values(activityData);
+    // Get the created activity
+    const [activity] = await db.select().from(activities).where(eq(activities.title, activityData.title));
     createdActivities.push(activity);
     console.log(`✅ Atividade criada: ${activity.title}`);
   }
@@ -407,7 +421,9 @@ export async function seedDatabase() {
   // Insert trips
   const createdTrips = [];
   for (const tripData of tripsData) {
-    const [trip] = await db.insert(trips).values(tripData).returning();
+    await db.insert(trips).values(tripData);
+    // Get the created trip
+    const [trip] = await db.select().from(trips).where(eq(trips.title, tripData.title));
     createdTrips.push(trip);
     console.log(`✅ Viagem criada: ${trip.title}`);
   }
@@ -509,14 +525,17 @@ export async function seedDatabase() {
         const amount = 50 + Math.floor(Math.random() * 200);
         const paidBy = participants[Math.floor(Math.random() * participants.length)].userId;
         
-        const [expense] = await db.insert(expenses).values({
+        await db.insert(expenses).values({
           tripId: trip.id,
           paidBy,
           amount,
           description,
           category,
           createdAt: new Date()
-        }).returning();
+        });
+        
+        // Get the created expense
+        const [expense] = await db.select().from(expenses).where(eq(expenses.tripId, trip.id)).orderBy(desc(expenses.id)).limit(1);
         
         // Split expense among all participants
         const amountPerPerson = amount / participants.length;
