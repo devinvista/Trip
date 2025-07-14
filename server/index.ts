@@ -2,7 +2,9 @@ import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { testConnection, initializeTables } from "./db";
+import { testConnection, initializeTables, db } from "./db";
+import { users } from "../shared/schema";
+import { eq } from "drizzle-orm";
 
 const app = express();
 
@@ -45,12 +47,35 @@ app.use((req, res, next) => {
   next();
 });
 
+// Function to fix user verification status
+async function fixUserVerificationStatus() {
+  try {
+    const verifiedUsers = ['tom', 'maria', 'carlos'];
+    
+    for (const username of verifiedUsers) {
+      const result = await db.update(users)
+        .set({ 
+          isVerified: true, 
+          verificationMethod: 'referral' 
+        })
+        .where(eq(users.username, username));
+      console.log(`✅ Status de verificação corrigido para ${username}`);
+    }
+  } catch (error) {
+    console.error('❌ Erro ao corrigir status de verificação:', error);
+  }
+}
+
 (async () => {
   // Testar conexão MySQL e inicializar tabelas
   console.log("🔗 Testando conexão MySQL...");
   await testConnection();
   console.log("🏗️ Inicializando tabelas MySQL...");
   await initializeTables();
+  
+  // Fix user verification status
+  console.log("🔧 Corrigindo status de verificação dos usuários...");
+  await fixUserVerificationStatus();
   
   const server = await registerRoutes(app);
 
