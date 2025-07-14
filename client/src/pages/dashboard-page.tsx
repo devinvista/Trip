@@ -380,18 +380,13 @@ export default function DashboardPage() {
             {/* Total de Viagens */}
             <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-blue-300/60">
               <CardContent className="p-3 sm:p-4 lg:p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-50 p-2.5 rounded-xl group-hover:bg-blue-100 transition-colors duration-200">
-                      <Briefcase className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-xl sm:text-2xl font-bold text-slate-900">{allTrips.length}</p>
-                      <p className="text-xs sm:text-sm text-slate-600 font-medium">Total de Viagens</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-50 p-2.5 rounded-xl group-hover:bg-blue-100 transition-colors duration-200">
+                    <Briefcase className="h-5 w-5 text-blue-600" />
                   </div>
-                  <div className="bg-green-50 px-2.5 py-1.5 rounded-full">
-                    <p className="text-xs font-semibold text-green-700">+{createdTrips.length}</p>
+                  <div>
+                    <p className="text-xl sm:text-2xl font-bold text-slate-900">{allTrips.length}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 font-medium">Total de Viagens</p>
                   </div>
                 </div>
               </CardContent>
@@ -400,18 +395,13 @@ export default function DashboardPage() {
             {/* Próximas Viagens */}
             <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300/60">
               <CardContent className="p-3 sm:p-4 lg:p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-emerald-50 p-2.5 rounded-xl group-hover:bg-emerald-100 transition-colors duration-200">
-                      <Clock className="h-5 w-5 text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="text-xl sm:text-2xl font-bold text-slate-900">{upcomingTrips.length}</p>
-                      <p className="text-xs sm:text-sm text-slate-600 font-medium">Próximas Viagens</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-emerald-50 p-2.5 rounded-xl group-hover:bg-emerald-100 transition-colors duration-200">
+                    <Clock className="h-5 w-5 text-emerald-600" />
                   </div>
-                  <div className="bg-emerald-50 px-2.5 py-1.5 rounded-full">
-                    <p className="text-xs font-semibold text-emerald-700">+{upcomingTrips.length}</p>
+                  <div>
+                    <p className="text-xl sm:text-2xl font-bold text-slate-900">{upcomingTrips.length}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 font-medium">Próximas Viagens</p>
                   </div>
                 </div>
               </CardContent>
@@ -420,19 +410,13 @@ export default function DashboardPage() {
             {/* Companheiros */}
             <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-violet-300/60">
               <CardContent className="p-3 sm:p-4 lg:p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-violet-50 p-2.5 rounded-xl group-hover:bg-violet-100 transition-colors duration-200">
-                      <Users className="h-5 w-5 text-violet-600" />
-                    </div>
-                    <div>
-                      <p className="text-xl sm:text-2xl font-bold text-slate-900">{totalParticipants}</p>
-                      <p className="text-xs sm:text-sm text-slate-600 font-medium">Companheiros</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-violet-50 p-2.5 rounded-xl group-hover:bg-violet-100 transition-colors duration-200">
+                    <Users className="h-5 w-5 text-violet-600" />
                   </div>
-                  <div className="bg-amber-50 px-2.5 py-1.5 rounded-full flex items-center gap-1">
-                    <Star className="h-3 w-3 text-amber-600" />
-                    <p className="text-xs font-semibold text-amber-700">+{totalParticipants}</p>
+                  <div>
+                    <p className="text-xl sm:text-2xl font-bold text-slate-900">{totalParticipants}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 font-medium">Companheiros</p>
                   </div>
                 </div>
               </CardContent>
@@ -441,19 +425,13 @@ export default function DashboardPage() {
             {/* Orçamento Total */}
             <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-orange-300/60">
               <CardContent className="p-3 sm:p-4 lg:p-5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-orange-50 p-2.5 rounded-xl group-hover:bg-orange-100 transition-colors duration-200">
-                      <DollarSign className="h-5 w-5 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="text-lg sm:text-xl font-bold text-slate-900">R$ {totalBudget.toLocaleString()}</p>
-                      <p className="text-xs sm:text-sm text-slate-600 font-medium">Orçamento Total</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-orange-50 p-2.5 rounded-xl group-hover:bg-orange-100 transition-colors duration-200">
+                    <DollarSign className="h-5 w-5 text-orange-600" />
                   </div>
-                  <div className="bg-green-50 px-2.5 py-1.5 rounded-full flex items-center gap-1">
-                    <TrendingUp className="h-3 w-3 text-green-600" />
-                    <p className="text-xs font-semibold text-green-700">R$ {totalBudget.toLocaleString()}</p>
+                  <div>
+                    <p className="text-lg sm:text-xl font-bold text-slate-900">R$ {totalBudget.toLocaleString()}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 font-medium">Orçamento Total</p>
                   </div>
                 </div>
               </CardContent>
