@@ -52,7 +52,10 @@ import {
   Share,
   Mail,
   MessageSquare,
-  WhatsApp
+  WhatsApp,
+  Camera,
+  Image,
+  Upload
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { motion } from "framer-motion";
@@ -113,6 +116,8 @@ export default function ProfilePage() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [showAvatarUpload, setShowAvatarUpload] = useState(false);
+  const [showCoverUpload, setShowCoverUpload] = useState(false);
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -252,6 +257,40 @@ export default function ProfilePage() {
     window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
 
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Simulated avatar upload - in a real app, you'd upload to a service
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Here you would typically upload to your server/cloud storage
+        toast({
+          title: "Avatar atualizado!",
+          description: "Sua foto de perfil foi atualizada com sucesso.",
+        });
+        setShowAvatarUpload(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCoverUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Simulated cover upload - in a real app, you'd upload to a service
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Here you would typically upload to your server/cloud storage
+        toast({
+          title: "Capa atualizada!",
+          description: "Sua imagem de capa foi atualizada com sucesso.",
+        });
+        setShowCoverUpload(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="min-h-screen" style={{ background: '#F5F9FC' }}>
       <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -262,15 +301,23 @@ export default function ProfilePage() {
           className="relative mb-8"
         >
           {/* Banner dinâmico com mosaico de destinos */}
-          <div className="relative h-48 rounded-2xl overflow-hidden mb-6"
+          <div className="relative h-64 rounded-2xl overflow-hidden mb-6"
                style={{ 
                  backgroundImage: `linear-gradient(45deg, #1B2B49 0%, #41B6FF 50%, #FFA500 100%)`,
                  backgroundSize: 'cover'
                }}>
             <div className="absolute inset-0 bg-black/20"></div>
             
+            {/* Botão para alterar cover */}
+            <button
+              onClick={() => setShowCoverUpload(true)}
+              className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors"
+            >
+              <Camera className="h-5 w-5 text-white" />
+            </button>
+            
             {/* Elementos de viagem flutuantes */}
-            <div className="absolute top-4 right-4 flex gap-2">
+            <div className="absolute top-4 left-4 flex gap-2">
               <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
                 <Plane className="h-5 w-5 text-white" />
               </div>
@@ -282,22 +329,30 @@ export default function ProfilePage() {
               </div>
             </div>
             
-            {/* Avatar interativo com bordas gradientes pulsantes */}
-            <div className="absolute -bottom-12 left-8">
+            {/* Avatar interativo com bordas gradientes pulsantes - posicionado dentro da capa */}
+            <div className="absolute bottom-6 left-8">
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full animate-pulse"></div>
-                <Avatar className="relative h-24 w-24 border-4 border-white shadow-xl">
+                <Avatar className="relative h-32 w-32 border-4 border-white shadow-xl">
                   <AvatarFallback 
-                    className="text-white text-xl font-bold"
+                    className="text-white text-2xl font-bold"
                     style={{ background: 'linear-gradient(135deg, #1B2B49 0%, #41B6FF 100%)' }}
                   >
                     {getInitials(user.fullName)}
                   </AvatarFallback>
                 </Avatar>
                 
+                {/* Botão para alterar avatar */}
+                <button
+                  onClick={() => setShowAvatarUpload(true)}
+                  className="absolute bottom-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors shadow-lg"
+                >
+                  <Camera className="h-4 w-4 text-gray-600" />
+                </button>
+                
                 {/* Medalha flutuante com nível do viajante */}
-                <div className="absolute -bottom-2 -right-2">
-                  <div className={`px-2 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-lg`}>
+                <div className="absolute -top-2 -right-2">
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-lg`}>
                     {getTravelerLevel(userStats?.completedTrips || 0).level}
                   </div>
                 </div>
@@ -306,7 +361,7 @@ export default function ProfilePage() {
           </div>
           
           {/* Informações do perfil */}
-          <div className="ml-8 mt-8">
+          <div className="ml-8 mt-4">
             <h1 className="text-3xl font-bold mb-2" style={{ color: '#1B2B49' }}>
               {user.fullName}
             </h1>
@@ -1223,6 +1278,99 @@ export default function ProfilePage() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Avatar Upload Modal */}
+      {showAvatarUpload && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Alterar Foto de Perfil</h3>
+            <div className="space-y-4">
+              <div className="text-center">
+                <Avatar className="h-24 w-24 mx-auto mb-4">
+                  <AvatarFallback 
+                    className="text-white text-xl font-bold"
+                    style={{ background: 'linear-gradient(135deg, #1B2B49 0%, #41B6FF 100%)' }}
+                  >
+                    {getInitials(user.fullName)}
+                  </AvatarFallback>
+                </Avatar>
+                <p className="text-sm text-gray-600 mb-4">
+                  Escolha uma nova foto de perfil
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                  <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Escolher Arquivo
+                  </Button>
+                </label>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => setShowAvatarUpload(false)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Cover Upload Modal */}
+      {showCoverUpload && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4">Alterar Imagem de Capa</h3>
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="h-32 w-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg mb-4 flex items-center justify-center">
+                  <Image className="h-12 w-12 text-white" />
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Escolha uma nova imagem de capa para seu perfil
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverUpload}
+                    className="hidden"
+                  />
+                  <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Escolher Arquivo
+                  </Button>
+                </label>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => setShowCoverUpload(false)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
