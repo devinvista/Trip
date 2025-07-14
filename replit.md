@@ -21,7 +21,8 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **Armazenamento de Sessão**: Sessões Express com armazenamento MySQL
 - **Segurança de Senha**: Módulo crypto do Node.js com hash scrypt
 - **Design de API**: Endpoints RESTful com respostas JSON
-- **Banco de Dados**: MySQL com Drizzle ORM
+- **Banco de Dados**: MySQL com Drizzle ORM (migração completa da memória para persistência)
+- **Armazenamento**: Sistema totalmente migrado para MySQL com dados persistentes
 
 ### Esquema do Banco de Dados
 A aplicação usa MySQL com as seguintes entidades principais:
@@ -326,3 +327,4 @@ Registro de Alterações:
 - 14 de julho de 2025. Redesign completo do header de perfil com avatar reposicionado dentro da imagem de capa - avatar aumentado para 32x32 (h-32 w-32) e posicionado no canto inferior esquerdo da capa, altura da capa aumentada para h-64, implementado sistema de upload de imagem para avatar e capa com botões de câmera interativos, modais de upload com preview e funcionalidade de seleção de arquivo, melhorada UX com transições suaves e feedback visual, medalha de nível reposicionada para canto superior direito do avatar
 - 14 de julho de 2025. Expansão completa do resumo de perfil com campos adicionais - adicionados telefone, idiomas, interesses e informações de contato na seção de resumo, criadas seções organizadas para estilos de viagem e interesses com badges diferenciados, incluída data de cadastro do usuário, melhorada hierarquia visual com labels e agrupamento lógico das informações, layout responsivo com flex-wrap para melhor adaptação em dispositivos móveis
 - 14 de julho de 2025. Migração final e definitiva do Replit Agent para ambiente Replit padrão concluída com sucesso - todas as funcionalidades da aplicação PartiuTrip preservadas e operacionais, servidor Express rodando estável na porta 5000, conexão MySQL estabelecida e funcionando, sistema de autenticação híbrida operacional, dados de teste carregados, aplicação totalmente funcional e pronta para uso
+- 14 de julho de 2025. Migração completa do sistema de armazenamento de memória para banco de dados MySQL - criadas todas as tabelas necessárias (users, trips, trip_participants, messages, trip_requests, expenses, expense_splits, user_ratings, destination_ratings, verification_requests, activities, activity_reviews, activity_bookings), dados de teste migrados com 6 usuários completos (tom, maria, carlos, ana, ricardo, julia), 4 viagens de exemplo com participantes, estrutura de banco otimizada com chaves estrangeiras e constraints, verificação de usuários implementada, sistema 100% funcional com dados persistentes
