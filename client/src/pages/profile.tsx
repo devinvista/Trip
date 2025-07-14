@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -246,16 +246,19 @@ export default function ProfilePage() {
   };
 
   const shareOnWhatsApp = () => {
-    const message = `Olá! Estou usando o PartiuTrip para encontrar companheiros de viagem e economizar nos custos. Use meu código ${referralData?.code} e ganhe 10% de desconto na sua primeira viagem! https://partiutrip.com`;
+    const message = `Olá! Estou usando o PartiuTrip para encontrar companheiros de viagem e economizar nos custos. Use meu código ${referralData?.code} e ganhe acesso à plataforma também! https://partiutrip.com`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
   };
 
   const shareByEmail = () => {
     const subject = "Convite PartiuTrip - Viaje junto e economize!";
-    const body = `Olá!\n\nEstou usando o PartiuTrip para encontrar companheiros de viagem e economizar nos custos. É uma plataforma incrível onde você pode compartilhar viagens com pessoas que têm os mesmos interesses!\n\nUse meu código ${referralData?.code} e ganhe 10% de desconto na sua primeira viagem.\n\nAcesse: https://partiutrip.com\n\nVamos viajar juntos!`;
+    const body = `Olá!\n\nEstou usando o PartiuTrip para encontrar companheiros de viagem e economizar nos custos. É uma plataforma incrível onde você pode compartilhar viagens com pessoas que têm os mesmos interesses!\n\nUse meu código ${referralData?.code} e ganhe acesso à plataforma também.\n\nAcesse: https://partiutrip.com\n\nVamos viajar juntos!`;
     window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
+
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -289,6 +292,14 @@ export default function ProfilePage() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const triggerAvatarUpload = () => {
+    avatarInputRef.current?.click();
+  };
+
+  const triggerCoverUpload = () => {
+    coverInputRef.current?.click();
   };
 
   return (
@@ -1050,80 +1061,7 @@ export default function ProfilePage() {
                 </CardContent>
               </Card>
 
-              {/* Profile Summary */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Resumo do Perfil</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="text-center">
-                    <Avatar className="h-24 w-24 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-indigo-600">
-                      <AvatarFallback className="text-white text-lg font-bold">
-                        {getInitials(user.fullName)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <h3 className="font-semibold text-lg">{user.fullName}</h3>
-                    <p className="text-slate-600 flex items-center justify-center gap-1 mt-1">
-                      <MapPin className="h-4 w-4" />
-                      {user.location}
-                    </p>
-                  </div>
 
-                  <Separator />
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Languages className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm font-medium">Idiomas:</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {user.languages?.map((lang) => (
-                        <Badge key={lang} variant="secondary" className="text-xs">
-                          {lang}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Heart className="h-4 w-4 text-red-500" />
-                      <span className="text-sm font-medium">Interesses:</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {user.interests?.map((interest) => (
-                        <Badge key={interest} variant="secondary" className="text-xs">
-                          {interest}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Plane className="h-4 w-4 text-green-500" />
-                      <span className="text-sm font-medium">Estilos de Viagem:</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {user.travelStyles?.map((style) => {
-                        const styleLabel = travelStyles.find(s => s.value === style)?.label || style;
-                        return (
-                          <Badge key={style} variant="secondary" className="text-xs">
-                            {styleLabel}
-                          </Badge>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {user.bio && (
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Bio:</h4>
-                      <p className="text-sm text-slate-600">{user.bio}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
             </div>
           </TabsContent>
 
@@ -1343,18 +1281,20 @@ export default function ProfilePage() {
               </div>
               
               <div className="space-y-2">
-                <label className="block">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="hidden"
-                  />
-                  <Button className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Escolher Arquivo
-                  </Button>
-                </label>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+                <Button 
+                  onClick={triggerAvatarUpload}
+                  className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Escolher Arquivo
+                </Button>
                 
                 <div className="flex gap-2">
                   <Button 
@@ -1387,18 +1327,20 @@ export default function ProfilePage() {
               </div>
               
               <div className="space-y-2">
-                <label className="block">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverUpload}
-                    className="hidden"
-                  />
-                  <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
-                    <Upload className="h-4 w-4 mr-2" />
-                    Escolher Arquivo
-                  </Button>
-                </label>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverUpload}
+                  className="hidden"
+                />
+                <Button 
+                  onClick={triggerCoverUpload}
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Escolher Arquivo
+                </Button>
                 
                 <div className="flex gap-2">
                   <Button 
