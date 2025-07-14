@@ -229,8 +229,10 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages Area */}
-        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-gray-50/30 to-white/30">
-          <div className="space-y-4">
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="p-4 bg-gradient-to-b from-gray-50/30 to-white/30 min-h-full">
+              <div className="space-y-4">
             {messages.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -306,9 +308,11 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                 </div>
               </motion.div>
             )}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+          </ScrollArea>
+        </div>
 
         {/* Enhanced Message Input */}
         <div className="p-4 border-t border-gray-100 bg-white">
