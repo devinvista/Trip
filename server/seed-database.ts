@@ -490,9 +490,9 @@ export async function seedDatabase() {
         
         await db.insert(messages).values({
           tripId: trip.id,
-          userId: randomParticipant.userId,
+          senderId: randomParticipant.userId,
           content: messages_samples[i % messages_samples.length],
-          createdAt: new Date(Date.now() - (messageCount - i) * 3600000) // Messages spread over hours
+          sentAt: new Date(Date.now() - (messageCount - i) * 3600000) // Messages spread over hours
         });
       }
     }

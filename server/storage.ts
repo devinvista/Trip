@@ -1160,25 +1160,43 @@ export class MemStorage implements IStorage {
   }
 
   async getTripMessages(tripId: number): Promise<(Message & { sender: User })[]> {
-    const tripMessages = Array.from(this.messages.values())
-      .filter(m => m.tripId === tripId)
-      .sort((a, b) => a.sentAt.getTime() - b.sentAt.getTime());
+    try {
+      const tripMessages = await db.select().from(messages)
+        .where(eq(messages.tripId, tripId))
+        .orderBy(messages.sentAt);
 
-    return tripMessages.map(m => {
-      const sender = this.users.get(m.senderId)!;
-      return { ...m, sender: this.sanitizeUser(sender) as User };
-    });
+      const result = [];
+      for (const message of tripMessages) {
+        const sender = await this.getUser(message.senderId);
+        if (sender) {
+          result.push({ ...message, sender: this.sanitizeUser(sender) as User });
+        }
+      }
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar mensagens:', error);
+      return [];
+    }
   }
 
   async createMessage(messageData: InsertMessage & { senderId: number }): Promise<Message> {
-    const id = this.currentMessageId++;
-    const message: Message = { 
-      ...messageData, 
-      id, 
-      sentAt: new Date() 
-    };
-    this.messages.set(id, message);
-    return message;
+    try {
+      const [insertedMessage] = await db.insert(messages).values({
+        tripId: messageData.tripId,
+        senderId: messageData.senderId,
+        content: messageData.content,
+        sentAt: new Date()
+      });
+      
+      // Get the inserted message to return it
+      const messageId = insertedMessage.insertId;
+      const [message] = await db.select().from(messages).where(eq(messages.id, messageId));
+      
+      return message;
+    } catch (error) {
+      console.error('❌ Erro ao criar mensagem:', error);
+      throw error;
+    }
   }
 
   async getTripRequests(tripId: number): Promise<(TripRequest & { user: User })[]> {
