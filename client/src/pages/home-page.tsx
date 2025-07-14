@@ -79,13 +79,7 @@ const TravelAnimation = ({ className = "" }: { className?: string }) => (
     </div>
     
     {/* Interactive Elements Below Animation */}
-    <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center">
-      <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-yellow-200/50">
-        <p className="text-sm font-medium bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-          Conectando Viajantes pelo Mundo
-        </p>
-      </div>
-    </div>
+  
   </div>
 );
 
