@@ -258,7 +258,7 @@ export async function initializeTables() {
 
       // Recreate activity_reviews table
       await connection.execute(`
-        CREATE TABLE activity_reviews (
+        CREATE TABLE IF NOT EXISTS activity_reviews (
           id INT AUTO_INCREMENT PRIMARY KEY,
           activity_id INT NOT NULL,
           user_id INT NOT NULL,
@@ -276,7 +276,7 @@ export async function initializeTables() {
 
       // Recreate activity_bookings table
       await connection.execute(`
-        CREATE TABLE activity_bookings (
+        CREATE TABLE IF NOT EXISTS activity_bookings (
           id INT AUTO_INCREMENT PRIMARY KEY,
           activity_id INT NOT NULL,
           user_id INT NOT NULL,
