@@ -365,7 +365,7 @@ export default function ProfilePage() {
             <h1 className="text-3xl font-bold mb-2" style={{ color: '#1B2B49' }}>
               {user.fullName}
             </h1>
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex flex-wrap items-center gap-4 mb-4">
               <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
                 <MapPin className="h-4 w-4" />
                 <span>{user.location}</span>
@@ -374,6 +374,18 @@ export default function ProfilePage() {
                 <Star className="h-4 w-4" />
                 <span>{userStats?.averageRating || '5.0'} ⭐</span>
               </div>
+              {user.phone && (
+                <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
+                  <User className="h-4 w-4" />
+                  <span>{user.phone}</span>
+                </div>
+              )}
+              {user.languages && user.languages.length > 0 && (
+                <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
+                  <Languages className="h-4 w-4" />
+                  <span>{user.languages.join(', ')}</span>
+                </div>
+              )}
             </div>
             
             {/* Bio editável */}
@@ -382,12 +394,43 @@ export default function ProfilePage() {
             </p>
             
             {/* Estilos de viagem preferidos */}
-            <div className="flex flex-wrap gap-2">
-              {user.travelStyles?.map((style) => (
-                <Badge key={style} variant="secondary" className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800">
-                  {travelStyles.find(s => s.value === style)?.label}
-                </Badge>
-              ))}
+            {user.travelStyles && user.travelStyles.length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Estilos de Viagem</h4>
+                <div className="flex flex-wrap gap-2">
+                  {user.travelStyles.map((style) => (
+                    <Badge key={style} variant="secondary" className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800">
+                      {travelStyles.find(s => s.value === style)?.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Interesses */}
+            {user.interests && user.interests.length > 0 && (
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Interesses</h4>
+                <div className="flex flex-wrap gap-2">
+                  {user.interests.map((interest) => (
+                    <Badge key={interest} variant="outline" className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200">
+                      {interest}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Informações de Contato */}
+            <div className="flex flex-wrap gap-6 text-sm" style={{ color: '#AAB0B7' }}>
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                <span>{user.email}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>Membro desde {new Date(user.createdAt || '2025-01-01').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</span>
+              </div>
             </div>
           </div>
         </motion.div>
