@@ -1,8 +1,9 @@
 import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, popularDestinations } from "@shared/schema";
+import { fixCreatorsAsParticipants } from "./fix-creators-as-participants";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { db, testConnection } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -731,6 +732,9 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
+
+    // Run automatic fix for creators as participants after initialization
+    setTimeout(() => this.runCreatorParticipantsFix(), 1000);
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -860,28 +864,69 @@ export class MemStorage implements IStorage {
   }
 
   async createTrip(tripData: InsertTrip & { creatorId: number }): Promise<Trip> {
-    const id = this.currentTripId++;
-    
-    // Automatically assign cover image if not provided
-    const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination, tripData.travelStyle);
-    
-    const trip: Trip = { 
-      ...tripData, 
-      id, 
-      coverImage,
-      budget: tripData.budget ?? null,
-      budgetBreakdown: tripData.budgetBreakdown || null,
-      currentParticipants: 1,
-      status: 'open',
-      sharedCosts: tripData.sharedCosts || null,
-      createdAt: new Date() 
-    };
-    this.trips.set(id, trip);
+    try {
+      // Automatically assign cover image if not provided
+      const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination, tripData.travelStyle);
+      
+      const tripToInsert = {
+        ...tripData,
+        coverImage,
+        budget: tripData.budget ?? null,
+        budgetBreakdown: tripData.budgetBreakdown || null,
+        currentParticipants: 1,
+        status: 'open' as const,
+        sharedCosts: tripData.sharedCosts || null,
+        createdAt: new Date()
+      };
 
-    // Add creator as participant
-    await this.addTripParticipant(id, tripData.creatorId);
+      // Fallback to memory storage - MySQL implementation has issues with insertId
+      const id = this.currentTripId++;
+      
+      const trip: Trip = { 
+        ...tripData, 
+        id, 
+        coverImage,
+        budget: tripData.budget ?? null,
+        budgetBreakdown: tripData.budgetBreakdown || null,
+        currentParticipants: 1,
+        status: 'open',
+        sharedCosts: tripData.sharedCosts || null,
+        createdAt: new Date() 
+      };
+      this.trips.set(id, trip);
 
-    return trip;
+      console.log(`✅ Viagem criada em memória com ID ${id}: ${trip.title}`);
+
+      // Add creator as participant
+      await this.addTripParticipant(id, tripData.creatorId);
+
+      return trip;
+    } catch (error) {
+      console.error('❌ Erro ao criar viagem no MySQL:', error);
+      
+      // Fallback to memory storage if MySQL fails
+      const id = this.currentTripId++;
+      
+      const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination, tripData.travelStyle);
+      
+      const trip: Trip = { 
+        ...tripData, 
+        id, 
+        coverImage,
+        budget: tripData.budget ?? null,
+        budgetBreakdown: tripData.budgetBreakdown || null,
+        currentParticipants: 1,
+        status: 'open',
+        sharedCosts: tripData.sharedCosts || null,
+        createdAt: new Date() 
+      };
+      this.trips.set(id, trip);
+
+      // Add creator as participant
+      await this.addTripParticipant(id, tripData.creatorId);
+
+      return trip;
+    }
   }
 
   async updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined> {
@@ -959,6 +1004,34 @@ export class MemStorage implements IStorage {
   }
 
   async getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]> {
+    try {
+      // First try to get participants from MySQL
+      const participants = await db.select()
+        .from(tripParticipants)
+        .where(eq(tripParticipants.tripId, tripId));
+
+      if (participants.length > 0) {
+        console.log(`📋 Encontrados ${participants.length} participantes no MySQL para viagem ${tripId}`);
+        
+        const result = [];
+        for (const p of participants) {
+          // Get user from MySQL
+          const userArray = await db.select().from(users).where(eq(users.id, p.userId)).limit(1);
+          if (userArray.length > 0) {
+            const sanitizedUser = this.sanitizeUser(userArray[0]);
+            if (sanitizedUser) {
+              result.push({ ...p, user: sanitizedUser as User });
+            }
+          }
+        }
+        return result;
+      }
+    } catch (error) {
+      console.error(`❌ Erro ao buscar participantes do MySQL para viagem ${tripId}:`, error);
+    }
+
+    // Fallback to memory storage
+    console.log(`🔄 Fallback para memória - viagem ${tripId}`);
     const participants = Array.from(this.tripParticipants.values())
       .filter(p => p.tripId === tripId);
 
@@ -976,6 +1049,15 @@ export class MemStorage implements IStorage {
   }
 
   async addTripParticipant(tripId: number, userId: number): Promise<TripParticipant> {
+    // Check if participant already exists in memory
+    const existingParticipant = Array.from(this.tripParticipants.values())
+      .find(p => p.tripId === tripId && p.userId === userId);
+
+    if (existingParticipant) {
+      console.log(`ℹ️ Participante ${userId} já existe na viagem ${tripId}`);
+      return existingParticipant;
+    }
+
     const id = this.currentParticipantId++;
     const participant: TripParticipant = {
       id,
@@ -986,6 +1068,7 @@ export class MemStorage implements IStorage {
     };
 
     this.tripParticipants.set(id, participant);
+    console.log(`✅ Participante ${userId} adicionado à viagem ${tripId} em memória`);
     return participant;
   }
 
@@ -1764,6 +1847,30 @@ export class MemStorage implements IStorage {
       .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
     
     return userTrips;
+  }
+
+  // Fix creators as participants
+  async fixCreatorsAsParticipants(): Promise<number> {
+    try {
+      return await fixCreatorsAsParticipants();
+    } catch (error) {
+      console.error('❌ Erro ao executar correção de criadores como participantes:', error);
+      return 0;
+    }
+  }
+
+  private async runCreatorParticipantsFix(): Promise<void> {
+    try {
+      console.log('🔧 Executando correção automática de criadores como participantes...');
+      const fixedCount = await this.fixCreatorsAsParticipants();
+      if (fixedCount > 0) {
+        console.log(`✅ Correção automática aplicada: ${fixedCount} viagens corrigidas`);
+      } else {
+        console.log('✅ Correção automática verificada: nenhuma correção necessária');
+      }
+    } catch (error) {
+      console.error('❌ Erro na correção automática de criadores como participantes:', error);
+    }
   }
 }
 

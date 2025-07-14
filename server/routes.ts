@@ -272,6 +272,26 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Admin endpoint: Fix creators as participants
+  app.post('/api/admin/fix-creators-participants', requireAuth, async (req, res) => {
+    try {
+      // Only allow verified users to run this fix
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: 'Acesso negado. Apenas usuários verificados podem executar esta correção.' });
+      }
+
+      const fixedCount = await storage.fixCreatorsAsParticipants();
+      
+      res.json({ 
+        message: `Correção executada com sucesso! ${fixedCount} criadores foram adicionados como participantes.`,
+        fixedCount
+      });
+    } catch (error) {
+      console.error('❌ Erro na correção de criadores como participantes:', error);
+      res.status(500).json({ message: 'Erro interno do servidor ao executar correção.' });
+    }
+  });
+
   // Trip request routes
   app.post("/api/trips/:id/request", requireAuth, async (req, res) => {
     try {
