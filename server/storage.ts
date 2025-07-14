@@ -2,6 +2,7 @@ import { users, trips, tripParticipants, messages, tripRequests, expenses, expen
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { db, testConnection } from "./db";
+import { eq } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -732,23 +733,55 @@ export class MemStorage implements IStorage {
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    try {
+      const userArray = await db.select().from(users).where(eq(users.id, id)).limit(1);
+      const user = userArray[0];
+      
+      if (!user) {
+        console.log(`❌ Usuário não encontrado no banco: ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`✅ Usuário carregado do banco: ${user.username}, isVerified: ${user.isVerified}`);
+      return user;
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuário no banco:', error);
+      return undefined;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    try {
+      const userArray = await db.select().from(users).where(eq(users.username, username)).limit(1);
+      return userArray[0];
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuário por username:', error);
+      return undefined;
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+    try {
+      const userArray = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      return userArray[0];
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuário por email:', error);
+      return undefined;
+    }
   }
 
   async getUserByPhone(phone: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => {
-      // Remove formatação do telefone armazenado para comparação
-      const cleanStoredPhone = user.phone.replace(/\D/g, '');
-      return cleanStoredPhone === phone;
-    });
+    try {
+      const allUsers = await db.select().from(users);
+      return allUsers.find(user => {
+        // Remove formatação do telefone armazenado para comparação
+        const cleanStoredPhone = user.phone.replace(/\D/g, '');
+        return cleanStoredPhone === phone;
+      });
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuário por telefone:', error);
+      return undefined;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {

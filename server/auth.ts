@@ -225,7 +225,7 @@ export function setupAuth(app: Express) {
   });
 
   // Rota de verificação do usuário
-  app.get("/api/user", (req, res) => {
+  app.get("/api/user", async (req, res) => {
     console.log('🔍 Verificando usuário atual:', {
       isAuthenticated: req.isAuthenticated(),
       hasUser: !!req.user,
@@ -236,7 +236,29 @@ export function setupAuth(app: Express) {
     });
     
     if (req.isAuthenticated() && req.user) {
-      res.json(req.user);
+      // Always fetch fresh user data from database to ensure latest verification status
+      try {
+        const freshUser = await storage.getUser((req.user as any).id);
+        if (freshUser) {
+          const { password: _, ...userWithoutPassword } = freshUser;
+          const cleanUser = {
+            ...userWithoutPassword,
+            bio: userWithoutPassword.bio || undefined,
+            location: userWithoutPassword.location || undefined,
+            profilePhoto: userWithoutPassword.profilePhoto || undefined,
+            languages: userWithoutPassword.languages || undefined,
+            interests: userWithoutPassword.interests || undefined,
+            travelStyle: userWithoutPassword.travelStyle || undefined,
+          };
+          console.log('✅ Fresh user data loaded, isVerified:', cleanUser.isVerified);
+          res.json(cleanUser);
+        } else {
+          res.status(401).json({ message: "Usuário não encontrado" });
+        }
+      } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+        res.status(500).json({ message: "Erro interno do servidor" });
+      }
     } else {
       res.status(401).json({ message: "Não autorizado" });
     }

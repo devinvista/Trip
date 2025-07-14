@@ -49,7 +49,7 @@ export async function initializeTables() {
         profile_photo TEXT,
         languages JSON,
         interests JSON,
-        travel_styles JSON,
+        travel_style VARCHAR(100),
         referred_by VARCHAR(50),
         is_verified BOOLEAN DEFAULT FALSE NOT NULL,
         verification_method VARCHAR(50),
@@ -81,6 +81,51 @@ export async function initializeTables() {
       console.log("✅ Campo verification_method adicionado à tabela users");
     } catch (error) {
       // Column already exists, this is fine
+    }
+
+    // Fix travel_styles column name if it exists
+    try {
+      await connection.execute(`ALTER TABLE users CHANGE travel_styles travel_style JSON`);
+      console.log("✅ Campo travel_styles renomeado para travel_style");
+    } catch (error) {
+      // Column doesn't exist or already renamed
+    }
+
+    // Add missing columns that may not exist
+    try {
+      await connection.execute(`ALTER TABLE users ADD COLUMN referred_by VARCHAR(50)`);
+      console.log("✅ Campo referred_by adicionado à tabela users");
+    } catch (error) {
+      // Column already exists, this is fine
+    }
+
+    try {
+      await connection.execute(`ALTER TABLE users ADD COLUMN average_rating DECIMAL(3,2) DEFAULT 0.00`);
+      console.log("✅ Campo average_rating adicionado à tabela users");
+    } catch (error) {
+      // Column already exists, this is fine
+    }
+
+    try {
+      await connection.execute(`ALTER TABLE users ADD COLUMN total_ratings INT DEFAULT 0 NOT NULL`);
+      console.log("✅ Campo total_ratings adicionado à tabela users");
+    } catch (error) {
+      // Column already exists, this is fine
+    }
+
+    try {
+      await connection.execute(`ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL`);
+      console.log("✅ Campo created_at adicionado à tabela users");
+    } catch (error) {
+      // Column already exists, this is fine
+    }
+
+    // Check current table structure
+    try {
+      const [columns] = await connection.execute(`DESCRIBE users`);
+      console.log("📊 Estrutura atual da tabela users:", columns);
+    } catch (error) {
+      console.log("❌ Erro ao descrever tabela users:", error);
     }
 
     console.log("✅ Tabelas MySQL inicializadas com sucesso!");

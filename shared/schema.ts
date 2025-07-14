@@ -14,7 +14,7 @@ export const users = mysqlTable("users", {
   profilePhoto: text("profile_photo"),
   languages: json("languages"),
   interests: json("interests"),
-  travelStyles: json("travel_styles"), // Array of travel styles
+  travelStyle: varchar("travel_style", { length: 100 }), // User's main travel style preference
   referredBy: varchar("referred_by", { length: 50 }), // Referral code used during registration
   isVerified: boolean("is_verified").default(false).notNull(), // User verification status
   verificationMethod: varchar("verification_method", { length: 50 }), // email, phone, document, etc.

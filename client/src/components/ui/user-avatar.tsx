@@ -3,7 +3,7 @@ import { VerificationBadge } from "./verification-badge";
 import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
-  user: {
+  user?: {
     fullName: string;
     profilePhoto?: string;
     isVerified?: boolean;
@@ -42,6 +42,19 @@ export function UserAvatar({
       .slice(0, 2);
   };
 
+  // Handle case when user is undefined
+  if (!user) {
+    return (
+      <div className="relative inline-block">
+        <Avatar className={cn(sizeClasses[size], className)}>
+          <AvatarFallback className="text-white font-bold bg-gray-400">
+            ?
+          </AvatarFallback>
+        </Avatar>
+      </div>
+    );
+  }
+
   return (
     <div className="relative inline-block">
       <Avatar className={cn(sizeClasses[size], className)}>
@@ -62,7 +75,7 @@ export function UserAvatar({
         </AvatarFallback>
       </Avatar>
       
-      {showVerificationBadge && (
+      {showVerificationBadge && user.isVerified && (
         <VerificationBadge 
           isVerified={user.isVerified || false}
           size={badgeSizeMap[size]}
