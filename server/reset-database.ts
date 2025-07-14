@@ -78,7 +78,7 @@ export async function resetDatabase() {
 }
 
 // Executar se chamado diretamente
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   resetDatabase()
     .then(() => {
       console.log("🎉 Reset concluído! O banco está limpo e pronto para novos dados.");
