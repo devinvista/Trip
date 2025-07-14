@@ -6,11 +6,11 @@ import { promisify } from "util";
 
 const scryptAsync = promisify(scrypt);
 
-// Helper function to hash passwords
+// Helper function to hash passwords - compatível com autenticação
 async function hashPassword(password: string): Promise<string> {
   const salt = "fixed-salt-for-demo";
-  const key = (await scryptAsync(password, salt, 32)) as Buffer;
-  return key.toString("hex");
+  const key = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${key.toString("hex")}.${salt}`;
 }
 
 // Generate referral code
