@@ -171,7 +171,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
       </CardHeader>
 
       {/* Participants Section - Fixed outside scroll area */}
-      <div className="border-b border-gray-100 bg-white p-4">
+      <div className="border-b border-gray-100 bg-gradient-to-b from-gray-50/30 to-white/30 p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-blue-600" />
