@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -196,12 +197,11 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
               const isOrganizer = participant.role === 'organizer' || participant.status === 'organizer';
               return (
                 <div key={participant.id} className="flex items-center gap-2 min-w-0 flex-shrink-0">
-                  <Avatar className={`h-8 w-8 ring-2 ${isOrganizer ? 'ring-blue-200' : 'ring-gray-200'}`}>
-                    <AvatarImage src={participant.user?.profilePhoto || ""} />
-                    <AvatarFallback className={`text-xs font-semibold ${isOrganizer ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {getInitials(participant.user?.fullName || participant.user?.username || "U")}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar 
+                    user={participant.user}
+                    size="sm"
+                    className={`h-8 w-8 ring-2 ${isOrganizer ? 'ring-blue-200' : 'ring-gray-200'}`}
+                  />
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs font-medium text-gray-900 truncate">
                       {participant.user?.fullName || participant.user?.username}
@@ -263,12 +263,11 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                     transition={{ delay: index * 0.1 }}
                     className={`flex gap-3 ${message.senderId === user?.id ? 'flex-row-reverse' : ''}`}
                   >
-                    <Avatar className="w-10 h-10 flex-shrink-0 ring-2 ring-white shadow-sm">
-                      <AvatarImage src={message.sender?.profilePhoto || ""} />
-                      <AvatarFallback className="text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
-                        {getInitials(message.sender?.fullName || 'U')}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar 
+                      user={message.sender}
+                      size="md"
+                      className="w-10 h-10 flex-shrink-0 ring-2 ring-white shadow-sm"
+                    />
                     <div className={`flex-1 max-w-[75%] ${message.senderId === user?.id ? 'text-right' : ''}`}>
                       <div className={`flex items-center gap-2 mb-1 ${message.senderId === user?.id ? 'justify-end' : ''}`}>
                         <span className="text-sm font-semibold text-gray-700">

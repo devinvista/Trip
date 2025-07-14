@@ -315,6 +315,10 @@ export function setupAuth(app: Express) {
       const buf = (await scryptAsync(password, salt, 64)) as Buffer;
       const hashedPassword = `${buf.toString("hex")}.${salt}`;
 
+      // Determinar se usuário deve ser verificado automaticamente
+      const isVerified = !!referredBy; // Usuários com código de indicação são verificados automaticamente
+      const verificationMethod = referredBy ? 'referral' : null;
+
       // Criar usuário
       const newUser = await storage.createUser({
         username,
@@ -327,7 +331,9 @@ export function setupAuth(app: Express) {
         languages,
         interests,
         travelStyle,
-        referredBy
+        referredBy,
+        isVerified,
+        verificationMethod
       });
 
       // Fazer login automático

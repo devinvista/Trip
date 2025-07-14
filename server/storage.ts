@@ -1749,7 +1749,9 @@ async function createDefaultTestUser() {
         location: 'Porto Alegre, RS',
         travelStyles: ['urbanas', 'aventura', 'culturais'],
         languages: ['Português', 'Inglês'],
-        interests: ['Aventura', 'Cultura', 'Gastronomia']
+        interests: ['Aventura', 'Cultura', 'Gastronomia'],
+        isVerified: true,
+        verificationMethod: 'referral'
       });
 
       console.log('✅ Usuário de teste criado: tom / demo123');
@@ -1804,7 +1806,9 @@ async function createSecondTestUser() {
         location: 'Rio de Janeiro, RJ',
         travelStyles: ['praia', 'culturais'],
         languages: ['Português', 'Espanhol'],
-        interests: ['Praia', 'Cultura', 'Fotografia']
+        interests: ['Praia', 'Cultura', 'Fotografia'],
+        isVerified: true,
+        verificationMethod: 'referral'
       });
 
       console.log('✅ Segundo usuário de teste criado: maria / demo123');
@@ -1951,7 +1955,9 @@ async function createAdditionalTestUsers() {
         travelStyles: ['aventura', 'natureza'],
         languages: ['Português'],
         interests: ['Montanha', 'Aventura', 'Natureza'],
-        bio: 'Aventureiro apaixonado por trilhas e montanhas'
+        bio: 'Aventureiro apaixonado por trilhas e montanhas',
+        isVerified: true,
+        verificationMethod: 'referral'
       },
       {
         username: 'ana',
@@ -1962,7 +1968,9 @@ async function createAdditionalTestUsers() {
         travelStyles: ['praia', 'culturais'],
         languages: ['Português', 'Inglês'],
         interests: ['Praia', 'Música', 'Dança'],
-        bio: 'Amo praia, música e conhecer novas culturas'
+        bio: 'Amo praia, música e conhecer novas culturas',
+        isVerified: false,
+        verificationMethod: null
       },
       {
         username: 'ricardo',
@@ -1973,7 +1981,9 @@ async function createAdditionalTestUsers() {
         travelStyles: ['culturais', 'urbanas'],
         languages: ['Português', 'Espanhol', 'Francês'],
         interests: ['História', 'Arquitetura', 'Museus'],
-        bio: 'Historiador e amante da cultura mundial'
+        bio: 'Historiador e amante da cultura mundial',
+        isVerified: false,
+        verificationMethod: null
       },
       {
         username: 'julia',

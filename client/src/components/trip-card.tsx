@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { Button } from "@/components/ui/button";
 import { 
   MapPin, 
@@ -218,12 +219,11 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
         <div className="flex items-center justify-between">
           {/* Creator Info */}
           <div className="flex items-center space-x-2">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={trip.creator?.profilePhoto || ""} />
-              <AvatarFallback className="text-xs">
-                {trip.creator?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar 
+              user={trip.creator}
+              size="sm"
+              className="w-8 h-8"
+            />
             <div>
               <span className="text-sm text-gray-600">Por</span>
               <span className="text-sm font-medium text-gray-800 ml-1">

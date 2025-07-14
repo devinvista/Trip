@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -343,14 +344,11 @@ export default function ProfilePage() {
             <div className="absolute bottom-6 left-8">
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full animate-pulse"></div>
-                <Avatar className="relative h-32 w-32 border-4 border-white shadow-xl">
-                  <AvatarFallback 
-                    className="text-white text-2xl font-bold"
-                    style={{ background: 'linear-gradient(135deg, #1B2B49 0%, #41B6FF 100%)' }}
-                  >
-                    {getInitials(user.fullName)}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar 
+                  user={user}
+                  size="xl"
+                  className="relative h-32 w-32 border-4 border-white shadow-xl"
+                />
                 
                 {/* Botão para alterar avatar */}
                 <button
@@ -1266,14 +1264,12 @@ export default function ProfilePage() {
             <h3 className="text-lg font-semibold mb-4">Alterar Foto de Perfil</h3>
             <div className="space-y-4">
               <div className="text-center">
-                <Avatar className="h-24 w-24 mx-auto mb-4">
-                  <AvatarFallback 
-                    className="text-white text-xl font-bold"
-                    style={{ background: 'linear-gradient(135deg, #1B2B49 0%, #41B6FF 100%)' }}
-                  >
-                    {getInitials(user.fullName)}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar 
+                  user={user}
+                  size="xl"
+                  className="h-24 w-24 mx-auto mb-4"
+                  showVerificationBadge={false}
+                />
                 <p className="text-sm text-gray-600 mb-4">
                   Escolha uma nova foto de perfil
                 </p>

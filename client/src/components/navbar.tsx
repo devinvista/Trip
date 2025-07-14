@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { 
@@ -116,12 +117,11 @@ export function Navbar() {
                       variant="ghost" 
                       className="flex items-center space-x-2 hover:bg-blue-50 rounded-xl px-2 py-2 transition-all duration-300 h-auto"
                     >
-                      <Avatar className="w-8 h-8 ring-2 ring-white shadow-md">
-                        <AvatarImage src={user?.profilePhoto || ""} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-500 text-white font-semibold text-sm">
-                          {user?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <UserAvatar 
+                        user={user}
+                        size="sm"
+                        className="w-8 h-8 ring-2 ring-white shadow-md"
+                      />
                       <div className="hidden sm:block text-left">
                         <div className="font-medium text-slate-700 text-sm leading-tight">
                           {user?.fullName?.split(' ')[0]}
@@ -137,12 +137,11 @@ export function Navbar() {
                     {/* User Info Header */}
                     <div className="px-3 py-3 border-b border-slate-100">
                       <div className="flex items-center space-x-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarImage src={user?.profilePhoto || ""} />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-500 text-white font-semibold">
-                            {user?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
+                        <UserAvatar 
+                          user={user}
+                          size="md"
+                          className="w-10 h-10"
+                        />
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-slate-900 truncate">{user?.fullName}</div>
                           <div className="text-sm text-slate-500 truncate">{user?.email}</div>
@@ -205,12 +204,11 @@ export function Navbar() {
 
                         {/* User Info */}
                         <div className="flex items-center space-x-3 py-6 border-b border-slate-100">
-                          <Avatar className="w-12 h-12 ring-2 ring-blue-100">
-                            <AvatarImage src={user?.profilePhoto || ""} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-500 text-white font-semibold">
-                              {user?.fullName?.split(' ').map(n => n[0]).join('').toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
+                          <UserAvatar 
+                            user={user}
+                            size="lg"
+                            className="w-12 h-12 ring-2 ring-blue-100"
+                          />
                           <div className="flex-1 min-w-0">
                             <div className="font-semibold text-slate-900 truncate">{user?.fullName}</div>
                             <div className="text-sm text-slate-600 truncate">{user?.email}</div>
