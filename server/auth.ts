@@ -14,6 +14,7 @@ declare global {
       username: string;
       email: string;
       fullName: string;
+      phone: string;
       bio?: string;
       location?: string;
       profilePhoto?: string;

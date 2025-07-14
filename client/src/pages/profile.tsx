@@ -36,6 +36,7 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 const profileSchema = z.object({
   fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
+  phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
   bio: z.string().max(500, "Bio deve ter no máximo 500 caracteres").optional(),
   location: z.string().min(2, "Localização deve ter pelo menos 2 caracteres"),
   languages: z.array(z.string()).min(1, "Selecione pelo menos um idioma"),
@@ -76,6 +77,7 @@ export default function ProfilePage() {
     defaultValues: {
       fullName: user?.fullName || "",
       email: user?.email || "",
+      phone: user?.phone || "",
       bio: user?.bio || "",
       location: user?.location || "",
       languages: user?.languages || [],
@@ -250,6 +252,23 @@ export default function ProfilePage() {
                           </p>
                         )}
                       </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone">Telefone</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="(11) 99999-9999"
+                        {...form.register("phone")}
+                        disabled={!isEditing}
+                        className={!isEditing ? "bg-slate-50" : ""}
+                      />
+                      {form.formState.errors.phone && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {form.formState.errors.phone.message}
+                        </p>
+                      )}
                     </div>
 
                     <div>

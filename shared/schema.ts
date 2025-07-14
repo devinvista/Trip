@@ -8,6 +8,7 @@ export const users = mysqlTable("users", {
   password: text("password").notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 20 }).notNull(),
   bio: text("bio"),
   location: varchar("location", { length: 255 }),
   profilePhoto: text("profile_photo"),
@@ -133,11 +134,14 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
   email: true,
   fullName: true,
+  phone: true,
   bio: true,
   location: true,
   languages: true,
   interests: true,
   travelStyle: true,
+}).extend({
+  phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
 });
 
 export const insertTripSchema = createInsertSchema(trips).omit({
