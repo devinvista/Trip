@@ -293,7 +293,7 @@ export function setupAuth(app: Express) {
   // Rota de registro
   app.post("/api/register", async (req, res) => {
     try {
-      const { username, password, email, fullName, bio, location, languages, interests, travelStyle } = req.body;
+      const { username, password, email, fullName, phone, bio, location, languages, interests, travelStyle, referredBy } = req.body;
 
       // Verificar se usuário já existe
       const existingUser = await storage.getUserByUsername(username);
@@ -321,11 +321,13 @@ export function setupAuth(app: Express) {
         password: hashedPassword,
         email,
         fullName,
+        phone,
         bio,
         location,
         languages,
         interests,
-        travelStyle
+        travelStyle,
+        referredBy
       });
 
       // Fazer login automático

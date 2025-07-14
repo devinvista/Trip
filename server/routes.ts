@@ -704,9 +704,10 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/user/referral", requireAuth, async (req, res) => {
     try {
       const userId = req.user!.id;
+      const username = req.user!.username.toUpperCase();
       
-      // Generate referral code based on user ID
-      const referralCode = `PARTIU${userId.toString().padStart(4, '0')}`;
+      // Generate referral code based on username and user ID
+      const referralCode = `PARTIU-${username}${userId.toString().padStart(2, '0')}`;
       
       // For now, return empty referred users (would need referral system implementation)
       const referralData = {
@@ -718,6 +719,44 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao buscar dados de indicação:', error);
       res.status(500).json({ message: "Erro ao buscar dados de indicação" });
+    }
+  });
+
+  // Validate referral code
+  app.post("/api/user/validate-referral", async (req, res) => {
+    try {
+      const { referralCode } = req.body;
+      
+      if (!referralCode) {
+        return res.status(400).json({ message: "Código de indicação é obrigatório" });
+      }
+      
+      // Check if referral code matches the format PARTIU-{USERNAME}{ID}
+      const referralRegex = /^PARTIU-([A-Z]+)(\d+)$/;
+      const match = referralCode.match(referralRegex);
+      
+      if (!match) {
+        return res.status(400).json({ message: "Formato de código de indicação inválido" });
+      }
+      
+      const [, username, userIdStr] = match;
+      const userId = parseInt(userIdStr);
+      
+      // Find the user with this username and ID
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.username.toUpperCase() !== username) {
+        return res.status(400).json({ message: "Código de indicação inválido" });
+      }
+      
+      res.json({ 
+        valid: true, 
+        referrerName: user.fullName,
+        referrerUsername: user.username
+      });
+    } catch (error) {
+      console.error('Erro ao validar código de indicação:', error);
+      res.status(500).json({ message: "Erro ao validar código de indicação" });
     }
   });
 

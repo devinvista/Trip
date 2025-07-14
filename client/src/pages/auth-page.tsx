@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
-import { Plane, Mail, Lock, User, Phone } from "lucide-react";
+import { Plane, Mail, Lock, User, Phone, Gift } from "lucide-react";
 
 // Função para formatação de telefone (xx) xxxxx-xxxx
 const formatPhoneNumber = (value: string) => {
@@ -41,6 +41,7 @@ const registerSchema = insertUserSchema.extend({
   confirmPassword: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   email: z.string().email("Email inválido"),
   fullName: z.string().min(3, "Nome completo deve ter pelo menos 3 caracteres"),
+  referralCode: z.string().min(1, "Código de indicação é obrigatório"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -75,6 +76,7 @@ export default function AuthPage() {
       languages: [],
       interests: [],
       travelStyle: "",
+      referralCode: "",
     },
   });
 
@@ -92,13 +94,37 @@ export default function AuthPage() {
     });
   };
 
-  const onRegister = (data: RegisterForm) => {
-    const { confirmPassword, ...registerData } = data;
-    registerMutation.mutate(registerData, {
-      onSuccess: () => {
-        navigate("/dashboard");
+  const onRegister = async (data: RegisterForm) => {
+    const { confirmPassword, referralCode, ...registerData } = data;
+    
+    // First validate the referral code
+    try {
+      const response = await fetch("/api/user/validate-referral", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ referralCode }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        registerForm.setError("referralCode", { message: error.message });
+        return;
       }
-    });
+      
+      // If valid, proceed with registration
+      registerMutation.mutate({
+        ...registerData,
+        referredBy: referralCode,
+      }, {
+        onSuccess: () => {
+          navigate("/dashboard");
+        }
+      });
+    } catch (error) {
+      registerForm.setError("referralCode", { message: "Erro ao validar código de indicação" });
+    }
   };
 
   if (user) {
@@ -315,6 +341,27 @@ export default function AuthPage() {
                               <div className="relative">
                                 <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                                 <Input type="password" placeholder="Confirme sua senha" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={registerForm.control}
+                        name="referralCode"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-slate-700 font-medium">Código de Indicação</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Gift className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input 
+                                  placeholder="Ex: PARTIU-TOM01" 
+                                  className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" 
+                                  {...field}
+                                />
                               </div>
                             </FormControl>
                             <FormMessage />
