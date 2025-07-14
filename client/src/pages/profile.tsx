@@ -33,6 +33,24 @@ import {
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 
+// Função para formatação de telefone (xx) xxxxx-xxxx
+const formatPhoneNumber = (value: string) => {
+  // Remove todos os caracteres não numéricos
+  const onlyNumbers = value.replace(/\D/g, '');
+  
+  // Aplica a formatação baseada no número de dígitos
+  if (onlyNumbers.length <= 2) {
+    return onlyNumbers;
+  } else if (onlyNumbers.length <= 7) {
+    return `(${onlyNumbers.slice(0, 2)}) ${onlyNumbers.slice(2)}`;
+  } else if (onlyNumbers.length <= 11) {
+    return `(${onlyNumbers.slice(0, 2)}) ${onlyNumbers.slice(2, 7)}-${onlyNumbers.slice(7)}`;
+  } else {
+    // Limita a 11 dígitos
+    return `(${onlyNumbers.slice(0, 2)}) ${onlyNumbers.slice(2, 7)}-${onlyNumbers.slice(7, 11)}`;
+  }
+};
+
 const profileSchema = z.object({
   fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
@@ -77,7 +95,7 @@ export default function ProfilePage() {
     defaultValues: {
       fullName: user?.fullName || "",
       email: user?.email || "",
-      phone: user?.phone || "",
+      phone: user?.phone ? formatPhoneNumber(user.phone) : "",
       bio: user?.bio || "",
       location: user?.location || "",
       languages: user?.languages || [],
@@ -260,7 +278,11 @@ export default function ProfilePage() {
                         id="phone"
                         type="tel"
                         placeholder="(11) 99999-9999"
-                        {...form.register("phone")}
+                        value={form.watch("phone")}
+                        onChange={(e) => {
+                          const formatted = formatPhoneNumber(e.target.value);
+                          form.setValue("phone", formatted);
+                        }}
                         disabled={!isEditing}
                         className={!isEditing ? "bg-slate-50" : ""}
                       />

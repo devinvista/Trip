@@ -14,6 +14,24 @@ import { insertUserSchema } from "@shared/schema";
 import { z } from "zod";
 import { Plane, Mail, Lock, User, Phone } from "lucide-react";
 
+// Função para formatação de telefone (xx) xxxxx-xxxx
+const formatPhoneNumber = (value: string) => {
+  // Remove todos os caracteres não numéricos
+  const onlyNumbers = value.replace(/\D/g, '');
+  
+  // Aplica a formatação baseada no número de dígitos
+  if (onlyNumbers.length <= 2) {
+    return onlyNumbers;
+  } else if (onlyNumbers.length <= 7) {
+    return `(${onlyNumbers.slice(0, 2)}) ${onlyNumbers.slice(2)}`;
+  } else if (onlyNumbers.length <= 11) {
+    return `(${onlyNumbers.slice(0, 2)}) ${onlyNumbers.slice(2, 7)}-${onlyNumbers.slice(7)}`;
+  } else {
+    // Limita a 11 dígitos
+    return `(${onlyNumbers.slice(0, 2)}) ${onlyNumbers.slice(2, 7)}-${onlyNumbers.slice(7, 11)}`;
+  }
+};
+
 const loginSchema = z.object({
   username: z.string().min(1, "Nome de usuário é obrigatório"),
   password: z.string().min(1, "Senha é obrigatória"),
@@ -250,7 +268,19 @@ export default function AuthPage() {
                             <FormControl>
                               <div className="relative">
                                 <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                                <Input type="tel" placeholder="(11) 99999-9999" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
+                                <Input 
+                                  type="tel" 
+                                  placeholder="(11) 99999-9999" 
+                                  className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" 
+                                  value={field.value}
+                                  onChange={(e) => {
+                                    const formatted = formatPhoneNumber(e.target.value);
+                                    field.onChange(formatted);
+                                  }}
+                                  onBlur={field.onBlur}
+                                  name={field.name}
+                                  ref={field.ref}
+                                />
                               </div>
                             </FormControl>
                             <FormMessage />
