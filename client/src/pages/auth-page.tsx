@@ -87,37 +87,41 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex">
       {/* Left Column - Forms */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                  <Plane className="h-6 w-6 text-white transform rotate-45" />
+            <div className="flex items-center justify-center mb-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Plane className="h-7 w-7 text-white transform rotate-45" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     PartiuTrip
                   </h1>
-                  <p className="text-sm text-orange-500 font-medium">Viaje Junto, Gaste Menos</p>
+                  <p className="text-sm text-orange-500 font-semibold">Viaje Junto, Gaste Menos</p>
                 </div>
               </div>
             </div>
-            <p className="text-gray-600">Conecte-se com viajantes como você</p>
+            <div className="space-y-2 mb-6">
+              <h2 className="text-xl font-semibold text-slate-800">Bem-vindo de volta!</h2>
+              <p className="text-slate-600">Conecte-se com viajantes como você e descubra o mundo</p>
+            </div>
           </div>
 
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Entrar</TabsTrigger>
-              <TabsTrigger value="register">Cadastrar</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-white/70 backdrop-blur-sm border border-slate-200 shadow-sm">
+              <TabsTrigger value="login" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white">Entrar</TabsTrigger>
+              <TabsTrigger value="register" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white">Cadastrar</TabsTrigger>
             </TabsList>
 
             <TabsContent value="login">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Bem-vindo de volta!</CardTitle>
+              <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl">
+                <CardHeader className="text-center pb-6">
+                  <CardTitle className="text-2xl font-bold text-slate-800">Entrar na sua conta</CardTitle>
+                  <p className="text-slate-600 mt-2">Acesse sua conta e continue sua jornada</p>
                 </CardHeader>
                 <CardContent>
                   <Form {...loginForm}>
@@ -127,11 +131,11 @@ export default function AuthPage() {
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nome de usuário</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Nome de usuário</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <User className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                <Input placeholder="Seu nome de usuário" className="pl-10" {...field} />
+                                <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input placeholder="Seu nome de usuário" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -144,11 +148,11 @@ export default function AuthPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Senha</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Senha</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                <Input type="password" placeholder="Sua senha" className="pl-10" {...field} />
+                                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input type="password" placeholder="Sua senha" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -156,19 +160,19 @@ export default function AuthPage() {
                         )}
                       />
 
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between py-2">
                         <div className="flex items-center space-x-2">
-                          <Checkbox id="remember" />
-                          <Label htmlFor="remember" className="text-sm">Lembrar de mim</Label>
+                          <Checkbox id="remember" className="border-slate-300" />
+                          <Label htmlFor="remember" className="text-sm text-slate-600">Lembrar de mim</Label>
                         </div>
-                        <a href="#" className="text-sm text-primary hover:underline">
+                        <a href="#" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
                           Esqueci minha senha
                         </a>
                       </div>
 
                       <Button 
                         type="submit" 
-                        className="w-full" 
+                        className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200" 
                         disabled={loginMutation.isPending}
                       >
                         {loginMutation.isPending ? "Entrando..." : "Entrar"}
@@ -180,9 +184,10 @@ export default function AuthPage() {
             </TabsContent>
 
             <TabsContent value="register">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Junte-se ao ViajaJunto!</CardTitle>
+              <Card className="border-0 bg-white/80 backdrop-blur-sm shadow-xl">
+                <CardHeader className="text-center pb-6">
+                  <CardTitle className="text-2xl font-bold text-slate-800">Junte-se ao PartiuTrip!</CardTitle>
+                  <p className="text-slate-600 mt-2">Crie sua conta e comece a explorar o mundo</p>
                 </CardHeader>
                 <CardContent>
                   <Form {...registerForm}>
@@ -192,9 +197,9 @@ export default function AuthPage() {
                         name="fullName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nome Completo</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Nome Completo</FormLabel>
                             <FormControl>
-                              <Input placeholder="Seu nome completo" {...field} />
+                              <Input placeholder="Seu nome completo" className="bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -206,11 +211,11 @@ export default function AuthPage() {
                         name="username"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nome de usuário</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Nome de usuário</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <User className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                <Input placeholder="Escolha um nome de usuário" className="pl-10" {...field} />
+                                <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input placeholder="Escolha um nome de usuário" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -223,11 +228,11 @@ export default function AuthPage() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Email</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                <Input type="email" placeholder="seu@email.com" className="pl-10" {...field} />
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input type="email" placeholder="seu@email.com" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -240,11 +245,11 @@ export default function AuthPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Senha</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Senha</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                <Input type="password" placeholder="Mínimo 8 caracteres" className="pl-10" {...field} />
+                                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input type="password" placeholder="Mínimo 6 caracteres" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -257,11 +262,11 @@ export default function AuthPage() {
                         name="confirmPassword"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Confirmar Senha</FormLabel>
+                            <FormLabel className="text-slate-700 font-medium">Confirmar Senha</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                <Input type="password" placeholder="Confirme sua senha" className="pl-10" {...field} />
+                                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                <Input type="password" placeholder="Confirme sua senha" className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" {...field} />
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -269,17 +274,17 @@ export default function AuthPage() {
                         )}
                       />
 
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" required />
-                        <Label htmlFor="terms" className="text-sm">
-                          Aceito os <a href="#" className="text-primary hover:underline">termos de uso</a> e{" "}
-                          <a href="#" className="text-primary hover:underline">política de privacidade</a>
+                      <div className="flex items-center space-x-2 py-2">
+                        <Checkbox id="terms" required className="border-slate-300" />
+                        <Label htmlFor="terms" className="text-sm text-slate-600">
+                          Aceito os <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">termos de uso</a> e{" "}
+                          <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">política de privacidade</a>
                         </Label>
                       </div>
 
                       <Button 
                         type="submit" 
-                        className="w-full" 
+                        className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200" 
                         disabled={registerMutation.isPending}
                       >
                         {registerMutation.isPending ? "Criando conta..." : "Criar Conta"}
@@ -294,23 +299,46 @@ export default function AuthPage() {
       </div>
 
       {/* Right Column - Hero */}
-      <div className="hidden lg:flex lg:w-1/2 hero-gradient items-center justify-center p-8">
-        <div className="text-center text-white max-w-md">
-          <h2 className="font-bold text-4xl mb-6">
-            Sua Próxima Aventura Te Espera
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Conecte-se com viajantes, divida custos e crie memórias inesquecíveis pelo mundo todo.
-          </p>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="bg-white bg-opacity-20 rounded-lg p-4">
-              <div className="font-semibold text-lg">500+</div>
-              <div>Viajantes ativos</div>
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 items-center justify-center p-12 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz4KPC9zdmc+')] opacity-20"></div>
+        
+        <div className="text-center text-white max-w-lg relative z-10">
+          <div className="mb-8">
+            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-6">
+              <Plane className="h-10 w-10 text-white transform rotate-45" />
             </div>
-            <div className="bg-white bg-opacity-20 rounded-lg p-4">
-              <div className="font-semibold text-lg">50+</div>
-              <div>Destinos disponíveis</div>
+            <h2 className="font-bold text-4xl mb-4 leading-tight">
+              Sua Próxima Aventura Te Espera
+            </h2>
+            <p className="text-xl mb-8 opacity-90 leading-relaxed">
+              Conecte-se com viajantes, divida custos e crie memórias inesquecíveis pelo mundo todo.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6 mb-8">
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <div className="font-bold text-3xl mb-2">2.8k+</div>
+              <div className="text-sm opacity-90">Viajantes conectados</div>
             </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <div className="font-bold text-3xl mb-2">85+</div>
+              <div className="text-sm opacity-90">Destinos disponíveis</div>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <div className="font-bold text-3xl mb-2">65%</div>
+              <div className="text-sm opacity-90">Economia média</div>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <div className="font-bold text-3xl mb-2">4.8★</div>
+              <div className="text-sm opacity-90">Avaliação média</div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-sm opacity-80 italic">
+              "Viajar sozinho é bom, viajar junto é melhor!"
+            </p>
           </div>
         </div>
       </div>
