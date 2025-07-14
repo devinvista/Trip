@@ -169,6 +169,63 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
           </div>
         </CardTitle>
       </CardHeader>
+
+      {/* Participants Section - Fixed outside scroll area */}
+      <div className="border-b border-gray-100 bg-white p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-blue-600" />
+            <span className="text-sm font-medium text-gray-900">Participantes</span>
+          </div>
+          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+            {participants.length || 1}
+          </Badge>
+        </div>
+        
+        <div className="flex items-center gap-3 overflow-x-auto pb-2">
+          {participants.length > 0 ? (
+            participants.map((participant: any) => {
+              const isOrganizer = participant.role === 'organizer' || participant.status === 'organizer';
+              return (
+                <div key={participant.id} className="flex items-center gap-2 min-w-0 flex-shrink-0">
+                  <Avatar className={`h-8 w-8 ring-2 ${isOrganizer ? 'ring-blue-200' : 'ring-gray-200'}`}>
+                    <AvatarImage src={participant.user?.profilePhoto || ""} />
+                    <AvatarFallback className={`text-xs font-semibold ${isOrganizer ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {getInitials(participant.user?.fullName || participant.user?.username || "U")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-medium text-gray-900 truncate">
+                      {participant.user?.fullName || participant.user?.username}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <div className={`w-2 h-2 rounded-full ${isOrganizer ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      <span className="text-xs text-gray-500">
+                        {isOrganizer ? 'Organizador' : 'Participante'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="flex items-center gap-2">
+              <Avatar className="h-8 w-8 ring-2 ring-blue-200">
+                <AvatarFallback className="bg-blue-100 text-blue-700 text-xs font-semibold">
+                  TT
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium text-gray-900">Tom Tubin</span>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-xs text-gray-500">Organizador</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages Area */}
