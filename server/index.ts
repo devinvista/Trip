@@ -59,6 +59,7 @@ async function fixUserVerificationStatus() {
           verificationMethod: 'referral' 
         })
         .where(eq(users.username, username));
+        
       console.log(`✅ Status de verificação corrigido para ${username}`);
     }
   } catch (error) {

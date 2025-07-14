@@ -8,13 +8,21 @@ interface VerificationBadgeProps {
 }
 
 export function VerificationBadge({ isVerified, size = "md", className }: VerificationBadgeProps) {
-  if (!isVerified) return null;
+  // Debug log
+  console.log("VerificationBadge render:", { isVerified, size });
+  
+  if (!isVerified) {
+    console.log("Badge not shown - isVerified is false");
+    return null;
+  }
 
   const sizeClasses = {
     sm: "h-3 w-3",
     md: "h-4 w-4", 
     lg: "h-5 w-5"
   };
+
+  console.log("Badge will be shown - isVerified is true");
 
   return (
     <div className={cn(

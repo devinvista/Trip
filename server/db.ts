@@ -35,8 +35,54 @@ export async function testConnection() {
 // Inicializar tabelas usando Drizzle
 export async function initializeTables() {
   try {
-    // Com MySQL e Drizzle, as tabelas são criadas automaticamente
-    // através do schema definido em shared/schema.ts
+    // Create tables with current schema structure
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        full_name VARCHAR(255) NOT NULL,
+        phone VARCHAR(20) NOT NULL,
+        bio TEXT,
+        location VARCHAR(255),
+        profile_photo TEXT,
+        languages JSON,
+        interests JSON,
+        travel_styles JSON,
+        referred_by VARCHAR(50),
+        is_verified BOOLEAN DEFAULT FALSE NOT NULL,
+        verification_method VARCHAR(50),
+        average_rating DECIMAL(3,2) DEFAULT 0.00,
+        total_ratings INT DEFAULT 0 NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+      )
+    `);
+
+    // Check if phone column exists and add it if missing
+    try {
+      await connection.execute(`ALTER TABLE users ADD COLUMN phone VARCHAR(20) NOT NULL DEFAULT ''`);
+      console.log("✅ Campo phone adicionado à tabela users");
+    } catch (error) {
+      // Column already exists, this is fine
+    }
+
+    // Check if is_verified column exists and add it if missing
+    try {
+      await connection.execute(`ALTER TABLE users ADD COLUMN is_verified BOOLEAN DEFAULT FALSE NOT NULL`);
+      console.log("✅ Campo is_verified adicionado à tabela users");
+    } catch (error) {
+      // Column already exists, this is fine
+    }
+
+    // Check if verification_method column exists and add it if missing
+    try {
+      await connection.execute(`ALTER TABLE users ADD COLUMN verification_method VARCHAR(50)`);
+      console.log("✅ Campo verification_method adicionado à tabela users");
+    } catch (error) {
+      // Column already exists, this is fine
+    }
+
     console.log("✅ Tabelas MySQL inicializadas com sucesso!");
     return true;
   } catch (error) {
