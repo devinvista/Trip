@@ -126,15 +126,21 @@ export async function initializeTables() {
       )
     `);
 
+    // Drop and recreate expenses table to ensure correct schema
+    await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
+    await connection.execute("DROP TABLE IF EXISTS expense_splits");
+    await connection.execute("DROP TABLE IF EXISTS expenses");
+    await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
+    
     // Create expenses table
     await connection.execute(`
-      CREATE TABLE IF NOT EXISTS expenses (
+      CREATE TABLE expenses (
         id INT AUTO_INCREMENT PRIMARY KEY,
         trip_id INT NOT NULL,
         paid_by INT NOT NULL,
-        description VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
         amount DECIMAL(10,2) NOT NULL,
-        category VARCHAR(100) NOT NULL,
+        category VARCHAR(100) NOT NULL DEFAULT 'other',
         receipt TEXT,
         settled_at TIMESTAMP NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -145,7 +151,7 @@ export async function initializeTables() {
 
     // Create expense_splits table
     await connection.execute(`
-      CREATE TABLE IF NOT EXISTS expense_splits (
+      CREATE TABLE expense_splits (
         id INT AUTO_INCREMENT PRIMARY KEY,
         expense_id INT NOT NULL,
         user_id INT NOT NULL,
@@ -214,10 +220,10 @@ export async function initializeTables() {
     try {
       console.log("🧹 Limpando dados existentes...");
       
-      // Clear tables in correct order (respecting foreign key constraints)
-      await connection.execute("DELETE FROM activity_reviews");
-      await connection.execute("DELETE FROM activity_bookings");
-      await connection.execute("DELETE FROM activities");
+      // Clear tables in correct order (respecting foreign key constraints) - with error handling
+      try { await connection.execute("DELETE FROM activity_reviews"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM activity_bookings"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM activities"); } catch (e) { /* Table may not exist yet */ }
       
       // Drop and recreate activities table to ensure correct schema
       await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
@@ -293,16 +299,16 @@ export async function initializeTables() {
         )
       `);
       
-      await connection.execute("DELETE FROM expense_splits");
-      await connection.execute("DELETE FROM expenses");
-      await connection.execute("DELETE FROM messages");
-      await connection.execute("DELETE FROM trip_participants");
-      await connection.execute("DELETE FROM trip_requests");
-      await connection.execute("DELETE FROM trips");
-      await connection.execute("DELETE FROM user_ratings");
-      await connection.execute("DELETE FROM destination_ratings");
-      await connection.execute("DELETE FROM verification_requests");
-      await connection.execute("DELETE FROM users");
+      try { await connection.execute("DELETE FROM expense_splits"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM expenses"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM messages"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM trip_participants"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM trip_requests"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM trips"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM user_ratings"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM destination_ratings"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM verification_requests"); } catch (e) { /* Table may not exist yet */ }
+      try { await connection.execute("DELETE FROM users"); } catch (e) { /* Table may not exist yet */ }
       
       // Reset auto-increment counters
       await connection.execute("ALTER TABLE users AUTO_INCREMENT = 1");

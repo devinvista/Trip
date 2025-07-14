@@ -299,7 +299,7 @@ export default function ActivityDetailPage() {
                   </div>
                 )}
 
-                {activity.languages && (
+                {activity.languages && Array.isArray(activity.languages) && (
                   <div className="flex items-center gap-2">
                     <Globe className="w-5 h-5 text-purple-600" />
                     <div>
@@ -325,7 +325,7 @@ export default function ActivityDetailPage() {
               <TabsContent value="details" className="mt-6">
                 <div className="bg-white rounded-lg border p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {activity.inclusions && activity.inclusions.length > 0 && (
+                    {activity.inclusions && Array.isArray(activity.inclusions) && activity.inclusions.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                           <CheckCircle className="w-5 h-5 text-green-600" />
@@ -342,7 +342,7 @@ export default function ActivityDetailPage() {
                       </div>
                     )}
 
-                    {activity.exclusions && activity.exclusions.length > 0 && (
+                    {activity.exclusions && Array.isArray(activity.exclusions) && activity.exclusions.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                           <XCircle className="w-5 h-5 text-red-600" />
@@ -360,7 +360,7 @@ export default function ActivityDetailPage() {
                     )}
                   </div>
 
-                  {activity.requirements && activity.requirements.length > 0 && (
+                  {activity.requirements && Array.isArray(activity.requirements) && activity.requirements.length > 0 && (
                     <div className="mt-6 pt-6 border-t">
                       <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                         <Shield className="w-5 h-5 text-blue-600" />

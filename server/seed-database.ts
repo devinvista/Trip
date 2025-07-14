@@ -577,7 +577,7 @@ export async function seedDatabase() {
           activityId: activity.id,
           userId: randomUser.id,
           rating: 3 + Math.floor(Math.random() * 3), // 3-5 stars
-          comment: reviews_samples[i % reviews_samples.length],
+          review: reviews_samples[i % reviews_samples.length],
           createdAt: new Date()
         });
       } catch (error) {
