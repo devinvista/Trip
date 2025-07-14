@@ -261,8 +261,41 @@ export async function initializeTables() {
 
     console.log("✅ Todas as tabelas criadas com sucesso!");
     
-    // Migrate data from memory storage to database
-    await migrateDataToDatabase();
+    // Clear and seed database with comprehensive data
+    try {
+      console.log("🧹 Limpando dados existentes...");
+      
+      // Clear tables in correct order (respecting foreign key constraints)
+      await connection.execute("DELETE FROM activity_reviews");
+      await connection.execute("DELETE FROM activity_bookings");
+      await connection.execute("DELETE FROM activities");
+      await connection.execute("DELETE FROM expense_splits");
+      await connection.execute("DELETE FROM expenses");
+      await connection.execute("DELETE FROM messages");
+      await connection.execute("DELETE FROM trip_participants");
+      await connection.execute("DELETE FROM trip_requests");
+      await connection.execute("DELETE FROM trips");
+      await connection.execute("DELETE FROM user_ratings");
+      await connection.execute("DELETE FROM destination_ratings");
+      await connection.execute("DELETE FROM verification_requests");
+      await connection.execute("DELETE FROM users");
+      
+      // Reset auto-increment counters
+      await connection.execute("ALTER TABLE users AUTO_INCREMENT = 1");
+      await connection.execute("ALTER TABLE trips AUTO_INCREMENT = 1");
+      await connection.execute("ALTER TABLE activities AUTO_INCREMENT = 1");
+      await connection.execute("ALTER TABLE messages AUTO_INCREMENT = 1");
+      await connection.execute("ALTER TABLE expenses AUTO_INCREMENT = 1");
+      
+      console.log("✅ Dados limpos com sucesso");
+      
+      console.log("🌱 Iniciando população completa do banco de dados...");
+      const { seedDatabase } = await import("./seed-database");
+      await seedDatabase();
+      
+    } catch (error) {
+      console.error("❌ Erro ao limpar/popular banco:", error);
+    }
 
     // Check if phone column exists and add it if missing
     try {
@@ -325,14 +358,6 @@ export async function initializeTables() {
       // Column already exists, this is fine
     }
 
-    // Check current table structure
-    try {
-      const [columns] = await connection.execute(`DESCRIBE users`);
-      console.log("📊 Estrutura atual da tabela users:", columns);
-    } catch (error) {
-      console.log("❌ Erro ao descrever tabela users:", error);
-    }
-
     console.log("✅ Tabelas MySQL inicializadas com sucesso!");
     return true;
   } catch (error) {
@@ -340,264 +365,5 @@ export async function initializeTables() {
     return false;
   }
 }
-
-// Migrate existing data from memory storage to database
-async function migrateDataToDatabase() {
   console.log("📦 Migrando dados da memória para o banco MySQL...");
   
-  try {
-    // Clear existing data for fresh migration
-    await connection.execute("SET FOREIGN_KEY_CHECKS = 0");
-    await connection.execute("TRUNCATE TABLE expense_splits");
-    await connection.execute("TRUNCATE TABLE expenses");
-    await connection.execute("TRUNCATE TABLE activity_reviews");
-    await connection.execute("TRUNCATE TABLE activity_bookings");
-    await connection.execute("TRUNCATE TABLE activities");
-    await connection.execute("TRUNCATE TABLE verification_requests");
-    await connection.execute("TRUNCATE TABLE destination_ratings");
-    await connection.execute("TRUNCATE TABLE user_ratings");
-    await connection.execute("TRUNCATE TABLE messages");
-    await connection.execute("TRUNCATE TABLE trip_requests");
-    await connection.execute("TRUNCATE TABLE trip_participants");
-    await connection.execute("TRUNCATE TABLE trips");
-    await connection.execute("TRUNCATE TABLE users");
-    await connection.execute("SET FOREIGN_KEY_CHECKS = 1");
-    
-    // Create test users
-    const testUsers = [
-      {
-        username: 'tom',
-        password: '$scrypt$N=16384,r=8,p=1$7fW/8E1YKqmH0dY8S8E6ZQ$rCcmJzPcLPKVQWq4ZG7eJcFdB8S5Wt6XyQcLkMv4pAz7nR9T2Y5L8aF3vH1mK9sE',
-        email: 'tom@email.com',
-        full_name: 'Tom Tubin',
-        phone: '(51) 99999-0001',
-        bio: 'Aventureiro apaixonado por trilhas e natureza',
-        location: 'Porto Alegre, RS',
-        travel_style: 'aventura',
-        is_verified: true,
-        verification_method: 'email'
-      },
-      {
-        username: 'maria',
-        password: '$scrypt$N=16384,r=8,p=1$7fW/8E1YKqmH0dY8S8E6ZQ$rCcmJzPcLPKVQWq4ZG7eJcFdB8S5Wt6XyQcLkMv4pAz7nR9T2Y5L8aF3vH1mK9sE',
-        email: 'maria@email.com',
-        full_name: 'Maria Santos',
-        phone: '(11) 98888-0002',
-        bio: 'Exploradora urbana que ama conhecer culturas',
-        location: 'São Paulo, SP',
-        travel_style: 'culturais',
-        is_verified: true,
-        verification_method: 'phone'
-      },
-      {
-        username: 'carlos',
-        password: '$scrypt$N=16384,r=8,p=1$7fW/8E1YKqmH0dY8S8E6ZQ$rCcmJzPcLPKVQWq4ZG7eJcFdB8S5Wt6XyQcLkMv4pAz7nR9T2Y5L8aF3vH1mK9sE',
-        email: 'carlos@email.com',
-        full_name: 'Carlos Oliveira',
-        phone: '(21) 97777-0003',
-        bio: 'Surfista carioca apaixonado por praias',
-        location: 'Rio de Janeiro, RJ',
-        travel_style: 'praia',
-        is_verified: true,
-        verification_method: 'document'
-      },
-      {
-        username: 'ana',
-        password: '$scrypt$N=16384,r=8,p=1$7fW/8E1YKqmH0dY8S8E6ZQ$rCcmJzPcLPKVQWq4ZG7eJcFdB8S5Wt6XyQcLkMv4pAz7nR9T2Y5L8aF3vH1mK9sE',
-        email: 'ana@email.com',
-        full_name: 'Ana Costa',
-        phone: '(31) 96666-0004',
-        bio: 'Fotógrafa que documenta suas viagens',
-        location: 'Belo Horizonte, MG',
-        travel_style: 'natureza',
-        is_verified: false
-      },
-      {
-        username: 'ricardo',
-        password: '$scrypt$N=16384,r=8,p=1$7fW/8E1YKqmH0dY8S8E6ZQ$rCcmJzPcLPKVQWq4ZG7eJcFdB8S5Wt6XyQcLkMv4pAz7nR9T2Y5L8aF3vH1mK9sE',
-        email: 'ricardo@email.com',
-        full_name: 'Ricardo Silva',
-        phone: '(85) 95555-0005',
-        bio: 'Empresário que busca aventuras radicais',
-        location: 'Fortaleza, CE',
-        travel_style: 'aventura',
-        is_verified: false
-      },
-      {
-        username: 'julia',
-        password: '$scrypt$N=16384,r=8,p=1$7fW/8E1YKqmH0dY8S8E6ZQ$rCcmJzPcLPKVQWq4ZG7eJcFdB8S5Wt6XyQcLkMv4pAz7nR9T2Y5L8aF3vH1mK9sE',
-        email: 'julia@email.com',
-        full_name: 'Julia Fernandes',
-        phone: '(47) 94444-0006',
-        bio: 'Professora que adora história e patrimônio',
-        location: 'Florianópolis, SC',
-        travel_style: 'culturais',
-        is_verified: false
-      }
-    ];
-
-    // Insert users
-    for (const user of testUsers) {
-      await connection.execute(`
-        INSERT INTO users (username, password, email, full_name, phone, bio, location, travel_style, is_verified, verification_method)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        user.username, 
-        user.password, 
-        user.email, 
-        user.full_name, 
-        user.phone, 
-        user.bio || null, 
-        user.location || null, 
-        user.travel_style || null, 
-        user.is_verified || false, 
-        user.verification_method || null
-      ]);
-    }
-    console.log("✅ Usuários de teste migrados para o banco");
-
-    // Create test trips
-    const testTrips = [
-      {
-        creator_id: 1, // tom
-        title: 'Trilha na Chapada Diamantina',
-        destination: 'Chapada Diamantina, BA',
-        cover_image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
-        start_date: '2025-08-15',
-        end_date: '2025-08-20',
-        budget: 2500,
-        budget_breakdown: JSON.stringify({
-          transport: 800,
-          accommodation: 600,
-          food: 500,
-          activities: 400,
-          insurance: 100,
-          other: 100
-        }),
-        max_participants: 8,
-        current_participants: 1,
-        description: 'Aventura incrível pela Chapada Diamantina com trilhas, cachoeiras e paisagens de tirar o fôlego.',
-        travel_style: 'aventura',
-        planned_activities: JSON.stringify([
-          {
-            id: 1,
-            name: 'Cachoeira da Fumaça',
-            description: 'Trilha até a impressionante Cachoeira da Fumaça',
-            estimatedCost: 150,
-            priority: 'high'
-          }
-        ])
-      },
-      {
-        creator_id: 1, // tom
-        title: 'Fim de semana relaxante em Campos do Jordão',
-        destination: 'Campos do Jordão, SP',
-        cover_image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80',
-        start_date: '2025-07-25',
-        end_date: '2025-07-27',
-        budget: 1200,
-        budget_breakdown: JSON.stringify({
-          transport: 300,
-          accommodation: 400,
-          food: 300,
-          activities: 150,
-          other: 50
-        }),
-        max_participants: 4,
-        current_participants: 1,
-        description: 'Escapada relaxante para Campos do Jordão com clima de montanha, vinícolas e gastronomia.',
-        travel_style: 'natureza',
-        planned_activities: JSON.stringify([])
-      },
-      {
-        creator_id: 2, // maria
-        title: 'Praia e Cultura no Rio de Janeiro',
-        destination: 'Rio de Janeiro, RJ',
-        cover_image: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&q=80',
-        start_date: '2025-09-10',
-        end_date: '2025-09-15',
-        budget: 3000,
-        budget_breakdown: JSON.stringify({
-          transport: 600,
-          accommodation: 800,
-          food: 700,
-          activities: 600,
-          insurance: 150,
-          other: 150
-        }),
-        max_participants: 6,
-        current_participants: 2,
-        description: 'Combine o melhor do Rio: praias paradisíacas, pontos turísticos icônicos e vida cultural vibrante.',
-        travel_style: 'praia',
-        planned_activities: JSON.stringify([])
-      },
-      {
-        creator_id: 1, // tom
-        title: 'Cruzeiro pelo Mediterrâneo',
-        destination: 'Mediterrâneo',
-        cover_image: 'https://guiaviajarmelhor.com.br/wp-content/uploads/2019/01/Curiosidades-cruzeiro-navio-1.jpg',
-        start_date: '2025-10-20',
-        end_date: '2025-10-30',
-        budget: 8000,
-        budget_breakdown: JSON.stringify({
-          transport: 2000,
-          accommodation: 3000,
-          food: 1500,
-          activities: 1000,
-          insurance: 300,
-          other: 200
-        }),
-        max_participants: 12,
-        current_participants: 1,
-        description: 'Cruzeiro luxuoso pelo Mar Mediterrâneo visitando destinos icônicos da Europa.',
-        travel_style: 'cruzeiros',
-        planned_activities: JSON.stringify([])
-      }
-    ];
-
-    // Insert trips
-    for (const trip of testTrips) {
-      await connection.execute(`
-        INSERT INTO trips (creator_id, title, destination, cover_image, start_date, end_date, budget, budget_breakdown, max_participants, current_participants, description, travel_style, planned_activities)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [
-        trip.creator_id, 
-        trip.title, 
-        trip.destination, 
-        trip.cover_image || null, 
-        trip.start_date, 
-        trip.end_date, 
-        trip.budget || null, 
-        trip.budget_breakdown, 
-        trip.max_participants, 
-        trip.current_participants, 
-        trip.description, 
-        trip.travel_style, 
-        trip.planned_activities
-      ]);
-    }
-    console.log("✅ Viagens de teste migradas para o banco");
-
-    // Add trip participants
-    const tripParticipants = [
-      { trip_id: 3, user_id: 1, status: 'accepted' }, // tom participa da viagem da maria
-      { trip_id: 1, user_id: 1, status: 'accepted' }, // tom é criador da primeira viagem
-      { trip_id: 2, user_id: 1, status: 'accepted' }, // tom é criador da segunda viagem
-      { trip_id: 3, user_id: 2, status: 'accepted' }, // maria é criadora da terceira viagem
-      { trip_id: 4, user_id: 1, status: 'accepted' }  // tom é criador da quarta viagem
-    ];
-
-    for (const participant of tripParticipants) {
-      await connection.execute(`
-        INSERT INTO trip_participants (trip_id, user_id, status)
-        VALUES (?, ?, ?)
-      `, [participant.trip_id, participant.user_id, participant.status]);
-    }
-    console.log("✅ Participantes das viagens migrados para o banco");
-
-    console.log("✅ Migração de dados concluída com sucesso!");
-    
-  } catch (error) {
-    console.error("❌ Erro na migração de dados:", error);
-  }
-}
