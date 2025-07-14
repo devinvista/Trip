@@ -9,7 +9,7 @@ const asyncScrypt = promisify(scrypt);
 async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString('hex');
   const derivedKey = await asyncScrypt(password, salt, 64);
-  return `${salt}:${(derivedKey as Buffer).toString('hex')}`;
+  return `${(derivedKey as Buffer).toString('hex')}.${salt}`;
 }
 
 export async function createSimpleSeedData() {

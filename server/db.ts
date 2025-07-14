@@ -1,6 +1,8 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 import * as schema from "@shared/schema";
+import { sql } from "drizzle-orm";
+import { users } from "@shared/schema";
 
 console.log(`🔗 Conectando ao MySQL...`);
 
@@ -222,9 +224,13 @@ export async function initializeTables() {
 
     console.log("✅ Todas as tabelas criadas com sucesso!");
     
-    // Import and run simple seed data
-    const { createSimpleSeedData } = await import("./comprehensive-seed-simple");
-    await createSimpleSeedData();
+    // Check if we need to create initial test data
+    const [userCount] = await db.select({ count: sql`count(*)` }).from(users);
+    if (userCount.count === 0) {
+      console.log("🌱 Criando dados básicos de teste...");
+      const { createSimpleSeedData } = await import("./comprehensive-seed-simple");
+      await createSimpleSeedData();
+    }
   } catch (error) {
     console.error("❌ Erro na inicialização do banco:", error);
     throw error;
