@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { getRealParticipantsCount } from '@/lib/trip-utils';
 import { 
   DndContext, 
   closestCenter, 
@@ -868,7 +869,7 @@ interface AdvancedActivityManagerProps {
   onActivitiesChange: (activities: PlannedActivity[]) => void;
   className?: string;
   tripDestination?: string;
-  tripParticipants?: number;
+  trip?: any; // Trip object for calculating real participants
 }
 
 export function AdvancedActivityManager({ 
@@ -876,8 +877,9 @@ export function AdvancedActivityManager({
   onActivitiesChange, 
   className = '',
   tripDestination,
-  tripParticipants = 1
+  trip
 }: AdvancedActivityManagerProps) {
+  const realParticipantsCount = trip ? getRealParticipantsCount(trip) : 1;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
 
@@ -1012,7 +1014,7 @@ export function AdvancedActivityManager({
         onClose={() => setIsDialogOpen(false)}
         onSave={handleSaveActivity}
         tripDestination={tripDestination}
-        tripParticipants={tripParticipants}
+        tripParticipants={realParticipantsCount}
       />
     </div>
   );
