@@ -658,33 +658,10 @@ export interface IStorage {
   getUserTripsInLocation(userId: number, location: string): Promise<Trip[]>;
 }
 
-// MySQL Storage implementation - uses database exclusively
-export class MySQLStorage implements IStorage {
-  public sessionStore: session.Store;
+// MemStorage class removed - using MySQLStorage exclusively
 
-  constructor() {
-    // Use MySQL session store instead of memory
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000,
-    });
-  }
-
-  private sanitizeUser(user: User | undefined): Omit<User, 'password'> | undefined {
-    if (!user) return undefined;
-    const { password, ...sanitizedUser } = user;
-    return sanitizedUser;
-  }
-
-  async getUser(id: number): Promise<User | undefined> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
     try {
-      const result = await db.select().from(users).where(eq(users.id, id));
-      return result[0];
-    } catch (error) {
-      console.error('❌ Erro ao buscar usuário:', error);
-      return undefined;
-    }
-  }
-
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
       const result = await db.select().from(users).where(eq(users.username, username));
