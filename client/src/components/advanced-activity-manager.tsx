@@ -1,22 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { getRealParticipantsCount } from '@/lib/trip-utils';
-import { 
-  DndContext, 
-  closestCenter, 
-  KeyboardSensor, 
-  PointerSensor, 
-  useSensor, 
-  useSensors
-} from '@dnd-kit/core';
-import { 
-  arrayMove, 
-  SortableContext, 
-  sortableKeyboardCoordinates, 
-  verticalListSortingStrategy
-} from '@dnd-kit/sortable';
 import { 
   Button, 
   Card, 
@@ -46,7 +30,6 @@ import {
   Plus, 
   DollarSign, 
   Calendar, 
-  GripVertical, 
   MapPin,
   Target,
   Clock,
@@ -98,7 +81,7 @@ const priorityColors = {
   low: 'bg-green-100 text-green-800 border-green-300'
 };
 
-// Activities Timeline Component
+// Modern Activities Timeline Component
 function ActivitiesTimeline({
   activities,
   onEdit,
@@ -114,22 +97,6 @@ function ActivitiesTimeline({
   startDate?: string;
   endDate?: string;
 }) {
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = activities.findIndex(activity => activity.id === active.id);
-      const newIndex = activities.findIndex(activity => activity.id === over.id);
-      onReorder(arrayMove(activities, oldIndex, newIndex));
-    }
-  };
-
   // Group activities by date with better date handling
   const groupedActivities = activities.reduce((groups, activity) => {
     let dateKey = 'Sem data definida';
@@ -181,205 +148,197 @@ function ActivitiesTimeline({
   });
 
   return (
-    <div className="relative">
-      {/* Timeline Line */}
-      <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary to-purple-400"></div>
-      
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-8">
-            {sortedDateGroups.map((dateGroup, groupIndex) => (
-              <div key={dateGroup} className="relative">
-                {/* Date Header */}
-                <div className="flex items-center mb-4">
-                  <div className="relative z-10 bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-2 rounded-full shadow-lg">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span className="font-medium text-sm">
-                        {dateGroup === 'Sem data definida' 
-                          ? dateGroup 
-                          : (() => {
-                              try {
-                                const date = new Date(dateGroup + 'T00:00:00');
-                                return date.toLocaleDateString('pt-BR', {
-                                  weekday: 'long',
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric'
-                                });
-                              } catch (error) {
-                                return dateGroup;
-                              }
-                            })()
-                        }
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Activities for this date */}
-                <div className="ml-16 space-y-4">
-                  {groupedActivities[dateGroup].map((activity, activityIndex) => (
-                    <SortableTimelineActivityItem
-                      key={activity.id}
-                      activity={activity}
-                      onEdit={onEdit}
-                      onDelete={onDelete}
-                      isLast={groupIndex === sortedDateGroups.length - 1 && 
-                             activityIndex === groupedActivities[dateGroup].length - 1}
-                    />
-                  ))}
+    <div className="space-y-12">
+      {sortedDateGroups.map((dateGroup, groupIndex) => (
+        <div key={dateGroup} className="relative">
+          {/* Date Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="bg-white border-2 border-slate-200 shadow-sm rounded-xl px-6 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+                  <span className="font-semibold text-slate-800 text-lg">
+                    {dateGroup === 'Sem data definida' 
+                      ? dateGroup 
+                      : (() => {
+                          try {
+                            const date = new Date(dateGroup + 'T00:00:00');
+                            return date.toLocaleDateString('pt-BR', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            });
+                          } catch (error) {
+                            return dateGroup;
+                          }
+                        })()
+                    }
+                  </span>
                 </div>
               </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
+              <span className="text-sm text-slate-500 bg-slate-50 px-3 py-1 rounded-full">
+                {groupedActivities[dateGroup].length} atividade{groupedActivities[dateGroup].length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+
+          {/* Activities Grid */}
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {groupedActivities[dateGroup].map((activity) => (
+              <ModernActivityCard
+                key={activity.id}
+                activity={activity}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
             ))}
           </div>
-        </SortableContext>
-      </DndContext>
+        </div>
+      ))}
     </div>
   );
 }
 
-// Sortable Timeline Activity Item
-function SortableTimelineActivityItem({ 
+// Modern Activity Card Component
+function ModernActivityCard({ 
   activity, 
   onEdit, 
-  onDelete,
-  isLast = false
+  onDelete
 }: {
   activity: PlannedActivity;
   onEdit: (activity: PlannedActivity) => void;
   onDelete: (id: string) => void;
-  isLast?: boolean;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: activity.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
   const formatTime = (dateTime?: string) => {
-    if (!dateTime) return null;
-    return new Date(dateTime).toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    if (!dateTime || !dateTime.includes('T')) return null;
+    try {
+      return new Date(dateTime).toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return null;
+    }
   };
+
+  const getPriorityConfig = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return { color: 'bg-red-50 text-red-700 border-red-200', dot: 'bg-red-500' };
+      case 'medium':
+        return { color: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500' };
+      case 'low':
+        return { color: 'bg-green-50 text-green-700 border-green-200', dot: 'bg-green-500' };
+      default:
+        return { color: 'bg-gray-50 text-gray-700 border-gray-200', dot: 'bg-gray-500' };
+    }
+  };
+
+  const priorityConfig = getPriorityConfig(activity.priority);
 
   return (
     <motion.div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="relative"
+      className="group"
     >
-      {/* Timeline Connector */}
-      <div className="absolute -left-16 top-6 w-4 h-4 bg-white border-4 border-primary rounded-full shadow-lg"></div>
-      
-      <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary">
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              {/* Header */}
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{activityCategories[activity.category as keyof typeof activityCategories]?.icon || '📌'}</span>
-                  <h4 className="font-semibold text-gray-900 truncate">{activity.title}</h4>
+      <Card className="h-full border-0 shadow-sm hover:shadow-md transition-all duration-300 bg-white/80 backdrop-blur-sm overflow-hidden">
+        <CardContent className="p-0">
+          {/* Header with Category Icon */}
+          <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-4 border-b border-slate-100">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center text-xl flex-shrink-0">
+                  {activityCategories[activity.category as keyof typeof activityCategories]?.icon || '📌'}
                 </div>
-                {formatTime(activity.dateTime) && (
-                  <Badge variant="outline" className="ml-auto">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {formatTime(activity.dateTime)}
-                  </Badge>
-                )}
-              </div>
-
-              {/* Details */}
-              <div className="space-y-2">
-                {activity.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">{activity.description}</p>
-                )}
-                
-                <div className="flex flex-wrap gap-2">
-                  <Badge className={priorityColors[activity.priority]}>
-                    {activity.priority === 'high' && '🔴'} 
-                    {activity.priority === 'medium' && '🟡'} 
-                    {activity.priority === 'low' && '🟢'} 
-                    {activity.priority === 'high' ? 'Alta' : activity.priority === 'medium' ? 'Média' : 'Baixa'}
-                  </Badge>
-                  
-                  <Badge variant="outline">
-                    {activityCategories[activity.category as keyof typeof activityCategories]?.label || activity.category}
-                  </Badge>
-
-                  {activity.estimatedCost && (
-                    <Badge variant="outline" className="text-green-700 border-green-300">
-                      <DollarSign className="h-3 w-3 mr-1" />
-                      R$ {activity.estimatedCost.toLocaleString('pt-BR')}
-                    </Badge>
-                  )}
-
-                  {activity.duration && (
-                    <Badge variant="outline">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {activity.duration}
-                    </Badge>
-                  )}
-
-                  {activity.location && (
-                    <Badge variant="outline">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {activity.location}
-                    </Badge>
-                  )}
-                </div>
-
-                {activity.notes && (
-                  <div className="mt-2 p-2 bg-gray-50 rounded-md">
-                    <p className="text-xs text-gray-600">{activity.notes}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-slate-900 text-sm leading-tight mb-1 line-clamp-2">
+                    {activity.title}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${priorityConfig.color}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${priorityConfig.dot}`}></div>
+                      {activity.priority === 'high' ? 'Alta' : activity.priority === 'medium' ? 'Média' : 'Baixa'}
+                    </span>
+                    {formatTime(activity.dateTime) && (
+                      <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-md">
+                        {formatTime(activity.dateTime)}
+                      </span>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
+              
+              {/* Actions */}
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEdit(activity)}
+                  className="h-7 w-7 p-0 hover:bg-blue-50 hover:text-blue-600"
+                >
+                  <Edit2 className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(activity.id)}
+                  className="h-7 w-7 p-0 hover:bg-red-50 hover:text-red-600"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-4 space-y-3">
+            {activity.description && (
+              <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
+                {activity.description}
+              </p>
+            )}
+
+            {/* Metadata */}
+            <div className="space-y-2">
+              {activity.location && (
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="truncate">{activity.location}</span>
+                </div>
+              )}
+              
+              {activity.duration && (
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span>{activity.duration}</span>
+                </div>
+              )}
+
+              {activity.estimatedCost && activity.estimatedCost > 0 && (
+                <div className="flex items-center gap-2 text-xs text-emerald-600 font-medium">
+                  <DollarSign className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span>R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
+                </div>
+              )}
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onEdit(activity)}
-                className="h-8 w-8 p-0"
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDelete(activity.id)}
-                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-              <div {...listeners} className="cursor-grab hover:cursor-grabbing p-1">
-                <GripVertical className="h-4 w-4 text-gray-400" />
-              </div>
+            {/* Category Badge */}
+            <div className="pt-2 border-t border-slate-100">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-md">
+                {activityCategories[activity.category as keyof typeof activityCategories]?.label || activity.category}
+              </span>
             </div>
+
+            {activity.notes && (
+              <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <p className="text-xs text-slate-600 leading-relaxed">{activity.notes}</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -525,12 +484,15 @@ function ActivityManagementDialog({
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-5xl max-h-[95vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-5xl max-h-[95vh] overflow-y-auto" aria-describedby="activity-dialog-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
             {activity ? 'Editar Atividade' : 'Adicionar Atividade'}
           </DialogTitle>
+          <p id="activity-dialog-description" className="sr-only">
+            {activity ? 'Formulário para editar uma atividade existente' : 'Formulário para adicionar uma nova atividade à viagem'}
+          </p>
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -1271,21 +1233,9 @@ export function AdvancedActivityManager({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = activities.findIndex(activity => activity.id === active.id);
-      const newIndex = activities.findIndex(activity => activity.id === over.id);
-      onActivitiesChange(arrayMove(activities, oldIndex, newIndex));
-    }
-  };
+
+
 
   const handleSaveActivity = (activity: PlannedActivity) => {
     if (editingActivity) {
