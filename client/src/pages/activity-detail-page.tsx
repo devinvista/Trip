@@ -56,6 +56,18 @@ export default function ActivityDetailPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // Helper function to safely parse JSON arrays
+  const parseJsonArray = (data: any): any[] => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    try {
+      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
   const { data: activity, isLoading: activityLoading } = useQuery<Activity>({
     queryKey: [`/api/activities/${id}`],
     queryFn: async () => {
@@ -199,35 +211,43 @@ export default function ActivityDetailPage() {
             {/* Image Gallery */}
             <div className="mb-6">
               <div className="relative rounded-lg overflow-hidden">
-                <img
-                  src={activity.images?.[selectedImageIndex] || activity.coverImage}
-                  alt={activity.title}
-                  className="w-full h-96 object-cover"
-                />
+                {(() => {
+                  const images = parseJsonArray(activity.images);
+                  return (
+                    <img
+                      src={images[selectedImageIndex] || activity.coverImage}
+                      alt={activity.title}
+                      className="w-full h-96 object-cover"
+                    />
+                  );
+                })()}
                 
-                {activity.images && activity.images.length > 1 && (
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex gap-2 overflow-x-auto">
-                      {activity.images.map((image, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedImageIndex(index)}
-                          className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                            index === selectedImageIndex 
-                              ? "border-white" 
-                              : "border-white/50"
-                          }`}
-                        >
-                          <img
-                            src={image}
-                            alt={`${activity.title} ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </button>
-                      ))}
+                {(() => {
+                  const images = parseJsonArray(activity.images);
+                  return images && images.length > 1 && (
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="flex gap-2 overflow-x-auto">
+                        {images.map((image: string, index: number) => (
+                          <button
+                            key={index}
+                            onClick={() => setSelectedImageIndex(index)}
+                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                              index === selectedImageIndex 
+                                ? "border-white" 
+                                : "border-white/50"
+                            }`}
+                          >
+                            <img
+                              src={image}
+                              alt={`${activity.title} ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
 
@@ -299,17 +319,20 @@ export default function ActivityDetailPage() {
                   </div>
                 )}
 
-                {activity.languages && Array.isArray(activity.languages) && (
-                  <div className="flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-purple-600" />
-                    <div>
-                      <div className="text-sm font-medium">Idiomas</div>
-                      <div className="text-xs text-gray-600">
-                        {activity.languages.join(", ")}
+                {(() => {
+                  const languages = parseJsonArray(activity.languages);
+                  return languages.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-purple-600" />
+                      <div>
+                        <div className="text-sm font-medium">Idiomas</div>
+                        <div className="text-xs text-gray-600">
+                          {languages.join(", ")}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
 
@@ -325,57 +348,66 @@ export default function ActivityDetailPage() {
               <TabsContent value="details" className="mt-6">
                 <div className="bg-white rounded-lg border p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {activity.inclusions && Array.isArray(activity.inclusions) && activity.inclusions.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                          Incluso
-                        </h3>
-                        <ul className="space-y-2">
-                          {activity.inclusions.map((item, index) => (
-                            <li key={index} className="flex items-center gap-2 text-sm">
-                              <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    {(() => {
+                      const inclusions = parseJsonArray(activity.inclusions);
+                      return inclusions.length > 0 && (
+                        <div>
+                          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                            Incluso
+                          </h3>
+                          <ul className="space-y-2">
+                            {inclusions.map((item, index) => (
+                              <li key={index} className="flex items-center gap-2 text-sm">
+                                <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })()}
 
-                    {activity.exclusions && Array.isArray(activity.exclusions) && activity.exclusions.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                          <XCircle className="w-5 h-5 text-red-600" />
-                          Não incluso
-                        </h3>
-                        <ul className="space-y-2">
-                          {activity.exclusions.map((item, index) => (
-                            <li key={index} className="flex items-center gap-2 text-sm">
-                              <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                    {(() => {
+                      const exclusions = parseJsonArray(activity.exclusions);
+                      return exclusions.length > 0 && (
+                        <div>
+                          <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                            <XCircle className="w-5 h-5 text-red-600" />
+                            Não incluso
+                          </h3>
+                          <ul className="space-y-2">
+                            {exclusions.map((item, index) => (
+                              <li key={index} className="flex items-center gap-2 text-sm">
+                                <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })()}
                   </div>
 
-                  {activity.requirements && Array.isArray(activity.requirements) && activity.requirements.length > 0 && (
-                    <div className="mt-6 pt-6 border-t">
-                      <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-blue-600" />
-                        Requisitos e Restrições
-                      </h3>
-                      <ul className="space-y-2">
-                        {activity.requirements.map((req, index) => (
-                          <li key={index} className="flex items-center gap-2 text-sm">
-                            <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {(() => {
+                    const requirements = parseJsonArray(activity.requirements);
+                    return requirements.length > 0 && (
+                      <div className="mt-6 pt-6 border-t">
+                        <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                          <Shield className="w-5 h-5 text-blue-600" />
+                          Requisitos e Restrições
+                        </h3>
+                        <ul className="space-y-2">
+                          {requirements.map((req, index) => (
+                            <li key={index} className="flex items-center gap-2 text-sm">
+                              <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                              {req}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })()}
 
                   {activity.cancellationPolicy && (
                     <div className="mt-6 pt-6 border-t">
