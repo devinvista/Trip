@@ -389,15 +389,19 @@ export default function ActivitiesPage() {
                       variant={filters.category === key ? "default" : "ghost"}
                       size="sm"
                       onClick={() => updateFilter("category", key)}
-                      className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 ${
+                      className={`group px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 transition-all duration-300 ${
                         filters.category === key 
-                          ? "bg-[#41B6FF] text-white shadow-sm" 
-                          : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
+                          ? "bg-[#41B6FF] text-white shadow-sm scale-105" 
+                          : "text-[#1B2B49] hover:bg-[#41B6FF]/10 hover:text-[#41B6FF] hover:shadow-md hover:scale-102 hover:border-[#41B6FF]/30"
                       }`}
                     >
-                      <span className="text-sm">{cat.icon}</span>
+                      <span className="text-sm transition-transform duration-300 group-hover:scale-110">{cat.icon}</span>
                       <span className="hidden sm:inline">{cat.label}</span>
-                      <span className="bg-white/20 text-current px-1 py-0.5 rounded text-xs">
+                      <span className={`px-1 py-0.5 rounded text-xs transition-colors duration-300 ${
+                        filters.category === key 
+                          ? "bg-white/20 text-current" 
+                          : "bg-slate-100 text-slate-600 group-hover:bg-[#41B6FF]/20 group-hover:text-[#41B6FF]"
+                      }`}>
                         {count}
                       </span>
                     </Button>
