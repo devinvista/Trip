@@ -138,13 +138,16 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   });
 
   const handleSubmit = (data: ReviewFormData) => {
-    console.log('Submitting review data:', data);
-    console.log('User authenticated:', !!user);
-    console.log('User details:', user);
-    console.log('Activity ID:', activityId);
-    console.log('Form errors:', form.formState.errors);
+    console.log('🚀 handleSubmit called with data:', data);
+    console.log('🔐 User authenticated:', !!user);
+    console.log('👤 User details:', user);
+    console.log('🎯 Activity ID:', activityId);
+    console.log('❌ Form errors:', form.formState.errors);
+    console.log('✅ Form valid:', form.formState.isValid);
+    console.log('📝 Form values:', form.getValues());
     
     if (!user) {
+      console.log('❌ User not authenticated, showing toast');
       toast({ 
         title: "Erro de autenticação", 
         description: "Você precisa estar logado para avaliar atividades",
@@ -153,6 +156,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
       return;
     }
     
+    console.log('🔄 Calling createReview.mutate...');
     createReview.mutate(data);
   };
 
@@ -274,6 +278,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                           type="submit"
                           disabled={createReview.isPending}
                           className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                          onClick={() => console.log('🔥 Button clicked! Form state:', form.formState)}
                         >
                           {createReview.isPending ? "Enviando..." : "Enviar Avaliação"}
                         </Button>
