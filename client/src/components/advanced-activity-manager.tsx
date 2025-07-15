@@ -795,7 +795,7 @@ function ActivityFormTab({
           />
           {tripStartDate && tripEndDate && (
             <p className="text-xs text-gray-500">
-              Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
+              Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')} (incluindo ambos os dias)
             </p>
           )}
         </div>
