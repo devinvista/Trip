@@ -106,22 +106,28 @@ export default function ActivitiesPage() {
   }, [debouncedSearch]);
 
   // Fetch user's trips to filter activities by destination
-  const { data: userTrips = [] } = useQuery({
-    queryKey: ["/api/user/trips"],
+  const { data: myTripsData } = useQuery({
+    queryKey: ["/api/my-trips"],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user) return { created: [], participating: [] };
       try {
-        const response = await fetch("/api/user/trips");
-        if (!response.ok) return [];
+        const response = await fetch("/api/my-trips");
+        if (!response.ok) return { created: [], participating: [] };
         return response.json();
       } catch (error) {
         console.error("Erro ao carregar viagens do usuário:", error);
-        return [];
+        return { created: [], participating: [] };
       }
     },
     enabled: !!user,
     retry: false,
   });
+
+  // Combine created and participating trips
+  const userTrips = useMemo(() => {
+    if (!myTripsData) return [];
+    return [...(myTripsData.created || []), ...(myTripsData.participating || [])];
+  }, [myTripsData]);
 
   const { data: activities, isLoading, isFetching } = useQuery<Activity[]>({
     queryKey: ["/api/activities", filters],
