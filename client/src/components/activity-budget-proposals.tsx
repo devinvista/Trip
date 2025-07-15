@@ -513,7 +513,9 @@ export function ActivityBudgetProposals({
                 <Card 
                   className={`relative h-full transition-all duration-300 cursor-pointer group ${
                     isSelected 
-                      ? 'ring-2 ring-blue-500 shadow-lg transform scale-[1.02]' 
+                      ? isBestValue
+                        ? 'ring-2 ring-green-500 shadow-lg transform scale-[1.02]'
+                        : 'ring-2 ring-blue-500 shadow-lg transform scale-[1.02]' 
                       : 'hover:shadow-lg hover:transform hover:scale-[1.01]'
                   } ${isBestValue ? 'border-green-500 border-2' : ''}`}
                   onClick={() => onSelectProposal?.(proposal)}
@@ -534,7 +536,7 @@ export function ActivityBudgetProposals({
                         <CardTitle className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
                           {proposal.title}
                           {isSelected && (
-                            <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                            <div className={`w-5 h-5 ${isBestValue ? 'bg-green-500' : 'bg-blue-500'} rounded-full flex items-center justify-center`}>
                               <Check className="h-3 w-3 text-white" />
                             </div>
                           )}
@@ -552,7 +554,7 @@ export function ActivityBudgetProposals({
                         <div className="text-3xl font-bold text-gray-900 mb-1">
                           R$ {Number(proposal.amount || 0).toFixed(2)}
                         </div>
-                        <Badge variant="outline" className="capitalize text-xs">
+                        <Badge variant="outline" className={`capitalize text-xs ${isBestValue ? 'border-green-300 text-green-700' : ''}`}>
                           {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
                         </Badge>
                       </div>
@@ -621,7 +623,11 @@ export function ActivityBudgetProposals({
                             includedProposalIds.includes(proposal.id)
                               ? "h-8 bg-green-100 hover:bg-green-200 text-green-800 border-green-300 cursor-not-allowed"
                               : isSelected 
-                              ? "h-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-blue-600 shadow-md" 
+                              ? isBestValue
+                                ? "h-8 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-green-600 shadow-md"
+                                : "h-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-blue-600 shadow-md"
+                              : isBestValue
+                              ? "h-8 border-green-300 text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:border-green-400 hover:text-green-700 transition-all duration-200"
                               : "h-8 border-blue-300 text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-400 hover:text-blue-700 transition-all duration-200"
                           }
                           disabled={includedProposalIds.includes(proposal.id)}
