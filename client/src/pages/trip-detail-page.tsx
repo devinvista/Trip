@@ -654,6 +654,15 @@ export default function TripDetailPage() {
   // Calculate user permissions
   const isCreator = trip && user && trip.creatorId === user.id;
   const isParticipant = trip && user && trip.participants?.some((p: any) => p.userId === user.id && p.status === 'accepted');
+  
+  // Debug permissions
+  console.log('Permission Debug:', {
+    user: user?.username,
+    isCreator,
+    isParticipant,
+    participants: trip?.participants,
+    showManagerForParticipants: isCreator || isParticipant
+  });
 
   const { data: expenses = [] } = useQuery<any[]>({
     queryKey: ["/api/trips", id, "expenses"],
