@@ -11,6 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { AdvancedActivityManager } from "@/components/advanced-activity-manager";
@@ -44,7 +47,11 @@ import {
   Palette,
   Waves,
   Music,
-  ShoppingBag
+  ShoppingBag,
+  Edit2,
+  Trash2,
+  Plus,
+  Save
 } from "lucide-react";
 import { format, differenceInDays, differenceInHours, differenceInMinutes, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -302,20 +309,147 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
   );
 }
 
-// Activities Timeline Component
+// Enhanced Activities Timeline Component with Edit Features
 function ActivitiesTimeline({ 
   activities, 
   tripStartDate, 
   tripEndDate, 
   canJoin, 
-  onJoinClick 
+  onJoinClick,
+  onActivitiesChange,
+  isEditable = false,
+  trip
 }: {
   activities: PlannedActivity[];
   tripStartDate: string;
   tripEndDate: string;
   canJoin: boolean;
   onJoinClick: () => void;
+  onActivitiesChange?: (activities: PlannedActivity[]) => void;
+  isEditable?: boolean;
+  trip?: any;
 }) {
+  const [editingActivity, setEditingActivity] = useState<PlannedActivity | null>(null);
+  const [isAddingActivity, setIsAddingActivity] = useState(false);
+  const [newActivity, setNewActivity] = useState<Partial<PlannedActivity>>({
+    priority: 'medium',
+    category: 'sightseeing',
+    scheduledDate: tripStartDate
+  });
+  const { toast } = useToast();
+
+  // Functions to handle activity editing
+  const handleSaveActivity = async (activity: PlannedActivity) => {
+    if (!onActivitiesChange) return;
+    
+    const updatedActivities = activities.map(a => 
+      a.id === activity.id ? activity : a
+    );
+    
+    try {
+      // Save to backend if trip is provided
+      if (trip) {
+        await apiRequest(`/api/trips/${trip.id}`, {
+          method: 'PATCH',
+          body: { plannedActivities: updatedActivities }
+        });
+      }
+      
+      onActivitiesChange(updatedActivities);
+      setEditingActivity(null);
+      toast({
+        title: "Atividade atualizada",
+        description: "As alterações foram salvas com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao salvar atividade:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar as alterações. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteActivity = async (activityId: string) => {
+    if (!onActivitiesChange) return;
+    
+    const updatedActivities = activities.filter(a => a.id !== activityId);
+    
+    try {
+      // Save to backend if trip is provided
+      if (trip) {
+        await apiRequest(`/api/trips/${trip.id}`, {
+          method: 'PATCH',
+          body: { plannedActivities: updatedActivities }
+        });
+      }
+      
+      onActivitiesChange(updatedActivities);
+      toast({
+        title: "Atividade removida",
+        description: "A atividade foi removida do cronograma.",
+      });
+    } catch (error) {
+      console.error('Erro ao remover atividade:', error);
+      toast({
+        title: "Erro ao remover",
+        description: "Não foi possível remover a atividade. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleAddActivity = async () => {
+    if (!onActivitiesChange || !newActivity.title) return;
+    
+    const activity: PlannedActivity = {
+      id: Date.now().toString(),
+      title: newActivity.title,
+      description: newActivity.description,
+      category: newActivity.category || 'sightseeing',
+      priority: newActivity.priority || 'medium',
+      estimatedCost: newActivity.estimatedCost,
+      duration: newActivity.duration,
+      location: newActivity.location,
+      scheduledDate: newActivity.scheduledDate || tripStartDate,
+      notes: newActivity.notes,
+      completed: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    const updatedActivities = [...activities, activity];
+    
+    try {
+      // Save to backend if trip is provided
+      if (trip) {
+        await apiRequest(`/api/trips/${trip.id}`, {
+          method: 'PATCH',
+          body: { plannedActivities: updatedActivities }
+        });
+      }
+      
+      onActivitiesChange(updatedActivities);
+      setNewActivity({
+        priority: 'medium',
+        category: 'sightseeing',
+        scheduledDate: tripStartDate
+      });
+      setIsAddingActivity(false);
+      toast({
+        title: "Atividade adicionada",
+        description: "Nova atividade foi adicionada ao cronograma.",
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar atividade:', error);
+      toast({
+        title: "Erro ao adicionar",
+        description: "Não foi possível adicionar a atividade. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
   // Function to get category icon and color
   const getCategoryConfig = (category: string) => {
     switch (category) {
@@ -359,8 +493,8 @@ function ActivitiesTimeline({
     const grouped: { [key: string]: PlannedActivity[] } = {};
     
     activities.forEach(activity => {
-      if (activity.dateTime) {
-        const date = parseISO(activity.dateTime);
+      if (activity.scheduledDate) {
+        const date = parseISO(activity.scheduledDate);
         const dateKey = format(date, 'yyyy-MM-dd');
         
         if (!grouped[dateKey]) {
@@ -444,13 +578,24 @@ function ActivitiesTimeline({
               </p>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-blue-600">
-              {activities.length}
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <div className="text-2xl font-bold text-blue-600">
+                {activities.length}
+              </div>
+              <div className="text-sm text-gray-500">
+                {activities.length === 1 ? 'atividade' : 'atividades'}
+              </div>
             </div>
-            <div className="text-sm text-gray-500">
-              {activities.length === 1 ? 'atividade' : 'atividades'}
-            </div>
+            {isEditable && (
+              <Button
+                onClick={() => setIsAddingActivity(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Atividade
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -531,6 +676,26 @@ function ActivitiesTimeline({
                                 <Badge variant="outline" className="text-xs px-3 py-1 font-medium bg-gray-50 text-gray-700">
                                   {categoryConfig.label}
                                 </Badge>
+                                {isEditable && (
+                                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setEditingActivity(activity)}
+                                      className="h-8 w-8 p-0 border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                                    >
+                                      <Edit2 className="h-3 w-3 text-blue-600" />
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleDeleteActivity(activity.id)}
+                                      className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 hover:border-red-300"
+                                    >
+                                      <Trash2 className="h-3 w-3 text-red-600" />
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                             
@@ -601,6 +766,222 @@ function ActivitiesTimeline({
           </div>
         </div>
       </motion.div>
+
+      {/* Edit Activity Dialog */}
+      {editingActivity && (
+        <Dialog open={!!editingActivity} onOpenChange={() => setEditingActivity(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Editar Atividade</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-title">Título</Label>
+                <Input
+                  id="edit-title"
+                  value={editingActivity.title}
+                  onChange={(e) => setEditingActivity({...editingActivity, title: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-description">Descrição</Label>
+                <Textarea
+                  id="edit-description"
+                  value={editingActivity.description || ''}
+                  onChange={(e) => setEditingActivity({...editingActivity, description: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-category">Categoria</Label>
+                  <Select value={editingActivity.category} onValueChange={(value) => setEditingActivity({...editingActivity, category: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sightseeing">Turismo</SelectItem>
+                      <SelectItem value="food">Comida</SelectItem>
+                      <SelectItem value="adventure">Aventura</SelectItem>
+                      <SelectItem value="culture">Cultura</SelectItem>
+                      <SelectItem value="relaxation">Relaxamento</SelectItem>
+                      <SelectItem value="nightlife">Vida Noturna</SelectItem>
+                      <SelectItem value="shopping">Compras</SelectItem>
+                      <SelectItem value="other">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-priority">Prioridade</Label>
+                  <Select value={editingActivity.priority} onValueChange={(value) => setEditingActivity({...editingActivity, priority: value as 'high' | 'medium' | 'low'})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">Alta</SelectItem>
+                      <SelectItem value="medium">Média</SelectItem>
+                      <SelectItem value="low">Baixa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-duration">Duração</Label>
+                  <Input
+                    id="edit-duration"
+                    value={editingActivity.duration || ''}
+                    onChange={(e) => setEditingActivity({...editingActivity, duration: e.target.value})}
+                    placeholder="ex: 2 horas"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-cost">Custo Estimado (R$)</Label>
+                  <Input
+                    id="edit-cost"
+                    type="number"
+                    value={editingActivity.estimatedCost || ''}
+                    onChange={(e) => setEditingActivity({...editingActivity, estimatedCost: Number(e.target.value)})}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="edit-location">Local</Label>
+                <Input
+                  id="edit-location"
+                  value={editingActivity.location || ''}
+                  onChange={(e) => setEditingActivity({...editingActivity, location: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-notes">Observações</Label>
+                <Textarea
+                  id="edit-notes"
+                  value={editingActivity.notes || ''}
+                  onChange={(e) => setEditingActivity({...editingActivity, notes: e.target.value})}
+                />
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button onClick={() => handleSaveActivity(editingActivity)} className="flex-1">
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar Alterações
+                </Button>
+                <Button variant="outline" onClick={() => setEditingActivity(null)}>
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Add Activity Dialog */}
+      <Dialog open={isAddingActivity} onOpenChange={setIsAddingActivity}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Adicionar Nova Atividade</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="new-title">Título</Label>
+              <Input
+                id="new-title"
+                value={newActivity.title || ''}
+                onChange={(e) => setNewActivity({...newActivity, title: e.target.value})}
+                placeholder="Nome da atividade"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-description">Descrição</Label>
+              <Textarea
+                id="new-description"
+                value={newActivity.description || ''}
+                onChange={(e) => setNewActivity({...newActivity, description: e.target.value})}
+                placeholder="Descreva a atividade..."
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="new-category">Categoria</Label>
+                <Select value={newActivity.category} onValueChange={(value) => setNewActivity({...newActivity, category: value})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sightseeing">Turismo</SelectItem>
+                    <SelectItem value="food">Comida</SelectItem>
+                    <SelectItem value="adventure">Aventura</SelectItem>
+                    <SelectItem value="culture">Cultura</SelectItem>
+                    <SelectItem value="relaxation">Relaxamento</SelectItem>
+                    <SelectItem value="nightlife">Vida Noturna</SelectItem>
+                    <SelectItem value="shopping">Compras</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="new-priority">Prioridade</Label>
+                <Select value={newActivity.priority} onValueChange={(value) => setNewActivity({...newActivity, priority: value as 'high' | 'medium' | 'low'})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="high">Alta</SelectItem>
+                    <SelectItem value="medium">Média</SelectItem>
+                    <SelectItem value="low">Baixa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="new-duration">Duração</Label>
+                <Input
+                  id="new-duration"
+                  value={newActivity.duration || ''}
+                  onChange={(e) => setNewActivity({...newActivity, duration: e.target.value})}
+                  placeholder="ex: 2 horas"
+                />
+              </div>
+              <div>
+                <Label htmlFor="new-cost">Custo Estimado (R$)</Label>
+                <Input
+                  id="new-cost"
+                  type="number"
+                  value={newActivity.estimatedCost || ''}
+                  onChange={(e) => setNewActivity({...newActivity, estimatedCost: Number(e.target.value)})}
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="new-location">Local</Label>
+              <Input
+                id="new-location"
+                value={newActivity.location || ''}
+                onChange={(e) => setNewActivity({...newActivity, location: e.target.value})}
+                placeholder="Local da atividade"
+              />
+            </div>
+            <div>
+              <Label htmlFor="new-notes">Observações</Label>
+              <Textarea
+                id="new-notes"
+                value={newActivity.notes || ''}
+                onChange={(e) => setNewActivity({...newActivity, notes: e.target.value})}
+                placeholder="Observações adicionais..."
+              />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button onClick={handleAddActivity} className="flex-1" disabled={!newActivity.title}>
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Atividade
+              </Button>
+              <Button variant="outline" onClick={() => setIsAddingActivity(false)}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -1070,45 +1451,16 @@ export default function TripDetailPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {(isCreator || isParticipant) ? (
-                      <div className="space-y-6">
-                        {/* Timeline View */}
-                        <ActivitiesTimeline 
-                          activities={plannedActivities}
-                          tripStartDate={trip.startDate}
-                          tripEndDate={trip.endDate}
-                          canJoin={canJoin}
-                          onJoinClick={() => setActiveTab("overview")}
-                        />
-                        
-                        {/* Activity Manager for editing */}
-                        <div className="border-t pt-6">
-                          <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-900">Gerenciar Atividades</h3>
-                            <p className="text-sm text-gray-600">Arraste e solte para reorganizar</p>
-                          </div>
-                          <AdvancedActivityManager
-                            activities={plannedActivities}
-                            onActivitiesChange={setPlannedActivities}
-                            tripDestination={trip.destination}
-                            trip={trip}
-                            tripParticipants={realParticipants.length}
-                            tripMaxParticipants={trip.maxParticipants}
-                            tripStartDate={trip.startDate}
-                            tripEndDate={trip.endDate}
-                            className="border-0"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <ActivitiesTimeline 
-                        activities={plannedActivities}
-                        tripStartDate={trip.startDate}
-                        tripEndDate={trip.endDate}
-                        canJoin={canJoin}
-                        onJoinClick={() => setActiveTab("overview")}
-                      />
-                    )}
+                    <ActivitiesTimeline 
+                      activities={plannedActivities}
+                      tripStartDate={trip.startDate}
+                      tripEndDate={trip.endDate}
+                      canJoin={canJoin}
+                      onJoinClick={() => setActiveTab("overview")}
+                      onActivitiesChange={setPlannedActivities}
+                      isEditable={isCreator || isParticipant}
+                      trip={trip}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
