@@ -81,7 +81,7 @@ const priorityColors = {
   low: 'bg-green-100 text-green-800 border-green-300'
 };
 
-// Modern Activities Timeline Component
+// Professional Timeline Component
 function ActivitiesTimeline({
   activities,
   onEdit,
@@ -103,24 +103,17 @@ function ActivitiesTimeline({
     
     if (activity.dateTime) {
       try {
-        // Handle different date formats
         let dateValue = activity.dateTime;
-        
-        // If it's already a date object, use it
         if (dateValue instanceof Date) {
-          dateKey = dateValue.toISOString().split('T')[0]; // YYYY-MM-DD format
+          dateKey = dateValue.toISOString().split('T')[0];
         } 
-        // If it's a string, try to parse it
         else if (typeof dateValue === 'string') {
-          // Handle YYYY-MM-DD format (from date input)
           if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
             dateKey = dateValue;
           }
-          // Handle YYYY-MM-DDTHH:mm:ss format
           else if (dateValue.includes('T')) {
             dateKey = new Date(dateValue).toISOString().split('T')[0];
           }
-          // Handle other date formats
           else {
             const parsed = new Date(dateValue);
             if (!isNaN(parsed.getTime())) {
@@ -147,204 +140,288 @@ function ActivitiesTimeline({
     return new Date(a).getTime() - new Date(b).getTime();
   });
 
-  return (
-    <div className="space-y-12">
-      {sortedDateGroups.map((dateGroup, groupIndex) => (
-        <div key={dateGroup} className="relative">
-          {/* Date Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="bg-white border-2 border-slate-200 shadow-sm rounded-xl px-6 py-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-                  <span className="font-semibold text-slate-800 text-lg">
-                    {dateGroup === 'Sem data definida' 
-                      ? dateGroup 
-                      : (() => {
-                          try {
-                            const date = new Date(dateGroup + 'T00:00:00');
-                            return date.toLocaleDateString('pt-BR', {
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            });
-                          } catch (error) {
-                            return dateGroup;
-                          }
-                        })()
-                    }
-                  </span>
-                </div>
-              </div>
-              <div className="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
-              <span className="text-sm text-slate-500 bg-slate-50 px-3 py-1 rounded-full">
-                {groupedActivities[dateGroup].length} atividade{groupedActivities[dateGroup].length !== 1 ? 's' : ''}
-              </span>
-            </div>
-          </div>
+  const formatDate = (dateStr: string) => {
+    if (dateStr === 'Sem data definida') return dateStr;
+    try {
+      const date = new Date(dateStr + 'T00:00:00');
+      return date.toLocaleDateString('pt-BR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    } catch {
+      return dateStr;
+    }
+  };
 
-          {/* Activities Grid */}
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {groupedActivities[dateGroup].map((activity) => (
-              <ModernActivityCard
-                key={activity.id}
-                activity={activity}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
+  const getDayOfWeek = (dateStr: string) => {
+    if (dateStr === 'Sem data definida') return '';
+    try {
+      const date = new Date(dateStr + 'T00:00:00');
+      return date.toLocaleDateString('pt-BR', { weekday: 'short' }).toUpperCase();
+    } catch {
+      return '';
+    }
+  };
+
+  const getDay = (dateStr: string) => {
+    if (dateStr === 'Sem data definida') return '';
+    try {
+      const date = new Date(dateStr + 'T00:00:00');
+      return date.getDate().toString();
+    } catch {
+      return '';
+    }
+  };
+
+  return (
+    <div className="relative">
+      {/* Timeline Backbone */}
+      <div className="absolute left-12 top-0 bottom-0 w-px bg-gradient-to-b from-blue-200 via-purple-200 to-transparent"></div>
+      
+      <div className="space-y-16">
+        {sortedDateGroups.map((dateGroup, groupIndex) => (
+          <motion.div 
+            key={dateGroup}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: groupIndex * 0.1 }}
+            className="relative"
+          >
+            {/* Date Marker */}
+            <div className="absolute left-0 top-0 z-10">
+              {dateGroup !== 'Sem data definida' ? (
+                <div className="flex items-center gap-4">
+                  <div className="bg-white border-2 border-blue-200 rounded-2xl shadow-lg p-3 min-w-[100px] text-center">
+                    <div className="text-xs font-bold text-blue-600 mb-1">
+                      {getDayOfWeek(dateGroup)}
+                    </div>
+                    <div className="text-2xl font-bold text-slate-800">
+                      {getDay(dateGroup)}
+                    </div>
+                  </div>
+                  <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-md"></div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <div className="bg-gray-100 border-2 border-gray-300 rounded-2xl shadow-lg p-3 min-w-[100px] text-center">
+                    <div className="text-xs font-medium text-gray-500">
+                      SEM DATA
+                    </div>
+                  </div>
+                  <div className="w-4 h-4 bg-gray-400 rounded-full shadow-md"></div>
+                </div>
+              )}
+            </div>
+
+            {/* Content Area */}
+            <div className="ml-32">
+              {/* Date Header */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-slate-800 mb-1">
+                  {formatDate(dateGroup)}
+                </h3>
+                <p className="text-sm text-slate-500">
+                  {groupedActivities[dateGroup].length} atividade{groupedActivities[dateGroup].length !== 1 ? 's' : ''} planejada{groupedActivities[dateGroup].length !== 1 ? 's' : ''}
+                </p>
+              </div>
+
+              {/* Activities List */}
+              <div className="space-y-4">
+                {groupedActivities[dateGroup]
+                  .sort((a, b) => {
+                    // Sort by time if available
+                    if (a.dateTime?.includes('T') && b.dateTime?.includes('T')) {
+                      return a.dateTime.localeCompare(b.dateTime);
+                    }
+                    return 0;
+                  })
+                  .map((activity, activityIndex) => {
+                    const formatTime = (dateTime?: string) => {
+                      if (!dateTime || !dateTime.includes('T')) return null;
+                      try {
+                        return new Date(dateTime).toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        });
+                      } catch {
+                        return null;
+                      }
+                    };
+
+                    const getPriorityConfig = (priority: string) => {
+                      switch (priority) {
+                        case 'high':
+                          return { 
+                            color: 'text-red-700 bg-red-50 border-red-200', 
+                            accent: 'border-red-400',
+                            dot: 'bg-red-500' 
+                          };
+                        case 'medium':
+                          return { 
+                            color: 'text-amber-700 bg-amber-50 border-amber-200', 
+                            accent: 'border-amber-400',
+                            dot: 'bg-amber-500' 
+                          };
+                        case 'low':
+                          return { 
+                            color: 'text-emerald-700 bg-emerald-50 border-emerald-200', 
+                            accent: 'border-emerald-400',
+                            dot: 'bg-emerald-500' 
+                          };
+                        default:
+                          return { 
+                            color: 'text-gray-700 bg-gray-50 border-gray-200', 
+                            accent: 'border-gray-400',
+                            dot: 'bg-gray-500' 
+                          };
+                      }
+                    };
+
+                    const getCategoryConfig = (category: string) => {
+                      const categoryInfo = activityCategories[category as keyof typeof activityCategories];
+                      return {
+                        icon: categoryInfo?.icon || '📌',
+                        label: categoryInfo?.label || category,
+                        gradient: category === 'adventure' ? 'from-orange-500 to-red-500' :
+                                  category === 'culture' ? 'from-purple-500 to-pink-500' :
+                                  category === 'food' ? 'from-yellow-500 to-orange-500' :
+                                  category === 'nature' ? 'from-green-500 to-emerald-500' :
+                                  category === 'sightseeing' ? 'from-blue-500 to-cyan-500' :
+                                  'from-gray-500 to-slate-500'
+                      };
+                    };
+
+                    const priorityConfig = getPriorityConfig(activity.priority);
+                    const categoryConfig = getCategoryConfig(activity.category);
+                    const time = formatTime(activity.dateTime);
+
+                    return (
+                      <motion.div
+                        key={activity.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: activityIndex * 0.1 }}
+                        className="group relative"
+                      >
+                        <Card className={`border-l-4 ${priorityConfig.accent} hover:shadow-lg transition-all duration-300 bg-white/95 backdrop-blur-sm`}>
+                          <CardContent className="p-0">
+                            {/* Header Section */}
+                            <div className="p-5 pb-4">
+                              <div className="flex items-start justify-between gap-4 mb-3">
+                                <div className="flex items-start gap-3 flex-1">
+                                  {/* Category Icon */}
+                                  <div className={`w-12 h-12 bg-gradient-to-br ${categoryConfig.gradient} rounded-xl shadow-md flex items-center justify-center text-white text-xl flex-shrink-0 transform group-hover:scale-110 transition-transform duration-200`}>
+                                    {categoryConfig.icon}
+                                  </div>
+                                  
+                                  {/* Title and Time */}
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-slate-900 text-lg leading-tight mb-2 group-hover:text-blue-700 transition-colors">
+                                      {activity.title}
+                                    </h3>
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                      {time && (
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
+                                          <Clock className="h-4 w-4" />
+                                          {time}
+                                        </div>
+                                      )}
+                                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${priorityConfig.color}`}>
+                                        <div className={`w-2 h-2 rounded-full ${priorityConfig.dot}`}></div>
+                                        {activity.priority === 'high' ? 'Alta Prioridade' : 
+                                         activity.priority === 'medium' ? 'Média Prioridade' : 'Baixa Prioridade'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Action Buttons */}
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-2 group-hover:translate-x-0">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onEdit(activity)}
+                                    className="h-9 w-9 p-0 hover:bg-blue-50 hover:text-blue-600 rounded-full"
+                                  >
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onDelete(activity.id)}
+                                    className="h-9 w-9 p-0 hover:bg-red-50 hover:text-red-600 rounded-full"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {/* Description */}
+                              {activity.description && (
+                                <p className="text-slate-600 leading-relaxed mb-4 text-sm">
+                                  {activity.description}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Info Grid */}
+                            <div className="px-5 pb-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                {activity.location && (
+                                  <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg">
+                                    <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                                    <span className="truncate font-medium">{activity.location}</span>
+                                  </div>
+                                )}
+                                
+                                {activity.duration && (
+                                  <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg">
+                                    <Clock className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                                    <span className="font-medium">{activity.duration}</span>
+                                  </div>
+                                )}
+
+                                {activity.estimatedCost && activity.estimatedCost > 0 && (
+                                  <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
+                                    <DollarSign className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                                    <span className="font-bold">R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
+                                  </div>
+                                )}
+
+                                <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg">
+                                  <span className="font-medium">{categoryConfig.label}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Notes Section */}
+                            {activity.notes && (
+                              <div className="px-5 pb-5">
+                                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                                  <div className="flex items-start gap-2">
+                                    <FileText className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                                    <p className="text-sm text-blue-700 leading-relaxed">{activity.notes}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    );
+                  })}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
 
-// Modern Activity Card Component
-function ModernActivityCard({ 
-  activity, 
-  onEdit, 
-  onDelete
-}: {
-  activity: PlannedActivity;
-  onEdit: (activity: PlannedActivity) => void;
-  onDelete: (id: string) => void;
-}) {
-  const formatTime = (dateTime?: string) => {
-    if (!dateTime || !dateTime.includes('T')) return null;
-    try {
-      return new Date(dateTime).toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch {
-      return null;
-    }
-  };
 
-  const getPriorityConfig = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return { color: 'bg-red-50 text-red-700 border-red-200', dot: 'bg-red-500' };
-      case 'medium':
-        return { color: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500' };
-      case 'low':
-        return { color: 'bg-green-50 text-green-700 border-green-200', dot: 'bg-green-500' };
-      default:
-        return { color: 'bg-gray-50 text-gray-700 border-gray-200', dot: 'bg-gray-500' };
-    }
-  };
-
-  const priorityConfig = getPriorityConfig(activity.priority);
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="group"
-    >
-      <Card className="h-full border-0 shadow-sm hover:shadow-md transition-all duration-300 bg-white/80 backdrop-blur-sm overflow-hidden">
-        <CardContent className="p-0">
-          {/* Header with Category Icon */}
-          <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-4 border-b border-slate-100">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 flex-1 min-w-0">
-                <div className="w-10 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center text-xl flex-shrink-0">
-                  {activityCategories[activity.category as keyof typeof activityCategories]?.icon || '📌'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-slate-900 text-sm leading-tight mb-1 line-clamp-2">
-                    {activity.title}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${priorityConfig.color}`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${priorityConfig.dot}`}></div>
-                      {activity.priority === 'high' ? 'Alta' : activity.priority === 'medium' ? 'Média' : 'Baixa'}
-                    </span>
-                    {formatTime(activity.dateTime) && (
-                      <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-md">
-                        {formatTime(activity.dateTime)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Actions */}
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(activity)}
-                  className="h-7 w-7 p-0 hover:bg-blue-50 hover:text-blue-600"
-                >
-                  <Edit2 className="h-3.5 w-3.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDelete(activity.id)}
-                  className="h-7 w-7 p-0 hover:bg-red-50 hover:text-red-600"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="p-4 space-y-3">
-            {activity.description && (
-              <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
-                {activity.description}
-              </p>
-            )}
-
-            {/* Metadata */}
-            <div className="space-y-2">
-              {activity.location && (
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                  <span className="truncate">{activity.location}</span>
-                </div>
-              )}
-              
-              {activity.duration && (
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <Clock className="h-3.5 w-3.5 flex-shrink-0" />
-                  <span>{activity.duration}</span>
-                </div>
-              )}
-
-              {activity.estimatedCost && activity.estimatedCost > 0 && (
-                <div className="flex items-center gap-2 text-xs text-emerald-600 font-medium">
-                  <DollarSign className="h-3.5 w-3.5 flex-shrink-0" />
-                  <span>R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Category Badge */}
-            <div className="pt-2 border-t border-slate-100">
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-md">
-                {activityCategories[activity.category as keyof typeof activityCategories]?.label || activity.category}
-              </span>
-            </div>
-
-            {activity.notes && (
-              <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <p className="text-xs text-slate-600 leading-relaxed">{activity.notes}</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
 
 // Legacy Sortable Activity Item (for backward compatibility)
 function SortableActivityItem({ 
