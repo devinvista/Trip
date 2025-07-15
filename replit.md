@@ -41,6 +41,14 @@ A aplicação usa MySQL com as seguintes entidades principais:
 - Rotas protegidas no frontend e backend
 - Gerenciamento de perfil de usuário com preferências de viagem
 
+### Sistema de Avaliações
+- Avaliações por estrelas (1-5) para atividades turísticas
+- Interface completa com formulário de avaliação
+- Sistema de fotos, data da visita e comentários
+- Votação em avaliações como "útil" 
+- Badges de verificação para avaliações confiáveis
+- Integração com página de detalhes das atividades
+
 ### Gerenciamento de Viagens
 - Criação de viagens com planejamento detalhado (destino, datas, orçamento, estilo)
 - Descoberta de viagens com capacidades de filtro avançado
@@ -134,6 +142,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - **14 de julho de 2025** - Plataforma de divisão de custos estilo Splitwise completamente funcional
 - **14 de julho de 2025** - Sistema de gamificação com níveis de viajante e programa PartiuAmigos
 - **13 de julho de 2025** - Interface redesenhada com design moderno e responsivo
+- **15 de julho de 2025** - Sistema completo de avaliações e reviews para atividades turísticas
 - **12 de julho de 2025** - Sistema de atividades turísticas inspirado no TripAdvisor
 - **11 de julho de 2025** - Dashboard dinâmico com filtros avançados e estatísticas em tempo real
 - **6 de julho de 2025** - Interface completamente traduzida para português brasileiro
@@ -181,6 +190,13 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Implementado sistema automático de atualização de orçamento: valores de atividades agora são adicionados automaticamente ao orçamento das viagens
 - July 15, 2025. Corrigido endpoint incorreto /api/trips/my-trips para /api/my-trips na página de detalhes da atividade
 - July 15, 2025. Corrigido erro com userTrips.flatMap() para tratar estrutura correta de dados { created: [], participating: [] }
+- July 15, 2025. **SISTEMA DE AVALIAÇÕES IMPLEMENTADO**: Sistema completo de avaliações para atividades turísticas
+- July 15, 2025. Criado endpoint GET/POST /api/activities/:id/reviews para buscar e criar avaliações
+- July 15, 2025. Implementado componente ActivityReviews com interface de avaliação por estrelas (1-5)
+- July 15, 2025. Adicionado sistema de "marcar como útil" para avaliações com endpoint /api/reviews/:id/helpful
+- July 15, 2025. Integrado sistema de avaliações na página de detalhes de atividades com aba dedicada
+- July 15, 2025. Criados dados de exemplo de avaliações para demonstração do sistema funcionando
+- July 15, 2025. Sistema de avaliações permite upload de fotos, data da visita e badges de verificação
 - July 12, 2025. Enhanced trip detail page with modern dynamic layout, contagem regressiva em tempo real, and improved budget tracking visualization
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips

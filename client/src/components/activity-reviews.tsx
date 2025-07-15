@@ -82,6 +82,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   // Create review mutation
   const createReview = useMutation({
     mutationFn: async (data: ReviewFormData) => {
+      console.log('Making API request with data:', data);
       const response = await fetch(`/api/activities/${activityId}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,12 +90,17 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
         credentials: 'include'
       });
 
+      console.log('API response status:', response.status);
+      
       if (!response.ok) {
         const error = await response.json();
+        console.error('API error:', error);
         throw new Error(error.message || 'Erro ao criar avaliação');
       }
 
-      return response.json();
+      const result = await response.json();
+      console.log('API success result:', result);
+      return result;
     },
     onSuccess: () => {
       toast({ title: "Avaliação criada com sucesso!" });
@@ -132,6 +138,8 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   });
 
   const handleSubmit = (data: ReviewFormData) => {
+    console.log('Submitting review data:', data);
+    console.log('User authenticated:', !!user);
     createReview.mutate(data);
   };
 
@@ -183,7 +191,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Avaliações dos Viajantes</span>
-            {user && !hasUserReviewed && (
+            {!hasUserReviewed && (
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
@@ -272,6 +280,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
           </CardTitle>
         </CardHeader>
         <CardContent>
+
           {totalRatings > 0 ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
