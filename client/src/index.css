@@ -5,8 +5,10 @@
 @tailwind utilities;
 
 /* Custom responsive breakpoints */
-@screen xs {
-  @apply min-w-[480px];
+@media (min-width: 480px) {
+  .xs\:min-w-xs {
+    min-width: 480px;
+  }
 }
 
 /* Custom animations */
