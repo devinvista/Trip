@@ -158,6 +158,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Implementado filtro por localização da atividade para mostrar apenas viagens na mesma cidade
 - July 15, 2025. Corrigido sistema de parsing de dados JSON duplamente escapados nas propostas de orçamento
 - July 15, 2025. Corrigido erro de tipo em proposal.inclusions.map através de parsing seguro de arrays JSON
+- July 15, 2025. Implementada nova lógica de preços baseada em propostas de orçamento: atividades são gratuitas por padrão, preços determinados pelas propostas selecionadas
+- July 15, 2025. Removida área duplicada de propostas do sidebar e integradas funcionalidades nos cards da aba orçamentos com seleção múltipla
 - July 12, 2025. Enhanced trip detail page with modern dynamic layout, contagem regressiva em tempo real, and improved budget tracking visualization
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips

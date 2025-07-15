@@ -145,27 +145,57 @@ export default function ActivityDetailPage() {
     ));
   };
 
-  const formatPrice = (priceType: string, priceAmount: number | null) => {
-    if (!priceAmount) return "Grátis";
+  const formatPrice = () => {
+    // Se não houver propostas, a atividade é grátis
+    if (!proposals || proposals.length === 0) {
+      return "Grátis";
+    }
+
+    // Se houver propostas selecionadas, mostrar o total
+    if (selectedProposals.length > 0) {
+      const total = selectedProposals.reduce((sum, proposal) => {
+        return sum + (Number(proposal.amount) || 0);
+      }, 0);
+      
+      return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(total);
+    }
+
+    // Se houver propostas mas nenhuma selecionada, mostrar faixa de preço
+    const amounts = proposals.map(p => Number(p.amount) || 0);
+    const minPrice = Math.min(...amounts);
+    const maxPrice = Math.max(...amounts);
     
-    const formatted = new Intl.NumberFormat("pt-BR", {
+    if (minPrice === maxPrice) {
+      return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(minPrice);
+    }
+    
+    return `${new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(priceAmount);
-
-    return priceType === "per_person" 
-      ? `${formatted}/pessoa`
-      : priceType === "per_group"
-      ? `${formatted}/grupo`
-      : formatted;
+    }).format(minPrice)} - ${new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(maxPrice)}`;
   };
 
   const calculateTotalPrice = () => {
-    if (!activity?.priceAmount) return 0;
-    const participants = bookingForm.watch("participants") || 1;
-    return activity.priceType === "per_person" 
-      ? activity.priceAmount * participants
-      : activity.priceAmount;
+    // Se houver propostas selecionadas, usar o total delas
+    if (selectedProposals.length > 0) {
+      const participants = bookingForm.watch("participants") || 1;
+      return selectedProposals.reduce((total, proposal) => {
+        const amount = Number(proposal.amount) || 0;
+        return total + (proposal.priceType === "per_person" ? amount * participants : amount);
+      }, 0);
+    }
+    
+    // Se não houver propostas ou nenhuma selecionada, retornar 0 (grátis)
+    return 0;
   };
 
   // Helper function to safely parse JSON arrays for proposals
@@ -568,10 +598,15 @@ export default function ActivityDetailPage() {
             <div className="bg-white rounded-lg border p-6 sticky top-6">
               <div className="text-center mb-6">
                 <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {formatPrice(activity.priceType, activity.priceAmount)}
+                  {formatPrice()}
                 </div>
                 <div className="text-sm text-gray-600">
-                  {activity.priceType === "per_person" ? "por pessoa" : "por grupo"}
+                  {selectedProposals.length > 0 
+                    ? `${selectedProposals.length} proposta${selectedProposals.length > 1 ? 's' : ''} selecionada${selectedProposals.length > 1 ? 's' : ''}`
+                    : proposals && proposals.length > 0 
+                    ? "Selecione uma proposta na aba orçamentos"
+                    : "Atividade gratuita"
+                  }
                 </div>
               </div>
 
@@ -717,12 +752,17 @@ export default function ActivityDetailPage() {
                         <div className="flex justify-between items-center text-lg font-semibold">
                           <span>Total:</span>
                           <span className="text-blue-600">
-                            {new Intl.NumberFormat("pt-BR", {
+                            {calculateTotalPrice() === 0 ? "Grátis" : new Intl.NumberFormat("pt-BR", {
                               style: "currency",
                               currency: "BRL",
                             }).format(calculateTotalPrice())}
                           </span>
                         </div>
+                        {selectedProposals.length > 0 && (
+                          <div className="mt-2 text-sm text-gray-600">
+                            Baseado em {selectedProposals.length} proposta{selectedProposals.length > 1 ? 's' : ''} selecionada{selectedProposals.length > 1 ? 's' : ''}
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex gap-2">
