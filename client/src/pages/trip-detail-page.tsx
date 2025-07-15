@@ -468,13 +468,12 @@ function ActivitiesTimeline({
       )}
 
       {/* Debug Info - remover após teste */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-yellow-50 p-2 rounded text-xs text-yellow-800 mb-4">
-          Debug: showManagerForParticipants={String(showManagerForParticipants)}, 
-          tripId={tripId}, 
-          hasOnActivitiesChange={Boolean(onActivitiesChange)}
-        </div>
-      )}
+      <div className="bg-yellow-50 p-2 rounded text-xs text-yellow-800 mb-4">
+        Debug: showManagerForParticipants={String(showManagerForParticipants)}, 
+        tripId={tripId}, 
+        hasOnActivitiesChange={Boolean(onActivitiesChange)},
+        activitiesLength={activities.length}
+      </div>
 
       {/* Timeline Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
