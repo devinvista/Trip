@@ -394,7 +394,7 @@ export const insertActivityReviewSchema = createInsertSchema(activityReviews).om
   createdAt: true,
 }).extend({
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
-  review: z.string().min(10, "Comentário deve ter pelo menos 10 caracteres").optional(),
+  review: z.string().optional().or(z.literal("")),
   photos: z.array(z.string()).optional(),
   visitDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 });

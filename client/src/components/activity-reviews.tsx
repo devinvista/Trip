@@ -278,7 +278,17 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                           type="submit"
                           disabled={createReview.isPending}
                           className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                          onClick={() => console.log('🔥 Button clicked! Form state:', form.formState)}
+                          onClick={() => {
+                            console.log('🔥 Button clicked! Form state:', form.formState);
+                            console.log('🔥 Form values:', form.getValues());
+                            console.log('🔥 Form errors:', form.formState.errors);
+                            console.log('🔥 Form isValid:', form.formState.isValid);
+                            console.log('🔥 User:', user);
+                            console.log('🔥 Activity ID:', activityId);
+                            
+                            // Manually trigger submit
+                            form.handleSubmit(handleSubmit)();
+                          }}
                         >
                           {createReview.isPending ? "Enviando..." : "Enviar Avaliação"}
                         </Button>

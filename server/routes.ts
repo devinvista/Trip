@@ -1116,6 +1116,8 @@ export function registerRoutes(app: Express): Server {
       
       console.log('🔍 Creating review - Activity ID:', activityId, 'User ID:', userId);
       console.log('🔍 Request body:', req.body);
+      console.log('🔍 User from req:', req.user);
+      console.log('🔍 Authentication status:', req.isAuthenticated());
       
       // Validate request body
       const validatedData = insertActivityReviewSchema.parse({
