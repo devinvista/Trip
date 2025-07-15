@@ -1071,17 +1071,35 @@ export default function TripDetailPage() {
                   </CardHeader>
                   <CardContent>
                     {(isCreator || isParticipant) ? (
-                      <AdvancedActivityManager
-                        activities={plannedActivities}
-                        onActivitiesChange={setPlannedActivities}
-                        tripDestination={trip.destination}
-                        trip={trip}
-                        tripParticipants={realParticipants.length}
-                        tripMaxParticipants={trip.maxParticipants}
-                        tripStartDate={trip.startDate}
-                        tripEndDate={trip.endDate}
-                        className="border-0"
-                      />
+                      <div className="space-y-6">
+                        {/* Timeline View */}
+                        <ActivitiesTimeline 
+                          activities={plannedActivities}
+                          tripStartDate={trip.startDate}
+                          tripEndDate={trip.endDate}
+                          canJoin={canJoin}
+                          onJoinClick={() => setActiveTab("overview")}
+                        />
+                        
+                        {/* Activity Manager for editing */}
+                        <div className="border-t pt-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900">Gerenciar Atividades</h3>
+                            <p className="text-sm text-gray-600">Arraste e solte para reorganizar</p>
+                          </div>
+                          <AdvancedActivityManager
+                            activities={plannedActivities}
+                            onActivitiesChange={setPlannedActivities}
+                            tripDestination={trip.destination}
+                            trip={trip}
+                            tripParticipants={realParticipants.length}
+                            tripMaxParticipants={trip.maxParticipants}
+                            tripStartDate={trip.startDate}
+                            tripEndDate={trip.endDate}
+                            className="border-0"
+                          />
+                        </div>
+                      </div>
                     ) : (
                       <ActivitiesTimeline 
                         activities={plannedActivities}
