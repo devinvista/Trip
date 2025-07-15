@@ -41,6 +41,8 @@ interface ActivityBudgetProposalsProps {
   activityId: number;
   onSelectProposal?: (proposal: ActivityBudgetProposal) => void;
   selectedProposalId?: number;
+  allowMultipleSelection?: boolean;
+  onProposalsChange?: (proposals: ActivityBudgetProposal[]) => void;
 }
 
 type ProposalFormData = z.infer<typeof insertActivityBudgetProposalSchema>;
@@ -48,9 +50,12 @@ type ProposalFormData = z.infer<typeof insertActivityBudgetProposalSchema>;
 export function ActivityBudgetProposals({ 
   activityId, 
   onSelectProposal, 
-  selectedProposalId 
+  selectedProposalId,
+  allowMultipleSelection = false,
+  onProposalsChange
 }: ActivityBudgetProposalsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedProposals, setSelectedProposals] = useState<ActivityBudgetProposal[]>([]);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -156,6 +161,37 @@ export function ActivityBudgetProposals({
       return;
     }
     voteProposal.mutate({ proposalId, increment });
+  };
+
+  // Handle multiple proposal selection
+  const handleProposalToggle = (proposal: ActivityBudgetProposal, selected: boolean) => {
+    if (!allowMultipleSelection) {
+      onSelectProposal?.(proposal);
+      return;
+    }
+
+    let newSelected: ActivityBudgetProposal[];
+    if (selected) {
+      newSelected = [...selectedProposals, proposal];
+    } else {
+      newSelected = selectedProposals.filter(p => p.id !== proposal.id);
+    }
+    
+    setSelectedProposals(newSelected);
+    onProposalsChange?.(newSelected);
+  };
+
+  const isProposalSelected = (proposalId: number) => {
+    if (!allowMultipleSelection) {
+      return selectedProposalId === proposalId;
+    }
+    return selectedProposals.some(p => p.id === proposalId);
+  };
+
+  const calculateSelectedTotal = () => {
+    return selectedProposals.reduce((total, proposal) => {
+      return total + (Number(proposal.amount) || 0);
+    }, 0);
   };
 
   // Helper function to safely parse JSON arrays
@@ -568,7 +604,7 @@ export function ActivityBudgetProposals({
                         )}
                       </div>
                       
-                      {onSelectProposal && (
+                      {(onSelectProposal || allowMultipleSelection) && (
                         <Button 
                           size="sm"
                           variant={isSelected ? "default" : "outline"}
@@ -576,8 +612,16 @@ export function ActivityBudgetProposals({
                             ? "bg-blue-600 hover:bg-blue-700 text-white h-8" 
                             : "h-8 hover:bg-blue-50 hover:border-blue-300"
                           }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProposalToggle(proposal, !isSelected);
+                          }}
                         >
-                          {isSelected ? "Selecionado" : "Selecionar"}
+                          {isSelected ? (
+                            allowMultipleSelection ? "Selecionado" : "Selecionado"
+                          ) : (
+                            allowMultipleSelection ? "Adicionar" : "Selecionar"
+                          )}
                         </Button>
                       )}
                     </div>
@@ -587,6 +631,70 @@ export function ActivityBudgetProposals({
             );
           })}
         </div>
+      )}
+
+      {/* Selected Proposals Summary */}
+      {allowMultipleSelection && selectedProposals.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold text-green-800 flex items-center gap-2">
+              <Check className="h-5 w-5" />
+              Propostas Selecionadas
+            </h4>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSelectedProposals([]);
+                onProposalsChange?.([]);
+              }}
+              className="text-green-700 hover:text-green-800"
+            >
+              Limpar
+            </Button>
+          </div>
+          
+          <div className="space-y-3">
+            {selectedProposals.map((proposal) => (
+              <div key={proposal.id} className="flex items-center justify-between bg-white/60 rounded-lg p-3">
+                <div>
+                  <div className="font-medium text-sm">{proposal.title}</div>
+                  <div className="text-xs text-gray-600">
+                    {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-semibold text-green-700">
+                    R$ {Number(proposal.amount || 0).toFixed(2)}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleProposalToggle(proposal, false)}
+                    className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  >
+                    ×
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="border-t border-green-200 pt-4 mt-4">
+            <div className="flex items-center justify-between">
+              <span className="text-lg font-semibold text-green-800">
+                Total: {selectedProposals.length} proposta{selectedProposals.length !== 1 ? 's' : ''}
+              </span>
+              <span className="text-2xl font-bold text-green-700">
+                R$ {calculateSelectedTotal().toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </motion.div>
       )}
     </div>
   );
