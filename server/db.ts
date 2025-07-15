@@ -250,13 +250,39 @@ export async function initializeTables() {
         activity_id INT NOT NULL,
         user_id INT NOT NULL,
         rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
-        comment TEXT,
+        review TEXT,
+        photos JSON,
+        visit_date TIMESTAMP NULL,
+        helpful_votes INT DEFAULT 0 NOT NULL,
+        is_verified BOOLEAN DEFAULT FALSE NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
         FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         UNIQUE KEY unique_review (activity_id, user_id)
       )
     `);
+
+    // Update activity_reviews table structure if needed
+    try {
+      await connection.execute(`
+        ALTER TABLE activity_reviews 
+        CHANGE COLUMN comment review TEXT
+      `);
+    } catch (err) {
+      // Column might already be renamed or not exist
+    }
+
+    try {
+      await connection.execute(`
+        ALTER TABLE activity_reviews 
+        ADD COLUMN IF NOT EXISTS photos JSON,
+        ADD COLUMN IF NOT EXISTS visit_date TIMESTAMP NULL,
+        ADD COLUMN IF NOT EXISTS helpful_votes INT DEFAULT 0 NOT NULL,
+        ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE NOT NULL
+      `);
+    } catch (err) {
+      // Columns might already exist
+    }
 
     // Create activity_bookings table
     await connection.execute(`
