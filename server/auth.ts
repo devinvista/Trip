@@ -61,6 +61,10 @@ export function setupAuth(app: Express) {
     next();
   });
 
+  // Inicializar Passport ANTES do middleware customizado
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   // Custom authentication middleware to handle both session and manual session ID
   app.use(async (req: any, res, next) => {
     // Log session information for debugging
@@ -137,10 +141,6 @@ export function setupAuth(app: Express) {
     }
     next();
   });
-
-  // Inicializar Passport
-  app.use(passport.initialize());
-  app.use(passport.session());
 
   // Estratégia local
   passport.use(new LocalStrategy(
