@@ -612,7 +612,7 @@ export function ActivityBudgetProposals({
                                 ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
                                 : ''
                             }`}
-                            title={userVoteData?.hasVoted ? 'Você já votou nesta atividade' : 'Votar nesta proposta'}
+                            title={userVoteData?.hasVoted ? 'Já deu like!' : 'Votar nesta proposta'}
                           >
                             <ThumbsUp className="h-3 w-3" />
                             <span className="text-xs">{proposal.votes}</span>
@@ -626,7 +626,7 @@ export function ActivityBudgetProposals({
                         )}
                         {user && userVoteData?.hasVoted && (
                           <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
-                            ✓ Você já votou nesta atividade
+                            ✓ Já deu like!
                           </Badge>
                         )}
                       </div>
