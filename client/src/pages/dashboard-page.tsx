@@ -35,6 +35,7 @@ import {
   Filter,
   X
 } from "lucide-react";
+import { getRealParticipantsCount } from "@/lib/trip-utils";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -182,7 +183,7 @@ export default function DashboardPage() {
   });
 
   const totalBudget = allTrips.reduce((sum, trip) => sum + (trip.budget || 0), 0);
-  const totalParticipants = allTrips.reduce((sum, trip) => sum + (trip.currentParticipants || 0), 0);
+  const totalParticipants = allTrips.reduce((sum, trip) => sum + getRealParticipantsCount(trip), 0);
 
   // Get next trip
   const nextTrip = upcomingTrips.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
@@ -582,7 +583,7 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-sm text-slate-600">
                           <Users className="h-4 w-4 text-blue-500" />
-                          <span>{trip.currentParticipants}/{trip.maxParticipants} participantes</span>
+                          <span>{getRealParticipantsCount(trip)}/{trip.maxParticipants} participantes</span>
                         </div>
                         
                         {/* Participants Progress */}
@@ -590,7 +591,7 @@ export default function DashboardPage() {
                           <div className="w-full bg-slate-200 rounded-full h-1.5">
                             <div 
                               className="bg-gradient-to-r from-blue-500 to-blue-600 h-1.5 rounded-full transition-all duration-300"
-                              style={{ width: `${(trip.currentParticipants / trip.maxParticipants) * 100}%` }}
+                              style={{ width: `${(getRealParticipantsCount(trip) / trip.maxParticipants) * 100}%` }}
                             />
                           </div>
                         </div>
@@ -682,7 +683,7 @@ export default function DashboardPage() {
                           variant="outline"
                           className="w-full text-red-600 border-red-300 hover:bg-red-50 hover:text-red-700 hover:border-red-400 transition-colors duration-200"
                           onClick={() => {
-                            const hasOtherParticipants = trip.currentParticipants > 1;
+                            const hasOtherParticipants = getRealParticipantsCount(trip) > 1;
                             let confirmMessage = '';
                             if (hasOtherParticipants) {
                               confirmMessage = `Como criador da viagem "${trip.title}", ao cancelar você transferirá a organização para o participante mais antigo. Confirma?`;

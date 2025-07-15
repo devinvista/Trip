@@ -23,6 +23,7 @@ import {
   Trash2,
   AlertTriangle
 } from "lucide-react";
+import { getRealParticipantsCount } from "@/lib/trip-utils";
 
 export default function EditTripPage() {
   const { user } = useAuth();
@@ -160,7 +161,7 @@ export default function EditTripPage() {
   };
 
   const handleDelete = () => {
-    if (trip?.currentParticipants > 1) {
+    if (getRealParticipantsCount(trip) > 1) {
       toast({
         variant: "destructive",
         title: "Não é possível excluir",
@@ -355,11 +356,11 @@ export default function EditTripPage() {
                             value={formData.maxParticipants}
                             onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
                             placeholder="6"
-                            min={trip?.currentParticipants || 1}
+                            min={getRealParticipantsCount(trip) || 1}
                             className="w-full"
                           />
                           <p className="text-xs text-gray-500 mt-1">
-                            Mínimo: {trip?.currentParticipants} (participantes atuais)
+                            Mínimo: {getRealParticipantsCount(trip)} (participantes atuais)
                           </p>
                         </div>
                       </div>
@@ -447,7 +448,7 @@ export default function EditTripPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Participantes:</span>
-                        <Badge variant="secondary">{trip.currentParticipants}/{trip.maxParticipants}</Badge>
+                        <Badge variant="secondary">{getRealParticipantsCount(trip)}/{trip.maxParticipants}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Status:</span>
@@ -464,7 +465,7 @@ export default function EditTripPage() {
                 </Card>
 
                 {/* Warning for creators */}
-                {trip?.currentParticipants > 1 && (
+                {getRealParticipantsCount(trip) > 1 && (
                   <Card className="shadow-lg border-orange-200 bg-orange-50">
                     <CardContent className="p-6">
                       <div className="flex items-start gap-3">

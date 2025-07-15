@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import { format, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { getRealParticipantsCount, getTripOccupancy } from "@/lib/trip-utils";
 import { useState, useEffect, useMemo } from "react";
 import { expenseCategories, budgetCategories, BudgetBreakdown } from "@shared/schema";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -187,14 +188,13 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedActivities?: PlannedActivity[] }) {
   const stats = useMemo(() => {
     const totalBudget = trip.budget || 0;
-    const perPerson = trip.maxParticipants > 0 ? totalBudget / trip.maxParticipants : 0;
+    const perPerson = getRealParticipantsCount(trip) > 0 ? totalBudget / getRealParticipantsCount(trip) : 0;
     const daysUntil = differenceInDays(new Date(trip.startDate), new Date());
     const duration = differenceInDays(new Date(trip.endDate), new Date(trip.startDate));
     
-    // Calculate real participants count from actual participants list
-    const realParticipants = trip.participants ? 
-      trip.participants.filter((p: any) => p.status === 'accepted').length : 
-      trip.currentParticipants || 1;
+    // Use standardized participant counting
+    const realParticipants = getRealParticipantsCount(trip);
+    const occupancy = getTripOccupancy(trip);
 
     return {
       totalBudget,
@@ -202,7 +202,7 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
       daysUntil: Math.max(0, daysUntil),
       duration: Math.max(1, duration),
       realParticipants,
-      occupancy: (realParticipants / trip.maxParticipants) * 100
+      occupancy
     };
   }, [trip]);
 
@@ -482,9 +482,7 @@ export default function TripDetailPage() {
     );
   }
 
-  const realParticipants = trip.participants ? 
-    trip.participants.filter((p: any) => p.status === 'accepted').length : 
-    trip.currentParticipants || 1;
+  const realParticipants = getRealParticipantsCount(trip);
   const canJoin = !isCreator && !isParticipant && realParticipants < trip.maxParticipants;
 
   const travelStyleLabels: { [key: string]: string } = {
@@ -569,7 +567,7 @@ export default function TripDetailPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      <span>{trip.participants ? trip.participants.filter((p: any) => p.status === 'accepted').length : trip.currentParticipants}/{trip.maxParticipants} participantes</span>
+                      <span>{getRealParticipantsCount(trip)}/{trip.maxParticipants} participantes</span>
                     </div>
                   </div>
                   

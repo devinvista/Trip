@@ -18,6 +18,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "wouter";
+import { getRealParticipantsCount } from "@/lib/trip-utils";
 
 interface Trip {
   id: number;
@@ -117,7 +118,7 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
         categorized.active.push(trip);
       } else if (startDate > now) {
         // Future trips - categorize as upcoming if confirmed, planning if still open
-        if (trip.currentParticipants >= 2) {
+        if (getRealParticipantsCount(trip) >= 2) {
           categorized.upcoming.push(trip);
         } else {
           categorized.planning.push(trip);

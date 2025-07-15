@@ -23,6 +23,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { getRealParticipantsCount, getAvailableSpots, isTripFull } from "@/lib/trip-utils";
 
 interface TripCardProps {
   trip: any;
@@ -34,7 +35,11 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
-  const availableSpots = trip.maxParticipants - trip.currentParticipants;
+  
+  // Use standardized participant counting
+  const currentParticipants = getRealParticipantsCount(trip);
+  const availableSpots = getAvailableSpots(trip);
+  const isFull = isTripFull(trip);
   const duration = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
   const getDestinationImage = (trip: any) => {
@@ -92,8 +97,8 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
           
           {/* Status badges */}
           <div className="absolute top-3 right-3 flex gap-2">
-            <Badge className={availableSpots > 0 ? "status-open" : "bg-red-100 text-red-800"}>
-              {availableSpots > 0 ? `${availableSpots} vagas` : "Lotada"}
+            <Badge className={!isFull ? "status-open" : "bg-red-100 text-red-800"}>
+              {!isFull ? `${availableSpots} vagas` : "Lotada"}
             </Badge>
           </div>
           
@@ -205,7 +210,7 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
             </div>
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              <span>{trip.currentParticipants}/{trip.maxParticipants} pessoas</span>
+              <span>{currentParticipants}/{trip.maxParticipants} pessoas</span>
             </div>
           </div>
         </div>
@@ -291,7 +296,7 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
               </Link>
             )}
 
-            {trip.currentParticipants < trip.maxParticipants ? (
+            {!isFull ? (
               <Link href={`/trip/${trip.id}`} className="flex-1">
                 <motion.div
                   whileHover={{ scale: 1.02 }}
