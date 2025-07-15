@@ -493,6 +493,7 @@ export default function ActivityDetailPage() {
                   activityId={Number(id)} 
                   allowMultipleSelection={true}
                   onProposalsChange={setSelectedProposals}
+                  includedProposalIds={[7]} // Exemplo: proposta ID 7 já está incluída em alguma viagem
                 />
               </TabsContent>
 

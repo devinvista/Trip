@@ -43,6 +43,7 @@ interface ActivityBudgetProposalsProps {
   selectedProposalId?: number;
   allowMultipleSelection?: boolean;
   onProposalsChange?: (proposals: ActivityBudgetProposal[]) => void;
+  includedProposalIds?: number[]; // IDs das propostas já incluídas nas viagens do usuário
 }
 
 type ProposalFormData = z.infer<typeof insertActivityBudgetProposalSchema>;
@@ -52,7 +53,8 @@ export function ActivityBudgetProposals({
   onSelectProposal, 
   selectedProposalId,
   allowMultipleSelection = false,
-  onProposalsChange
+  onProposalsChange,
+  includedProposalIds = []
 }: ActivityBudgetProposalsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProposals, setSelectedProposals] = useState<ActivityBudgetProposal[]>([]);
@@ -605,24 +607,44 @@ export function ActivityBudgetProposals({
                       </div>
                       
                       {(onSelectProposal || allowMultipleSelection) && (
-                        <Button 
-                          size="sm"
-                          variant={isSelected ? "default" : "outline"}
-                          className={isSelected 
-                            ? "bg-blue-600 hover:bg-blue-700 text-white h-8" 
-                            : "h-8 hover:bg-blue-50 hover:border-blue-300"
+                        (() => {
+                          const isIncluded = includedProposalIds.includes(proposal.id);
+                          
+                          if (isIncluded) {
+                            return (
+                              <Button 
+                                size="sm"
+                                variant="secondary"
+                                className="h-8 bg-green-100 hover:bg-green-200 text-green-800 border-green-300"
+                                disabled
+                              >
+                                <Check className="h-3 w-3 mr-1" />
+                                Já incluído
+                              </Button>
+                            );
                           }
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleProposalToggle(proposal, !isSelected);
-                          }}
-                        >
-                          {isSelected ? (
-                            allowMultipleSelection ? "Selecionado" : "Selecionado"
-                          ) : (
-                            allowMultipleSelection ? "Adicionar" : "Selecionar"
-                          )}
-                        </Button>
+                          
+                          return (
+                            <Button 
+                              size="sm"
+                              variant={isSelected ? "default" : "outline"}
+                              className={isSelected 
+                                ? "bg-blue-600 hover:bg-blue-700 text-white h-8" 
+                                : "h-8 hover:bg-blue-50 hover:border-blue-300"
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleProposalToggle(proposal, !isSelected);
+                              }}
+                            >
+                              {isSelected ? (
+                                allowMultipleSelection ? "Selecionado" : "Selecionado"
+                              ) : (
+                                allowMultipleSelection ? "Adicionar" : "Selecionar"
+                              )}
+                            </Button>
+                          );
+                        })()
                       )}
                     </div>
                   </CardContent>
