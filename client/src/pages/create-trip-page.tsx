@@ -882,6 +882,7 @@ function CreateTripPageContent() {
                         <AdvancedActivityManager
                           activities={plannedActivities}
                           onActivitiesChange={setPlannedActivities}
+                          tripDestination={form.watch('destination')}
                           className="border-2 border-gray-200 rounded-lg p-4"
                         />
                       </motion.div>

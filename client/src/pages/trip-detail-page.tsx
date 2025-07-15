@@ -766,6 +766,7 @@ export default function TripDetailPage() {
                       <AdvancedActivityManager
                         activities={plannedActivities}
                         onActivitiesChange={setPlannedActivities}
+                        tripDestination={trip.destination}
                         className="border-0"
                       />
                     ) : (

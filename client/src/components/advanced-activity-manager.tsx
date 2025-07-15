@@ -213,12 +213,14 @@ function ActivityManagementDialog({
   activity, 
   isOpen, 
   onClose, 
-  onSave 
+  onSave,
+  tripDestination
 }: {
   activity?: PlannedActivity;
   isOpen: boolean;
   onClose: () => void;
   onSave: (activity: PlannedActivity) => void;
+  tripDestination?: string;
 }) {
   const [activeTab, setActiveTab] = useState(activity ? "manual" : "search");
   
@@ -245,7 +247,11 @@ function ActivityManagementDialog({
           </TabsList>
           
           <TabsContent value="search" className="space-y-4">
-            <ActivitySearchTab onSave={onSave} onClose={onClose} />
+            <ActivitySearchTab 
+              onSave={onSave} 
+              onClose={onClose} 
+              tripDestination={tripDestination}
+            />
           </TabsContent>
           
           <TabsContent value="manual" className="space-y-4">
@@ -262,32 +268,56 @@ function ActivityManagementDialog({
 }
 
 // Activity Search Tab
-function ActivitySearchTab({ onSave, onClose }: { onSave: (activity: PlannedActivity) => void; onClose: () => void }) {
+function ActivitySearchTab({ 
+  onSave, 
+  onClose, 
+  tripDestination 
+}: { 
+  onSave: (activity: PlannedActivity) => void; 
+  onClose: () => void;
+  tripDestination?: string;
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedActivity, setSelectedActivity] = useState<any>(null);
   const [participants, setParticipants] = useState(1);
 
-  // Query for popular activities (shown by default)
+  // Query for activities by trip destination (shown by default)
+  const { data: destinationActivities, isLoading: isLoadingDestination } = useQuery({
+    queryKey: ['/api/activities', { 
+      location: tripDestination,
+      sortBy: 'rating',
+      category: selectedCategory === 'all' ? '' : selectedCategory,
+    }],
+    enabled: searchTerm.length <= 2 && !!tripDestination,
+  });
+
+  // Fallback to popular activities if no destination
   const { data: popularActivities, isLoading: isLoadingPopular } = useQuery({
     queryKey: ['/api/activities', { 
       sortBy: 'rating',
       category: selectedCategory === 'all' ? '' : selectedCategory,
     }],
-    enabled: searchTerm.length <= 2,
+    enabled: searchTerm.length <= 2 && !tripDestination,
   });
 
   // Query for search results
   const { data: searchResults, isLoading: isLoadingSearch } = useQuery({
     queryKey: ['/api/activities', { 
       search: searchTerm, 
+      location: tripDestination,
       category: selectedCategory === 'all' ? '' : selectedCategory,
     }],
     enabled: searchTerm.length > 2,
   });
 
-  const activities = searchTerm.length > 2 ? searchResults : popularActivities;
-  const isLoading = searchTerm.length > 2 ? isLoadingSearch : isLoadingPopular;
+  const activities = searchTerm.length > 2 
+    ? searchResults 
+    : (tripDestination ? destinationActivities : popularActivities);
+  
+  const isLoading = searchTerm.length > 2 
+    ? isLoadingSearch 
+    : (tripDestination ? isLoadingDestination : isLoadingPopular);
 
   const handleAddToTrip = () => {
     if (!selectedActivity) return;
@@ -344,10 +374,20 @@ function ActivitySearchTab({ onSave, onClose }: { onSave: (activity: PlannedActi
         {/* Header */}
         <div className="mb-4">
           <h3 className="font-semibold text-gray-900">
-            {searchTerm.length > 2 ? `Resultados para "${searchTerm}"` : 'Atividades Populares'}
+            {searchTerm.length > 2 
+              ? `Resultados para "${searchTerm}"` 
+              : tripDestination 
+                ? `Melhores Atividades em ${tripDestination}`
+                : 'Atividades Populares'
+            }
           </h3>
           <p className="text-sm text-gray-600">
-            {searchTerm.length > 2 ? 'Selecione uma atividade encontrada' : 'Escolha entre as atividades mais procuradas'}
+            {searchTerm.length > 2 
+              ? 'Selecione uma atividade encontrada' 
+              : tripDestination
+                ? `As atividades mais escolhidas e bem avaliadas em ${tripDestination}`
+                : 'Escolha entre as atividades mais procuradas'
+            }
           </p>
         </div>
 
@@ -364,7 +404,9 @@ function ActivitySearchTab({ onSave, onClose }: { onSave: (activity: PlannedActi
             <p>
               {searchTerm.length > 2 
                 ? `Nenhuma atividade encontrada para "${searchTerm}"`
-                : 'Nenhuma atividade disponível'
+                : tripDestination
+                  ? `Nenhuma atividade encontrada em ${tripDestination}`
+                  : 'Nenhuma atividade disponível'
               }
             </p>
           </div>
@@ -771,12 +813,14 @@ interface AdvancedActivityManagerProps {
   activities: PlannedActivity[];
   onActivitiesChange: (activities: PlannedActivity[]) => void;
   className?: string;
+  tripDestination?: string;
 }
 
 export function AdvancedActivityManager({ 
   activities, 
   onActivitiesChange, 
-  className = '' 
+  className = '',
+  tripDestination
 }: AdvancedActivityManagerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
@@ -911,6 +955,7 @@ export function AdvancedActivityManager({
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         onSave={handleSaveActivity}
+        tripDestination={tripDestination}
       />
     </div>
   );
