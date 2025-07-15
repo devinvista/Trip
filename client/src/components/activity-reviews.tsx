@@ -140,6 +140,19 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   const handleSubmit = (data: ReviewFormData) => {
     console.log('Submitting review data:', data);
     console.log('User authenticated:', !!user);
+    console.log('User details:', user);
+    console.log('Activity ID:', activityId);
+    console.log('Form errors:', form.formState.errors);
+    
+    if (!user) {
+      toast({ 
+        title: "Erro de autenticação", 
+        description: "Você precisa estar logado para avaliar atividades",
+        variant: "destructive" 
+      });
+      return;
+    }
+    
     createReview.mutate(data);
   };
 

@@ -1111,11 +1111,16 @@ export function registerRoutes(app: Express): Server {
       const activityId = parseInt(req.params.id);
       const userId = req.user!.id;
       
+      console.log('🔍 Creating review - Activity ID:', activityId, 'User ID:', userId);
+      console.log('🔍 Request body:', req.body);
+      
       // Validate request body
       const validatedData = insertActivityReviewSchema.parse({
         ...req.body,
         activityId
       });
+      
+      console.log('🔍 Validated data:', validatedData);
 
       // Check if user already reviewed this activity
       const existingReview = await db
