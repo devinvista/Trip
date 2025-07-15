@@ -76,7 +76,7 @@ export function ActivityBudgetProposals({
   });
 
   // Fetch proposals
-  const { data: proposals, isLoading } = useQuery({
+  const { data: proposalsData, isLoading } = useQuery({
     queryKey: ['/api/activities', activityId, 'proposals'],
     queryFn: async () => {
       const response = await fetch(`/api/activities/${activityId}/proposals`);
@@ -84,6 +84,11 @@ export function ActivityBudgetProposals({
       return response.json() as Promise<ActivityBudgetProposal[]>;
     }
   });
+
+  // Filter unique proposals to avoid duplicate keys
+  const proposals = proposalsData ? proposalsData.filter((proposal, index, arr) => 
+    arr.findIndex(p => p.id === proposal.id) === index
+  ) : [];
 
   // Create proposal mutation
   const createProposal = useMutation({
@@ -494,11 +499,13 @@ export function ActivityBudgetProposals({
             const inclusions = safeParseArray(proposal.inclusions);
             const exclusions = safeParseArray(proposal.exclusions);
             const isBestValue = bestValue?.id === proposal.id;
-            const isSelected = selectedProposalId === proposal.id;
+            const isSelected = allowMultipleSelection 
+              ? selectedProposals.some(p => p.id === proposal.id)
+              : selectedProposalId === proposal.id;
             
             return (
               <motion.div
-                key={proposal.id}
+                key={`proposal-${proposal.id}-${index}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -607,44 +614,41 @@ export function ActivityBudgetProposals({
                       </div>
                       
                       {(onSelectProposal || allowMultipleSelection) && (
-                        (() => {
-                          const isIncluded = includedProposalIds.includes(proposal.id);
-                          
-                          if (isIncluded) {
-                            return (
-                              <Button 
-                                size="sm"
-                                variant="secondary"
-                                className="h-8 bg-green-100 hover:bg-green-200 text-green-800 border-green-300"
-                                disabled
-                              >
-                                <Check className="h-3 w-3 mr-1" />
-                                Já incluído
-                              </Button>
-                            );
+                        <Button 
+                          size="sm"
+                          variant={
+                            includedProposalIds.includes(proposal.id) 
+                              ? "secondary" 
+                              : isSelected 
+                              ? "default" 
+                              : "outline"
                           }
-                          
-                          return (
-                            <Button 
-                              size="sm"
-                              variant={isSelected ? "default" : "outline"}
-                              className={isSelected 
-                                ? "bg-blue-600 hover:bg-blue-700 text-white h-8" 
-                                : "h-8 hover:bg-blue-50 hover:border-blue-300"
-                              }
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleProposalToggle(proposal, !isSelected);
-                              }}
-                            >
-                              {isSelected ? (
-                                allowMultipleSelection ? "Selecionado" : "Selecionado"
-                              ) : (
-                                allowMultipleSelection ? "Adicionar" : "Selecionar"
-                              )}
-                            </Button>
-                          );
-                        })()
+                          className={
+                            includedProposalIds.includes(proposal.id)
+                              ? "h-8 bg-green-100 hover:bg-green-200 text-green-800 border-green-300"
+                              : isSelected 
+                              ? "bg-blue-600 hover:bg-blue-700 text-white h-8" 
+                              : "h-8 hover:bg-blue-50 hover:border-blue-300"
+                          }
+                          disabled={includedProposalIds.includes(proposal.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!includedProposalIds.includes(proposal.id)) {
+                              handleProposalToggle(proposal, !isSelected);
+                            }
+                          }}
+                        >
+                          {includedProposalIds.includes(proposal.id) ? (
+                            <>
+                              <Check className="h-3 w-3 mr-1" />
+                              Já incluído
+                            </>
+                          ) : isSelected ? (
+                            allowMultipleSelection ? "Selecionado" : "Selecionado"
+                          ) : (
+                            allowMultipleSelection ? "Adicionar" : "Selecionar"
+                          )}
+                        </Button>
                       )}
                     </div>
                   </CardContent>
@@ -681,8 +685,8 @@ export function ActivityBudgetProposals({
           </div>
           
           <div className="space-y-3">
-            {selectedProposals.map((proposal) => (
-              <div key={proposal.id} className="flex items-center justify-between bg-white/60 rounded-lg p-3">
+            {selectedProposals.map((proposal, idx) => (
+              <div key={`selected-${proposal.id}-${idx}`} className="flex items-center justify-between bg-white/60 rounded-lg p-3">
                 <div>
                   <div className="font-medium text-sm">{proposal.title}</div>
                   <div className="text-xs text-gray-600">
