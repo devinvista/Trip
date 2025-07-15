@@ -4,6 +4,7 @@ import { createServer, type Server } from "http";
 
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
+import { syncTripParticipants } from "./sync-participants.js";
 import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema } from "@shared/schema";
 
 // Middleware para verificar autenticação
@@ -364,13 +365,8 @@ export function registerRoutes(app: Express): Server {
       if (status === 'accepted') {
         await storage.addTripParticipant(request.tripId, request.userId);
         
-        // Update trip participant count
-        const trip = await storage.getTrip(request.tripId);
-        if (trip) {
-          await storage.updateTrip(request.tripId, { 
-            currentParticipants: trip.currentParticipants + 1 
-          });
-        }
+        // Sync trip participant count based on actual accepted participants
+        await syncTripParticipants(request.tripId);
       }
       
       res.json(request);
@@ -413,9 +409,8 @@ export function registerRoutes(app: Express): Server {
       // Atualizar contador de participantes
       const updatedTrip = await storage.getTrip(tripId);
       if (updatedTrip && updatedTrip.status !== 'cancelled') {
-        await storage.updateTrip(tripId, { 
-          currentParticipants: Math.max(0, updatedTrip.currentParticipants - 1) 
-        });
+        // Sync trip participant count based on actual accepted participants
+        await syncTripParticipants(tripId);
       }
       
       res.json({ 

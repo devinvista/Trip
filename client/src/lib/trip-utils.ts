@@ -23,15 +23,15 @@ export interface Trip {
 
 /**
  * Calculates the real number of participants in a trip
- * Uses the participants array if available (counting only accepted participants),
- * otherwise falls back to currentParticipants field
+ * Always counts only accepted participants from the participants array if available,
+ * otherwise falls back to currentParticipants field (which should be kept in sync)
  */
 export function getRealParticipantsCount(trip: Trip): number {
   if (trip.participants && Array.isArray(trip.participants)) {
-    // Count only accepted participants
+    // Always prioritize counting accepted participants from the participants array
     return trip.participants.filter(p => p.status === 'accepted').length;
   }
-  // Fallback to currentParticipants field
+  // Fallback to currentParticipants field only when participants array is not available
   return trip.currentParticipants || 1;
 }
 

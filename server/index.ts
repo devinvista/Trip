@@ -5,6 +5,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { testConnection, initializeTables, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
+import { syncParticipantsCount } from "./sync-participants.js";
 
 const app = express();
 
@@ -109,5 +110,9 @@ async function fixUserVerificationStatus() {
     // Fix user verification status
     console.log("🔧 Corrigindo status de verificação dos usuários...");
     await fixUserVerificationStatus();
+    
+    // Sync participants count
+    console.log("🔄 Sincronizando contagem de participantes...");
+    await syncParticipantsCount();
   })().catch(console.error);
 })();
