@@ -110,30 +110,43 @@ export default function ActivitiesPage() {
     queryKey: ["/api/user/trips"],
     queryFn: async () => {
       if (!user) return [];
-      const response = await fetch("/api/user/trips");
-      if (!response.ok) return [];
-      return response.json();
+      try {
+        const response = await fetch("/api/user/trips");
+        if (!response.ok) return [];
+        return response.json();
+      } catch (error) {
+        console.error("Erro ao carregar viagens do usuário:", error);
+        return [];
+      }
     },
     enabled: !!user,
+    retry: false,
   });
 
   const { data: activities, isLoading, isFetching } = useQuery<Activity[]>({
     queryKey: ["/api/activities", filters],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (filters.search) params.set("search", filters.search);
-      if (filters.category !== "all") params.set("category", filters.category);
-      if (filters.priceRange !== "all") params.set("priceRange", filters.priceRange);
-      if (filters.location) params.set("location", filters.location);
-      if (filters.duration !== "all") params.set("duration", filters.duration);
-      if (filters.difficulty !== "all") params.set("difficulty", filters.difficulty);
-      if (filters.rating !== "all") params.set("rating", filters.rating);
-      params.set("sortBy", filters.sortBy);
-      
-      const response = await fetch(`/api/activities?${params}`);
-      if (!response.ok) throw new Error("Falha ao carregar atividades");
-      return response.json();
+      try {
+        const params = new URLSearchParams();
+        if (filters.search) params.set("search", filters.search);
+        if (filters.category !== "all") params.set("category", filters.category);
+        if (filters.priceRange !== "all") params.set("priceRange", filters.priceRange);
+        if (filters.location) params.set("location", filters.location);
+        if (filters.duration !== "all") params.set("duration", filters.duration);
+        if (filters.difficulty !== "all") params.set("difficulty", filters.difficulty);
+        if (filters.rating !== "all") params.set("rating", filters.rating);
+        params.set("sortBy", filters.sortBy);
+        
+        const response = await fetch(`/api/activities?${params}`);
+        if (!response.ok) throw new Error("Falha ao carregar atividades");
+        return response.json();
+      } catch (error) {
+        console.error("Erro ao carregar atividades:", error);
+        throw error;
+      }
     },
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const updateFilter = (key: keyof ActivityFilters, value: string | boolean) => {
