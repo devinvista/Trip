@@ -297,7 +297,7 @@ export default function ActivitiesPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div className="flex items-center gap-3 sm:gap-6">
               <Link to="/search">
-                <Button variant="ghost" size="sm" className="text-[#1B2B49] hover:bg-[#41B6FF]/10">
+                <Button variant="ghost" size="sm" className="text-[#1B2B49] hover:bg-[#FFA500]/10 hover:text-[#FFA500] transition-all duration-300">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar
                 </Button>
@@ -318,7 +318,7 @@ export default function ActivitiesPage() {
                 variant="outline" 
                 size="sm"
                 onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="border-[#AAB0B7]/30 hover:bg-[#41B6FF]/10"
+                className="border-[#AAB0B7]/30 hover:bg-[#FFA500]/10 hover:border-[#FFA500]/30 hover:text-[#FFA500] transition-all duration-300"
               >
                 {viewMode === "grid" ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
                 <span className="hidden sm:inline ml-2">
@@ -330,7 +330,7 @@ export default function ActivitiesPage() {
                 variant="outline" 
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className="border-[#AAB0B7]/30 hover:bg-[#41B6FF]/10"
+                className="border-[#AAB0B7]/30 hover:bg-[#FFA500]/10 hover:border-[#FFA500]/30 hover:text-[#FFA500] transition-all duration-300"
               >
                 <SlidersHorizontal className="w-4 h-4 mr-2" />
                 Filtros
@@ -350,12 +350,12 @@ export default function ActivitiesPage() {
                   handleSearch();
                 }
               }}
-              className="pl-10 pr-24 h-12 text-base border-[#AAB0B7]/30 focus:border-[#41B6FF] bg-white rounded-lg"
+              className="pl-10 pr-24 h-12 text-base border-[#AAB0B7]/30 focus:border-[#FFA500] bg-white rounded-lg"
             />
             <Button 
               onClick={handleSearch}
               size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#41B6FF] hover:bg-[#41B6FF]/90 text-white"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#FFA500] hover:bg-[#FFA500]/90 hover:shadow-md transition-all duration-300 text-white"
             >
               Buscar
             </Button>
@@ -369,10 +369,10 @@ export default function ActivitiesPage() {
                   variant={filters.category === "all" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => updateFilter("category", "all")}
-                  className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 ${
+                  className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 transition-all duration-300 ${
                     filters.category === "all" 
-                      ? "bg-[#41B6FF] text-white shadow-sm" 
-                      : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
+                      ? "bg-[#FFA500] text-white shadow-sm" 
+                      : "text-[#1B2B49] hover:bg-[#FFA500]/10 hover:text-[#FFA500]"
                   }`}
                 >
                   🗂️ <span className="hidden xs:inline">Todas</span>
@@ -427,7 +427,7 @@ export default function ActivitiesPage() {
                       value={filters.priceRange} 
                       onValueChange={(value) => updateFilter("priceRange", value)}
                     >
-                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
+                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#FFA500]">
                         <SelectValue placeholder="Todos os preços" />
                       </SelectTrigger>
                       <SelectContent>
@@ -448,7 +448,7 @@ export default function ActivitiesPage() {
                       value={filters.difficulty} 
                       onValueChange={(value) => updateFilter("difficulty", value)}
                     >
-                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
+                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#FFA500]">
                         <SelectValue placeholder="Todos os níveis" />
                       </SelectTrigger>
                       <SelectContent>
@@ -469,7 +469,7 @@ export default function ActivitiesPage() {
                       value={filters.sortBy} 
                       onValueChange={(value) => updateFilter("sortBy", value)}
                     >
-                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
+                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#FFA500]">
                         <SelectValue placeholder="Ordenar por" />
                       </SelectTrigger>
                       <SelectContent>
@@ -488,8 +488,8 @@ export default function ActivitiesPage() {
                   <div className="mt-6 pt-4 border-t border-[#AAB0B7]/20">
                     <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-[#AAB0B7]/20">
                       <div className="flex items-center gap-3">
-                        <div className="bg-[#41B6FF]/10 p-2 rounded-lg">
-                          <Target className="w-4 h-4 text-[#41B6FF]" />
+                        <div className="bg-[#FFA500]/10 p-2 rounded-lg">
+                          <Target className="w-4 h-4 text-[#FFA500]" />
                         </div>
                         <div>
                           <label className="text-sm font-medium text-[#1B2B49]">
