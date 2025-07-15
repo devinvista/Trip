@@ -376,6 +376,9 @@ function ActivitiesTimeline({
       .map(([date, dayActivities]) => ({
         date,
         displayDate: format(parseISO(date), 'EEEE, dd/MM', { locale: ptBR }),
+        fullDate: format(parseISO(date), 'dd \'de\' MMMM \'de\' yyyy', { locale: ptBR }),
+        shortDate: format(parseISO(date), 'dd/MM', { locale: ptBR }),
+        dayOfWeek: format(parseISO(date), 'EEEE', { locale: ptBR }),
         activities: dayActivities.sort((a, b) => {
           // Sort by priority (high > medium > low), then by title
           const priorityOrder = { high: 3, medium: 2, low: 1 };
@@ -426,55 +429,75 @@ function ActivitiesTimeline({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Timeline Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <Calendar className="h-4 w-4 text-blue-600" />
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Cronograma de Atividades</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {groupedActivities.length} {groupedActivities.length === 1 ? 'dia' : 'dias'} com atividades planejadas
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">Cronograma de Atividades</h3>
-            <p className="text-sm text-gray-600">
-              {groupedActivities.length} {groupedActivities.length === 1 ? 'dia' : 'dias'} com atividades planejadas
-            </p>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600">
+              {activities.length}
+            </div>
+            <div className="text-sm text-gray-500">
+              {activities.length === 1 ? 'atividade' : 'atividades'}
+            </div>
           </div>
-        </div>
-        <div className="flex-1"></div>
-        <div className="text-sm text-gray-500">
-          Total: {activities.length} {activities.length === 1 ? 'atividade' : 'atividades'}
         </div>
       </div>
 
       {/* Timeline */}
       <div className="relative">
         {/* Timeline Line */}
-        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200"></div>
+        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 via-blue-400 to-blue-300 rounded-full"></div>
         
-        <div className="space-y-8">
+        <div className="space-y-12">
           {groupedActivities.map((dayGroup, dayIndex) => (
             <motion.div
               key={dayGroup.date}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: dayIndex * 0.1 }}
+              transition={{ duration: 0.6, delay: dayIndex * 0.15 }}
               className="relative"
             >
               {/* Date Header */}
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative z-10 w-12 h-12 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                  <Calendar className="h-5 w-5 text-blue-600" />
+              <div className="flex items-center gap-6 mb-6">
+                <div className="relative z-10 w-16 h-16 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center shadow-xl">
+                  <div className="text-center">
+                    <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                      {dayGroup.shortDate}
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-                  <h4 className="font-semibold text-gray-900 capitalize">{dayGroup.displayDate}</h4>
-                  <p className="text-sm text-gray-600">
-                    {dayGroup.activities.length} {dayGroup.activities.length === 1 ? 'atividade' : 'atividades'}
-                  </p>
+                <div className="bg-white px-6 py-4 rounded-xl border border-gray-200 shadow-sm flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-lg font-bold text-gray-900 capitalize">{dayGroup.dayOfWeek}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{dayGroup.fullDate}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-blue-600">
+                        {dayGroup.activities.length}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {dayGroup.activities.length === 1 ? 'atividade' : 'atividades'}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Activities for this day */}
-              <div className="ml-16 space-y-3">
+              <div className="ml-20 space-y-4">
                 {dayGroup.activities.map((activity, activityIndex) => {
                   const categoryConfig = getCategoryConfig(activity.category);
                   const IconComponent = categoryConfig.icon;
@@ -482,57 +505,61 @@ function ActivitiesTimeline({
                   return (
                     <motion.div
                       key={activity.id}
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: (dayIndex * 0.1) + (activityIndex * 0.05) }}
-                      className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                      transition={{ duration: 0.4, delay: (dayIndex * 0.15) + (activityIndex * 0.08) }}
+                      className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all duration-300 overflow-hidden"
                     >
-                      <div className="p-4">
-                        <div className="flex items-start gap-3">
+                      <div className="p-6">
+                        <div className="flex items-start gap-4">
                           {/* Activity Icon */}
-                          <div className={`flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center ${categoryConfig.color}`}>
-                            <IconComponent className="h-5 w-5" />
+                          <div className={`flex-shrink-0 w-12 h-12 rounded-xl border-2 flex items-center justify-center ${categoryConfig.color} group-hover:scale-110 transition-transform duration-200`}>
+                            <IconComponent className="h-6 w-6" />
                           </div>
                           
                           {/* Activity Content */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between mb-2">
-                              <h5 className="font-medium text-gray-900 truncate pr-2">{activity.title}</h5>
+                            <div className="flex items-start justify-between mb-3">
+                              <h5 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                                {activity.title}
+                              </h5>
                               <div className="flex items-center gap-2 flex-shrink-0">
-                                <Badge variant="outline" className={`text-xs px-2 py-1 ${getPriorityColor(activity.priority)}`}>
+                                <Badge variant="outline" className={`text-xs px-3 py-1 font-medium ${getPriorityColor(activity.priority)}`}>
                                   {activity.priority === 'high' ? 'Alta' : 
                                    activity.priority === 'medium' ? 'Média' : 'Baixa'}
                                 </Badge>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-xs px-3 py-1 font-medium bg-gray-50 text-gray-700">
                                   {categoryConfig.label}
                                 </Badge>
                               </div>
                             </div>
                             
                             {activity.description && (
-                              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{activity.description}</p>
+                              <p className="text-sm text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                                {activity.description}
+                              </p>
                             )}
                             
                             {/* Activity Details */}
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <div className="flex items-center gap-6 text-sm text-gray-500">
                                 {activity.duration && (
-                                  <div className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    <span>{activity.duration}</span>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span className="font-medium">{activity.duration}</span>
                                   </div>
                                 )}
                                 {activity.location && (
-                                  <div className="flex items-center gap-1">
-                                    <MapPin className="h-3 w-3" />
-                                    <span className="truncate max-w-32">{activity.location}</span>
+                                  <div className="flex items-center gap-2">
+                                    <MapPin className="h-4 w-4" />
+                                    <span className="truncate max-w-40 font-medium">{activity.location}</span>
                                   </div>
                                 )}
                               </div>
                               
                               {activity.estimatedCost && (
-                                <div className="flex items-center gap-1 text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded">
-                                  <DollarSign className="h-3 w-3" />
+                                <div className="flex items-center gap-2 text-sm font-semibold text-green-600 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
+                                  <DollarSign className="h-4 w-4" />
                                   <span>R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
                                 </div>
                               )}
@@ -550,25 +577,30 @@ function ActivitiesTimeline({
       </div>
 
       {/* Summary Card */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <Trophy className="h-4 w-4 text-blue-600" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-xl p-6 border border-blue-200"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+            <Trophy className="h-6 w-6 text-white" />
           </div>
           <div className="flex-1">
-            <h4 className="font-medium text-gray-900">Resumo do Planejamento</h4>
-            <p className="text-sm text-gray-600">
+            <h4 className="text-lg font-bold text-gray-900">Resumo do Planejamento</h4>
+            <p className="text-sm text-gray-600 mt-1">
               {activities.length} atividades distribuídas em {groupedActivities.length} {groupedActivities.length === 1 ? 'dia' : 'dias'}
             </p>
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-blue-600">
+            <div className="text-2xl font-bold text-blue-600">
               R$ {activities.reduce((sum, activity) => sum + (activity.estimatedCost || 0), 0).toLocaleString('pt-BR')}
             </div>
-            <div className="text-xs text-gray-500">Custo total estimado</div>
+            <div className="text-sm text-gray-500">Custo total estimado</div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
