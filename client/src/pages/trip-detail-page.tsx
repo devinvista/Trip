@@ -1005,6 +1005,44 @@ export default function TripDetailPage() {
     enabled: !!id,
   });
 
+  // Initialize planned activities when trip data is loaded
+  useEffect(() => {
+    if (trip?.plannedActivities) {
+      try {
+        console.log('🔍 Raw plannedActivities:', trip.plannedActivities);
+        console.log('🔍 Type of plannedActivities:', typeof trip.plannedActivities);
+        
+        let parsedActivities = trip.plannedActivities;
+        
+        // Handle double-escaped JSON strings
+        if (typeof parsedActivities === 'string') {
+          try {
+            parsedActivities = JSON.parse(parsedActivities);
+          } catch (e) {
+            console.log('First parse failed, data might be double-escaped');
+          }
+        }
+        
+        // If it's still a string, try parsing again
+        if (typeof parsedActivities === 'string') {
+          try {
+            parsedActivities = JSON.parse(parsedActivities);
+          } catch (e) {
+            console.log('Second parse failed');
+          }
+        }
+        
+        console.log('🔍 Parsed activities:', parsedActivities);
+        setPlannedActivities(Array.isArray(parsedActivities) ? parsedActivities : []);
+      } catch (error) {
+        console.error('Error parsing planned activities:', error);
+        setPlannedActivities([]);
+      }
+    } else {
+      setPlannedActivities([]);
+    }
+  }, [trip?.plannedActivities]);
+
   const { data: requests = [] } = useQuery<any[]>({
     queryKey: ["/api/trips", id, "requests"],
     queryFn: async () => {
