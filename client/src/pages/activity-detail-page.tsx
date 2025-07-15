@@ -98,6 +98,29 @@ export default function ActivityDetailPage() {
     enabled: !!id,
   });
 
+  // Buscar propostas já incluídas nas viagens do usuário
+  const { data: userTrips } = useQuery({
+    queryKey: ['/api/trips/my-trips'],
+    queryFn: async () => {
+      const response = await fetch('/api/trips/my-trips');
+      if (!response.ok) throw new Error("Erro ao buscar viagens");
+      return response.json();
+    },
+    enabled: !!user,
+  });
+
+  // Extrair IDs das propostas já incluídas nas viagens do usuário
+  const includedProposalIds = userTrips ? 
+    userTrips.flatMap((trip: any) => {
+      const plannedActivities = parseJsonArray(trip.plannedActivities);
+      return plannedActivities
+        .filter((activity: any) => activity.activityId === Number(id))
+        .flatMap((activity: any) => {
+          const proposals = parseJsonArray(activity.budgetProposals);
+          return proposals.map((proposal: any) => proposal.id);
+        });
+    }) : [];
+
   const bookingForm = useForm<InsertActivityBooking>({
     resolver: zodResolver(insertActivityBookingSchema),
     defaultValues: {
@@ -493,7 +516,7 @@ export default function ActivityDetailPage() {
                   activityId={Number(id)} 
                   allowMultipleSelection={true}
                   onProposalsChange={setSelectedProposals}
-                  includedProposalIds={[7]} // Exemplo: proposta ID 7 já está incluída em alguma viagem
+                  includedProposalIds={includedProposalIds}
                 />
               </TabsContent>
 

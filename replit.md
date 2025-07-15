@@ -154,6 +154,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Implementada timeline visual para atividades planejadas com agrupamento por data e melhor experiência do usuário
 - July 15, 2025. Corrigido sistema de datas na timeline com suporte a diferentes formatos de data/hora
 - July 15, 2025. Migração completa do Replit Agent para ambiente Replit padrão - aplicação funcionando perfeitamente
+- July 15, 2025. Corrigido bug nas propostas de orçamento: removido valor hardcoded que fazia proposta aparecer incorretamente como "já incluído"
+- July 15, 2025. Implementada lógica dinâmica para verificar propostas realmente incluídas nas viagens do usuário
+- July 15, 2025. Padronizado design de botões azuis em todos os componentes da aplicação com gradientes e estados consistentes
 - July 15, 2025. Corrigido sistema de adição de atividades a viagens - agora mostra todas as viagens do usuário sem filtro de localização
 - July 15, 2025. Implementado filtro por localização da atividade para mostrar apenas viagens na mesma cidade
 - July 15, 2025. Corrigido sistema de parsing de dados JSON duplamente escapados nas propostas de orçamento
