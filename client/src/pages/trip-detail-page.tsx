@@ -770,7 +770,7 @@ function ActivitiesTimeline({
       {/* Edit Activity Dialog */}
       {editingActivity && (
         <Dialog open={!!editingActivity} onOpenChange={() => setEditingActivity(null)}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Editar Atividade</DialogTitle>
             </DialogHeader>
@@ -791,7 +791,7 @@ function ActivitiesTimeline({
                   onChange={(e) => setEditingActivity({...editingActivity, description: e.target.value})}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-category">Categoria</Label>
                   <Select value={editingActivity.category} onValueChange={(value) => setEditingActivity({...editingActivity, category: value})}>
@@ -824,7 +824,7 @@ function ActivitiesTimeline({
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-duration">Duração</Label>
                   <Input
@@ -860,12 +860,12 @@ function ActivitiesTimeline({
                   onChange={(e) => setEditingActivity({...editingActivity, notes: e.target.value})}
                 />
               </div>
-              <div className="flex gap-2 pt-4">
+              <div className="flex flex-col sm:flex-row gap-2 pt-4">
                 <Button onClick={() => handleSaveActivity(editingActivity)} className="flex-1">
                   <Save className="h-4 w-4 mr-2" />
                   Salvar Alterações
                 </Button>
-                <Button variant="outline" onClick={() => setEditingActivity(null)}>
+                <Button variant="outline" onClick={() => setEditingActivity(null)} className="sm:w-auto">
                   Cancelar
                 </Button>
               </div>
@@ -876,7 +876,7 @@ function ActivitiesTimeline({
 
       {/* Add Activity Dialog */}
       <Dialog open={isAddingActivity} onOpenChange={setIsAddingActivity}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Adicionar Nova Atividade</DialogTitle>
           </DialogHeader>
@@ -899,7 +899,7 @@ function ActivitiesTimeline({
                 placeholder="Descreva a atividade..."
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="new-category">Categoria</Label>
                 <Select value={newActivity.category} onValueChange={(value) => setNewActivity({...newActivity, category: value})}>
@@ -932,7 +932,7 @@ function ActivitiesTimeline({
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="new-duration">Duração</Label>
                 <Input
@@ -970,12 +970,12 @@ function ActivitiesTimeline({
                 placeholder="Observações adicionais..."
               />
             </div>
-            <div className="flex gap-2 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 pt-4">
               <Button onClick={handleAddActivity} className="flex-1" disabled={!newActivity.title}>
                 <Plus className="h-4 w-4 mr-2" />
                 Adicionar Atividade
               </Button>
-              <Button variant="outline" onClick={() => setIsAddingActivity(false)}>
+              <Button variant="outline" onClick={() => setIsAddingActivity(false)} className="sm:w-auto">
                 Cancelar
               </Button>
             </div>
@@ -1009,9 +1009,6 @@ export default function TripDetailPage() {
   useEffect(() => {
     if (trip?.plannedActivities) {
       try {
-        console.log('🔍 Raw plannedActivities:', trip.plannedActivities);
-        console.log('🔍 Type of plannedActivities:', typeof trip.plannedActivities);
-        
         let parsedActivities = trip.plannedActivities;
         
         // Handle double-escaped JSON strings
@@ -1019,7 +1016,7 @@ export default function TripDetailPage() {
           try {
             parsedActivities = JSON.parse(parsedActivities);
           } catch (e) {
-            console.log('First parse failed, data might be double-escaped');
+            // First parse failed, data might be double-escaped
           }
         }
         
@@ -1028,11 +1025,10 @@ export default function TripDetailPage() {
           try {
             parsedActivities = JSON.parse(parsedActivities);
           } catch (e) {
-            console.log('Second parse failed');
+            // Second parse failed
           }
         }
         
-        console.log('🔍 Parsed activities:', parsedActivities);
         setPlannedActivities(Array.isArray(parsedActivities) ? parsedActivities : []);
       } catch (error) {
         console.error('Error parsing planned activities:', error);

@@ -149,6 +149,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Corrigido sistema de contagem de participantes para usar apenas participantes aceitos em toda aplicação
 - July 15, 2025. Implementada função getRealParticipantsCount() padronizada e sincronização automática no backend
 - July 15, 2025. Corrigido AdvancedActivityManager para calcular custos baseado em participantes aceitos reais
+- July 15, 2025. Implementado sistema responsivo para DialogContent - todos os diálogos agora se ajustam automaticamente ao tamanho da tela
+- July 15, 2025. Corrigido sistema de parsing de atividades planejadas para tratar strings JSON duplamente escapadas do banco de dados
 - July 12, 2025. Enhanced trip detail page with modern dynamic layout, contagem regressiva em tempo real, and improved budget tracking visualization
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips
