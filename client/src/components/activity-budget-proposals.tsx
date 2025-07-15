@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,8 @@ export function ActivityBudgetProposals({
 }: ActivityBudgetProposalsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProposals, setSelectedProposals] = useState<ActivityBudgetProposal[]>([]);
+  const [pendingVotes, setPendingVotes] = useState<Map<number, boolean>>(new Map());
+  const voteTimeouts = useRef<Map<number, NodeJS.Timeout>>(new Map());
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -169,6 +171,28 @@ export function ActivityBudgetProposals({
     createProposal.mutate(data);
   };
 
+  // Debounced vote handler - only commits vote after user stops clicking
+  const debouncedVote = useCallback((proposalId: number, increment: boolean) => {
+    // Clear existing timeout for this proposal
+    const existingTimeout = voteTimeouts.current.get(proposalId);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+    }
+
+    // Set new timeout to commit vote after delay
+    const newTimeout = setTimeout(() => {
+      voteProposal.mutate({ proposalId, increment });
+      setPendingVotes(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(proposalId);
+        return newMap;
+      });
+      voteTimeouts.current.delete(proposalId);
+    }, 800); // 800ms delay to commit vote
+
+    voteTimeouts.current.set(proposalId, newTimeout);
+  }, [voteProposal]);
+
   const handleVote = (proposalId: number, increment: boolean) => {
     if (!user) {
       toast({ 
@@ -177,12 +201,37 @@ export function ActivityBudgetProposals({
       });
       return;
     }
-    voteProposal.mutate({ proposalId, increment });
+
+    // Update pending vote state immediately for visual feedback
+    setPendingVotes(prev => {
+      const newMap = new Map(prev);
+      const currentVoteStatus = getProposalVoteStatus(proposalId);
+      newMap.set(proposalId, !currentVoteStatus.hasVoted);
+      return newMap;
+    });
+
+    // Trigger debounced vote
+    debouncedVote(proposalId, increment);
   };
 
   const getProposalVoteStatus = (proposalId: number) => {
-    return proposalVotes?.[proposalId] || { hasVoted: false, vote: null };
+    const pendingVote = pendingVotes.get(proposalId);
+    const actualVote = proposalVotes?.[proposalId] || { hasVoted: false, vote: null };
+    
+    // If there's a pending vote, use that state for visual feedback
+    if (pendingVote !== undefined) {
+      return { hasVoted: pendingVote, vote: actualVote.vote };
+    }
+    
+    return actualVote;
   };
+
+  // Clean up timeouts on unmount
+  useEffect(() => {
+    return () => {
+      voteTimeouts.current.forEach(timeout => clearTimeout(timeout));
+    };
+  }, []);
 
   // Handle multiple proposal selection
   const handleProposalToggle = (proposal: ActivityBudgetProposal, selected: boolean) => {
@@ -623,10 +672,18 @@ export function ActivityBudgetProposals({
                             disabled={voteProposal.isPending}
                             className={`h-8 px-2 flex items-center gap-1 ${
                               getProposalVoteStatus(proposal.id).hasVoted 
-                                ? 'bg-blue-100 text-blue-600 border-blue-300' 
+                                ? pendingVotes.has(proposal.id)
+                                  ? 'bg-yellow-100 text-yellow-600 border-yellow-300 animate-pulse' 
+                                  : 'bg-blue-100 text-blue-600 border-blue-300'
                                 : 'hover:bg-blue-50 hover:text-blue-600'
                             }`}
-                            title={getProposalVoteStatus(proposal.id).hasVoted ? 'Clique para remover like' : 'Dar like'}
+                            title={
+                              pendingVotes.has(proposal.id) 
+                                ? 'Processando voto...' 
+                                : getProposalVoteStatus(proposal.id).hasVoted 
+                                  ? 'Clique para remover like' 
+                                  : 'Dar like'
+                            }
                           >
                             <ThumbsUp className={`h-3 w-3 ${
                               getProposalVoteStatus(proposal.id).hasVoted ? 'fill-current' : ''
@@ -641,8 +698,12 @@ export function ActivityBudgetProposals({
                           </Badge>
                         )}
                         {user && getProposalVoteStatus(proposal.id).hasVoted && (
-                          <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
-                            ✓ Já deu like!
+                          <Badge variant="outline" className={`text-xs ${
+                            pendingVotes.has(proposal.id)
+                              ? 'text-yellow-600 border-yellow-200 animate-pulse'
+                              : 'text-blue-600 border-blue-200'
+                          }`}>
+                            {pendingVotes.has(proposal.id) ? '⏳ Processando...' : '✓ Já deu like!'}
                           </Badge>
                         )}
                       </div>

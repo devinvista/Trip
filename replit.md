@@ -174,6 +174,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Implementado sistema de votação por proposta individual com toggle: usuários podem votar e remover voto clicando novamente
 - July 15, 2025. Alterado texto de "Você já votou nesta atividade" para "Já deu like!" em toda interface de propostas de orçamento
 - July 15, 2025. Criado endpoint /api/proposals/:id/user-vote para verificar votos individuais por proposta
+- July 15, 2025. Implementado sistema de votação debounced: voto só é contabilizado após 800ms do último clique, evitando spam
+- July 15, 2025. Adicionado feedback visual para votos pendentes com animação e cor amarela durante processamento
 - July 15, 2025. Corrigido erro "Expected array, received string" nas propostas de orçamento - campos inclusões/exclusões agora funcionam corretamente como arrays
 - July 15, 2025. Corrigido erro de ícone Plus não encontrado no componente AddActivityToTrip
 - July 15, 2025. Implementado sistema automático de atualização de orçamento: valores de atividades agora são adicionados automaticamente ao orçamento das viagens
