@@ -57,6 +57,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   const form = useForm<ReviewFormData>({
     resolver: zodResolver(insertActivityReviewSchema),
     defaultValues: {
+      activityId: activityId,
       rating: 5,
       review: "",
       photos: [],
@@ -222,6 +223,18 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                   </DialogHeader>
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="activityId"
+                        render={({ field }) => (
+                          <FormItem className="hidden">
+                            <FormControl>
+                              <Input type="hidden" {...field} value={activityId} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      
                       <FormField
                         control={form.control}
                         name="rating"

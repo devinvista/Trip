@@ -393,6 +393,7 @@ export const insertActivityReviewSchema = createInsertSchema(activityReviews).om
   isVerified: true,
   createdAt: true,
 }).extend({
+  activityId: z.number().positive("ID da atividade é obrigatório"),
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   review: z.string().optional().or(z.literal("")),
   photos: z.array(z.string()).optional(),

@@ -1122,7 +1122,7 @@ export function registerRoutes(app: Express): Server {
       // Validate request body
       const validatedData = insertActivityReviewSchema.parse({
         ...req.body,
-        activityId
+        activityId: activityId
       });
       
       console.log('🔍 Validated data:', validatedData);
@@ -1142,14 +1142,17 @@ export function registerRoutes(app: Express): Server {
       }
 
       // Create the review
-      const [newReview] = await db.insert(activityReviews).values({
+      const insertResult = await db.insert(activityReviews).values({
         activityId,
         userId,
         rating: validatedData.rating,
         review: validatedData.review,
         photos: validatedData.photos || [],
         visitDate: validatedData.visitDate || null
-      }).returning();
+      });
+      
+      // Get the inserted review ID
+      const reviewId = insertResult.insertId;
 
       // Update activity's average rating
       const allReviews = await db
@@ -1189,7 +1192,7 @@ export function registerRoutes(app: Express): Server {
         })
         .from(activityReviews)
         .innerJoin(users, eq(activityReviews.userId, users.id))
-        .where(eq(activityReviews.id, newReview.id))
+        .where(eq(activityReviews.id, reviewId))
         .limit(1);
 
       res.status(201).json(reviewWithUser[0]);
@@ -1207,14 +1210,20 @@ export function registerRoutes(app: Express): Server {
     try {
       const reviewId = parseInt(req.params.id);
 
-      const [updatedReview] = await db.update(activityReviews)
+      await db.update(activityReviews)
         .set({
           helpfulVotes: sql`${activityReviews.helpfulVotes} + 1`
         })
-        .where(eq(activityReviews.id, reviewId))
-        .returning();
+        .where(eq(activityReviews.id, reviewId));
 
-      res.json(updatedReview);
+      // Get the updated review
+      const updatedReview = await db
+        .select()
+        .from(activityReviews)
+        .where(eq(activityReviews.id, reviewId))
+        .limit(1);
+
+      res.json(updatedReview[0]);
     } catch (error) {
       console.error('❌ Erro ao marcar avaliação como útil:', error);
       res.status(500).json({ message: "Erro interno do servidor" });
