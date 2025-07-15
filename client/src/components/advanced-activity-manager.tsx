@@ -81,7 +81,7 @@ const priorityColors = {
   low: 'bg-green-100 text-green-800 border-green-300'
 };
 
-// Professional Timeline Component
+// Professional Timeline Component with Enhanced Visual Design
 function ActivitiesTimeline({
   activities,
   onEdit,
@@ -175,60 +175,107 @@ function ActivitiesTimeline({
     }
   };
 
-  return (
-    <div className="relative">
-      {/* Timeline Backbone */}
-      <div className="absolute left-12 top-0 bottom-0 w-px bg-gradient-to-b from-blue-200 via-purple-200 to-transparent"></div>
-      
-      <div className="space-y-16">
-        {sortedDateGroups.map((dateGroup, groupIndex) => (
-          <motion.div 
-            key={dateGroup}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: groupIndex * 0.1 }}
-            className="relative"
-          >
-            {/* Date Marker */}
-            <div className="absolute left-0 top-0 z-10">
-              {dateGroup !== 'Sem data definida' ? (
-                <div className="flex items-center gap-4">
-                  <div className="bg-white border-2 border-blue-200 rounded-2xl shadow-lg p-3 min-w-[100px] text-center">
-                    <div className="text-xs font-bold text-blue-600 mb-1">
-                      {getDayOfWeek(dateGroup)}
-                    </div>
-                    <div className="text-2xl font-bold text-slate-800">
-                      {getDay(dateGroup)}
-                    </div>
-                  </div>
-                  <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-md"></div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <div className="bg-gray-100 border-2 border-gray-300 rounded-2xl shadow-lg p-3 min-w-[100px] text-center">
-                    <div className="text-xs font-medium text-gray-500">
-                      SEM DATA
-                    </div>
-                  </div>
-                  <div className="w-4 h-4 bg-gray-400 rounded-full shadow-md"></div>
-                </div>
-              )}
-            </div>
+  if (activities.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <div className="w-20 h-20 bg-[#FFA500]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Calendar className="w-8 h-8 text-[#FFA500]" />
+        </div>
+        <h3 className="text-xl font-semibold text-[#1B2B49] mb-3">
+          Nenhuma atividade planejada ainda
+        </h3>
+        <p className="text-[#AAB0B7] mb-6">
+          Adicione atividades para criar um cronograma incrível para sua viagem.
+        </p>
+      </div>
+    );
+  }
 
-            {/* Content Area */}
-            <div className="ml-32">
+  return (
+    <div className="space-y-8">
+      {/* Timeline Header */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Cronograma de Atividades</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {sortedDateGroups.length} {sortedDateGroups.length === 1 ? 'dia' : 'dias'} com atividades planejadas
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-blue-600">
+              {activities.length}
+            </div>
+            <div className="text-sm text-gray-500">
+              {activities.length === 1 ? 'atividade' : 'atividades'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="relative">
+        {/* Timeline Line */}
+        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 via-blue-400 to-blue-300 rounded-full"></div>
+        
+        <div className="space-y-12">
+          {sortedDateGroups.map((dateGroup, dayIndex) => (
+            <motion.div
+              key={dateGroup}
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: dayIndex * 0.15 }}
+              className="relative"
+            >
               {/* Date Header */}
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-slate-800 mb-1">
-                  {formatDate(dateGroup)}
-                </h3>
-                <p className="text-sm text-slate-500">
-                  {groupedActivities[dateGroup].length} atividade{groupedActivities[dateGroup].length !== 1 ? 's' : ''} planejada{groupedActivities[dateGroup].length !== 1 ? 's' : ''}
-                </p>
+              <div className="flex items-center gap-6 mb-6">
+                <div className="relative z-10 w-16 h-16 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center shadow-xl">
+                  <div className="text-center">
+                    {dateGroup !== 'Sem data definida' ? (
+                      <>
+                        <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                          {getDayOfWeek(dateGroup)}
+                        </div>
+                        <div className="text-lg font-bold text-gray-900">
+                          {getDay(dateGroup)}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-xs font-medium text-gray-500">
+                        SEM DATA
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="bg-white px-6 py-4 rounded-xl border border-gray-200 shadow-sm flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-lg font-bold text-gray-900 capitalize">
+                        {dateGroup !== 'Sem data definida' ? getDayOfWeek(dateGroup).toLowerCase() : 'Sem data definida'}
+                      </h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {formatDate(dateGroup)} • {groupedActivities[dateGroup].length} atividade{groupedActivities[dateGroup].length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-gray-900">
+                        Custo estimado
+                      </div>
+                      <div className="text-lg font-bold text-[#FFA500]">
+                        R$ {groupedActivities[dateGroup].reduce((sum, activity) => sum + (activity.estimatedCost || 0), 0).toLocaleString('pt-BR')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Activities List */}
-              <div className="space-y-4">
+              {/* Activities List with Enhanced Design */}
+              <div className="ml-24 space-y-6">
                 {groupedActivities[dateGroup]
                   .sort((a, b) => {
                     // Sort by time if available
@@ -256,25 +303,25 @@ function ActivitiesTimeline({
                           return { 
                             color: 'text-red-700 bg-red-50 border-red-200', 
                             accent: 'border-red-400',
-                            dot: 'bg-red-500' 
+                            gradient: 'from-red-500 to-orange-500'
                           };
                         case 'medium':
                           return { 
                             color: 'text-amber-700 bg-amber-50 border-amber-200', 
                             accent: 'border-amber-400',
-                            dot: 'bg-amber-500' 
+                            gradient: 'from-amber-500 to-yellow-500'
                           };
                         case 'low':
                           return { 
                             color: 'text-emerald-700 bg-emerald-50 border-emerald-200', 
                             accent: 'border-emerald-400',
-                            dot: 'bg-emerald-500' 
+                            gradient: 'from-emerald-500 to-green-500'
                           };
                         default:
                           return { 
                             color: 'text-gray-700 bg-gray-50 border-gray-200', 
                             accent: 'border-gray-400',
-                            dot: 'bg-gray-500' 
+                            gradient: 'from-gray-500 to-slate-500'
                           };
                       }
                     };
@@ -289,6 +336,9 @@ function ActivitiesTimeline({
                                   category === 'food' ? 'from-yellow-500 to-orange-500' :
                                   category === 'nature' ? 'from-green-500 to-emerald-500' :
                                   category === 'sightseeing' ? 'from-blue-500 to-cyan-500' :
+                                  category === 'shopping' ? 'from-pink-500 to-rose-500' :
+                                  category === 'nightlife' ? 'from-purple-600 to-indigo-600' :
+                                  category === 'wellness' ? 'from-teal-500 to-cyan-500' :
                                   'from-gray-500 to-slate-500'
                       };
                     };
@@ -300,50 +350,70 @@ function ActivitiesTimeline({
                     return (
                       <motion.div
                         key={activity.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: activityIndex * 0.1 }}
-                        className="group relative"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: activityIndex * 0.1 }}
+                        className="group"
                       >
-                        <Card className={`border-l-4 ${priorityConfig.accent} hover:shadow-lg transition-all duration-300 bg-white/95 backdrop-blur-sm`}>
-                          <CardContent className="p-0">
-                            {/* Header Section */}
-                            <div className="p-5 pb-4">
-                              <div className="flex items-start justify-between gap-4 mb-3">
-                                <div className="flex items-start gap-3 flex-1">
-                                  {/* Category Icon */}
-                                  <div className={`w-12 h-12 bg-gradient-to-br ${categoryConfig.gradient} rounded-xl shadow-md flex items-center justify-center text-white text-xl flex-shrink-0 transform group-hover:scale-110 transition-transform duration-200`}>
-                                    {categoryConfig.icon}
-                                  </div>
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-[#FFA500]/60">
+                          <div className="relative">
+                            {/* Priority Stripe */}
+                            <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${priorityConfig.gradient}`}></div>
+                            
+                            {/* Category Icon */}
+                            <div className="absolute top-3 left-3">
+                              <div className={`w-10 h-10 bg-gradient-to-br ${categoryConfig.gradient} rounded-lg shadow-md flex items-center justify-center text-white text-lg`}>
+                                {categoryConfig.icon}
+                              </div>
+                            </div>
+
+                            {/* Priority Badge */}
+                            <div className="absolute top-3 right-3">
+                              <Badge className={`${priorityConfig.color} border-0 text-xs font-medium`}>
+                                {activity.priority === 'high' ? 'Alta Prioridade' : 
+                                 activity.priority === 'medium' ? 'Média Prioridade' : 'Baixa Prioridade'}
+                              </Badge>
+                            </div>
+
+                            {/* Main Content */}
+                            <div className="p-6 pt-16">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1">
+                                  <h3 className="font-bold text-lg text-[#1B2B49] mb-2 group-hover:text-[#FFA500] transition-colors">
+                                    {activity.title}
+                                  </h3>
                                   
-                                  {/* Title and Time */}
-                                  <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-slate-900 text-lg leading-tight mb-2 group-hover:text-blue-700 transition-colors">
-                                      {activity.title}
-                                    </h3>
-                                    <div className="flex items-center gap-3 flex-wrap">
-                                      {time && (
-                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
-                                          <Clock className="h-4 w-4" />
-                                          {time}
-                                        </div>
-                                      )}
-                                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${priorityConfig.color}`}>
-                                        <div className={`w-2 h-2 rounded-full ${priorityConfig.dot}`}></div>
-                                        {activity.priority === 'high' ? 'Alta Prioridade' : 
-                                         activity.priority === 'medium' ? 'Média Prioridade' : 'Baixa Prioridade'}
-                                      </span>
-                                    </div>
+                                  {/* Time and Duration */}
+                                  <div className="flex items-center gap-4 mb-3">
+                                    {time && (
+                                      <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                                        <Clock className="h-4 w-4" />
+                                        {time}
+                                      </div>
+                                    )}
+                                    {activity.duration && (
+                                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <Clock className="h-4 w-4" />
+                                        {activity.duration}
+                                      </div>
+                                    )}
                                   </div>
+
+                                  {/* Description */}
+                                  {activity.description && (
+                                    <p className="text-[#AAB0B7] text-sm mb-4 line-clamp-2">
+                                      {activity.description}
+                                    </p>
+                                  )}
                                 </div>
-                                
+
                                 {/* Action Buttons */}
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-2 group-hover:translate-x-0">
+                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => onEdit(activity)}
-                                    className="h-9 w-9 p-0 hover:bg-blue-50 hover:text-blue-600 rounded-full"
+                                    className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600 rounded-full"
                                   >
                                     <Edit2 className="h-4 w-4" />
                                   </Button>
@@ -351,71 +421,55 @@ function ActivitiesTimeline({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => onDelete(activity.id)}
-                                    className="h-9 w-9 p-0 hover:bg-red-50 hover:text-red-600 rounded-full"
+                                    className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 rounded-full"
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </div>
 
-                              {/* Description */}
-                              {activity.description && (
-                                <p className="text-slate-600 leading-relaxed mb-4 text-sm">
-                                  {activity.description}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Info Grid */}
-                            <div className="px-5 pb-4">
-                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                              {/* Info Grid */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                                 {activity.location && (
-                                  <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg">
-                                    <MapPin className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                                  <div className="flex items-center gap-2 text-xs text-slate-600 bg-[#F5F9FC] px-3 py-2 rounded-lg">
+                                    <MapPin className="h-4 w-4 text-[#FFA500] flex-shrink-0" />
                                     <span className="truncate font-medium">{activity.location}</span>
-                                  </div>
-                                )}
-                                
-                                {activity.duration && (
-                                  <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg">
-                                    <Clock className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                                    <span className="font-medium">{activity.duration}</span>
                                   </div>
                                 )}
 
                                 {activity.estimatedCost && activity.estimatedCost > 0 && (
-                                  <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
-                                    <DollarSign className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                                  <div className="flex items-center gap-2 text-xs text-[#FFA500] bg-orange-50 px-3 py-2 rounded-lg border border-orange-200">
+                                    <DollarSign className="h-4 w-4 flex-shrink-0" />
                                     <span className="font-bold">R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
                                   </div>
                                 )}
 
-                                <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-2 rounded-lg">
-                                  <span className="font-medium">{categoryConfig.label}</span>
+                                <div className="flex items-center gap-2 text-xs text-slate-600 bg-[#F5F9FC] px-3 py-2 rounded-lg">
+                                  <Badge variant="outline" className="text-xs border-[#AAB0B7]/30">
+                                    {categoryConfig.label}
+                                  </Badge>
                                 </div>
                               </div>
-                            </div>
 
-                            {/* Notes Section */}
-                            {activity.notes && (
-                              <div className="px-5 pb-5">
+                              {/* Notes Section */}
+                              {activity.notes && (
                                 <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
                                   <div className="flex items-start gap-2">
                                     <FileText className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
                                     <p className="text-sm text-blue-700 leading-relaxed">{activity.notes}</p>
                                   </div>
                                 </div>
-                              </div>
-                            )}
-                          </CardContent>
+                              )}
+                            </div>
+                          </div>
                         </Card>
                       </motion.div>
                     );
                   })}
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
