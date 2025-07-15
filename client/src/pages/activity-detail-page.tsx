@@ -37,6 +37,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { ActivityBudgetProposals } from "@/components/activity-budget-proposals";
 import { AddActivityToTrip } from "@/components/add-activity-to-trip";
+import { ActivityReviews } from "@/components/activity-reviews";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
@@ -521,80 +522,11 @@ export default function ActivityDetailPage() {
               </TabsContent>
 
               <TabsContent value="reviews" className="mt-6">
-                <div className="bg-white rounded-lg border p-6">
-                  {reviewsLoading ? (
-                    <div className="flex justify-center py-8">
-                      <LoadingSpinner />
-                    </div>
-                  ) : reviews && reviews.length > 0 ? (
-                    <div className="space-y-6">
-                      {reviews.map((review) => (
-                        <div key={review.id} className="border-b pb-6 last:border-b-0">
-                          <div className="flex items-start gap-4">
-                            <Avatar>
-                              <AvatarImage src={review.user.profilePhoto} />
-                              <AvatarFallback>
-                                {review.user.fullName.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                            
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="font-medium">{review.user.fullName}</span>
-                                <div className="flex items-center gap-1">
-                                  {renderStars(review.rating)}
-                                </div>
-                                <span className="text-sm text-gray-500">
-                                  {format(new Date(review.createdAt), "MMM yyyy", { locale: ptBR })}
-                                </span>
-                              </div>
-                              
-                              {review.review && (
-                                <p className="text-gray-700 mb-2">{review.review}</p>
-                              )}
-                              
-                              {review.photos && review.photos.length > 0 && (
-                                <div className="flex gap-2 mb-2">
-                                  {review.photos.map((photo, index) => (
-                                    <img
-                                      key={index}
-                                      src={photo}
-                                      alt={`Review ${index + 1}`}
-                                      className="w-16 h-16 object-cover rounded"
-                                    />
-                                  ))}
-                                </div>
-                              )}
-                              
-                              <div className="flex items-center gap-4 text-sm text-gray-500">
-                                <button className="flex items-center gap-1 hover:text-blue-600">
-                                  <MessageSquare className="w-4 h-4" />
-                                  Útil ({review.helpfulVotes})
-                                </button>
-                                {review.isVerified && (
-                                  <span className="flex items-center gap-1 text-green-600">
-                                    <CheckCircle className="w-4 h-4" />
-                                    Verificado
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        Nenhuma avaliação ainda
-                      </h3>
-                      <p className="text-gray-600">
-                        Seja o primeiro a avaliar esta atividade!
-                      </p>
-                    </div>
-                  )}
-                </div>
+                <ActivityReviews 
+                  activityId={Number(id)} 
+                  averageRating={activity.averageRating}
+                  totalRatings={activity.totalRatings}
+                />
               </TabsContent>
 
               <TabsContent value="location" className="mt-6">

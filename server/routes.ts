@@ -6,6 +6,10 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
 import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema } from "@shared/schema";
+import { db } from "./db";
+import { activityReviews, activities, activityBudgetProposalVotes, users } from "@shared/schema";
+import { eq, and, desc, sql } from "drizzle-orm";
+import { z } from "zod";
 
 // Middleware para verificar autenticação
 function requireAuth(req: any, res: any, next: any) {
@@ -1064,33 +1068,150 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/activities/:id/reviews", async (req, res) => {
     try {
       const activityId = parseInt(req.params.id);
-      const reviews = await storage.getActivityReviews(activityId);
+      const limit = parseInt(req.query.limit as string) || 10;
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      const reviews = await db
+        .select({
+          id: activityReviews.id,
+          activityId: activityReviews.activityId,
+          rating: activityReviews.rating,
+          review: activityReviews.review,
+          photos: activityReviews.photos,
+          visitDate: activityReviews.visitDate,
+          helpfulVotes: activityReviews.helpfulVotes,
+          isVerified: activityReviews.isVerified,
+          createdAt: activityReviews.createdAt,
+          user: {
+            id: users.id,
+            username: users.username,
+            fullName: users.fullName,
+            profilePhoto: users.profilePhoto,
+            averageRating: users.averageRating,
+            isVerified: users.isVerified
+          }
+        })
+        .from(activityReviews)
+        .innerJoin(users, eq(activityReviews.userId, users.id))
+        .where(eq(activityReviews.activityId, activityId))
+        .orderBy(desc(activityReviews.createdAt))
+        .limit(limit)
+        .offset(offset);
+
       res.json(reviews);
     } catch (error) {
-      console.error('Erro ao buscar avaliações:', error);
-      res.status(500).json({ message: "Erro ao buscar avaliações" });
+      console.error('❌ Erro ao buscar avaliações:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
 
-  // Create review for an activity (requires authentication)
+  // Create a new activity review
   app.post("/api/activities/:id/reviews", requireAuth, async (req, res) => {
     try {
       const activityId = parseInt(req.params.id);
       const userId = req.user!.id;
-      const reviewData = insertActivityReviewSchema.parse(req.body);
       
-      const review = await storage.createActivityReview({
-        ...reviewData,
-        activityId,
-        userId
+      // Validate request body
+      const validatedData = insertActivityReviewSchema.parse({
+        ...req.body,
+        activityId
       });
-      
-      res.status(201).json(review);
+
+      // Check if user already reviewed this activity
+      const existingReview = await db
+        .select()
+        .from(activityReviews)
+        .where(and(
+          eq(activityReviews.activityId, activityId),
+          eq(activityReviews.userId, userId)
+        ))
+        .limit(1);
+
+      if (existingReview.length > 0) {
+        return res.status(400).json({ message: "Você já avaliou esta atividade" });
+      }
+
+      // Create the review
+      const [newReview] = await db.insert(activityReviews).values({
+        activityId,
+        userId,
+        rating: validatedData.rating,
+        review: validatedData.review,
+        photos: validatedData.photos || [],
+        visitDate: validatedData.visitDate || null
+      }).returning();
+
+      // Update activity's average rating
+      const allReviews = await db
+        .select({ rating: activityReviews.rating })
+        .from(activityReviews)
+        .where(eq(activityReviews.activityId, activityId));
+
+      const averageRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+
+      await db.update(activities)
+        .set({
+          averageRating: parseFloat(averageRating.toFixed(2)),
+          totalRatings: allReviews.length
+        })
+        .where(eq(activities.id, activityId));
+
+      // Return the new review with user data
+      const reviewWithUser = await db
+        .select({
+          id: activityReviews.id,
+          activityId: activityReviews.activityId,
+          rating: activityReviews.rating,
+          review: activityReviews.review,
+          photos: activityReviews.photos,
+          visitDate: activityReviews.visitDate,
+          helpfulVotes: activityReviews.helpfulVotes,
+          isVerified: activityReviews.isVerified,
+          createdAt: activityReviews.createdAt,
+          user: {
+            id: users.id,
+            username: users.username,
+            fullName: users.fullName,
+            profilePhoto: users.profilePhoto,
+            averageRating: users.averageRating,
+            isVerified: users.isVerified
+          }
+        })
+        .from(activityReviews)
+        .innerJoin(users, eq(activityReviews.userId, users.id))
+        .where(eq(activityReviews.id, newReview.id))
+        .limit(1);
+
+      res.status(201).json(reviewWithUser[0]);
     } catch (error) {
-      console.error('Erro ao criar avaliação:', error);
-      res.status(400).json({ message: "Erro ao criar avaliação" });
+      console.error('❌ Erro ao criar avaliação:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
+
+  // Update helpful votes for a review
+  app.post("/api/reviews/:id/helpful", requireAuth, async (req, res) => {
+    try {
+      const reviewId = parseInt(req.params.id);
+
+      const [updatedReview] = await db.update(activityReviews)
+        .set({
+          helpfulVotes: sql`${activityReviews.helpfulVotes} + 1`
+        })
+        .where(eq(activityReviews.id, reviewId))
+        .returning();
+
+      res.json(updatedReview);
+    } catch (error) {
+      console.error('❌ Erro ao marcar avaliação como útil:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+
 
   // ============ ACTIVITY BOOKINGS ROUTES ============
 
