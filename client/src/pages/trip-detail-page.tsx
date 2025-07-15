@@ -308,13 +308,27 @@ function ActivitiesTimeline({
   tripStartDate, 
   tripEndDate, 
   canJoin, 
-  onJoinClick 
+  onJoinClick,
+  showManagerForParticipants = false,
+  tripId,
+  tripDestination,
+  tripParticipants,
+  tripMaxParticipants,
+  onActivitiesChange,
+  trip
 }: {
   activities: PlannedActivity[];
   tripStartDate: string;
   tripEndDate: string;
   canJoin: boolean;
   onJoinClick: () => void;
+  showManagerForParticipants?: boolean;
+  tripId?: number;
+  tripDestination?: string;
+  tripParticipants?: number;
+  tripMaxParticipants?: number;
+  onActivitiesChange?: (activities: PlannedActivity[]) => void;
+  trip?: any;
 }) {
   // Function to get category icon and color
   const getCategoryConfig = (category: string) => {
@@ -427,6 +441,23 @@ function ActivitiesTimeline({
 
   return (
     <div className="space-y-6">
+      {/* Activity Manager for Participants */}
+      {showManagerForParticipants && tripId && onActivitiesChange && (
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <AdvancedActivityManager
+            activities={activities}
+            onActivitiesChange={onActivitiesChange}
+            tripDestination={tripDestination}
+            trip={trip}
+            tripParticipants={tripParticipants || 1}
+            tripMaxParticipants={tripMaxParticipants || 1}
+            tripStartDate={tripStartDate}
+            tripEndDate={tripEndDate}
+            className="border-0"
+          />
+        </div>
+      )}
+
       {/* Timeline Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
@@ -1038,27 +1069,21 @@ export default function TripDetailPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {(isCreator || isParticipant) ? (
-                      <AdvancedActivityManager
-                        activities={plannedActivities}
-                        onActivitiesChange={setPlannedActivities}
-                        tripDestination={trip.destination}
-                        trip={trip}
-                        tripParticipants={realParticipants.length}
-                        tripMaxParticipants={trip.maxParticipants}
-                        tripStartDate={trip.startDate}
-                        tripEndDate={trip.endDate}
-                        className="border-0"
-                      />
-                    ) : (
-                      <ActivitiesTimeline 
-                        activities={plannedActivities}
-                        tripStartDate={trip.startDate}
-                        tripEndDate={trip.endDate}
-                        canJoin={canJoin}
-                        onJoinClick={() => setActiveTab("overview")}
-                      />
-                    )}
+                    {/* Timeline always visible for everyone */}
+                    <ActivitiesTimeline 
+                      activities={plannedActivities}
+                      tripStartDate={trip.startDate}
+                      tripEndDate={trip.endDate}
+                      canJoin={canJoin}
+                      onJoinClick={() => setActiveTab("overview")}
+                      showManagerForParticipants={isCreator || isParticipant}
+                      tripId={parseInt(id!)}
+                      tripDestination={trip.destination}
+                      tripParticipants={realParticipants.length}
+                      tripMaxParticipants={trip.maxParticipants}
+                      onActivitiesChange={setPlannedActivities}
+                      trip={trip}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
