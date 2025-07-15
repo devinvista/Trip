@@ -130,13 +130,47 @@ function ActivitiesTimeline({
     }
   };
 
-  // Group activities by date
+  // Group activities by date with better date handling
   const groupedActivities = activities.reduce((groups, activity) => {
-    const date = activity.dateTime ? new Date(activity.dateTime).toDateString() : 'Sem data definida';
-    if (!groups[date]) {
-      groups[date] = [];
+    let dateKey = 'Sem data definida';
+    
+    if (activity.dateTime) {
+      try {
+        // Handle different date formats
+        let dateValue = activity.dateTime;
+        
+        // If it's already a date object, use it
+        if (dateValue instanceof Date) {
+          dateKey = dateValue.toISOString().split('T')[0]; // YYYY-MM-DD format
+        } 
+        // If it's a string, try to parse it
+        else if (typeof dateValue === 'string') {
+          // Handle YYYY-MM-DD format (from date input)
+          if (dateValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            dateKey = dateValue;
+          }
+          // Handle YYYY-MM-DDTHH:mm:ss format
+          else if (dateValue.includes('T')) {
+            dateKey = new Date(dateValue).toISOString().split('T')[0];
+          }
+          // Handle other date formats
+          else {
+            const parsed = new Date(dateValue);
+            if (!isNaN(parsed.getTime())) {
+              dateKey = parsed.toISOString().split('T')[0];
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('Error parsing activity date:', activity.dateTime, error);
+        dateKey = 'Sem data definida';
+      }
     }
-    groups[date].push(activity);
+    
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
+    groups[dateKey].push(activity);
     return groups;
   }, {} as Record<string, PlannedActivity[]>);
 
@@ -168,12 +202,19 @@ function ActivitiesTimeline({
                       <span className="font-medium text-sm">
                         {dateGroup === 'Sem data definida' 
                           ? dateGroup 
-                          : new Date(dateGroup).toLocaleDateString('pt-BR', {
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })
+                          : (() => {
+                              try {
+                                const date = new Date(dateGroup + 'T00:00:00');
+                                return date.toLocaleDateString('pt-BR', {
+                                  weekday: 'long',
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                });
+                              } catch (error) {
+                                return dateGroup;
+                              }
+                            })()
                         }
                       </span>
                     </div>
@@ -1045,7 +1086,7 @@ function ActivityFormTab({
           <Input
             id="dateTime"
             type="date"
-            value={formData.dateTime}
+            value={formData.dateTime ? formData.dateTime.split('T')[0] : ''}
             onChange={(e) => setFormData(prev => ({ ...prev, dateTime: e.target.value }))}
             min={tripStartDate ? formatDateForInput(tripStartDate) : undefined}
             max={tripEndDate ? formatDateForInput(tripEndDate) : undefined}
@@ -1056,6 +1097,25 @@ function ActivityFormTab({
               Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
             </p>
           )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="time">Horário (opcional)</Label>
+          <Input
+            id="time"
+            type="time"
+            value={formData.dateTime && formData.dateTime.includes('T') ? formData.dateTime.split('T')[1]?.split('.')[0] : ''}
+            onChange={(e) => {
+              const date = formData.dateTime ? formData.dateTime.split('T')[0] : '';
+              const time = e.target.value;
+              if (date && time) {
+                setFormData(prev => ({ ...prev, dateTime: `${date}T${time}` }));
+              } else if (date) {
+                setFormData(prev => ({ ...prev, dateTime: date }));
+              }
+            }}
+            className="border-2 focus:border-primary"
+          />
         </div>
       </div>
 
