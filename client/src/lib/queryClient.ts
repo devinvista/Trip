@@ -33,7 +33,7 @@ export async function apiRequest(
 
   if (!response.ok) {
     const errorText = await response.text();
-    let errorMessage = `HTTP ${response.status}`;
+    let errorMessage = `Erro HTTP ${response.status}`;
 
     try {
       const errorData = JSON.parse(errorText);

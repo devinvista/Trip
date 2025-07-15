@@ -32,10 +32,10 @@ const categoryColors = {
 };
 
 const categoryLabels = {
-  planning: 'Planning',
-  booking: 'Booking',
-  experience: 'Experience',
-  completion: 'Completion'
+  planning: 'Planejamento',
+  booking: 'Reservas',
+  experience: 'Experiência',
+  completion: 'Conclusão'
 };
 
 export function JourneyProgressTracker({
@@ -108,8 +108,8 @@ export function JourneyProgressTracker({
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span>Overall Progress</span>
-            <span>{completedMilestones.length}/{milestones.length} completed</span>
+            <span>Progresso Geral</span>
+            <span>{completedMilestones.length}/{milestones.length} concluídos</span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
         </div>
@@ -237,9 +237,9 @@ export function JourneyProgressTracker({
                 >
                   <Trophy className="h-16 w-16 text-yellow-500 mx-auto" />
                 </motion.div>
-                <h3 className="text-2xl font-bold mb-2">Milestone Achieved! 🎉</h3>
+                <h3 className="text-2xl font-bold mb-2">Marco Alcançado! 🎉</h3>
                 <p className="text-muted-foreground">
-                  You've completed another step in your journey!
+                  Você completou mais uma etapa da sua jornada!
                 </p>
                 <div className="flex justify-center mt-4">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -266,9 +266,9 @@ export function JourneyProgressTracker({
             className="text-center p-4 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg border-2 border-yellow-300 dark:border-yellow-700"
           >
             <Trophy className="h-12 w-12 text-yellow-600 mx-auto mb-2" />
-            <h3 className="text-xl font-bold text-yellow-800 dark:text-yellow-200">Journey Complete!</h3>
+            <h3 className="text-xl font-bold text-yellow-800 dark:text-yellow-200">Jornada Completa!</h3>
             <p className="text-yellow-700 dark:text-yellow-300">
-              Congratulations! You've completed all milestones for this trip.
+              Parabéns! Você completou todos os marcos desta viagem.
             </p>
           </motion.div>
         )}

@@ -49,7 +49,7 @@ export function WelcomeBanner({ userName, onStartTour, onDismiss, isVisible }: W
               </div>
               
               <h2 className="text-2xl font-bold mb-2">
-                {userName ? `Bem-vindo, ${userName}!` : 'Bem-vindo ao ViajaJunto!'}
+                {userName ? `Bem-vindo, ${userName}!` : 'Bem-vindo ao PartiuTrip!'}
               </h2>
               
               <p className="text-blue-100 mb-4 leading-relaxed">
