@@ -572,6 +572,7 @@ export interface IStorage {
   getTrips(filters?: { destination?: string; startDate?: Date; endDate?: Date; budget?: number; travelStyle?: string }): Promise<Trip[]>;
   createTrip(trip: InsertTrip & { creatorId: number }): Promise<Trip>;
   updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined>;
+  updateTripActivities(tripId: number, plannedActivities: string): Promise<Trip | undefined>;
   deleteTrip(id: number): Promise<boolean>;
 
   // Trip Participants
@@ -896,6 +897,17 @@ export class DatabaseStorage implements IStorage {
       return updatedTrip;
     } catch (error) {
       console.error('❌ Erro ao atualizar viagem no MySQL:', error);
+      return undefined;
+    }
+  }
+
+  async updateTripActivities(tripId: number, plannedActivities: string): Promise<Trip | undefined> {
+    try {
+      await db.update(trips).set({ plannedActivities }).where(eq(trips.id, tripId));
+      const [updatedTrip] = await db.select().from(trips).where(eq(trips.id, tripId));
+      return updatedTrip;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar atividades da viagem no MySQL:', error);
       return undefined;
     }
   }

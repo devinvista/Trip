@@ -376,6 +376,34 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Update trip planned activities
+  app.patch("/api/trips/:id/activities", requireAuth, async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      const { plannedActivities } = req.body;
+      
+      const trip = await storage.getTrip(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+      
+      // Check if user is creator or participant
+      const isCreator = trip.creatorId === req.user!.id;
+      const participants = await storage.getTripParticipants(tripId);
+      const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
+      
+      if (!isCreator && !isParticipant) {
+        return res.status(403).json({ message: "Você não tem permissão para editar as atividades desta viagem" });
+      }
+      
+      const updatedTrip = await storage.updateTripActivities(tripId, plannedActivities);
+      res.json(updatedTrip);
+    } catch (error) {
+      console.error('Erro ao atualizar atividades:', error);
+      res.status(500).json({ message: "Erro ao atualizar atividades" });
+    }
+  });
+
   // Remove participant from trip
   app.delete("/api/trips/:id/participants/:userId", requireAuth, async (req, res) => {
     try {

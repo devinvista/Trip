@@ -1053,6 +1053,31 @@ export default function TripDetailPage() {
   const isCreator = trip && user && trip.creatorId === user.id;
   const isParticipant = trip && user && trip.participants?.some((p: any) => p.userId === user.id && p.status === 'accepted');
 
+  // Handle activities change and save to database
+  const handleActivitiesChange = async (newActivities: PlannedActivity[]) => {
+    setPlannedActivities(newActivities);
+    
+    // Save to database
+    try {
+      const response = await apiRequest("PATCH", `/api/trips/${id}/activities`, {
+        plannedActivities: JSON.stringify(newActivities)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao salvar atividades');
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/trips", id] });
+    } catch (error) {
+      console.error('Erro ao salvar atividades:', error);
+      toast({
+        title: "Erro ao salvar atividades",
+        description: "Não foi possível salvar as alterações.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const { data: expenses = [] } = useQuery<any[]>({
     queryKey: ["/api/trips", id, "expenses"],
     queryFn: async () => {
@@ -1177,6 +1202,35 @@ export default function TripDetailPage() {
     return expenses.reduce((total, expense) => {
       return total + expense.amount;
     }, 0);
+  };
+
+  // Handle saving activity to database
+  const handleSaveActivity = async (activity: PlannedActivity) => {
+    try {
+      const updatedActivities = [...plannedActivities, activity];
+      setPlannedActivities(updatedActivities);
+      
+      const response = await apiRequest("PATCH", `/api/trips/${id}/activities`, {
+        plannedActivities: JSON.stringify(updatedActivities)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao salvar atividade');
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/trips", id] });
+      toast({
+        title: "Atividade salva!",
+        description: "A atividade foi adicionada com sucesso à viagem.",
+      });
+    } catch (error) {
+      console.error('Erro ao salvar atividade:', error);
+      toast({
+        title: "Erro ao salvar atividade",
+        description: "Não foi possível salvar a atividade.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (isLoading) {
@@ -1478,25 +1532,34 @@ export default function TripDetailPage() {
               </TabsContent>
 
               <TabsContent value="activities" className="space-y-6">
-                <Card className="bg-white shadow-sm border border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                      Atividades Planejadas
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ActivitiesTimeline 
-                      activities={plannedActivities}
-                      tripStartDate={trip.startDate}
-                      tripEndDate={trip.endDate}
-                      canJoin={canJoin}
-                      onJoinClick={() => setActiveTab("overview")}
-                      onActivitiesChange={setPlannedActivities}
-                      isEditable={isCreator || isParticipant}
-                      trip={trip}
-                    />
-                  </CardContent>
-                </Card>
+                {(isCreator || isParticipant) ? (
+                  <AdvancedActivityManager 
+                    activities={plannedActivities}
+                    onActivitiesChange={handleActivitiesChange}
+                    tripDestination={trip.destination}
+                    trip={trip}
+                  />
+                ) : (
+                  <Card className="bg-white shadow-sm border border-gray-200">
+                    <CardHeader>
+                      <CardTitle className="text-lg font-semibold text-gray-900">
+                        Atividades Planejadas
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ActivitiesTimeline 
+                        activities={plannedActivities}
+                        tripStartDate={trip.startDate}
+                        tripEndDate={trip.endDate}
+                        canJoin={canJoin}
+                        onJoinClick={() => setActiveTab("overview")}
+                        onActivitiesChange={setPlannedActivities}
+                        isEditable={false}
+                        trip={trip}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
 
               <TabsContent value="expenses" className="space-y-6">
