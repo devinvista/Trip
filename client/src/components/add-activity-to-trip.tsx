@@ -167,6 +167,16 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
   };
 
   const selectedTrip = Array.isArray(userTrips) ? userTrips.find(trip => trip.id === selectedTripId) : undefined;
+  
+  // Debug logging
+  if (isOpen && user) {
+    console.log('🔍 AddActivityToTrip Debug:', {
+      userTrips: userTrips,
+      isArray: Array.isArray(userTrips),
+      length: Array.isArray(userTrips) ? userTrips.length : 'not array',
+      tripsLoading
+    });
+  }
 
   if (!user) {
     return (
@@ -210,7 +220,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
                   <div key={i} className="h-24 bg-gray-100 rounded-lg animate-pulse" />
                 ))}
               </div>
-            ) : !userTrips || userTrips.length === 0 ? (
+            ) : !Array.isArray(userTrips) || userTrips.length === 0 ? (
               <Card>
                 <CardContent className="py-8 text-center">
                   <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -229,7 +239,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
               <div className="space-y-3">
                 <h3 className="font-semibold">Selecione uma viagem:</h3>
                 <div className="grid gap-3">
-                  {userTrips.map((trip) => (
+                  {Array.isArray(userTrips) && userTrips.map((trip) => (
                     <Card 
                       key={trip.id} 
                       className="cursor-pointer hover:shadow-md transition-shadow"
