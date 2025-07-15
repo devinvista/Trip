@@ -52,9 +52,10 @@ interface AddActivityToTripProps {
   activity: Activity;
   isOpen: boolean;
   onClose: () => void;
+  selectedProposals?: ActivityBudgetProposal[];
 }
 
-export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTripProps) {
+export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals = [] }: AddActivityToTripProps) {
   const [selectedTripId, setSelectedTripId] = useState<number | null>(null);
   const [selectedProposal, setSelectedProposal] = useState<ActivityBudgetProposal | null>(null);
   const [step, setStep] = useState<'trip' | 'proposal' | 'confirm'>('trip');
@@ -83,8 +84,8 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
   // Add activity to trip mutation
   const addActivityToTrip = useMutation({
     mutationFn: async () => {
-      if (!selectedTripId || !selectedProposal) {
-        throw new Error('Selecione uma viagem e proposta');
+      if (!selectedTripId) {
+        throw new Error('Selecione uma viagem');
       }
 
       const selectedTrip = Array.isArray(userTrips) ? userTrips.find(trip => trip.id === selectedTripId) : undefined;
@@ -92,39 +93,60 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
         throw new Error('Viagem não encontrada');
       }
 
-      // Calcular o custo total baseado no tipo de preço e número de participantes
-      const participants = selectedTrip.maxParticipants || 1;
-      const totalCost = selectedProposal.priceType === "per_person" 
-        ? selectedProposal.amount * participants
-        : selectedProposal.amount;
+      // Use pre-selected proposals or single selected proposal
+      const proposalsToAdd = selectedProposals && selectedProposals.length > 0 
+        ? selectedProposals 
+        : selectedProposal 
+        ? [selectedProposal] 
+        : [];
 
-      console.log('🔍 Calculando custo da atividade:', {
-        proposalAmount: selectedProposal.amount,
-        priceType: selectedProposal.priceType,
-        participants,
-        totalCost
-      });
+      if (proposalsToAdd.length === 0) {
+        throw new Error('Selecione pelo menos uma proposta');
+      }
 
-      const response = await fetch(`/api/trips/${selectedTripId}/activities`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          activityId: activity.id,
-          budgetProposalId: selectedProposal.id,
+      // Add each proposal as separate activity
+      const promises = proposalsToAdd.map(async (proposal) => {
+        const participants = selectedTrip.maxParticipants || 1;
+        const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
+        const totalCost = proposal.priceType === "per_person" 
+          ? amount * participants
+          : amount;
+
+        console.log('🔍 Calculando custo da atividade:', {
+          proposalAmount: proposal.amount,
+          priceType: proposal.priceType,
           participants,
-          totalCost,
-          notes: `Atividade adicionada: ${activity.title} - ${selectedProposal.title}`
-        })
+          totalCost
+        });
+
+        const response = await fetch(`/api/trips/${selectedTripId}/activities`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            activityId: activity.id,
+            budgetProposalId: proposal.id,
+            participants,
+            totalCost,
+            notes: `Atividade adicionada: ${activity.title} - ${proposal.title}`
+          })
+        });
+
+        if (!response.ok) throw new Error('Falha ao adicionar atividade');
+        return response.json();
       });
 
-      if (!response.ok) throw new Error('Falha ao adicionar atividade');
-      return response.json();
+      return Promise.all(promises);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/trips'] });
+      
+      const proposalsCount = selectedProposals && selectedProposals.length > 0 
+        ? selectedProposals.length 
+        : 1;
+      
       toast({ 
         title: "Atividade adicionada com sucesso!", 
-        description: `${activity.title} foi adicionada à sua viagem.` 
+        description: `${activity.title} foi adicionada à sua viagem${proposalsCount > 1 ? ` com ${proposalsCount} propostas de orçamento` : ''}.` 
       });
       handleClose();
     },
@@ -146,7 +168,12 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
 
   const handleTripSelect = (tripId: string) => {
     setSelectedTripId(parseInt(tripId));
-    setStep('proposal');
+    // If we have pre-selected proposals, skip to confirm step
+    if (selectedProposals && selectedProposals.length > 0) {
+      setStep('confirm');
+    } else {
+      setStep('proposal');
+    }
   };
 
   const handleProposalSelect = (proposal: ActivityBudgetProposal) => {
@@ -299,7 +326,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
           </div>
         )}
 
-        {step === 'confirm' && selectedTrip && selectedProposal && (
+        {step === 'confirm' && selectedTrip && ((selectedProposals && selectedProposals.length > 0) || selectedProposal) && (
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
               <Button 
@@ -349,49 +376,83 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
               {/* Proposal Details */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Proposta Selecionada</CardTitle>
+                  <CardTitle className="text-lg">
+                    {selectedProposals && selectedProposals.length > 0 
+                      ? `Propostas Selecionadas (${selectedProposals.length})`
+                      : 'Proposta Selecionada'
+                    }
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-4">
-                    <h4 className="font-semibold">{selectedProposal.title}</h4>
-                    <p className="text-sm text-gray-600">{selectedProposal.description}</p>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Valor Base:</span>
-                      <span className="font-semibold text-blue-600">
-                        R$ {selectedProposal.amount.toFixed(2)}
-                      </span>
+                  {selectedProposals && selectedProposals.length > 0 ? (
+                    <div className="space-y-3">
+                      {selectedProposals.map((proposal, index) => {
+                        const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
+                        const totalCost = proposal.priceType === "per_person" 
+                          ? amount * selectedTrip.maxParticipants
+                          : amount;
+                        
+                        return (
+                          <div key={proposal.id} className="border rounded-lg p-3 bg-gray-50">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h4 className="font-semibold text-sm">{proposal.title}</h4>
+                                <p className="text-xs text-gray-600">{proposal.description}</p>
+                              </div>
+                              <span className="text-sm font-semibold text-blue-600">
+                                R$ {totalCost.toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      
+                      <div className="flex justify-between items-center pt-2 border-t">
+                        <span className="font-semibold">Custo Total:</span>
+                        <span className="font-semibold text-green-600">
+                          R$ {selectedProposals.reduce((total, proposal) => {
+                            const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
+                            const cost = proposal.priceType === "per_person" 
+                              ? amount * selectedTrip.maxParticipants
+                              : amount;
+                            return total + cost;
+                          }, 0).toFixed(2)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Tipo de Preço:</span>
-                      <span className="capitalize">{selectedProposal.priceType === "per_person" ? "Por Pessoa" : "Por Grupo"}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Participantes:</span>
-                      <span>{selectedTrip.maxParticipants}</span>
-                    </div>
-                    <div className="flex justify-between border-t pt-2">
-                      <span className="font-semibold">Custo Total:</span>
-                      <span className="font-semibold text-green-600">
-                        R$ {(selectedProposal.priceType === "per_person" 
-                          ? selectedProposal.amount * selectedTrip.maxParticipants
-                          : selectedProposal.amount).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {selectedProposal.inclusions.length > 0 && (
-                    <div className="mt-4">
-                      <h5 className="font-medium text-green-700 mb-2">✅ Inclui:</h5>
-                      <ul className="text-xs text-gray-600 space-y-1">
-                        {selectedProposal.inclusions.slice(0, 3).map((item, idx) => (
-                          <li key={idx}>• {item}</li>
-                        ))}
-                        {selectedProposal.inclusions.length > 3 && (
-                          <li className="text-gray-500">... e mais {selectedProposal.inclusions.length - 3} itens</li>
-                        )}
-                      </ul>
+                  ) : selectedProposal && (
+                    <div>
+                      <div className="mb-4">
+                        <h4 className="font-semibold">{selectedProposal.title}</h4>
+                        <p className="text-sm text-gray-600">{selectedProposal.description}</p>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>Valor Base:</span>
+                          <span className="font-semibold text-blue-600">
+                            R$ {(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Tipo de Preço:</span>
+                          <span className="capitalize">{selectedProposal.priceType === "per_person" ? "Por Pessoa" : "Por Grupo"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Participantes:</span>
+                          <span>{selectedTrip.maxParticipants}</span>
+                        </div>
+                        <div className="flex justify-between border-t pt-2">
+                          <span className="font-semibold">Custo Total:</span>
+                          <span className="font-semibold text-green-600">
+                            R$ {(selectedProposal.priceType === "per_person" 
+                              ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * selectedTrip.maxParticipants
+                              : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </CardContent>
@@ -402,15 +463,36 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
               <h4 className="font-semibold text-blue-900 mb-2">Resumo da Adição</h4>
               <p className="text-sm text-blue-800">
                 A atividade <strong>{activity.title}</strong> será adicionada à viagem{' '}
-                <strong>{selectedTrip.title}</strong> com a proposta <strong>{selectedProposal.title}</strong>{' '}
-                no valor de <strong>R$ {(selectedProposal.priceType === "per_person" 
-                  ? selectedProposal.amount * selectedTrip.maxParticipants
-                  : selectedProposal.amount).toFixed(2)}</strong>.
+                <strong>{selectedTrip.title}</strong> com{' '}
+                {selectedProposals && selectedProposals.length > 0 
+                  ? `${selectedProposals.length} propostas de orçamento`
+                  : selectedProposal ? `a proposta ${selectedProposal.title}` : 'a proposta selecionada'
+                } no valor total de <strong>R$ {
+                  selectedProposals && selectedProposals.length > 0 
+                    ? selectedProposals.reduce((total, proposal) => {
+                        const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
+                        const cost = proposal.priceType === "per_person" 
+                          ? amount * selectedTrip.maxParticipants
+                          : amount;
+                        return total + cost;
+                      }, 0).toFixed(2)
+                    : selectedProposal 
+                      ? (selectedProposal.priceType === "per_person" 
+                          ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * selectedTrip.maxParticipants
+                          : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))).toFixed(2)
+                      : '0.00'
+                }</strong>.
               </p>
               <div className="mt-2 text-xs text-blue-700">
-                <span className="font-medium">Detalhes:</span> {selectedProposal.priceType === "per_person" 
-                  ? `R$ ${selectedProposal.amount.toFixed(2)} por pessoa × ${selectedTrip.maxParticipants} participantes`
-                  : `R$ ${selectedProposal.amount.toFixed(2)} valor fixo por grupo`}
+                <span className="font-medium">Detalhes:</span> {
+                  selectedProposals && selectedProposals.length > 0 
+                    ? `${selectedProposals.length} propostas serão adicionadas para ${selectedTrip.maxParticipants} participantes`
+                    : selectedProposal 
+                      ? (selectedProposal.priceType === "per_person" 
+                          ? `R$ ${(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)} por pessoa × ${selectedTrip.maxParticipants} participantes`
+                          : `R$ ${(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)} valor fixo por grupo`)
+                      : 'Nenhuma proposta selecionada'
+                }
               </div>
             </div>
 

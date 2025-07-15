@@ -20,7 +20,8 @@ import {
   Mail,
   Globe,
   MessageCircle,
-  Plane
+  Plane,
+  Package
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +45,7 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { activityCategories, insertActivityBookingSchema } from "@shared/schema";
-import type { Activity, ActivityReview, ActivityBooking, InsertActivityBooking } from "@shared/schema";
+import type { Activity, ActivityReview, ActivityBooking, InsertActivityBooking, ActivityBudgetProposal } from "@shared/schema";
 
 export default function ActivityDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -52,6 +53,7 @@ export default function ActivityDetailPage() {
   const [showBookingDialog, setShowBookingDialog] = useState(false);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showAddToTripDialog, setShowAddToTripDialog] = useState(false);
+  const [selectedProposals, setSelectedProposals] = useState<ActivityBudgetProposal[]>([]);
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -84,6 +86,16 @@ export default function ActivityDetailPage() {
       if (!response.ok) throw new Error("Falha ao carregar avaliações");
       return response.json();
     },
+  });
+
+  const { data: proposals, isLoading: proposalsLoading } = useQuery<ActivityBudgetProposal[]>({
+    queryKey: [`/api/activities/${id}/proposals`],
+    queryFn: async () => {
+      const response = await fetch(`/api/activities/${id}/proposals`);
+      if (!response.ok) throw new Error("Erro ao buscar propostas");
+      return response.json();
+    },
+    enabled: !!id,
   });
 
   const bookingForm = useForm<InsertActivityBooking>({
@@ -154,6 +166,49 @@ export default function ActivityDetailPage() {
     return activity.priceType === "per_person" 
       ? activity.priceAmount * participants
       : activity.priceAmount;
+  };
+
+  // Helper function to safely parse JSON arrays for proposals
+  const safeParseArray = (data: any) => {
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'string') {
+      try {
+        let parsed = JSON.parse(data);
+        if (typeof parsed === 'string') {
+          parsed = JSON.parse(parsed);
+        }
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  // Calculate total cost of selected proposals
+  const calculateSelectedProposalsTotal = () => {
+    const participants = bookingForm.watch("participants") || 1;
+    return selectedProposals.reduce((total, proposal) => {
+      const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
+      const proposalCost = proposal.priceType === "per_person" 
+        ? amount * participants 
+        : amount;
+      return total + proposalCost;
+    }, 0);
+  };
+
+  // Handle proposal selection
+  const handleProposalSelect = (proposal: ActivityBudgetProposal, selected: boolean) => {
+    if (selected) {
+      setSelectedProposals(prev => [...prev, proposal]);
+    } else {
+      setSelectedProposals(prev => prev.filter(p => p.id !== proposal.id));
+    }
+  };
+
+  // Check if proposal is selected
+  const isProposalSelected = (proposalId: number) => {
+    return selectedProposals.some(p => p.id === proposalId);
   };
 
   if (activityLoading) {
@@ -553,6 +608,81 @@ export default function ActivityDetailPage() {
                 Adicionar à Viagem
               </Button>
 
+              {/* Propostas de Orçamento */}
+              {proposals && proposals.length > 0 && (
+                <div className="border-t pt-4 mb-4">
+                  <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Package className="w-4 h-4 text-blue-600" />
+                    Propostas de Orçamento
+                  </h3>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {proposals.map((proposal) => {
+                      const isSelected = isProposalSelected(proposal.id);
+                      const inclusions = safeParseArray(proposal.inclusions);
+                      const exclusions = safeParseArray(proposal.exclusions);
+                      
+                      return (
+                        <div 
+                          key={proposal.id} 
+                          className={`border rounded-lg p-3 cursor-pointer transition-all ${
+                            isSelected 
+                              ? 'border-blue-500 bg-blue-50' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => handleProposalSelect(proposal, !isSelected)}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium text-sm">{proposal.title}</h4>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-blue-600">
+                                R$ {(typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0')).toFixed(2)}
+                              </span>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) => handleProposalSelect(proposal, e.target.checked)}
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-600 mb-2">{proposal.description}</p>
+                          <div className="text-xs text-gray-500">
+                            {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
+                          </div>
+                          
+                          {inclusions.length > 0 && (
+                            <div className="mt-2">
+                              <div className="text-xs text-green-700 font-medium">Inclui:</div>
+                              <ul className="text-xs text-gray-600 mt-1">
+                                {inclusions.slice(0, 2).map((item, idx) => (
+                                  <li key={idx}>• {item}</li>
+                                ))}
+                                {inclusions.length > 2 && (
+                                  <li className="text-gray-500">... +{inclusions.length - 2} itens</li>
+                                )}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {selectedProposals.length > 0 && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-green-800">
+                          {selectedProposals.length} proposta(s) selecionada(s)
+                        </span>
+                        <span className="text-sm font-semibold text-green-700">
+                          R$ {calculateSelectedProposalsTotal().toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
                 <DialogTrigger asChild>
                   <div style={{ display: 'none' }}></div>
@@ -777,6 +907,7 @@ export default function ActivityDetailPage() {
         activity={activity}
         isOpen={showAddToTripDialog}
         onClose={() => setShowAddToTripDialog(false)}
+        selectedProposals={selectedProposals}
       />
     </div>
   );
