@@ -4,11 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom responsive breakpoints */
-@screen xs {
-  @apply min-w-[480px];
-}
-
 /* Custom animations */
 @keyframes fade-in {
   from { opacity: 0; }

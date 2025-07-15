@@ -363,46 +363,47 @@ export default function ActivitiesPage() {
 
           {/* Category Filters */}
           <div className="space-y-4">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap gap-2 sm:gap-3">
-                <Button
-                  variant={filters.category === "all" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => updateFilter("category", "all")}
-                  className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 ${
-                    filters.category === "all" 
-                      ? "bg-[#41B6FF] text-white shadow-sm" 
-                      : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
-                  }`}
-                >
-                  🗂️ <span className="hidden xs:inline">Todas</span>
-                  <span className="bg-white/20 text-current px-1 py-0.5 rounded text-xs">
-                    {activities?.length || 0}
-                  </span>
-                </Button>
-                
-                {Object.entries(activityCategories).slice(0, 4).map(([key, cat]) => {
-                  const count = activities?.filter(a => a.category === key).length || 0;
-                  return (
-                    <Button
-                      key={key}
-                      variant={filters.category === key ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => updateFilter("category", key)}
-                      className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 ${
-                        filters.category === key 
-                          ? "bg-[#41B6FF] text-white shadow-sm" 
-                          : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
-                      }`}
-                    >
-                      <span className="text-sm">{cat.icon}</span>
-                      <span className="hidden sm:inline">{cat.label}</span>
-                      <span className="bg-white/20 text-current px-1 py-0.5 rounded text-xs">
-                        {count}
-                      </span>
-                    </Button>
-                  );
-                })}
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1 overflow-hidden">
+                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2">
+                  <Button
+                    variant={filters.category === "all" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => updateFilter("category", "all")}
+                    className={`px-3 text-sm whitespace-nowrap flex-shrink-0 ${
+                      filters.category === "all" 
+                        ? "bg-[#41B6FF] text-white shadow-sm" 
+                        : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
+                    }`}
+                  >
+                    🗂️ Todas
+                    <span className="ml-1 bg-white/20 text-current px-1.5 py-0.5 rounded text-xs">
+                      {activities?.length || 0}
+                    </span>
+                  </Button>
+                  
+                  {Object.entries(activityCategories).slice(0, 4).map(([key, cat]) => {
+                    const count = activities?.filter(a => a.category === key).length || 0;
+                    return (
+                      <Button
+                        key={key}
+                        variant={filters.category === key ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => updateFilter("category", key)}
+                        className={`px-3 text-sm whitespace-nowrap flex-shrink-0 ${
+                          filters.category === key 
+                            ? "bg-[#41B6FF] text-white shadow-sm" 
+                            : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
+                        }`}
+                      >
+                        {cat.icon} <span className="hidden sm:inline ml-1">{cat.label}</span>
+                        <span className="ml-1 bg-white/20 text-current px-1.5 py-0.5 rounded text-xs">
+                          {count}
+                        </span>
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
