@@ -1,6 +1,6 @@
 import { db } from "./db.js";
 import { trips, tripParticipants } from "@shared/schema.js";
-import { eq, count } from "drizzle-orm";
+import { eq, count, and } from "drizzle-orm";
 
 /**
  * Synchronizes the currentParticipants field with actual accepted participants count
@@ -22,12 +22,14 @@ export async function syncParticipantsCount() {
     let updatedCount = 0;
 
     for (const trip of allTrips) {
-      // Count actual accepted participants for this trip
+      // Count actual accepted participants for this trip only
       const [result] = await db
         .select({ count: count() })
         .from(tripParticipants)
-        .where(eq(tripParticipants.tripId, trip.id))
-        .where(eq(tripParticipants.status, 'accepted'));
+        .where(and(
+          eq(tripParticipants.tripId, trip.id),
+          eq(tripParticipants.status, 'accepted')
+        ));
 
       const realParticipantsCount = result.count;
 
@@ -63,8 +65,10 @@ export async function syncTripParticipants(tripId: number) {
     const [result] = await db
       .select({ count: count() })
       .from(tripParticipants)
-      .where(eq(tripParticipants.tripId, tripId))
-      .where(eq(tripParticipants.status, 'accepted'));
+      .where(and(
+        eq(tripParticipants.tripId, tripId),
+        eq(tripParticipants.status, 'accepted')
+      ));
 
     const realParticipantsCount = result.count;
 
