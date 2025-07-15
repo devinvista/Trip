@@ -51,7 +51,8 @@ import {
   Clock,
   FileText,
   Star,
-  Search
+  Search,
+  Users
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -214,13 +215,15 @@ function ActivityManagementDialog({
   isOpen, 
   onClose, 
   onSave,
-  tripDestination
+  tripDestination,
+  tripParticipants = 1
 }: {
   activity?: PlannedActivity;
   isOpen: boolean;
   onClose: () => void;
   onSave: (activity: PlannedActivity) => void;
   tripDestination?: string;
+  tripParticipants?: number;
 }) {
   const [activeTab, setActiveTab] = useState(activity ? "manual" : "search");
   
@@ -251,6 +254,7 @@ function ActivityManagementDialog({
               onSave={onSave} 
               onClose={onClose} 
               tripDestination={tripDestination}
+              tripParticipants={tripParticipants}
             />
           </TabsContent>
           
@@ -271,16 +275,20 @@ function ActivityManagementDialog({
 function ActivitySearchTab({ 
   onSave, 
   onClose, 
-  tripDestination 
+  tripDestination,
+  tripParticipants = 1
 }: { 
   onSave: (activity: PlannedActivity) => void; 
   onClose: () => void;
   tripDestination?: string;
+  tripParticipants?: number;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedActivity, setSelectedActivity] = useState<any>(null);
-  const [participants, setParticipants] = useState(1);
+  
+  // Use trip participants automatically instead of manual input
+  const participants = tripParticipants;
 
   // Query for activities by trip destination (shown by default)
   const { data: destinationActivities, isLoading: isLoadingDestination } = useQuery({
@@ -505,22 +513,31 @@ function ActivitySearchTab({
           <h3 className="font-semibold mb-3">Detalhes da Atividade Selecionada</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="participants">Número de Participantes</Label>
-              <Input
-                id="participants"
-                type="number"
-                min="1"
-                value={participants}
-                onChange={(e) => setParticipants(parseInt(e.target.value) || 1)}
-                className="mt-1"
-              />
+              <Label>Participantes da Viagem</Label>
+              <div className="mt-1 p-2 bg-blue-50 rounded border border-blue-200">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-blue-600" />
+                  <span className="font-semibold text-blue-800">
+                    {participants} {participants === 1 ? 'participante' : 'participantes'}
+                  </span>
+                </div>
+                <p className="text-xs text-blue-600 mt-1">
+                  Calculado automaticamente baseado na viagem
+                </p>
+              </div>
             </div>
             <div>
               <Label>Custo Total Estimado</Label>
-              <div className="mt-1 p-2 bg-gray-50 rounded border">
-                <span className="font-semibold text-primary">
-                  R$ {((selectedActivity.priceAmount || 0) * participants).toLocaleString('pt-BR')}
-                </span>
+              <div className="mt-1 p-2 bg-green-50 rounded border border-green-200">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-green-600" />
+                  <span className="font-semibold text-green-800">
+                    R$ {((selectedActivity.priceAmount || 0) * participants).toLocaleString('pt-BR')}
+                  </span>
+                </div>
+                <p className="text-xs text-green-600 mt-1">
+                  R$ {(selectedActivity.priceAmount || 0).toLocaleString('pt-BR')} × {participants} {participants === 1 ? 'pessoa' : 'pessoas'}
+                </p>
               </div>
             </div>
           </div>
@@ -851,13 +868,15 @@ interface AdvancedActivityManagerProps {
   onActivitiesChange: (activities: PlannedActivity[]) => void;
   className?: string;
   tripDestination?: string;
+  tripParticipants?: number;
 }
 
 export function AdvancedActivityManager({ 
   activities, 
   onActivitiesChange, 
   className = '',
-  tripDestination
+  tripDestination,
+  tripParticipants = 1
 }: AdvancedActivityManagerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
@@ -993,6 +1012,7 @@ export function AdvancedActivityManager({
         onClose={() => setIsDialogOpen(false)}
         onSave={handleSaveActivity}
         tripDestination={tripDestination}
+        tripParticipants={tripParticipants}
       />
     </div>
   );
