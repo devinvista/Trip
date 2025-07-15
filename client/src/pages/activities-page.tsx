@@ -391,8 +391,8 @@ export default function ActivitiesPage() {
                       onClick={() => updateFilter("category", key)}
                       className={`group px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 transition-all duration-300 ${
                         filters.category === key 
-                          ? "bg-[#41B6FF] text-white shadow-sm scale-105" 
-                          : "text-[#1B2B49] hover:bg-[#41B6FF]/10 hover:text-[#41B6FF] hover:shadow-md hover:scale-102 hover:border-[#41B6FF]/30"
+                          ? "bg-[#FFA500] text-white shadow-sm scale-105" 
+                          : "text-[#1B2B49] hover:bg-[#FFA500]/10 hover:text-[#FFA500] hover:shadow-md hover:scale-102 hover:border-[#FFA500]/30"
                       }`}
                     >
                       <span className="text-sm transition-transform duration-300 group-hover:scale-110">{cat.icon}</span>
@@ -400,7 +400,7 @@ export default function ActivitiesPage() {
                       <span className={`px-1 py-0.5 rounded text-xs transition-colors duration-300 ${
                         filters.category === key 
                           ? "bg-white/20 text-current" 
-                          : "bg-slate-100 text-slate-600 group-hover:bg-[#41B6FF]/20 group-hover:text-[#41B6FF]"
+                          : "bg-slate-100 text-slate-600 group-hover:bg-[#FFA500]/20 group-hover:text-[#FFA500]"
                       }`}>
                         {count}
                       </span>
@@ -635,21 +635,21 @@ export default function ActivitiesPage() {
             {cities.map((city) => (
               <div key={city} className="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
                 {/* City Header - Enhanced */}
-                <div className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200/60 p-4 md:p-6">
+                <div className="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-200/60 p-4 md:p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="bg-blue-100 p-3 rounded-xl">
-                        <MapPin className="w-6 h-6 text-blue-600" />
+                      <div className="bg-orange-100 p-3 rounded-xl">
+                        <MapPin className="w-6 h-6 text-orange-600" />
                       </div>
                       <div>
                         <h2 className="text-xl md:text-2xl font-bold text-slate-900">
                           {city}
                         </h2>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
                             {groupedActivities[city].length} atividades
                           </Badge>
-                          <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                             {Math.round(groupedActivities[city].reduce((acc, a) => acc + Number(a.averageRating), 0) / groupedActivities[city].length * 10) / 10}★ média
                           </Badge>
                         </div>
@@ -658,7 +658,7 @@ export default function ActivitiesPage() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="border-blue-200 text-blue-600 hover:bg-blue-50 hidden sm:flex"
+                      className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 hidden sm:flex"
                     >
                       Ver todas <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>
@@ -679,7 +679,7 @@ export default function ActivitiesPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-blue-300/60 group">
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-orange-300/60 group">
                         <div className="relative">
                           <img
                             src={activity.coverImage}
@@ -748,7 +748,7 @@ export default function ActivitiesPage() {
                           {/* Multiple Budget Options - Mobile Optimized */}
                           <div className="mb-4">
                             <div className="flex items-center gap-2 mb-3">
-                              <DollarSign className="w-4 h-4 text-[#41B6FF]" />
+                              <DollarSign className="w-4 h-4 text-[#FFA500]" />
                               <span className="text-sm font-medium text-[#1B2B49]">Opções de Orçamento</span>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -790,11 +790,11 @@ export default function ActivitiesPage() {
 
                             <div className="flex gap-2">
                               <Link to={`/activities/${activity.id}`}>
-                                <Button size="sm" variant="outline" className="border-[#AAB0B7]/30 hover:bg-[#41B6FF]/10 text-xs sm:text-sm">
+                                <Button size="sm" variant="outline" className="border-[#AAB0B7]/30 hover:bg-[#FFA500]/10 hover:border-[#FFA500]/30 hover:text-[#FFA500] transition-all duration-300 text-xs sm:text-sm">
                                   Ver detalhes
                                 </Button>
                               </Link>
-                              <Button size="sm" className="bg-[#41B6FF] hover:bg-[#41B6FF]/90 text-white text-xs sm:text-sm">
+                              <Button size="sm" className="bg-[#FFA500] hover:bg-[#FFA500]/90 hover:shadow-md transition-all duration-300 text-white text-xs sm:text-sm">
                                 <Plus className="w-4 h-4 mr-1" />
                                 Adicionar
                               </Button>
@@ -811,8 +811,8 @@ export default function ActivitiesPage() {
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="w-20 h-20 bg-[#41B6FF]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="w-8 h-8 text-[#41B6FF]" />
+            <div className="w-20 h-20 bg-[#FFA500]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Search className="w-8 h-8 text-[#FFA500]" />
             </div>
             <h3 className="text-xl font-semibold text-[#1B2B49] mb-3">
               Nenhuma atividade encontrada
@@ -835,7 +835,7 @@ export default function ActivitiesPage() {
                 });
                 setSearchInput("");
               }}
-              className="bg-[#41B6FF] hover:bg-[#41B6FF]/90 text-white"
+              className="bg-[#FFA500] hover:bg-[#FFA500]/90 hover:shadow-md transition-all duration-300 text-white"
             >
               Limpar filtros
             </Button>
