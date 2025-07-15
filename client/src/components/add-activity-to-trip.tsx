@@ -63,17 +63,27 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch user trips in same location as activity
-  const { data: userTrips, isLoading: tripsLoading } = useQuery({
-    queryKey: ['/api/users', user?.id, 'trips-in-location'],
+  // Fetch all user trips (both created and participated)
+  const { data: userTrips = [], isLoading: tripsLoading } = useQuery({
+    queryKey: ['/api/my-trips'],
     queryFn: async () => {
       if (!user) return [];
-      const response = await fetch(`/api/users/${user.id}/trips-in-location?location=${encodeURIComponent(activity.location)}`);
+      const response = await fetch('/api/my-trips');
       if (!response.ok) {
         if (response.status === 401) return [];
         throw new Error('Falha ao buscar viagens');
       }
-      return response.json() as Promise<Trip[]>;
+      const data = await response.json();
+      // Combine created and participated trips, filter only future trips
+      const allTrips = [...(data.created || []), ...(data.participating || [])];
+      const now = new Date();
+      const result = allTrips.filter(trip => {
+        const tripEnd = new Date(trip.endDate);
+        return tripEnd >= now; // Only show future trips or trips in progress
+      });
+      
+      console.log('🔍 AddActivityToTrip userTrips result:', result);
+      return result;
     },
     enabled: !!user && isOpen
   });
@@ -85,7 +95,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
         throw new Error('Selecione uma viagem e proposta');
       }
 
-      const selectedTrip = userTrips?.find(trip => trip.id === selectedTripId);
+      const selectedTrip = Array.isArray(userTrips) ? userTrips.find(trip => trip.id === selectedTripId) : undefined;
       if (!selectedTrip) {
         throw new Error('Viagem não encontrada');
       }
@@ -156,7 +166,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
     addActivityToTrip.mutate();
   };
 
-  const selectedTrip = userTrips?.find(trip => trip.id === selectedTripId);
+  const selectedTrip = Array.isArray(userTrips) ? userTrips.find(trip => trip.id === selectedTripId) : undefined;
 
   if (!user) {
     return (
@@ -208,10 +218,10 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
                     Nenhuma viagem encontrada
                   </h4>
                   <p className="text-gray-500 mb-4">
-                    Você não tem viagens programadas para {activity.location}.
+                    Você não tem viagens programadas ou futuras.
                   </p>
                   <p className="text-sm text-gray-400">
-                    Para adicionar esta atividade, crie uma viagem para este destino primeiro.
+                    Para adicionar esta atividade, crie uma viagem primeiro.
                   </p>
                 </CardContent>
               </Card>

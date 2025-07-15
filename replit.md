@@ -153,6 +153,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Corrigido sistema de parsing de atividades planejadas para tratar strings JSON duplamente escapadas do banco de dados
 - July 15, 2025. Implementada timeline visual para atividades planejadas com agrupamento por data e melhor experiência do usuário
 - July 15, 2025. Corrigido sistema de datas na timeline com suporte a diferentes formatos de data/hora
+- July 15, 2025. Migração completa do Replit Agent para ambiente Replit padrão - aplicação funcionando perfeitamente
+- July 15, 2025. Corrigido sistema de adição de atividades a viagens - agora mostra todas as viagens do usuário sem filtro de localização
 - July 12, 2025. Enhanced trip detail page with modern dynamic layout, contagem regressiva em tempo real, and improved budget tracking visualization
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips
