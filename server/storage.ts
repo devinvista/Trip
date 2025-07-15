@@ -1965,10 +1965,55 @@ export class DatabaseStorage implements IStorage {
       });
       
       const [tripActivity] = await db.select().from(tripActivities).where(eq(tripActivities.id, result[0].insertId));
+      
+      // Update the trip's budget by adding the activity cost
+      await this.updateTripBudgetWithActivity(tripActivityData.tripId, tripActivityData.totalCost);
+      
       return tripActivity;
     } catch (error) {
       console.error('❌ Erro ao adicionar atividade à viagem:', error);
       throw error;
+    }
+  }
+
+  async updateTripBudgetWithActivity(tripId: number, activityCost: number): Promise<void> {
+    try {
+      // Get current trip
+      const trip = await this.getTrip(tripId);
+      if (!trip) throw new Error('Viagem não encontrada');
+      
+      // Parse current budget breakdown
+      let budgetBreakdown: any = {};
+      if (trip.budgetBreakdown) {
+        try {
+          budgetBreakdown = typeof trip.budgetBreakdown === 'string' 
+            ? JSON.parse(trip.budgetBreakdown) 
+            : trip.budgetBreakdown;
+        } catch (e) {
+          console.warn('Erro ao parsear budget breakdown:', e);
+          budgetBreakdown = {};
+        }
+      }
+      
+      // Add activity cost to activities category
+      budgetBreakdown.activities = (budgetBreakdown.activities || 0) + activityCost;
+      
+      // Update total budget
+      const newBudget = (trip.budget || 0) + activityCost;
+      
+      // Update trip with new budget
+      await db
+        .update(trips)
+        .set({
+          budget: newBudget,
+          budgetBreakdown: JSON.stringify(budgetBreakdown)
+        })
+        .where(eq(trips.id, tripId));
+        
+      console.log(`✅ Orçamento da viagem ${tripId} atualizado: +R$ ${activityCost} para atividades`);
+    } catch (error) {
+      console.error('❌ Erro ao atualizar orçamento da viagem:', error);
+      // Don't throw here to avoid breaking the activity addition
     }
   }
 

@@ -170,6 +170,11 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Removida área duplicada de propostas do sidebar e integradas funcionalidades nos cards da aba orçamentos com seleção múltipla
 - July 15, 2025. Implementado estado "Já incluído" para botões de propostas que já foram adicionadas às viagens do usuário
 - July 15, 2025. **MIGRAÇÃO CONCLUÍDA**: Migração completa do Replit Agent para ambiente Replit padrão finalizada com sucesso - aplicação 100% funcional
+- July 15, 2025. Corrigido erro "Expected array, received string" nas propostas de orçamento - campos inclusões/exclusões agora funcionam corretamente como arrays
+- July 15, 2025. Corrigido erro de ícone Plus não encontrado no componente AddActivityToTrip
+- July 15, 2025. Implementado sistema automático de atualização de orçamento: valores de atividades agora são adicionados automaticamente ao orçamento das viagens
+- July 15, 2025. Corrigido endpoint incorreto /api/trips/my-trips para /api/my-trips na página de detalhes da atividade
+- July 15, 2025. Corrigido erro com userTrips.flatMap() para tratar estrutura correta de dados { created: [], participating: [] }
 - July 12, 2025. Enhanced trip detail page with modern dynamic layout, contagem regressiva em tempo real, and improved budget tracking visualization
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips

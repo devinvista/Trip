@@ -220,7 +220,104 @@ export async function initializeTables() {
       )
     `);
 
+    // Create activities table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS activities (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        location VARCHAR(255) NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        difficulty VARCHAR(50) DEFAULT 'medium' NOT NULL,
+        duration INT NOT NULL,
+        price DECIMAL(10,2) DEFAULT 0.00,
+        currency VARCHAR(3) DEFAULT 'BRL' NOT NULL,
+        images JSON,
+        average_rating DECIMAL(3,2) DEFAULT 0.00,
+        total_ratings INT DEFAULT 0 NOT NULL,
+        is_active BOOLEAN DEFAULT TRUE NOT NULL,
+        created_by_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (created_by_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
 
+    // Create activity_reviews table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS activity_reviews (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        activity_id INT NOT NULL,
+        user_id INT NOT NULL,
+        rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        comment TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_review (activity_id, user_id)
+      )
+    `);
+
+    // Create activity_bookings table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS activity_bookings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        activity_id INT NOT NULL,
+        user_id INT NOT NULL,
+        booking_date TIMESTAMP NOT NULL,
+        participants INT DEFAULT 1 NOT NULL,
+        total_cost DECIMAL(10,2) NOT NULL,
+        status VARCHAR(50) DEFAULT 'pending' NOT NULL,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create activity_budget_proposals table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS activity_budget_proposals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        activity_id INT NOT NULL,
+        created_by INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        price_type VARCHAR(50) DEFAULT 'per_person' NOT NULL,
+        amount DECIMAL(10,2) NOT NULL,
+        currency VARCHAR(3) DEFAULT 'BRL' NOT NULL,
+        inclusions JSON,
+        exclusions JSON,
+        valid_until TIMESTAMP NULL,
+        is_active BOOLEAN DEFAULT TRUE NOT NULL,
+        votes INT DEFAULT 0 NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+        FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create trip_activities table
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS trip_activities (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        trip_id INT NOT NULL,
+        activity_id INT NOT NULL,
+        budget_proposal_id INT NOT NULL,
+        added_by INT NOT NULL,
+        status VARCHAR(50) DEFAULT 'proposed' NOT NULL,
+        participants INT DEFAULT 1 NOT NULL,
+        total_cost DECIMAL(10,2) NOT NULL,
+        scheduled_date TIMESTAMP NULL,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
+        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+        FOREIGN KEY (budget_proposal_id) REFERENCES activity_budget_proposals(id) ON DELETE CASCADE,
+        FOREIGN KEY (added_by) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
 
     console.log("✅ Todas as tabelas criadas com sucesso!");
     

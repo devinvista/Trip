@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ActivityBudgetProposals } from "./activity-budget-proposals";
-import { Plane, MapPin, Calendar, Users, DollarSign } from "lucide-react";
+import { Plane, MapPin, Calendar, Users, DollarSign, Plus } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 
