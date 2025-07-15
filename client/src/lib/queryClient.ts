@@ -66,7 +66,26 @@ export const getQueryFn: <T>(options: {
       headers['X-Session-ID'] = sessionId;
     }
     
-    const res = await fetch(queryKey[0] as string, {
+    // Handle URL with query parameters
+    let url = queryKey[0] as string;
+    
+    // If there are query parameters in the queryKey, add them to the URL
+    if (queryKey.length > 1 && typeof queryKey[1] === 'object' && queryKey[1] !== null) {
+      const params = new URLSearchParams();
+      const queryParams = queryKey[1] as Record<string, any>;
+      
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          params.append(key, String(value));
+        }
+      });
+      
+      if (params.toString()) {
+        url += (url.includes('?') ? '&' : '?') + params.toString();
+      }
+    }
+    
+    const res = await fetch(url, {
       credentials: "include",
       headers,
     });

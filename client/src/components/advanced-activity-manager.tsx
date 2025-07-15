@@ -268,13 +268,26 @@ function ActivitySearchTab({ onSave, onClose }: { onSave: (activity: PlannedActi
   const [selectedActivity, setSelectedActivity] = useState<any>(null);
   const [participants, setParticipants] = useState(1);
 
-  const { data: activities, isLoading } = useQuery({
+  // Query for popular activities (shown by default)
+  const { data: popularActivities, isLoading: isLoadingPopular } = useQuery({
+    queryKey: ['/api/activities', { 
+      sortBy: 'rating',
+      category: selectedCategory === 'all' ? '' : selectedCategory,
+    }],
+    enabled: searchTerm.length <= 2,
+  });
+
+  // Query for search results
+  const { data: searchResults, isLoading: isLoadingSearch } = useQuery({
     queryKey: ['/api/activities', { 
       search: searchTerm, 
       category: selectedCategory === 'all' ? '' : selectedCategory,
     }],
     enabled: searchTerm.length > 2,
   });
+
+  const activities = searchTerm.length > 2 ? searchResults : popularActivities;
+  const isLoading = searchTerm.length > 2 ? isLoadingSearch : isLoadingPopular;
 
   const handleAddToTrip = () => {
     if (!selectedActivity) return;
@@ -326,71 +339,86 @@ function ActivitySearchTab({ onSave, onClose }: { onSave: (activity: PlannedActi
         </Select>
       </div>
 
-      {/* Search Results */}
-      {searchTerm.length > 2 && (
-        <div className="border rounded-lg p-4 max-h-96 overflow-y-auto">
-          {isLoading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <p className="mt-2 text-gray-600">Buscando atividades...</p>
-            </div>
-          ) : activities?.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Search className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-              <p>Nenhuma atividade encontrada para "{searchTerm}"</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {activities?.map((activity: any) => (
-                <Card 
-                  key={activity.id} 
-                  className={`cursor-pointer transition-all ${
-                    selectedActivity?.id === activity.id 
-                      ? 'ring-2 ring-primary bg-primary/5' 
-                      : 'hover:bg-gray-50'
-                  }`}
-                  onClick={() => setSelectedActivity(activity)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <Camera className="h-6 w-6 text-gray-500" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-900 truncate">{activity.title}</h4>
-                            <p className="text-sm text-gray-600 line-clamp-2 mt-1">{activity.description}</p>
+      {/* Activities Results */}
+      <div className="border rounded-lg p-4 max-h-96 overflow-y-auto">
+        {/* Header */}
+        <div className="mb-4">
+          <h3 className="font-semibold text-gray-900">
+            {searchTerm.length > 2 ? `Resultados para "${searchTerm}"` : 'Atividades Populares'}
+          </h3>
+          <p className="text-sm text-gray-600">
+            {searchTerm.length > 2 ? 'Selecione uma atividade encontrada' : 'Escolha entre as atividades mais procuradas'}
+          </p>
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="mt-2 text-gray-600">
+              {searchTerm.length > 2 ? 'Buscando atividades...' : 'Carregando atividades populares...'}
+            </p>
+          </div>
+        ) : activities?.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Search className="h-12 w-12 mx-auto mb-2 text-gray-400" />
+            <p>
+              {searchTerm.length > 2 
+                ? `Nenhuma atividade encontrada para "${searchTerm}"`
+                : 'Nenhuma atividade disponível'
+              }
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {activities?.slice(0, 10).map((activity: any) => (
+              <Card 
+                key={activity.id} 
+                className={`cursor-pointer transition-all ${
+                  selectedActivity?.id === activity.id 
+                    ? 'ring-2 ring-primary bg-primary/5' 
+                    : 'hover:bg-gray-50'
+                }`}
+                onClick={() => setSelectedActivity(activity)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <Camera className="h-6 w-6 text-gray-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 truncate">{activity.title}</h4>
+                          <p className="text-sm text-gray-600 line-clamp-2 mt-1">{activity.description}</p>
+                        </div>
+                        {activity.priceAmount && (
+                          <div className="text-right ml-4">
+                            <p className="font-semibold text-primary">R$ {activity.priceAmount}</p>
+                            <p className="text-xs text-gray-500">por pessoa</p>
                           </div>
-                          {activity.priceAmount && (
-                            <div className="text-right ml-4">
-                              <p className="font-semibold text-primary">R$ {activity.priceAmount}</p>
-                              <p className="text-xs text-gray-500">por pessoa</p>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {activity.location}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            {activity.averageRating || 0} ({activity.totalRatings || 0})
-                          </span>
-                          <Badge variant="outline" className="text-xs">
-                            {activityCategories[activity.category as keyof typeof activityCategories]?.label}
-                          </Badge>
-                        </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {activity.location}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          {activity.averageRating || 0} ({activity.totalRatings || 0})
+                        </span>
+                        <Badge variant="outline" className="text-xs">
+                          {activityCategories[activity.category as keyof typeof activityCategories]?.label}
+                        </Badge>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Selected Activity Details */}
       {selectedActivity && (
