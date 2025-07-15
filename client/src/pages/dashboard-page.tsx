@@ -244,7 +244,7 @@ export default function DashboardPage() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 w-full lg:w-auto">
                 <Link href="/create-trip">
-                  <Button className="w-full h-10 sm:h-12 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  <Button className="w-full h-10 sm:h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                     <span className="font-medium text-sm sm:text-base hidden sm:inline">Criar Viagem</span>
                     <span className="font-medium text-sm sm:hidden">Nova</span>
@@ -424,11 +424,11 @@ export default function DashboardPage() {
             </Card>
 
             {/* Orçamento Total */}
-            <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-orange-300/60">
+            <Card className="group bg-white border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-blue-300">
               <CardContent className="p-3 sm:p-4 lg:p-5">
                 <div className="flex items-center gap-3">
-                  <div className="bg-orange-50 p-2.5 rounded-xl group-hover:bg-orange-100 transition-colors duration-200">
-                    <DollarSign className="h-5 w-5 text-orange-600" />
+                  <div className="bg-blue-50 p-2.5 rounded-xl group-hover:bg-blue-100 transition-colors duration-200">
+                    <DollarSign className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-lg sm:text-xl font-bold text-slate-900">R$ {totalBudget.toLocaleString()}</p>
@@ -551,7 +551,7 @@ export default function DashboardPage() {
                     <div className="absolute top-3 left-3">
                       <Badge 
                         className={trip.creatorId === user?.id 
-                          ? "bg-orange-500/90 backdrop-blur-sm hover:bg-orange-600 text-white border-0 shadow-sm" 
+                          ? "bg-blue-600/90 backdrop-blur-sm hover:bg-blue-700 text-white border-0 shadow-sm" 
                           : "bg-white/90 backdrop-blur-sm text-slate-700 hover:bg-white border-0 shadow-sm"}
                       >
                         {trip.creatorId === user?.id ? 'Criada por você' : 'Participando'}
@@ -560,7 +560,7 @@ export default function DashboardPage() {
 
                     {/* Title overlay */}
                     <div className="absolute bottom-3 left-3 right-3">
-                      <h3 className="font-bold text-lg text-white mb-1 group-hover:text-orange-200 transition-colors drop-shadow-sm">
+                      <h3 className="font-bold text-lg text-white mb-1 group-hover:text-blue-200 transition-colors drop-shadow-sm">
                         {trip.title}
                       </h3>
                       <p className="text-white/90 flex items-center gap-2 text-sm drop-shadow-sm">
@@ -733,14 +733,14 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                     <Link href="/create-trip" className="w-full sm:w-auto">
-                      <Button className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0 px-6 sm:px-8 py-3 h-auto">
+                      <Button className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 px-6 sm:px-8 py-3 h-auto">
                         <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                         <span className="hidden sm:inline">Criar Nova Viagem</span>
                         <span className="sm:hidden">Nova Viagem</span>
                       </Button>
                     </Link>
                     <Link href="/search" className="w-full sm:w-auto">
-                      <Button variant="outline" className="w-full sm:w-auto border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 px-6 sm:px-8 py-3 h-auto">
+                      <Button variant="outline" className="w-full sm:w-auto border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 px-6 sm:px-8 py-3 h-auto">
                         <Search className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                         <span className="hidden sm:inline">Buscar Companheiros</span>
                         <span className="sm:hidden">Buscar</span>
@@ -776,7 +776,7 @@ export default function DashboardPage() {
                         <p className="font-medium text-gray-900">{request.trip?.title}</p>
                         <p className="text-sm text-gray-600">Solicitação enviada</p>
                       </div>
-                      <Badge variant="outline" className="text-amber-600 border-amber-600">
+                      <Badge variant="outline" className="text-blue-600 border-blue-600">
                         Pendente
                       </Badge>
                     </div>

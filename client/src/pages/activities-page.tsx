@@ -679,7 +679,7 @@ export default function ActivitiesPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-orange-300/60 group">
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-blue-300 group">
                         <div className="relative">
                           <img
                             src={activity.coverImage}

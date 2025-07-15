@@ -192,7 +192,7 @@ export default function HomePage() {
                 transition={{ delay: 0.6 }}
               >
                 Conecte-se com viajantes que compartilham seus interesses. 
-                <span className="text-amber-600 font-semibold"> Divida custos</span>, troque experiências 
+                <span className="text-blue-600 font-semibold"> Divida custos</span>, troque experiências 
                 e descubra o mundo de forma mais inteligente e econômica.
               </motion.p>
 
@@ -203,7 +203,7 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
               >
-                <Button asChild size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold px-8 py-6 rounded-full shadow-xl shadow-yellow-500/25 transform hover:scale-105 transition-all">
+                <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 py-6 rounded-full shadow-xl shadow-blue-500/25 transform hover:scale-105 transition-all">
                   <Link href="/search">
                     <Users className="mr-2 h-5 w-5" />
                     Encontrar Viagem
@@ -327,7 +327,7 @@ export default function HomePage() {
                   }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Users className="w-6 h-6 text-yellow-600 group-hover:text-yellow-500 transition-colors" />
+                  <Users className="w-6 h-6 text-blue-600 group-hover:text-blue-500 transition-colors" />
                   <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-3 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-30">
                     Comunidade Verificada
                   </div>
@@ -605,7 +605,7 @@ export default function HomePage() {
             <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
               Junte-se a uma aventura que está prestes a começar e faça novas amizades
             </p>
-            <Button asChild className="mt-6 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white border-0 px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all">
+            <Button asChild className="mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all">
               <Link href="/search">
                 <Heart className="mr-2 h-5 w-5" />
                 Explorar Mais Viagens
@@ -814,7 +814,7 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button asChild size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold px-8 py-4 text-lg rounded-full shadow-2xl hover:shadow-yellow-500/25 transition-all duration-300">
+              <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-8 py-4 text-lg rounded-full shadow-2xl hover:shadow-blue-500/25 transition-all duration-300">
                 <Link href="/auth">
                   <Users className="mr-2 h-5 w-5" />
                   Criar Conta Grátis
