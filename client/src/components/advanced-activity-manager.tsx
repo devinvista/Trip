@@ -289,6 +289,18 @@ function ActivitySearchTab({
       sortBy: 'rating',
       category: selectedCategory === 'all' ? '' : selectedCategory,
     }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('location', tripDestination || '');
+      params.set('sortBy', 'rating');
+      if (selectedCategory !== 'all' && selectedCategory) {
+        params.set('category', selectedCategory);
+      }
+      
+      const response = await fetch(`/api/activities?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch destination activities');
+      return response.json();
+    },
     enabled: searchTerm.length <= 2 && !!tripDestination,
   });
 
@@ -298,6 +310,17 @@ function ActivitySearchTab({
       sortBy: 'rating',
       category: selectedCategory === 'all' ? '' : selectedCategory,
     }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('sortBy', 'rating');
+      if (selectedCategory !== 'all' && selectedCategory) {
+        params.set('category', selectedCategory);
+      }
+      
+      const response = await fetch(`/api/activities?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch popular activities');
+      return response.json();
+    },
     enabled: searchTerm.length <= 2 && !tripDestination,
   });
 
@@ -308,6 +331,20 @@ function ActivitySearchTab({
       location: tripDestination,
       category: selectedCategory === 'all' ? '' : selectedCategory,
     }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('search', searchTerm);
+      if (tripDestination) {
+        params.set('location', tripDestination);
+      }
+      if (selectedCategory !== 'all' && selectedCategory) {
+        params.set('category', selectedCategory);
+      }
+      
+      const response = await fetch(`/api/activities?${params}`);
+      if (!response.ok) throw new Error('Failed to search activities');
+      return response.json();
+    },
     enabled: searchTerm.length > 2,
   });
 
