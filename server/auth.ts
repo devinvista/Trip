@@ -124,20 +124,15 @@ export function setupAuth(app: Express) {
       }
     }
     
-    // Debug middleware to log session information
+    // Final debug log after authentication attempts
     if (req.path.startsWith('/api/')) {
-      console.log('🔍 Session debug:', {
-        url: req.url,
-        method: req.method,
-        sessionID: req.sessionID,
+      console.log('🔍 Verificando usuário atual:', {
         isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
         hasUser: !!req.user,
-        sessionData: req.session,
-        cookies: Object.keys(req.cookies || {}),
-        headers: {
-          cookie: req.headers.cookie ? 'presente' : 'ausente',
-          sessionIdHeader: req.headers['x-session-id'] ? 'presente' : 'ausente'
-        }
+        user: req.user ? req.user.username : undefined,
+        sessionID: req.sessionID,
+        session: req.session,
+        cookies: req.cookies
       });
     }
     next();

@@ -14,7 +14,7 @@ import { z } from "zod";
 // Middleware para verificar autenticação
 function requireAuth(req: any, res: any, next: any) {
   console.log(`🔐 Verificando autenticação:`, {
-    isAuthenticated: req.isAuthenticated(),
+    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
     hasUser: !!req.user,
     sessionID: req.sessionID,
     session: !!req.session,
@@ -23,7 +23,10 @@ function requireAuth(req: any, res: any, next: any) {
     url: req.url
   });
   
-  if (!req.isAuthenticated() || !req.user) {
+  // Check both standard authentication and manual authentication
+  const isAuth = (req.isAuthenticated && req.isAuthenticated()) || !!req.user;
+  
+  if (!isAuth || !req.user) {
     console.log(`❌ Acesso negado - usuário não autenticado`);
     return res.status(401).json({ message: "Não autorizado" });
   }
