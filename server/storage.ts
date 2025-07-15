@@ -1911,36 +1911,49 @@ export class DatabaseStorage implements IStorage {
       const [proposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
       if (!proposal) return undefined;
       
-      // Check if user has already voted on this activity
+      // Check if user has already voted on this specific proposal
       const [existingVote] = await db.select().from(activityBudgetProposalVotes)
         .where(and(
           eq(activityBudgetProposalVotes.userId, userId),
-          eq(activityBudgetProposalVotes.activityId, proposal.activityId)
+          eq(activityBudgetProposalVotes.proposalId, id)
         ));
       
       if (existingVote) {
-        // User has already voted on this activity
-        console.log(`⚠️ Usuário ${userId} já votou na atividade ${proposal.activityId}`);
-        return proposal; // Return current proposal without changes
+        // User has already voted on this proposal - remove the vote (toggle)
+        await db.delete(activityBudgetProposalVotes)
+          .where(and(
+            eq(activityBudgetProposalVotes.userId, userId),
+            eq(activityBudgetProposalVotes.proposalId, id)
+          ));
+        
+        // Decrease vote count
+        const newVotes = Math.max(0, proposal.votes - 1);
+        await db.update(activityBudgetProposals).set({
+          votes: newVotes,
+          updatedAt: new Date(),
+        }).where(eq(activityBudgetProposals.id, id));
+        
+        console.log(`👍 Usuário ${userId} removeu voto da proposta ${id}`);
+      } else {
+        // Create new vote record
+        const voteType = increment ? 'up' : 'down';
+        await db.insert(activityBudgetProposalVotes).values({
+          proposalId: id,
+          userId: userId,
+          activityId: proposal.activityId,
+          voteType: voteType,
+          createdAt: new Date(),
+        });
+        
+        // Update proposal vote count
+        const newVotes = increment ? proposal.votes + 1 : Math.max(0, proposal.votes - 1);
+        await db.update(activityBudgetProposals).set({
+          votes: newVotes,
+          updatedAt: new Date(),
+        }).where(eq(activityBudgetProposals.id, id));
+        
+        console.log(`👍 Usuário ${userId} votou na proposta ${id}`);
       }
-      
-      // Create new vote record
-      const voteType = increment ? 'up' : 'down';
-      await db.insert(activityBudgetProposalVotes).values({
-        proposalId: id,
-        userId: userId,
-        activityId: proposal.activityId,
-        voteType: voteType,
-        createdAt: new Date(),
-      });
-      
-      // Update proposal vote count
-      const newVotes = increment ? proposal.votes + 1 : Math.max(0, proposal.votes - 1);
-      
-      await db.update(activityBudgetProposals).set({
-        votes: newVotes,
-        updatedAt: new Date(),
-      }).where(eq(activityBudgetProposals.id, id));
       
       const [updatedProposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
       return updatedProposal;
@@ -1961,6 +1974,21 @@ export class DatabaseStorage implements IStorage {
       return vote;
     } catch (error) {
       console.error('❌ Erro ao buscar voto do usuário:', error);
+      return undefined;
+    }
+  }
+
+  async getUserVoteForProposal(userId: number, proposalId: number): Promise<ActivityBudgetProposalVote | undefined> {
+    try {
+      const [vote] = await db.select().from(activityBudgetProposalVotes)
+        .where(and(
+          eq(activityBudgetProposalVotes.userId, userId),
+          eq(activityBudgetProposalVotes.proposalId, proposalId)
+        ));
+      
+      return vote;
+    } catch (error) {
+      console.error('❌ Erro ao buscar voto do usuário para proposta:', error);
       return undefined;
     }
   }

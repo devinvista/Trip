@@ -85,22 +85,34 @@ export function ActivityBudgetProposals({
     }
   });
 
-  // Check if user has voted on this activity
-  const { data: userVoteData } = useQuery({
-    queryKey: ['/api/activities', activityId, 'user-vote'],
-    queryFn: async () => {
-      if (!user) return { hasVoted: false, vote: null };
-      const response = await fetch(`/api/activities/${activityId}/user-vote`);
-      if (!response.ok) throw new Error('Falha ao verificar voto');
-      return response.json() as Promise<{ hasVoted: boolean; vote: any }>;
-    },
-    enabled: !!user
-  });
-
   // Filter unique proposals to avoid duplicate keys
   const proposals = proposalsData ? proposalsData.filter((proposal, index, arr) => 
     arr.findIndex(p => p.id === proposal.id) === index
   ) : [];
+
+  // Check if user has voted on individual proposals
+  const { data: proposalVotes } = useQuery({
+    queryKey: ['/api/proposals', 'user-votes', activityId],
+    queryFn: async () => {
+      if (!user || !proposals || proposals.length === 0) return {};
+      
+      const votePromises = proposals.map(async (proposal) => {
+        const response = await fetch(`/api/proposals/${proposal.id}/user-vote`, {
+          credentials: 'include',
+        });
+        if (!response.ok) throw new Error('Failed to fetch vote');
+        const data = await response.json();
+        return { proposalId: proposal.id, hasVoted: data.hasVoted, vote: data.vote };
+      });
+      
+      const votes = await Promise.all(votePromises);
+      return votes.reduce((acc, vote) => {
+        acc[vote.proposalId] = vote;
+        return acc;
+      }, {} as Record<number, { hasVoted: boolean; vote: any }>);
+    },
+    enabled: !!user && !!proposals && proposals.length > 0,
+  });
 
   // Create proposal mutation
   const createProposal = useMutation({
@@ -141,12 +153,12 @@ export function ActivityBudgetProposals({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/activities', activityId, 'proposals'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/activities', activityId, 'user-vote'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/proposals', 'user-votes', activityId] });
     },
     onError: (error: any) => {
       toast({ 
         title: "Erro ao votar", 
-        description: userVoteData?.hasVoted ? "Você já votou nesta atividade" : "Tente novamente mais tarde",
+        description: "Tente novamente mais tarde",
         variant: "destructive" 
       });
     }
@@ -166,6 +178,10 @@ export function ActivityBudgetProposals({
       return;
     }
     voteProposal.mutate({ proposalId, increment });
+  };
+
+  const getProposalVoteStatus = (proposalId: number) => {
+    return proposalVotes?.[proposalId] || { hasVoted: false, vote: null };
   };
 
   // Handle multiple proposal selection
@@ -602,19 +618,19 @@ export function ActivityBudgetProposals({
                             variant="outline"
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (!userVoteData?.hasVoted) {
-                                handleVote(proposal.id, true);
-                              }
+                              handleVote(proposal.id, true);
                             }}
-                            disabled={voteProposal.isPending || userVoteData?.hasVoted}
+                            disabled={voteProposal.isPending}
                             className={`h-8 px-2 flex items-center gap-1 ${
-                              userVoteData?.hasVoted 
-                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                                : ''
+                              getProposalVoteStatus(proposal.id).hasVoted 
+                                ? 'bg-blue-100 text-blue-600 border-blue-300' 
+                                : 'hover:bg-blue-50 hover:text-blue-600'
                             }`}
-                            title={userVoteData?.hasVoted ? 'Já deu like!' : 'Votar nesta proposta'}
+                            title={getProposalVoteStatus(proposal.id).hasVoted ? 'Clique para remover like' : 'Dar like'}
                           >
-                            <ThumbsUp className="h-3 w-3" />
+                            <ThumbsUp className={`h-3 w-3 ${
+                              getProposalVoteStatus(proposal.id).hasVoted ? 'fill-current' : ''
+                            }`} />
                             <span className="text-xs">{proposal.votes}</span>
                           </Button>
                         )}
@@ -624,7 +640,7 @@ export function ActivityBudgetProposals({
                             {proposal.votes}
                           </Badge>
                         )}
-                        {user && userVoteData?.hasVoted && (
+                        {user && getProposalVoteStatus(proposal.id).hasVoted && (
                           <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
                             ✓ Já deu like!
                           </Badge>

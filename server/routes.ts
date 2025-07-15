@@ -1276,6 +1276,21 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Check if user has voted on a specific proposal
+  app.get("/api/proposals/:id/user-vote", requireAuth, async (req, res) => {
+    try {
+      const proposalId = parseInt(req.params.id);
+      const userId = req.user.id;
+      
+      const vote = await storage.getUserVoteForProposal(userId, proposalId);
+      
+      res.json({ hasVoted: !!vote, vote });
+    } catch (error) {
+      console.error('Erro ao verificar voto do usuário para proposta:', error);
+      res.status(500).json({ message: "Erro ao verificar voto" });
+    }
+  });
+
   // ===== TRIP ACTIVITIES ROUTES =====
   
   // Get all activities for a trip
