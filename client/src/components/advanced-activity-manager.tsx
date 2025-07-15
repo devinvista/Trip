@@ -218,7 +218,9 @@ function ActivityManagementDialog({
   onSave,
   tripDestination,
   tripParticipants = 1,
-  tripMaxParticipants
+  tripMaxParticipants,
+  tripStartDate,
+  tripEndDate
 }: {
   activity?: PlannedActivity;
   isOpen: boolean;
@@ -227,6 +229,8 @@ function ActivityManagementDialog({
   tripDestination?: string;
   tripParticipants?: number;
   tripMaxParticipants?: number;
+  tripStartDate?: string;
+  tripEndDate?: string;
 }) {
   const [activeTab, setActiveTab] = useState(activity ? "manual" : "search");
   
@@ -259,6 +263,8 @@ function ActivityManagementDialog({
               tripDestination={tripDestination}
               tripParticipants={tripParticipants}
               tripMaxParticipants={tripMaxParticipants}
+              tripStartDate={tripStartDate}
+              tripEndDate={tripEndDate}
             />
           </TabsContent>
           
@@ -266,7 +272,9 @@ function ActivityManagementDialog({
             <ActivityFormTab 
               activity={activity} 
               onSave={onSave} 
-              onClose={onClose} 
+              onClose={onClose}
+              tripStartDate={tripStartDate}
+              tripEndDate={tripEndDate}
             />
           </TabsContent>
         </Tabs>
@@ -281,17 +289,22 @@ function ActivitySearchTab({
   onClose, 
   tripDestination,
   tripParticipants = 1,
-  tripMaxParticipants
+  tripMaxParticipants,
+  tripStartDate,
+  tripEndDate
 }: { 
   onSave: (activity: PlannedActivity) => void; 
   onClose: () => void;
   tripDestination?: string;
   tripParticipants?: number;
   tripMaxParticipants?: number;
+  tripStartDate?: string;
+  tripEndDate?: string;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedActivity, setSelectedActivity] = useState<any>(null);
+  const [selectedDate, setSelectedDate] = useState<string>("");
   
   // Use max participants for cost estimation (planning for full trip capacity)
   const participants = tripMaxParticipants || tripParticipants;
@@ -387,7 +400,7 @@ function ActivitySearchTab({
       attachments: [],
       urls: [],
       notes: `Atividade encontrada na busca\nPreço original: R$ ${selectedActivity.priceAmount || 0}\nParticipantes: ${participants}`,
-      dateTime: undefined,
+      dateTime: selectedDate || undefined,
       status: "planned"
     };
 
@@ -517,7 +530,7 @@ function ActivitySearchTab({
       {selectedActivity && (
         <div className="border-t pt-4">
           <h3 className="font-semibold mb-3">Detalhes da Atividade Selecionada</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div>
               <Label>Participantes da Viagem</Label>
               <div className="mt-1 p-2 bg-blue-50 rounded border border-blue-200">
@@ -546,6 +559,23 @@ function ActivitySearchTab({
                 </p>
               </div>
             </div>
+            <div>
+              <Label htmlFor="activityDate">Data da Atividade</Label>
+              <Input
+                id="activityDate"
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                min={tripStartDate ? new Date(tripStartDate).toISOString().split('T')[0] : undefined}
+                max={tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : undefined}
+                className="mt-1"
+              />
+              {tripStartDate && tripEndDate && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -572,11 +602,15 @@ function ActivitySearchTab({
 function ActivityFormTab({ 
   activity, 
   onSave, 
-  onClose 
+  onClose,
+  tripStartDate,
+  tripEndDate
 }: {
   activity?: PlannedActivity;
   onSave: (activity: PlannedActivity) => void;
   onClose: () => void;
+  tripStartDate?: string;
+  tripEndDate?: string;
 }) {
   const [formData, setFormData] = useState<Partial<PlannedActivity>>(
     activity || {
@@ -589,7 +623,8 @@ function ActivityFormTab({
       location: '',
       urls: [],
       attachments: [],
-      notes: ''
+      notes: '',
+      dateTime: ''
     }
   );
 
@@ -611,6 +646,7 @@ function ActivityFormTab({
       urls: formData.urls || [],
       attachments: formData.attachments || [],
       notes: formData.notes,
+      dateTime: formData.dateTime,
       status: "planned",
       createdAt: activity?.createdAt || new Date().toISOString(),
     };
@@ -745,6 +781,24 @@ function ActivityFormTab({
             className="border-2 focus:border-primary"
           />
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="dateTime">Data da Atividade</Label>
+          <Input
+            id="dateTime"
+            type="date"
+            value={formData.dateTime}
+            onChange={(e) => setFormData(prev => ({ ...prev, dateTime: e.target.value }))}
+            min={tripStartDate ? new Date(tripStartDate).toISOString().split('T')[0] : undefined}
+            max={tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : undefined}
+            className="border-2 focus:border-primary"
+          />
+          {tripStartDate && tripEndDate && (
+            <p className="text-xs text-gray-500">
+              Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Description */}
@@ -877,6 +931,8 @@ interface AdvancedActivityManagerProps {
   trip?: any; // Trip object for calculating real participants
   tripParticipants?: number; // Current accepted participants
   tripMaxParticipants?: number; // Max participants for cost estimation
+  tripStartDate?: string; // Trip start date for activity scheduling
+  tripEndDate?: string; // Trip end date for activity scheduling
 }
 
 export function AdvancedActivityManager({ 
@@ -886,10 +942,14 @@ export function AdvancedActivityManager({
   tripDestination,
   trip,
   tripParticipants = 1,
-  tripMaxParticipants
+  tripMaxParticipants,
+  tripStartDate,
+  tripEndDate
 }: AdvancedActivityManagerProps) {
   const realParticipantsCount = trip ? getRealParticipantsCount(trip) : tripParticipants;
   const maxParticipantsCount = trip ? trip.maxParticipants : (tripMaxParticipants || tripParticipants);
+  const startDate = trip ? trip.startDate : tripStartDate;
+  const endDate = trip ? trip.endDate : tripEndDate;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
 
@@ -1026,6 +1086,8 @@ export function AdvancedActivityManager({
         tripDestination={tripDestination}
         tripParticipants={realParticipantsCount}
         tripMaxParticipants={maxParticipantsCount}
+        tripStartDate={startDate}
+        tripEndDate={endDate}
       />
     </div>
   );

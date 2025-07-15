@@ -768,6 +768,8 @@ export default function TripDetailPage() {
                         trip={trip}
                         tripParticipants={realParticipants.length}
                         tripMaxParticipants={trip.maxParticipants}
+                        tripStartDate={trip.startDate}
+                        tripEndDate={trip.endDate}
                         className="border-0"
                       />
                     ) : (

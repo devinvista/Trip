@@ -885,6 +885,8 @@ function CreateTripPageContent() {
                           tripDestination={form.watch('destination')}
                           tripParticipants={1}
                           tripMaxParticipants={form.watch('maxParticipants') || 1}
+                          tripStartDate={form.watch('startDate')}
+                          tripEndDate={form.watch('endDate')}
                           className="border-2 border-gray-200 rounded-lg p-4"
                         />
                       </motion.div>
