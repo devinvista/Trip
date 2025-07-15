@@ -409,6 +409,8 @@ export const insertActivityBudgetProposalSchema = createInsertSchema(activityBud
 
 export const insertTripActivitySchema = createInsertSchema(tripActivities).omit({
   id: true,
+  tripId: true,
+  addedBy: true,
   status: true,
   createdAt: true,
 }).extend({
