@@ -658,37 +658,47 @@ export interface IStorage {
   getUserTripsInLocation(userId: number, location: string): Promise<Trip[]>;
 }
 
-// MySQL Storage implementation - uses database exclusively
-export class MySQLStorage implements IStorage {
+export class MemStorage implements IStorage {
   public sessionStore: session.Store;
 
-  constructor() {
-    // Use MySQL session store instead of memory
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000,
-    });
-  }
-
+  // Helper function to remove sensitive information from user objects
   private sanitizeUser(user: User | undefined): Omit<User, 'password'> | undefined {
     if (!user) return undefined;
     const { password, ...sanitizedUser } = user;
     return sanitizedUser;
   }
 
+  constructor() {
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000,
+    });
+
+    // Run automatic fix for creators as participants after initialization
+    setTimeout(() => this.runCreatorParticipantsFix(), 1000);
+  }
+
   async getUser(id: number): Promise<User | undefined> {
     try {
-      const result = await db.select().from(users).where(eq(users.id, id));
-      return result[0];
+      const userArray = await db.select().from(users).where(eq(users.id, id)).limit(1);
+      const user = userArray[0];
+      
+      if (!user) {
+        console.log(`❌ Usuário não encontrado no banco: ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`✅ Usuário carregado do banco: ${user.username}, isVerified: ${user.isVerified}`);
+      return user;
     } catch (error) {
-      console.error('❌ Erro ao buscar usuário:', error);
+      console.error('❌ Erro ao buscar usuário no banco:', error);
       return undefined;
     }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     try {
-      const result = await db.select().from(users).where(eq(users.username, username));
-      return result[0];
+      const userArray = await db.select().from(users).where(eq(users.username, username)).limit(1);
+      return userArray[0];
     } catch (error) {
       console.error('❌ Erro ao buscar usuário por username:', error);
       return undefined;
@@ -697,8 +707,8 @@ export class MySQLStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     try {
-      const result = await db.select().from(users).where(eq(users.email, email));
-      return result[0];
+      const userArray = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      return userArray[0];
     } catch (error) {
       console.error('❌ Erro ao buscar usuário por email:', error);
       return undefined;
@@ -707,103 +717,78 @@ export class MySQLStorage implements IStorage {
 
   async getUserByPhone(phone: string): Promise<User | undefined> {
     try {
-      const cleanPhone = phone.replace(/\D/g, '');
-      const result = await db.select().from(users).where(eq(users.phone, cleanPhone));
-      return result[0];
+      const allUsers = await db.select().from(users);
+      return allUsers.find(user => {
+        // Remove formatação do telefone armazenado para comparação
+        const cleanStoredPhone = user.phone.replace(/\D/g, '');
+        return cleanStoredPhone === phone;
+      });
     } catch (error) {
       console.error('❌ Erro ao buscar usuário por telefone:', error);
       return undefined;
     }
   }
 
-  async createUser(userData: InsertUser): Promise<User> {
+  async createUser(insertUser: InsertUser): Promise<User> {
     try {
-      const result = await db.insert(users).values(userData).returning();
-      return result[0];
+      const result = await db.insert(users).values({
+        ...insertUser,
+        profilePhoto: null,
+        bio: insertUser.bio || null,
+        location: insertUser.location || null,
+        languages: insertUser.languages || null,
+        interests: insertUser.interests || null,
+        travelStyle: insertUser.travelStyle || null,
+        isVerified: false,
+        verificationMethod: null,
+        averageRating: "0.00",
+        totalRatings: 0,
+        createdAt: new Date() 
+      });
+      
+      // Get the created user
+      const [user] = await db.select().from(users).where(eq(users.id, result[0].insertId));
+      return user;
     } catch (error) {
-      console.error('❌ Erro ao criar usuário:', error);
+      console.error('❌ Erro ao criar usuário no MySQL:', error);
       throw error;
     }
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
     try {
-      const result = await db.update(users).set(updates).where(eq(users.id, id)).returning();
-      return result[0];
+      await db.update(users).set(updates).where(eq(users.id, id));
+      const [updatedUser] = await db.select().from(users).where(eq(users.id, id));
+      return updatedUser;
     } catch (error) {
-      console.error('❌ Erro ao atualizar usuário:', error);
+      console.error('❌ Erro ao atualizar usuário no MySQL:', error);
       return undefined;
     }
   }
 
-  // All other methods use MySQL exclusively - truncated for brevity
   async getTrip(id: number): Promise<Trip | undefined> {
     try {
-      const result = await db.select().from(trips).where(eq(trips.id, id));
-      return result[0];
+      const [trip] = await db.select().from(trips).where(eq(trips.id, id));
+      return trip;
     } catch (error) {
-      console.error('❌ Erro ao buscar viagem:', error);
+      console.error('❌ Erro ao buscar viagem no MySQL:', error);
       return undefined;
-    }
-  }
-
-  async getTrips(filters?: { destination?: string; startDate?: Date; endDate?: Date; budget?: number; travelStyle?: string }): Promise<Trip[]> {
-    try {
-      let query = db.select().from(trips);
-      
-      if (filters?.destination) {
-        query = query.where(like(trips.destination, `%${filters.destination}%`));
-      }
-      
-      return await query;
-    } catch (error) {
-      console.error('❌ Erro ao buscar viagens:', error);
-      return [];
-    }
-  }
-
-  async createTrip(tripData: InsertTrip & { creatorId: number }): Promise<Trip> {
-    try {
-      const result = await db.insert(trips).values(tripData).returning();
-      return result[0];
-    } catch (error) {
-      console.error('❌ Erro ao criar viagem:', error);
-      throw error;
-    }
-  }
-
-  async updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined> {
-    try {
-      const result = await db.update(trips).set(updates).where(eq(trips.id, id)).returning();
-      return result[0];
-    } catch (error) {
-      console.error('❌ Erro ao atualizar viagem:', error);
-      return undefined;
-    }
-  }
-
-  async deleteTrip(id: number): Promise<boolean> {
-    try {
-      await db.delete(trips).where(eq(trips.id, id));
-      return true;
-    } catch (error) {
-      console.error('❌ Erro ao deletar viagem:', error);
-      return false;
     }
   }
 
   async getTripsByCreator(creatorId: number): Promise<Trip[]> {
     try {
-      return await db.select().from(trips).where(eq(trips.creatorId, creatorId));
+      const creatorTrips = await db.select().from(trips).where(eq(trips.creatorId, creatorId));
+      return creatorTrips;
     } catch (error) {
-      console.error('❌ Erro ao buscar viagens por criador:', error);
+      console.error('❌ Erro ao buscar viagens do criador no MySQL:', error);
       return [];
     }
   }
 
   async getTripsByParticipant(userId: number): Promise<Trip[]> {
     try {
-      const result = await db.select({
+      const participantTrips = await db.select({
         id: trips.id,
         title: trips.title,
         destination: trips.destination,
@@ -811,95 +796,300 @@ export class MySQLStorage implements IStorage {
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
-        budgetBreakdown: trips.budgetBreakdown,
         maxParticipants: trips.maxParticipants,
-        currentParticipants: trips.currentParticipants,
         description: trips.description,
         travelStyle: trips.travelStyle,
-        createdAt: trips.createdAt,
         creatorId: trips.creatorId,
-        activities: trips.activities,
-        requirements: trips.requirements,
-        itinerary: trips.itinerary,
-        transportInfo: trips.transportInfo,
-        accommodationInfo: trips.accommodationInfo
+        status: trips.status,
+        budgetBreakdown: trips.budgetBreakdown,
+        currentParticipants: trips.currentParticipants,
+        sharedCosts: trips.sharedCosts,
+        createdAt: trips.createdAt
       })
       .from(trips)
-      .innerJoin(tripParticipants, eq(trips.id, tripParticipants.tripId))
-      .where(and(eq(tripParticipants.userId, userId), eq(tripParticipants.status, 'accepted')));
-      
-      return result;
+      .innerJoin(tripParticipants, eq(tripParticipants.tripId, trips.id))
+      .where(and(
+        eq(tripParticipants.userId, userId),
+        eq(tripParticipants.status, 'accepted'),
+        ne(trips.creatorId, userId) // Excluir viagens onde o usuário é o criador
+      ));
+
+      return participantTrips;
     } catch (error) {
-      console.error('❌ Erro ao buscar viagens por participante:', error);
+      console.error('❌ Erro ao buscar viagens do participante no MySQL:', error);
       return [];
+    }
+  }
+
+  async getTrips(filters?: { destination?: string; startDate?: Date; endDate?: Date; budget?: number; travelStyle?: string }): Promise<Trip[]> {
+    try {
+      let query = db.select().from(trips).where(eq(trips.status, 'open'));
+
+      if (filters) {
+        const conditions = [eq(trips.status, 'open')];
+        
+        if (filters.destination) {
+          conditions.push(like(trips.destination, `%${filters.destination}%`));
+        }
+        if (filters.startDate) {
+          conditions.push(gte(trips.startDate, filters.startDate));
+        }
+        if (filters.endDate) {
+          conditions.push(lte(trips.endDate, filters.endDate));
+        }
+        if (filters.budget) {
+          conditions.push(lte(trips.budget, filters.budget));
+        }
+        if (filters.travelStyle) {
+          conditions.push(eq(trips.travelStyle, filters.travelStyle));
+        }
+
+        query = db.select().from(trips).where(and(...conditions));
+      }
+
+      const allTrips = await query.orderBy(desc(trips.createdAt));
+      return allTrips;
+    } catch (error) {
+      console.error('❌ Erro ao buscar viagens no MySQL:', error);
+      return [];
+    }
+  }
+
+  async createTrip(tripData: InsertTrip & { creatorId: number }): Promise<Trip> {
+    try {
+      // Automatically assign cover image if not provided
+      const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination, tripData.travelStyle);
+      
+      const tripToInsert = {
+        ...tripData,
+        coverImage,
+        budget: tripData.budget ?? null,
+        budgetBreakdown: tripData.budgetBreakdown || null,
+        currentParticipants: 1,
+        status: 'open' as const,
+        sharedCosts: tripData.sharedCosts || null,
+        createdAt: new Date()
+      };
+
+      const result = await db.insert(trips).values(tripToInsert);
+      const tripId = result[0].insertId;
+
+      // Get the created trip
+      const [trip] = await db.select().from(trips).where(eq(trips.id, tripId));
+
+      console.log(`✅ Viagem criada no MySQL com ID ${tripId}: ${trip.title}`);
+
+      // Add creator as participant
+      await this.addTripParticipant(tripId, tripData.creatorId);
+
+      return trip;
+    } catch (error) {
+      console.error('❌ Erro ao criar viagem no MySQL:', error);
+      throw error;
+    }
+  }
+
+  async updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined> {
+    try {
+      await db.update(trips).set(updates).where(eq(trips.id, id));
+      const [updatedTrip] = await db.select().from(trips).where(eq(trips.id, id));
+      return updatedTrip;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar viagem no MySQL:', error);
+      return undefined;
+    }
+  }
+
+  async deleteTrip(id: number): Promise<boolean> {
+    try {
+      // Remove all associated data using MySQL cascading
+      await db.delete(trips).where(eq(trips.id, id));
+      
+      // The foreign key constraints should handle cascading deletes
+      // But let's manually clean up to be safe
+      await db.delete(tripParticipants).where(eq(tripParticipants.tripId, id));
+      await db.delete(messages).where(eq(messages.tripId, id));
+      await db.delete(tripRequests).where(eq(tripRequests.tripId, id));
+      
+      // Remove expenses and their splits
+      const tripExpenses = await db.select().from(expenses).where(eq(expenses.tripId, id));
+      for (const expense of tripExpenses) {
+        await db.delete(expenseSplits).where(eq(expenseSplits.expenseId, expense.id));
+      }
+      await db.delete(expenses).where(eq(expenses.tripId, id));
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao deletar viagem no MySQL:', error);
+      return false;
+    }
+  }
+
+  // Fix existing trips with broken Egypt images
+  async fixEgyptTrips(): Promise<void> {
+    try {
+      const brokenImageUrl = "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80";
+      const newImageUrl = "https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=800&q=80";
+      
+      const trips = await db.select().from(trips);
+      
+      for (const trip of trips) {
+        if (trip.coverImage === brokenImageUrl && 
+            (trip.destination.toLowerCase().includes('egito') || 
+             trip.destination.toLowerCase().includes('cairo'))) {
+          console.log(`🔧 Corrigindo imagem da viagem do Egito: ${trip.title}`);
+          await db.update(trips).set({ coverImage: newImageUrl }).where(eq(trips.id, trip.id));
+        }
+      }
+    } catch (error) {
+      console.error('❌ Erro ao corrigir imagens do Egito:', error);
     }
   }
 
   async getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]> {
     try {
-      const result = await db.select({
-        id: tripParticipants.id,
-        tripId: tripParticipants.tripId,
-        userId: tripParticipants.userId,
-        status: tripParticipants.status,
-        joinedAt: tripParticipants.joinedAt,
-        user: users
-      })
-      .from(tripParticipants)
-      .innerJoin(users, eq(tripParticipants.userId, users.id))
-      .where(eq(tripParticipants.tripId, tripId));
+      const participants = await db.select()
+        .from(tripParticipants)
+        .where(eq(tripParticipants.tripId, tripId));
+
+      console.log(`📋 Encontrados ${participants.length} participantes no MySQL para viagem ${tripId}`);
       
+      const result = [];
+      for (const p of participants) {
+        // Get user from MySQL
+        const userArray = await db.select().from(users).where(eq(users.id, p.userId)).limit(1);
+        if (userArray.length > 0) {
+          const sanitizedUser = this.sanitizeUser(userArray[0]);
+          if (sanitizedUser) {
+            result.push({ ...p, user: sanitizedUser as User });
+          }
+        }
+      }
       return result;
     } catch (error) {
-      console.error('❌ Erro ao buscar participantes da viagem:', error);
+      console.error(`❌ Erro ao buscar participantes do MySQL para viagem ${tripId}:`, error);
       return [];
     }
   }
 
   async addTripParticipant(tripId: number, userId: number): Promise<TripParticipant> {
     try {
+      // Check if participant already exists in MySQL
+      const existingParticipant = await db.select()
+        .from(tripParticipants)
+        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)))
+        .limit(1);
+
+      if (existingParticipant.length > 0) {
+        console.log(`ℹ️ Participante ${userId} já existe na viagem ${tripId}`);
+        return existingParticipant[0];
+      }
+
       const result = await db.insert(tripParticipants).values({
         tripId,
         userId,
-        status: 'accepted'
-      }).returning();
+        status: 'accepted',
+        joinedAt: new Date()
+      });
+
+      const [participant] = await db.select().from(tripParticipants).where(eq(tripParticipants.id, result[0].insertId));
       
-      return result[0];
+      console.log(`✅ Participante ${userId} adicionado à viagem ${tripId} no MySQL`);
+      return participant;
     } catch (error) {
-      console.error('❌ Erro ao adicionar participante:', error);
+      console.error('❌ Erro ao adicionar participante no MySQL:', error);
       throw error;
     }
   }
 
   async updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined> {
     try {
-      const result = await db.update(tripParticipants)
+      await db.update(tripParticipants)
         .set({ status })
-        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)))
-        .returning();
-      
-      return result[0];
+        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
+
+      const [updatedParticipant] = await db.select()
+        .from(tripParticipants)
+        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
+
+      return updatedParticipant;
     } catch (error) {
-      console.error('❌ Erro ao atualizar participante:', error);
+      console.error('❌ Erro ao atualizar participante no MySQL:', error);
       return undefined;
     }
   }
 
   async removeTripParticipant(tripId: number, userId: number): Promise<void> {
     try {
+      const trip = await this.getTrip(tripId);
+      if (!trip) return;
+
+      // Remove participant from MySQL
       await db.delete(tripParticipants)
         .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
+
+      // Get remaining participants after removal
+      const participants = await this.getTripParticipants(tripId);
+      const activeParticipants = participants.filter(p => p.status === 'accepted');
+      
+      if (activeParticipants.length === 0) {
+        // No participants left, delete the trip completely
+        await this.deleteTrip(tripId);
+        console.log(`❌ Viagem ${tripId} cancelada - sem participantes restantes`);
+      } else {
+        // Check if removed user was the creator
+        if (trip.creatorId === userId) {
+          // Transfer organizer role to oldest active participant (first one in the list)
+          const newOrganizer = activeParticipants[0];
+          await this.updateTrip(tripId, { 
+            creatorId: newOrganizer.userId,
+            currentParticipants: activeParticipants.length
+          });
+          console.log(`✅ Organização da viagem ${tripId} transferida para usuário ${newOrganizer.user.username}`);
+        } else {
+          // Just update participant count
+          await this.updateTrip(tripId, { 
+            currentParticipants: activeParticipants.length
+          });
+        }
+      }
     } catch (error) {
-      console.error('❌ Erro ao remover participante:', error);
-      throw error;
+      console.error('❌ Erro ao remover participante no MySQL:', error);
     }
   }
 
   async recalculateExpenseSplits(tripId: number): Promise<void> {
-    // Implementation for recalculating expense splits
     try {
-      // This would contain logic to recalculate all expense splits for a trip
-      console.log(`🔄 Recalculando divisões de despesas para viagem ${tripId}`);
+      // Get all expenses for this trip that were split equally among all participants
+      const expenses = await this.getTripExpenses(tripId);
+      const participants = await this.getTripParticipants(tripId);
+      const activeParticipants = participants.filter(p => p.status === 'accepted');
+      
+      for (const expense of expenses) {
+        // Check if this expense was split equally among all participants
+        const splits = await db.select().from(expenseSplits)
+          .where(eq(expenseSplits.expenseId, expense.id));
+        
+        // If the number of splits matches the number of participants at the time,
+        // recalculate with new participants
+        if (splits.length > 0) {
+          const newSplitAmount = expense.amount / activeParticipants.length;
+          
+          // Remove existing splits
+          await db.delete(expenseSplits).where(eq(expenseSplits.expenseId, expense.id));
+          
+          // Create new splits for all current participants
+          for (const participant of activeParticipants) {
+            await db.insert(expenseSplits).values({
+              expenseId: expense.id,
+              userId: participant.userId,
+              amount: newSplitAmount,
+              paid: participant.userId === expense.paidBy,
+              settledAt: null,
+            });
+          }
+        }
+      }
     } catch (error) {
       console.error('❌ Erro ao recalcular divisões de despesas:', error);
     }
@@ -907,19 +1097,17 @@ export class MySQLStorage implements IStorage {
 
   async getTripMessages(tripId: number): Promise<(Message & { sender: User })[]> {
     try {
-      const result = await db.select({
-        id: messages.id,
-        tripId: messages.tripId,
-        senderId: messages.senderId,
-        content: messages.content,
-        sentAt: messages.sentAt,
-        sender: users
-      })
-      .from(messages)
-      .innerJoin(users, eq(messages.senderId, users.id))
-      .where(eq(messages.tripId, tripId))
-      .orderBy(messages.sentAt);
-      
+      const tripMessages = await db.select().from(messages)
+        .where(eq(messages.tripId, tripId))
+        .orderBy(messages.sentAt);
+
+      const result = [];
+      for (const message of tripMessages) {
+        const sender = await this.getUser(message.senderId);
+        if (sender) {
+          result.push({ ...message, sender: this.sanitizeUser(sender) as User });
+        }
+      }
       return result;
     } catch (error) {
       console.error('❌ Erro ao buscar mensagens:', error);
@@ -929,8 +1117,18 @@ export class MySQLStorage implements IStorage {
 
   async createMessage(messageData: InsertMessage & { senderId: number }): Promise<Message> {
     try {
-      const result = await db.insert(messages).values(messageData).returning();
-      return result[0];
+      const [insertedMessage] = await db.insert(messages).values({
+        tripId: messageData.tripId,
+        senderId: messageData.senderId,
+        content: messageData.content,
+        sentAt: new Date()
+      });
+      
+      // Get the inserted message to return it
+      const messageId = insertedMessage.insertId;
+      const [message] = await db.select().from(messages).where(eq(messages.id, messageId));
+      
+      return message;
     } catch (error) {
       console.error('❌ Erro ao criar mensagem:', error);
       throw error;
@@ -939,39 +1137,35 @@ export class MySQLStorage implements IStorage {
 
   async getTripRequests(tripId: number): Promise<(TripRequest & { user: User })[]> {
     try {
-      const result = await db.select({
-        id: tripRequests.id,
-        tripId: tripRequests.tripId,
-        userId: tripRequests.userId,
-        status: tripRequests.status,
-        requestedAt: tripRequests.requestedAt,
-        user: users
-      })
-      .from(tripRequests)
-      .innerJoin(users, eq(tripRequests.userId, users.id))
-      .where(eq(tripRequests.tripId, tripId));
-      
+      const requests = await db.select().from(tripRequests)
+        .where(eq(tripRequests.tripId, tripId));
+
+      const result = [];
+      for (const request of requests) {
+        const user = await this.getUser(request.userId);
+        if (user) {
+          result.push({ ...request, user: this.sanitizeUser(user) as User });
+        }
+      }
       return result;
     } catch (error) {
-      console.error('❌ Erro ao buscar solicitações:', error);
+      console.error('❌ Erro ao buscar solicitações de viagem:', error);
       return [];
     }
   }
 
   async getUserTripRequests(userId: number): Promise<(TripRequest & { trip: Trip })[]> {
     try {
-      const result = await db.select({
-        id: tripRequests.id,
-        tripId: tripRequests.tripId,
-        userId: tripRequests.userId,
-        status: tripRequests.status,
-        requestedAt: tripRequests.requestedAt,
-        trip: trips
-      })
-      .from(tripRequests)
-      .innerJoin(trips, eq(tripRequests.tripId, trips.id))
-      .where(eq(tripRequests.userId, userId));
-      
+      const requests = await db.select().from(tripRequests)
+        .where(eq(tripRequests.userId, userId));
+
+      const result = [];
+      for (const request of requests) {
+        const trip = await this.getTrip(request.tripId);
+        if (trip) {
+          result.push({ ...request, trip });
+        }
+      }
       return result;
     } catch (error) {
       console.error('❌ Erro ao buscar solicitações do usuário:', error);
@@ -981,97 +1175,119 @@ export class MySQLStorage implements IStorage {
 
   async createTripRequest(requestData: InsertTripRequest & { userId: number }): Promise<TripRequest> {
     try {
-      const result = await db.insert(tripRequests).values(requestData).returning();
-      return result[0];
+      const result = await db.insert(tripRequests).values({
+        tripId: requestData.tripId,
+        userId: requestData.userId,
+        message: requestData.message || null,
+        status: 'pending',
+        createdAt: new Date()
+      });
+
+      const [request] = await db.select().from(tripRequests).where(eq(tripRequests.id, result[0].insertId));
+      return request;
     } catch (error) {
-      console.error('❌ Erro ao criar solicitação:', error);
+      console.error('❌ Erro ao criar solicitação de viagem:', error);
       throw error;
     }
   }
 
   async updateTripRequest(id: number, status: string): Promise<TripRequest | undefined> {
     try {
-      const result = await db.update(tripRequests)
-        .set({ status })
-        .where(eq(tripRequests.id, id))
-        .returning();
-      
-      return result[0];
+      await db.update(tripRequests).set({ status }).where(eq(tripRequests.id, id));
+      const [updatedRequest] = await db.select().from(tripRequests).where(eq(tripRequests.id, id));
+      return updatedRequest;
     } catch (error) {
-      console.error('❌ Erro ao atualizar solicitação:', error);
+      console.error('❌ Erro ao atualizar solicitação de viagem:', error);
       return undefined;
     }
   }
 
+  // Expense methods
   async getTripExpenses(tripId: number): Promise<(Expense & { payer: User; splits: (ExpenseSplit & { user: User })[] })[]> {
     try {
-      const expenseList = await db.select({
-        id: expenses.id,
-        tripId: expenses.tripId,
-        paidBy: expenses.paidBy,
-        amount: expenses.amount,
-        description: expenses.description,
-        category: expenses.category,
-        paidAt: expenses.paidAt,
-        receipt: expenses.receipt,
-        payer: users
-      })
-      .from(expenses)
-      .innerJoin(users, eq(expenses.paidBy, users.id))
-      .where(eq(expenses.tripId, tripId));
+      const tripExpenses = await db.select().from(expenses)
+        .where(eq(expenses.tripId, tripId));
       
-      const expensesWithSplits = await Promise.all(expenseList.map(async (expense) => {
-        const splits = await db.select({
-          id: expenseSplits.id,
-          expenseId: expenseSplits.expenseId,
-          userId: expenseSplits.userId,
-          amount: expenseSplits.amount,
-          paid: expenseSplits.paid,
-          settledAt: expenseSplits.settledAt,
-          user: users
-        })
-        .from(expenseSplits)
-        .innerJoin(users, eq(expenseSplits.userId, users.id))
-        .where(eq(expenseSplits.expenseId, expense.id));
+      const result = [];
+      for (const expense of tripExpenses) {
+        const payer = await this.getUser(expense.paidBy);
+        if (!payer) continue;
+
+        const splits = await db.select().from(expenseSplits)
+          .where(eq(expenseSplits.expenseId, expense.id));
         
-        return { ...expense, splits };
-      }));
+        const splitsWithUsers = [];
+        for (const split of splits) {
+          const user = await this.getUser(split.userId);
+          if (user) {
+            splitsWithUsers.push({ ...split, user: this.sanitizeUser(user) as User });
+          }
+        }
+
+        result.push({ ...expense, payer: this.sanitizeUser(payer) as User, splits: splitsWithUsers });
+      }
       
-      return expensesWithSplits;
+      return result;
     } catch (error) {
-      console.error('❌ Erro ao buscar despesas:', error);
+      console.error('❌ Erro ao buscar despesas da viagem:', error);
       return [];
     }
   }
 
   async createExpense(expenseData: InsertExpense & { paidBy: number }): Promise<Expense> {
     try {
-      const result = await db.insert(expenses).values(expenseData).returning();
-      return result[0];
+      const result = await db.insert(expenses).values({
+        tripId: expenseData.tripId,
+        paidBy: expenseData.paidBy,
+        amount: expenseData.amount,
+        description: expenseData.description,
+        category: expenseData.category,
+        receipt: expenseData.receipt || null,
+        createdAt: new Date(),
+        settledAt: null,
+      });
+      
+      const [expense] = await db.select().from(expenses).where(eq(expenses.id, result[0].insertId));
+      return expense;
     } catch (error) {
       console.error('❌ Erro ao criar despesa:', error);
       throw error;
     }
   }
 
-  async createExpenseSplits(splitsData: InsertExpenseSplit[]): Promise<ExpenseSplit[]> {
+  async createExpenseSplits(splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]> {
     try {
-      const result = await db.insert(expenseSplits).values(splitsData).returning();
-      return result;
+      const createdSplits: ExpenseSplit[] = [];
+      
+      for (const split of splits) {
+        const result = await db.insert(expenseSplits).values({
+          expenseId: split.expenseId,
+          userId: split.userId,
+          amount: split.amount,
+          paid: split.paid || false,
+          settledAt: null,
+        });
+        
+        const [expenseSplit] = await db.select().from(expenseSplits).where(eq(expenseSplits.id, result[0].insertId));
+        createdSplits.push(expenseSplit);
+      }
+      
+      return createdSplits;
     } catch (error) {
-      console.error('❌ Erro ao criar divisões de despesas:', error);
+      console.error('❌ Erro ao criar divisões de despesa:', error);
       throw error;
     }
   }
 
   async updateExpenseSplit(id: number, paid: boolean): Promise<ExpenseSplit | undefined> {
     try {
-      const result = await db.update(expenseSplits)
-        .set({ paid, settledAt: paid ? new Date() : null })
-        .where(eq(expenseSplits.id, id))
-        .returning();
+      await db.update(expenseSplits).set({ 
+        paid, 
+        settledAt: paid ? new Date() : null 
+      }).where(eq(expenseSplits.id, id));
       
-      return result[0];
+      const [updatedSplit] = await db.select().from(expenseSplits).where(eq(expenseSplits.id, id));
+      return updatedSplit;
     } catch (error) {
       console.error('❌ Erro ao atualizar divisão de despesa:', error);
       return undefined;
@@ -1079,80 +1295,784 @@ export class MySQLStorage implements IStorage {
   }
 
   async getTripBalances(tripId: number): Promise<{ userId: number; user: User; balance: number }[]> {
+    const participants = await this.getTripParticipants(tripId);
+    const balances = new Map<number, number>();
+
+    // Initialize balances for all participants
+    for (const participant of participants) {
+      balances.set(participant.userId, 0);
+    }
+
+    // Calculate balances based on expenses and splits
+    const expenses = await this.getTripExpenses(tripId);
+    for (const expense of expenses) {
+      // Payer gets credit for the full amount
+      const payerBalance = balances.get(expense.paidBy) || 0;
+      balances.set(expense.paidBy, payerBalance + expense.amount);
+
+      // Each person in the split owes their portion
+      for (const split of expense.splits) {
+        const splitBalance = balances.get(split.userId) || 0;
+        balances.set(split.userId, splitBalance - split.amount);
+      }
+    }
+
+    // Convert to array with user info
+    const result = [];
+    for (const [userId, balance] of balances.entries()) {
+      const user = await this.getUser(userId);
+      if (user) {
+        result.push({ userId, user: this.sanitizeUser(user) as User, balance });
+      }
+    }
+
+    return result;
+  }
+
+  // User Rating Methods
+  async getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]> {
     try {
-      const expenseList = await this.getTripExpenses(tripId);
-      const participantList = await this.getTripParticipants(tripId);
-      
-      const balances = new Map<number, { user: User; balance: number }>();
-      
-      // Initialize balances for all participants
-      participantList.forEach(participant => {
-        balances.set(participant.userId, { user: participant.user, balance: 0 });
-      });
-      
-      // Calculate balances from expenses
-      expenseList.forEach(expense => {
-        const payerBalance = balances.get(expense.paidBy);
-        if (payerBalance) {
-          payerBalance.balance += expense.amount;
+      const ratings = await db.select().from(userRatings)
+        .where(eq(userRatings.ratedUserId, userId));
+
+      const result = [];
+      for (const rating of ratings) {
+        const rater = await this.getUser(rating.raterUserId);
+        const trip = await this.getTrip(rating.tripId);
+        if (rater && trip) {
+          result.push({
+            ...rating,
+            rater: this.sanitizeUser(rater) as User,
+            trip
+          });
         }
-        
-        expense.splits.forEach(split => {
-          const userBalance = balances.get(split.userId);
-          if (userBalance) {
-            userBalance.balance -= split.amount;
-          }
-        });
-      });
-      
-      return Array.from(balances.entries()).map(([userId, data]) => ({
-        userId,
-        user: data.user,
-        balance: data.balance
-      }));
+      }
+      return result;
     } catch (error) {
-      console.error('❌ Erro ao calcular saldos:', error);
+      console.error('❌ Erro ao buscar avaliações do usuário:', error);
       return [];
     }
   }
 
-  // All other methods would be implemented similarly using MySQL queries
-  // For brevity, I'll provide stub implementations that delegate to the original methods
-  async getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]> { return []; }
-  async createUserRating(rating: InsertUserRating & { raterUserId: number }): Promise<UserRating> { throw new Error('Not implemented'); }
-  async updateUserAverageRating(userId: number): Promise<void> { }
-  async getDestinationRatings(destination: string): Promise<(DestinationRating & { user: User })[]> { return []; }
-  async createDestinationRating(rating: InsertDestinationRating & { userId: number }): Promise<DestinationRating> { throw new Error('Not implemented'); }
-  async getDestinationAverageRating(destination: string): Promise<{ average: number; total: number }> { return { average: 0, total: 0 }; }
-  async getVerificationRequests(userId?: number): Promise<(VerificationRequest & { user: User })[]> { return []; }
-  async createVerificationRequest(request: InsertVerificationRequest & { userId: number }): Promise<VerificationRequest> { throw new Error('Not implemented'); }
-  async updateVerificationRequest(id: number, status: string, reviewedBy?: number, rejectionReason?: string): Promise<VerificationRequest | undefined> { return undefined; }
-  async updateUserVerificationStatus(userId: number, isVerified: boolean, method?: string): Promise<void> { }
-  async getActivities(filters?: any): Promise<Activity[]> { return []; }
-  async getActivity(id: number): Promise<Activity | undefined> { return undefined; }
-  async createActivity(activity: InsertActivity & { createdById: number }): Promise<Activity> { throw new Error('Not implemented'); }
-  async updateActivity(id: number, updates: Partial<Activity>): Promise<Activity | undefined> { return undefined; }
-  async deleteActivity(id: number): Promise<boolean> { return false; }
-  async getActivityReviews(activityId: number): Promise<(ActivityReview & { user: User })[]> { return []; }
-  async createActivityReview(review: InsertActivityReview & { userId: number }): Promise<ActivityReview> { throw new Error('Not implemented'); }
-  async updateActivityAverageRating(activityId: number): Promise<void> { }
-  async getActivityBookings(activityId: number): Promise<(ActivityBooking & { user: User })[]> { return []; }
-  async getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]> { return []; }
-  async createActivityBooking(booking: InsertActivityBooking & { userId: number }): Promise<ActivityBooking> { throw new Error('Not implemented'); }
-  async updateActivityBooking(id: number, status: string): Promise<ActivityBooking | undefined> { return undefined; }
-  async getActivityBudgetProposals(activityId: number): Promise<(ActivityBudgetProposal & { creator: User })[]> { return []; }
-  async createActivityBudgetProposal(proposal: InsertActivityBudgetProposal & { createdBy: number }): Promise<ActivityBudgetProposal> { throw new Error('Not implemented'); }
-  async updateActivityBudgetProposal(id: number, updates: Partial<ActivityBudgetProposal>): Promise<ActivityBudgetProposal | undefined> { return undefined; }
-  async deleteActivityBudgetProposal(id: number): Promise<boolean> { return false; }
-  async voteActivityBudgetProposal(id: number, increment: boolean): Promise<ActivityBudgetProposal | undefined> { return undefined; }
-  async getTripActivities(tripId: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]> { return []; }
-  async addActivityToTrip(tripActivity: InsertTripActivity & { addedBy: number }): Promise<TripActivity> { throw new Error('Not implemented'); }
-  async updateTripActivity(id: number, updates: Partial<TripActivity>): Promise<TripActivity | undefined> { return undefined; }
-  async removeTripActivity(id: number): Promise<boolean> { return false; }
-  async getUserTripsInLocation(userId: number, location: string): Promise<Trip[]> { return []; }
+  async createUserRating(ratingData: InsertUserRating & { raterUserId: number }): Promise<UserRating> {
+    try {
+      const result = await db.insert(userRatings).values({
+        ...ratingData,
+        createdAt: new Date(),
+      });
+      
+      const [rating] = await db.select().from(userRatings).where(eq(userRatings.id, result[0].insertId));
+      
+      // Update user's average rating
+      await this.updateUserAverageRating(ratingData.ratedUserId);
+      
+      return rating;
+    } catch (error) {
+      console.error('❌ Erro ao criar avaliação do usuário:', error);
+      throw error;
+    }
+  }
+
+  async updateUserAverageRating(userId: number): Promise<void> {
+    try {
+      const ratings = await db.select().from(userRatings)
+        .where(eq(userRatings.ratedUserId, userId));
+      
+      if (ratings.length === 0) {
+        return;
+      }
+      
+      const average = ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
+      
+      await db.update(users).set({
+        averageRating: average.toFixed(2),
+        totalRatings: ratings.length
+      }).where(eq(users.id, userId));
+    } catch (error) {
+      console.error('❌ Erro ao atualizar avaliação média do usuário:', error);
+    }
+  }
+
+  // Destination Rating Methods
+  async getDestinationRatings(destination: string): Promise<(DestinationRating & { user: User })[]> {
+    try {
+      const ratings = await db.select().from(destinationRatings)
+        .where(eq(destinationRatings.destination, destination));
+
+      const result = [];
+      for (const rating of ratings) {
+        const user = await this.getUser(rating.userId);
+        if (user) {
+          result.push({
+            ...rating,
+            user: this.sanitizeUser(user) as User
+          });
+        }
+      }
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar avaliações do destino:', error);
+      return [];
+    }
+  }
+
+  async createDestinationRating(ratingData: InsertDestinationRating & { userId: number }): Promise<DestinationRating> {
+    try {
+      const result = await db.insert(destinationRatings).values({
+        ...ratingData,
+        createdAt: new Date(),
+      });
+      
+      const [rating] = await db.select().from(destinationRatings).where(eq(destinationRatings.id, result[0].insertId));
+      return rating;
+    } catch (error) {
+      console.error('❌ Erro ao criar avaliação do destino:', error);
+      throw error;
+    }
+  }
+
+  async getDestinationAverageRating(destination: string): Promise<{ average: number; total: number }> {
+    try {
+      const ratings = await db.select().from(destinationRatings)
+        .where(eq(destinationRatings.destination, destination));
+      
+      if (ratings.length === 0) {
+        return { average: 0, total: 0 };
+      }
+      
+      const average = ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
+      return { average: Math.round(average * 10) / 10, total: ratings.length };
+    } catch (error) {
+      console.error('❌ Erro ao buscar avaliação média do destino:', error);
+      return { average: 0, total: 0 };
+    }
+  }
+
+  // Verification Methods
+  async getVerificationRequests(userId?: number): Promise<(VerificationRequest & { user: User })[]> {
+    try {
+      let query = db.select().from(verificationRequests);
+      
+      if (userId) {
+        query = query.where(eq(verificationRequests.userId, userId));
+      }
+      
+      const requests = await query;
+      const result = [];
+      
+      for (const request of requests) {
+        const user = await this.getUser(request.userId);
+        if (user) {
+          result.push({
+            ...request,
+            user: this.sanitizeUser(user) as User
+          });
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar solicitações de verificação:', error);
+      return [];
+    }
+  }
+
+  async createVerificationRequest(requestData: InsertVerificationRequest & { userId: number }): Promise<VerificationRequest> {
+    try {
+      const result = await db.insert(verificationRequests).values({
+        ...requestData,
+        status: "pending",
+        submittedAt: new Date(),
+        reviewedAt: null,
+        reviewedBy: null,
+        rejectionReason: null,
+      });
+      
+      const [request] = await db.select().from(verificationRequests).where(eq(verificationRequests.id, result[0].insertId));
+      return request;
+    } catch (error) {
+      console.error('❌ Erro ao criar solicitação de verificação:', error);
+      throw error;
+    }
+  }
+
+  async updateVerificationRequest(
+    id: number, 
+    status: string, 
+    reviewedBy?: number, 
+    rejectionReason?: string
+  ): Promise<VerificationRequest | undefined> {
+    try {
+      // First get the request to check if it exists and get the userId
+      const [request] = await db.select().from(verificationRequests).where(eq(verificationRequests.id, id));
+      if (!request) return undefined;
+      
+      // Update the request
+      await db.update(verificationRequests).set({
+        status,
+        reviewedAt: new Date(),
+        reviewedBy: reviewedBy || null,
+        rejectionReason: rejectionReason || null,
+      }).where(eq(verificationRequests.id, id));
+      
+      // Get the updated request
+      const [updatedRequest] = await db.select().from(verificationRequests).where(eq(verificationRequests.id, id));
+      
+      // If approved, update user verification status
+      if (status === "approved") {
+        await this.updateUserVerificationStatus(request.userId, true, request.verificationType);
+      }
+      
+      return updatedRequest;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar solicitação de verificação:', error);
+      return undefined;
+    }
+  }
+
+  async updateUserVerificationStatus(userId: number, isVerified: boolean, method?: string): Promise<void> {
+    try {
+      await db.update(users).set({
+        isVerified,
+        verificationMethod: method || null,
+      }).where(eq(users.id, userId));
+    } catch (error) {
+      console.error('❌ Erro ao atualizar status de verificação do usuário:', error);
+    }
+  }
+
+  // ===== ACTIVITIES METHODS =====
+
+  async getActivities(filters?: { 
+    search?: string; 
+    category?: string; 
+    location?: string; 
+    priceRange?: string; 
+    difficulty?: string; 
+    duration?: string; 
+    rating?: string; 
+    sortBy?: string; 
+  }): Promise<Activity[]> {
+    try {
+      let allActivities = await db.select().from(activities).where(eq(activities.isActive, true));
+
+      if (filters) {
+        if (filters.search) {
+          const search = filters.search.toLowerCase();
+          allActivities = allActivities.filter(a => 
+            a.title.toLowerCase().includes(search) ||
+            a.description.toLowerCase().includes(search) ||
+            a.location.toLowerCase().includes(search)
+          );
+        }
+
+        if (filters.category && filters.category !== "all") {
+          allActivities = allActivities.filter(a => a.category === filters.category);
+        }
+
+        if (filters.location) {
+          allActivities = allActivities.filter(a => 
+            a.location.toLowerCase().includes(filters.location!.toLowerCase())
+          );
+        }
+
+        if (filters.priceRange && filters.priceRange !== "all") {
+          allActivities = allActivities.filter(a => {
+            if (filters.priceRange === "free") return !a.priceAmount;
+            if (filters.priceRange === "0-50") return a.priceAmount && a.priceAmount <= 50;
+            if (filters.priceRange === "50-150") return a.priceAmount && a.priceAmount > 50 && a.priceAmount <= 150;
+            if (filters.priceRange === "150-300") return a.priceAmount && a.priceAmount > 150 && a.priceAmount <= 300;
+            if (filters.priceRange === "300+") return a.priceAmount && a.priceAmount > 300;
+            return true;
+          });
+        }
+
+        if (filters.difficulty && filters.difficulty !== "all") {
+          allActivities = allActivities.filter(a => a.difficultyLevel === filters.difficulty);
+        }
+
+        if (filters.rating && filters.rating !== "all") {
+          const minRating = parseFloat(filters.rating);
+          allActivities = allActivities.filter(a => parseFloat(a.averageRating) >= minRating);
+        }
+
+        // Sorting
+        if (filters.sortBy) {
+          allActivities.sort((a, b) => {
+            switch (filters.sortBy) {
+              case "rating":
+                return parseFloat(b.averageRating) - parseFloat(a.averageRating);
+              case "price_low":
+                const priceA = a.priceAmount || 0;
+                const priceB = b.priceAmount || 0;
+                return priceA - priceB;
+              case "price_high":
+                const priceA2 = a.priceAmount || 0;
+                const priceB2 = b.priceAmount || 0;
+                return priceB2 - priceA2;
+              case "newest":
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+              default:
+                return 0;
+            }
+          });
+        }
+      }
+
+      return allActivities;
+    } catch (error) {
+      console.error('❌ Erro ao buscar atividades:', error);
+      return [];
+    }
+  }
+
+  async getActivity(id: number): Promise<Activity | undefined> {
+    try {
+      const [activity] = await db.select().from(activities).where(eq(activities.id, id));
+      return activity;
+    } catch (error) {
+      console.error('❌ Erro ao buscar atividade:', error);
+      return undefined;
+    }
+  }
+
+  async createActivity(activityData: InsertActivity & { createdById: number }): Promise<Activity> {
+    try {
+      const result = await db.insert(activities).values({
+        ...activityData,
+        averageRating: "0.00",
+        totalRatings: 0,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      
+      const [activity] = await db.select().from(activities).where(eq(activities.id, result[0].insertId));
+      return activity;
+    } catch (error) {
+      console.error('❌ Erro ao criar atividade:', error);
+      throw error;
+    }
+  }
+
+  async updateActivity(id: number, updates: Partial<Activity>): Promise<Activity | undefined> {
+    try {
+      await db.update(activities).set({
+        ...updates,
+        updatedAt: new Date(),
+      }).where(eq(activities.id, id));
+      
+      const [updatedActivity] = await db.select().from(activities).where(eq(activities.id, id));
+      return updatedActivity;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar atividade:', error);
+      return undefined;
+    }
+  }
+
+  async deleteActivity(id: number): Promise<boolean> {
+    try {
+      await db.update(activities).set({ isActive: false }).where(eq(activities.id, id));
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao deletar atividade:', error);
+      return false;
+    }
+  }
+
+  // Activity Reviews
+  async getActivityReviews(activityId: number): Promise<(ActivityReview & { user: User })[]> {
+    try {
+      const reviews = await db.select().from(activityReviews)
+        .where(eq(activityReviews.activityId, activityId))
+        .orderBy(desc(activityReviews.createdAt));
+      
+      const result = [];
+      for (const review of reviews) {
+        const user = await this.getUser(review.userId);
+        if (user) {
+          result.push({
+            ...review,
+            user: this.sanitizeUser(user) as User
+          });
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar avaliações da atividade:', error);
+      return [];
+    }
+  }
+
+  async createActivityReview(reviewData: InsertActivityReview & { userId: number }): Promise<ActivityReview> {
+    try {
+      const result = await db.insert(activityReviews).values({
+        ...reviewData,
+        helpfulVotes: 0,
+        isVerified: false,
+        createdAt: new Date(),
+      });
+      
+      const [review] = await db.select().from(activityReviews).where(eq(activityReviews.id, result[0].insertId));
+      
+      // Update activity average rating
+      await this.updateActivityAverageRating(reviewData.activityId);
+      
+      return review;
+    } catch (error) {
+      console.error('❌ Erro ao criar avaliação da atividade:', error);
+      throw error;
+    }
+  }
+
+  async updateActivityAverageRating(activityId: number): Promise<void> {
+    try {
+      const reviews = await db.select().from(activityReviews)
+        .where(eq(activityReviews.activityId, activityId));
+      
+      if (reviews.length === 0) return;
+      
+      const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+      const averageRating = (totalRating / reviews.length).toFixed(2);
+      
+      await db.update(activities).set({
+        averageRating,
+        totalRatings: reviews.length,
+        updatedAt: new Date(),
+      }).where(eq(activities.id, activityId));
+    } catch (error) {
+      console.error('❌ Erro ao atualizar avaliação média da atividade:', error);
+    }
+  }
+
+  // Activity Bookings
+  async getActivityBookings(activityId: number): Promise<(ActivityBooking & { user: User })[]> {
+    try {
+      const bookings = await db.select().from(activityBookings)
+        .where(eq(activityBookings.activityId, activityId))
+        .orderBy(desc(activityBookings.createdAt));
+      
+      const result = [];
+      for (const booking of bookings) {
+        const user = await this.getUser(booking.userId);
+        if (user) {
+          result.push({
+            ...booking,
+            user: this.sanitizeUser(user) as User
+          });
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar reservas da atividade:', error);
+      return [];
+    }
+  }
+
+  async getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]> {
+    try {
+      const bookings = await db.select().from(activityBookings)
+        .where(eq(activityBookings.userId, userId))
+        .orderBy(desc(activityBookings.createdAt));
+      
+      const result = [];
+      for (const booking of bookings) {
+        const activity = await this.getActivity(booking.activityId);
+        if (activity) {
+          result.push({
+            ...booking,
+            activity
+          });
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar reservas do usuário:', error);
+      return [];
+    }
+  }
+
+  async createActivityBooking(bookingData: InsertActivityBooking & { userId: number }): Promise<ActivityBooking> {
+    try {
+      const result = await db.insert(activityBookings).values({
+        ...bookingData,
+        status: "pending",
+        createdAt: new Date(),
+      });
+      
+      const [booking] = await db.select().from(activityBookings).where(eq(activityBookings.id, result[0].insertId));
+      return booking;
+    } catch (error) {
+      console.error('❌ Erro ao criar reserva da atividade:', error);
+      throw error;
+    }
+  }
+
+  async updateActivityBooking(id: number, status: string): Promise<ActivityBooking | undefined> {
+    try {
+      await db.update(activityBookings).set({ status }).where(eq(activityBookings.id, id));
+      const [updatedBooking] = await db.select().from(activityBookings).where(eq(activityBookings.id, id));
+      return updatedBooking;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar reserva da atividade:', error);
+      return undefined;
+    }
+  }
+
+  // Activity Budget Proposals
+  async getActivityBudgetProposals(activityId: number): Promise<(ActivityBudgetProposal & { creator: User })[]> {
+    try {
+      const proposals = await db.select().from(activityBudgetProposals)
+        .where(and(
+          eq(activityBudgetProposals.activityId, activityId),
+          eq(activityBudgetProposals.isActive, true)
+        ))
+        .orderBy(desc(activityBudgetProposals.votes));
+      
+      const result = [];
+      for (const proposal of proposals) {
+        const creator = await this.getUser(proposal.createdBy);
+        if (creator) {
+          result.push({
+            ...proposal,
+            creator: this.sanitizeUser(creator) as User
+          });
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar propostas de orçamento da atividade:', error);
+      return [];
+    }
+  }
+
+  async createActivityBudgetProposal(proposalData: InsertActivityBudgetProposal & { createdBy: number }): Promise<ActivityBudgetProposal> {
+    try {
+      const result = await db.insert(activityBudgetProposals).values({
+        ...proposalData,
+        currency: proposalData.currency || "BRL",
+        isActive: true,
+        votes: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      
+      const [proposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, result[0].insertId));
+      return proposal;
+    } catch (error) {
+      console.error('❌ Erro ao criar proposta de orçamento da atividade:', error);
+      throw error;
+    }
+  }
+
+  async updateActivityBudgetProposal(id: number, updates: Partial<ActivityBudgetProposal>): Promise<ActivityBudgetProposal | undefined> {
+    try {
+      await db.update(activityBudgetProposals).set({
+        ...updates,
+        updatedAt: new Date(),
+      }).where(eq(activityBudgetProposals.id, id));
+      
+      const [updatedProposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
+      return updatedProposal;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar proposta de orçamento da atividade:', error);
+      return undefined;
+    }
+  }
+
+  async deleteActivityBudgetProposal(id: number): Promise<boolean> {
+    try {
+      await db.update(activityBudgetProposals).set({ isActive: false }).where(eq(activityBudgetProposals.id, id));
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao deletar proposta de orçamento da atividade:', error);
+      return false;
+    }
+  }
+
+  async voteActivityBudgetProposal(id: number, increment: boolean): Promise<ActivityBudgetProposal | undefined> {
+    try {
+      const [proposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
+      if (!proposal) return undefined;
+      
+      const newVotes = increment ? proposal.votes + 1 : Math.max(0, proposal.votes - 1);
+      
+      await db.update(activityBudgetProposals).set({
+        votes: newVotes,
+        updatedAt: new Date(),
+      }).where(eq(activityBudgetProposals.id, id));
+      
+      const [updatedProposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
+      return updatedProposal;
+    } catch (error) {
+      console.error('❌ Erro ao votar na proposta de orçamento da atividade:', error);
+      return undefined;
+    }
+  }
+
+  // Trip Activities - Link activities to trips with selected proposals
+  async getTripActivities(tripId: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]> {
+    try {
+      const tripActivities = await db.select().from(tripActivities)
+        .where(eq(tripActivities.tripId, tripId))
+        .orderBy(desc(tripActivities.createdAt));
+      
+      const result = [];
+      for (const tripActivity of tripActivities) {
+        const activity = await this.getActivity(tripActivity.activityId);
+        const [proposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, tripActivity.budgetProposalId));
+        const addedByUser = await this.getUser(tripActivity.addedBy);
+        
+        if (activity && proposal && addedByUser) {
+          result.push({
+            ...tripActivity,
+            activity,
+            proposal,
+            addedByUser: this.sanitizeUser(addedByUser) as User
+          });
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar atividades da viagem:', error);
+      return [];
+    }
+  }
+
+  async addActivityToTrip(tripActivityData: InsertTripActivity & { addedBy: number }): Promise<TripActivity> {
+    try {
+      const result = await db.insert(tripActivities).values({
+        ...tripActivityData,
+        status: "proposed",
+        createdAt: new Date(),
+      });
+      
+      const [tripActivity] = await db.select().from(tripActivities).where(eq(tripActivities.id, result[0].insertId));
+      return tripActivity;
+    } catch (error) {
+      console.error('❌ Erro ao adicionar atividade à viagem:', error);
+      throw error;
+    }
+  }
+
+  async updateTripActivity(id: number, updates: Partial<TripActivity>): Promise<TripActivity | undefined> {
+    try {
+      await db.update(tripActivities).set(updates).where(eq(tripActivities.id, id));
+      const [updatedTripActivity] = await db.select().from(tripActivities).where(eq(tripActivities.id, id));
+      return updatedTripActivity;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar atividade da viagem:', error);
+      return undefined;
+    }
+  }
+
+  async removeTripActivity(id: number): Promise<boolean> {
+    try {
+      await db.delete(tripActivities).where(eq(tripActivities.id, id));
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao remover atividade da viagem:', error);
+      return false;
+    }
+  }
+  
+  // Get user trips in same location as activity
+  async getUserTripsInLocation(userId: number, location: string): Promise<Trip[]> {
+    try {
+      // Get all trips where user is creator or participant
+      const userTrips = await db.select().from(trips).where(eq(trips.creatorId, userId));
+      
+      const participantTrips = await db.select({
+        id: trips.id,
+        creatorId: trips.creatorId,
+        title: trips.title,
+        destination: trips.destination,
+        startDate: trips.startDate,
+        endDate: trips.endDate,
+        budget: trips.budget,
+        budgetBreakdown: trips.budgetBreakdown,
+        maxParticipants: trips.maxParticipants,
+        currentParticipants: trips.currentParticipants,
+        description: trips.description,
+        travelStyle: trips.travelStyle,
+        sharedCosts: trips.sharedCosts,
+        plannedActivities: trips.plannedActivities,
+        status: trips.status,
+        coverImage: trips.coverImage,
+        createdAt: trips.createdAt,
+      }).from(trips)
+        .innerJoin(tripParticipants, eq(tripParticipants.tripId, trips.id))
+        .where(and(
+          eq(tripParticipants.userId, userId),
+          eq(tripParticipants.status, 'accepted')
+        ));
+      
+      // Combine and deduplicate trips
+      const allTrips = [...userTrips, ...participantTrips];
+      const uniqueTrips = allTrips.filter((trip, index, self) => 
+        index === self.findIndex(t => t.id === trip.id)
+      );
+      
+      const result = uniqueTrips.filter(trip => {
+        // Check if trip location matches activity location (same city)
+        const tripLocation = trip.destination.toLowerCase();
+        const activityLocation = location.toLowerCase();
+        
+        // Extract city names (before comma if present)
+        const tripCity = tripLocation.split(',')[0].trim();
+        const activityCity = activityLocation.split(',')[0].trim();
+        
+        const locationMatch = tripCity === activityCity || 
+                             tripLocation.includes(activityCity) || 
+                             activityLocation.includes(tripCity);
+        
+        if (!locationMatch) return false;
+        
+        // Only include future trips or trips in progress
+        const now = new Date();
+        const tripEnd = new Date(trip.endDate);
+        return tripEnd >= now;
+      })
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao buscar viagens do usuário na localização:', error);
+      return [];
+    }
+  }
+
+  // Fix creators as participants
+  async fixCreatorsAsParticipants(): Promise<number> {
+    try {
+      return await fixCreatorsAsParticipants();
+    } catch (error) {
+      console.error('❌ Erro ao executar correção de criadores como participantes:', error);
+      return 0;
+    }
+  }
+
+  private async runCreatorParticipantsFix(): Promise<void> {
+    try {
+      console.log('🔧 Executando correção automática de criadores como participantes...');
+      const fixedCount = await this.fixCreatorsAsParticipants();
+      if (fixedCount > 0) {
+        console.log(`✅ Correção automática aplicada: ${fixedCount} viagens corrigidas`);
+      } else {
+        console.log('✅ Correção automática verificada: nenhuma correção necessária');
+      }
+    } catch (error) {
+      console.error('❌ Erro na correção automática de criadores como participantes:', error);
+    }
+  }
 }
 
-export const storage = new MySQLStorage();
+export const storage = new MemStorage();
 
 // Create default test user
 async function createDefaultTestUser() {
