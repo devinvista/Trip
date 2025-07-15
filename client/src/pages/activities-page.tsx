@@ -161,6 +161,10 @@ export default function ActivitiesPage() {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleSearch = () => {
+    setFilters(prev => ({ ...prev, search: searchInput }));
+  };
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -290,7 +294,7 @@ export default function ActivitiesPage() {
       {/* Modern Header with Institutional Colors */}
       <div className="bg-white shadow-sm border-b border-[#AAB0B7]/20">
         <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div className="flex items-center gap-3 sm:gap-6">
               <Link to="/search">
                 <Button variant="ghost" size="sm" className="text-[#1B2B49] hover:bg-[#41B6FF]/10">
@@ -332,6 +336,176 @@ export default function ActivitiesPage() {
                 Filtros
               </Button>
             </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#AAB0B7] w-5 h-5" />
+            <Input
+              placeholder="Buscar por atividades, locais ou experiências..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
+              className="pl-10 pr-24 h-12 text-base border-[#AAB0B7]/30 focus:border-[#41B6FF] bg-white rounded-lg"
+            />
+            <Button 
+              onClick={handleSearch}
+              size="sm"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#41B6FF] hover:bg-[#41B6FF]/90 text-white"
+            >
+              Buscar
+            </Button>
+          </div>
+
+          {/* Category Filters */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1 overflow-hidden">
+                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2">
+                  <Button
+                    variant={filters.category === "all" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => updateFilter("category", "all")}
+                    className={`px-3 text-sm whitespace-nowrap flex-shrink-0 ${
+                      filters.category === "all" 
+                        ? "bg-[#41B6FF] text-white shadow-sm" 
+                        : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
+                    }`}
+                  >
+                    🗂️ Todas
+                    <span className="ml-1 bg-white/20 text-current px-1.5 py-0.5 rounded text-xs">
+                      {activities?.length || 0}
+                    </span>
+                  </Button>
+                  
+                  {Object.entries(activityCategories).slice(0, 4).map(([key, cat]) => {
+                    const count = activities?.filter(a => a.category === key).length || 0;
+                    return (
+                      <Button
+                        key={key}
+                        variant={filters.category === key ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => updateFilter("category", key)}
+                        className={`px-3 text-sm whitespace-nowrap flex-shrink-0 ${
+                          filters.category === key 
+                            ? "bg-[#41B6FF] text-white shadow-sm" 
+                            : "text-[#1B2B49] hover:bg-[#41B6FF]/10"
+                        }`}
+                      >
+                        {cat.icon} <span className="hidden sm:inline ml-1">{cat.label}</span>
+                        <span className="ml-1 bg-white/20 text-current px-1.5 py-0.5 rounded text-xs">
+                          {count}
+                        </span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Advanced Filters */}
+            {showFilters && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-[#F5F9FC] rounded-xl border border-[#AAB0B7]/20 p-4 md:p-6"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#1B2B49] mb-3">
+                      Faixa de Preço
+                    </label>
+                    <Select 
+                      value={filters.priceRange} 
+                      onValueChange={(value) => updateFilter("priceRange", value)}
+                    >
+                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
+                        <SelectValue placeholder="Todos os preços" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRICE_RANGES.map(range => (
+                          <SelectItem key={range.value} value={range.value}>
+                            {range.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#1B2B49] mb-3">
+                      Nível de Dificuldade
+                    </label>
+                    <Select 
+                      value={filters.difficulty} 
+                      onValueChange={(value) => updateFilter("difficulty", value)}
+                    >
+                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
+                        <SelectValue placeholder="Todos os níveis" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DIFFICULTY_LEVELS.map(level => (
+                          <SelectItem key={level.value} value={level.value}>
+                            {level.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#1B2B49] mb-3">
+                      Ordenar por
+                    </label>
+                    <Select 
+                      value={filters.sortBy} 
+                      onValueChange={(value) => updateFilter("sortBy", value)}
+                    >
+                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
+                        <SelectValue placeholder="Ordenar por" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SORT_OPTIONS.map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Special Filters */}
+                {user && (
+                  <div className="mt-6 pt-4 border-t border-[#AAB0B7]/20">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-[#AAB0B7]/20">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-[#41B6FF]/10 p-2 rounded-lg">
+                          <Target className="w-4 h-4 text-[#41B6FF]" />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-[#1B2B49]">
+                            Apenas destinos das minhas viagens
+                          </label>
+                          <p className="text-xs text-[#AAB0B7] mt-1">
+                            Mostra apenas atividades nos destinos onde você tem viagens planejadas
+                          </p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={filters.onlyMyTrips}
+                        onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
@@ -451,217 +625,7 @@ export default function ActivitiesPage() {
         </div>
       )}
 
-      {/* Popular Categories Section */}
-      <div className="bg-white border-b border-[#AAB0B7]/20">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[#1B2B49]">Categorias Populares</h2>
-            <Button variant="ghost" size="sm" className="text-[#41B6FF] hover:bg-[#41B6FF]/10">
-              Ver todas <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
-          
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {Object.entries(activityCategories).slice(0, 8).map(([key, category]) => (
-              <Button
-                key={key}
-                variant={filters.category === key ? "default" : "outline"}
-                onClick={() => updateFilter("category", key)}
-                className={`min-w-fit whitespace-nowrap ${
-                  filters.category === key
-                    ? "bg-[#41B6FF] hover:bg-[#41B6FF]/90 text-white"
-                    : "border-[#AAB0B7]/30 hover:bg-[#41B6FF]/10"
-                }`}
-              >
-                <span className="mr-2">{category.icon}</span>
-                {category.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Enhanced Search Bar */}
-        <div className="mb-8">
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#AAB0B7] w-5 h-5" />
-            <Input
-              placeholder="Buscar atividades, experiências ou locais..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-12 pr-12 py-4 w-full text-base border-[#AAB0B7]/30 focus:border-[#41B6FF] focus:ring-[#41B6FF]/20 rounded-xl"
-            />
-            {isFetching && (
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#41B6FF]"></div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Modern Filter Tabs - Similar to Dashboard */}
-        <div className="mb-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-[#1B2B49]" />
-                <span className="text-lg font-semibold text-[#1B2B49]">Filtros</span>
-              </div>
-              <div className="bg-slate-100 rounded-lg p-1 flex gap-1 overflow-x-auto min-w-fit">
-                <Button
-                  variant={filters.category === "all" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => updateFilter("category", "all")}
-                  className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap ${
-                    filters.category === "all" 
-                      ? "bg-white shadow-sm text-slate-900" 
-                      : "text-slate-600 hover:bg-white/50"
-                  }`}
-                >
-                  🗂️ Todas
-                  <span className="ml-1 bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs">
-                    {activities?.length || 0}
-                  </span>
-                </Button>
-                
-                {Object.entries(activityCategories).slice(0, 4).map(([key, cat]) => {
-                  const count = activities?.filter(a => a.category === key).length || 0;
-                  return (
-                    <Button
-                      key={key}
-                      variant={filters.category === key ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => updateFilter("category", key)}
-                      className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap truncate ${
-                        filters.category === key 
-                          ? "bg-white shadow-sm text-slate-900" 
-                          : "text-slate-600 hover:bg-white/50"
-                      }`}
-                    >
-                      {cat.icon} <span className="hidden sm:inline">{cat.label}</span>
-                      <span className="ml-1 bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs">
-                        {count}
-                      </span>
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 border-slate-200 hover:bg-slate-50"
-            >
-              <Filter className="w-4 h-4" />
-              Mais filtros
-              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-            </Button>
-          </div>
-
-          {/* Advanced Filters */}
-          {showFilters && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="bg-white rounded-xl border border-slate-200/60 p-4 md:p-6 shadow-sm"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">
-                    Faixa de Preço
-                  </label>
-                  <Select 
-                    value={filters.priceRange} 
-                    onValueChange={(value) => updateFilter("priceRange", value)}
-                  >
-                    <SelectTrigger className="border-slate-200 focus:border-blue-400">
-                      <SelectValue placeholder="Todos os preços" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PRICE_RANGES.map(range => (
-                        <SelectItem key={range.value} value={range.value}>
-                          {range.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">
-                    Nível de Dificuldade
-                  </label>
-                  <Select 
-                    value={filters.difficulty} 
-                    onValueChange={(value) => updateFilter("difficulty", value)}
-                  >
-                    <SelectTrigger className="border-slate-200 focus:border-blue-400">
-                      <SelectValue placeholder="Todos os níveis" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DIFFICULTY_LEVELS.map(level => (
-                        <SelectItem key={level.value} value={level.value}>
-                          {level.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">
-                    Ordenar por
-                  </label>
-                  <Select 
-                    value={filters.sortBy} 
-                    onValueChange={(value) => updateFilter("sortBy", value)}
-                  >
-                    <SelectTrigger className="border-slate-200 focus:border-blue-400">
-                      <SelectValue placeholder="Ordenar por" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {SORT_OPTIONS.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Special Filters */}
-              {user && (
-                <div className="mt-6 pt-4 border-t border-slate-200">
-                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <Target className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-slate-900">
-                          Apenas destinos das minhas viagens
-                        </label>
-                        <p className="text-xs text-slate-600 mt-1">
-                          Mostra apenas atividades nos destinos onde você tem viagens planejadas
-                        </p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={filters.onlyMyTrips}
-                      onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
-                    />
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          )}
-        </div>
-
         {/* Activities Grouped by City - Enhanced Layout */}
         {cities.length > 0 ? (
           <div className="space-y-8">
