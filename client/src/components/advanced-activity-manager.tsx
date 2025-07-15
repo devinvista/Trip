@@ -98,7 +98,255 @@ const priorityColors = {
   low: 'bg-green-100 text-green-800 border-green-300'
 };
 
-// Sortable Activity Item
+// Activities Timeline Component
+function ActivitiesTimeline({
+  activities,
+  onEdit,
+  onDelete,
+  onReorder,
+  startDate,
+  endDate
+}: {
+  activities: PlannedActivity[];
+  onEdit: (activity: PlannedActivity) => void;
+  onDelete: (id: string) => void;
+  onReorder: (activities: PlannedActivity[]) => void;
+  startDate?: string;
+  endDate?: string;
+}) {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      const oldIndex = activities.findIndex(activity => activity.id === active.id);
+      const newIndex = activities.findIndex(activity => activity.id === over.id);
+      onReorder(arrayMove(activities, oldIndex, newIndex));
+    }
+  };
+
+  // Group activities by date
+  const groupedActivities = activities.reduce((groups, activity) => {
+    const date = activity.dateTime ? new Date(activity.dateTime).toDateString() : 'Sem data definida';
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(activity);
+    return groups;
+  }, {} as Record<string, PlannedActivity[]>);
+
+  const sortedDateGroups = Object.keys(groupedActivities).sort((a, b) => {
+    if (a === 'Sem data definida') return 1;
+    if (b === 'Sem data definida') return -1;
+    return new Date(a).getTime() - new Date(b).getTime();
+  });
+
+  return (
+    <div className="relative">
+      {/* Timeline Line */}
+      <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary to-purple-400"></div>
+      
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-8">
+            {sortedDateGroups.map((dateGroup, groupIndex) => (
+              <div key={dateGroup} className="relative">
+                {/* Date Header */}
+                <div className="flex items-center mb-4">
+                  <div className="relative z-10 bg-gradient-to-r from-primary to-purple-600 text-white px-4 py-2 rounded-full shadow-lg">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span className="font-medium text-sm">
+                        {dateGroup === 'Sem data definida' 
+                          ? dateGroup 
+                          : new Date(dateGroup).toLocaleDateString('pt-BR', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Activities for this date */}
+                <div className="ml-16 space-y-4">
+                  {groupedActivities[dateGroup].map((activity, activityIndex) => (
+                    <SortableTimelineActivityItem
+                      key={activity.id}
+                      activity={activity}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                      isLast={groupIndex === sortedDateGroups.length - 1 && 
+                             activityIndex === groupedActivities[dateGroup].length - 1}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+    </div>
+  );
+}
+
+// Sortable Timeline Activity Item
+function SortableTimelineActivityItem({ 
+  activity, 
+  onEdit, 
+  onDelete,
+  isLast = false
+}: {
+  activity: PlannedActivity;
+  onEdit: (activity: PlannedActivity) => void;
+  onDelete: (id: string) => void;
+  isLast?: boolean;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: activity.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const formatTime = (dateTime?: string) => {
+    if (!dateTime) return null;
+    return new Date(dateTime).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  return (
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="relative"
+    >
+      {/* Timeline Connector */}
+      <div className="absolute -left-16 top-6 w-4 h-4 bg-white border-4 border-primary rounded-full shadow-lg"></div>
+      
+      <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-primary">
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              {/* Header */}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{activityCategories[activity.category as keyof typeof activityCategories]?.icon || '📌'}</span>
+                  <h4 className="font-semibold text-gray-900 truncate">{activity.title}</h4>
+                </div>
+                {formatTime(activity.dateTime) && (
+                  <Badge variant="outline" className="ml-auto">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {formatTime(activity.dateTime)}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Details */}
+              <div className="space-y-2">
+                {activity.description && (
+                  <p className="text-sm text-gray-600 line-clamp-2">{activity.description}</p>
+                )}
+                
+                <div className="flex flex-wrap gap-2">
+                  <Badge className={priorityColors[activity.priority]}>
+                    {activity.priority === 'high' && '🔴'} 
+                    {activity.priority === 'medium' && '🟡'} 
+                    {activity.priority === 'low' && '🟢'} 
+                    {activity.priority === 'high' ? 'Alta' : activity.priority === 'medium' ? 'Média' : 'Baixa'}
+                  </Badge>
+                  
+                  <Badge variant="outline">
+                    {activityCategories[activity.category as keyof typeof activityCategories]?.label || activity.category}
+                  </Badge>
+
+                  {activity.estimatedCost && (
+                    <Badge variant="outline" className="text-green-700 border-green-300">
+                      <DollarSign className="h-3 w-3 mr-1" />
+                      R$ {activity.estimatedCost.toLocaleString('pt-BR')}
+                    </Badge>
+                  )}
+
+                  {activity.duration && (
+                    <Badge variant="outline">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {activity.duration}
+                    </Badge>
+                  )}
+
+                  {activity.location && (
+                    <Badge variant="outline">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {activity.location}
+                    </Badge>
+                  )}
+                </div>
+
+                {activity.notes && (
+                  <div className="mt-2 p-2 bg-gray-50 rounded-md">
+                    <p className="text-xs text-gray-600">{activity.notes}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(activity)}
+                className="h-8 w-8 p-0"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(activity.id)}
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+              <div {...listeners} className="cursor-grab hover:cursor-grabbing p-1">
+                <GripVertical className="h-4 w-4 text-gray-400" />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
+// Legacy Sortable Activity Item (for backward compatibility)
 function SortableActivityItem({ 
   activity, 
   onEdit, 
@@ -1042,7 +1290,7 @@ export function AdvancedActivityManager({
         </Card>
       )}
 
-      {/* Activities List */}
+      {/* Activities Timeline */}
       <div className="space-y-4">
         {activities.length === 0 ? (
           <Card className="border-2 border-dashed border-gray-300">
@@ -1064,26 +1312,14 @@ export function AdvancedActivityManager({
             </CardContent>
           </Card>
         ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-3">
-                <AnimatePresence>
-                  {activities.map((activity) => (
-                    <SortableActivityItem
-                      key={activity.id}
-                      activity={activity}
-                      onEdit={handleEditActivity}
-                      onDelete={handleDeleteActivity}
-                    />
-                  ))}
-                </AnimatePresence>
-              </div>
-            </SortableContext>
-          </DndContext>
+          <ActivitiesTimeline 
+            activities={activities}
+            onEdit={handleEditActivity}
+            onDelete={handleDeleteActivity}
+            onReorder={onActivitiesChange}
+            startDate={startDate}
+            endDate={endDate}
+          />
         )}
       </div>
 
