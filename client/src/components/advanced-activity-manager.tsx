@@ -572,7 +572,7 @@ function ActivitySearchTab({
               />
               {tripStartDate && tripEndDate && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')} (incluindo ambos os dias)
+                  Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
                 </p>
               )}
             </div>
@@ -805,7 +805,7 @@ function ActivityFormTab({
           />
           {tripStartDate && tripEndDate && (
             <p className="text-xs text-gray-500">
-              Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')} (incluindo ambos os dias)
+              Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
             </p>
           )}
         </div>

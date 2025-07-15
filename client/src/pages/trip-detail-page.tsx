@@ -37,9 +37,16 @@ import {
   Trophy,
   Zap,
   Gift,
-  AlertCircle
+  AlertCircle,
+  ChevronRight,
+  Utensils,
+  Mountain,
+  Palette,
+  Waves,
+  Music,
+  ShoppingBag
 } from "lucide-react";
-import { format, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
+import { format, differenceInDays, differenceInHours, differenceInMinutes, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getRealParticipantsCount, getTripOccupancy } from "@/lib/trip-utils";
 import { useState, useEffect, useMemo } from "react";
@@ -291,6 +298,277 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+// Activities Timeline Component
+function ActivitiesTimeline({ 
+  activities, 
+  tripStartDate, 
+  tripEndDate, 
+  canJoin, 
+  onJoinClick 
+}: {
+  activities: PlannedActivity[];
+  tripStartDate: string;
+  tripEndDate: string;
+  canJoin: boolean;
+  onJoinClick: () => void;
+}) {
+  // Function to get category icon and color
+  const getCategoryConfig = (category: string) => {
+    switch (category) {
+      case 'sightseeing':
+        return { icon: Camera, color: 'bg-blue-100 text-blue-600 border-blue-200', label: 'Turismo' };
+      case 'food':
+        return { icon: Utensils, color: 'bg-orange-100 text-orange-600 border-orange-200', label: 'Comida' };
+      case 'adventure':
+        return { icon: Mountain, color: 'bg-green-100 text-green-600 border-green-200', label: 'Aventura' };
+      case 'culture':
+        return { icon: Palette, color: 'bg-purple-100 text-purple-600 border-purple-200', label: 'Cultura' };
+      case 'relaxation':
+        return { icon: Waves, color: 'bg-teal-100 text-teal-600 border-teal-200', label: 'Relaxamento' };
+      case 'nightlife':
+        return { icon: Music, color: 'bg-pink-100 text-pink-600 border-pink-200', label: 'Vida Noturna' };
+      case 'shopping':
+        return { icon: ShoppingBag, color: 'bg-indigo-100 text-indigo-600 border-indigo-200', label: 'Compras' };
+      default:
+        return { icon: Target, color: 'bg-gray-100 text-gray-600 border-gray-200', label: category };
+    }
+  };
+
+  // Function to get priority color
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-100 text-red-700 border-red-200';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'low':
+        return 'bg-green-100 text-green-700 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+
+  // Group activities by date
+  const groupedActivities = useMemo(() => {
+    if (!activities || activities.length === 0) return [];
+
+    const grouped: { [key: string]: PlannedActivity[] } = {};
+    
+    activities.forEach(activity => {
+      if (activity.dateTime) {
+        const date = parseISO(activity.dateTime);
+        const dateKey = format(date, 'yyyy-MM-dd');
+        
+        if (!grouped[dateKey]) {
+          grouped[dateKey] = [];
+        }
+        grouped[dateKey].push(activity);
+      }
+    });
+
+    // Sort dates and activities within each date
+    return Object.entries(grouped)
+      .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+      .map(([date, dayActivities]) => ({
+        date,
+        displayDate: format(parseISO(date), 'EEEE, dd/MM', { locale: ptBR }),
+        activities: dayActivities.sort((a, b) => {
+          // Sort by priority (high > medium > low), then by title
+          const priorityOrder = { high: 3, medium: 2, low: 1 };
+          const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
+          const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
+          
+          if (aPriority !== bPriority) {
+            return bPriority - aPriority;
+          }
+          
+          return a.title.localeCompare(b.title);
+        })
+      }));
+  }, [activities]);
+
+  if (activities.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-4"
+        >
+          <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+            <Target className="h-8 w-8 text-gray-400" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900">Nenhuma atividade planejada</h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Comece a planejar suas atividades para tornar esta viagem ainda mais especial!
+            </p>
+          </div>
+          {canJoin && (
+            <div className="pt-4">
+              <p className="text-sm text-gray-600 mb-3">
+                Participe da viagem para ajudar no planejamento das atividades!
+              </p>
+              <Button onClick={onJoinClick} className="inline-flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                Solicitar Participação
+              </Button>
+            </div>
+          )}
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Timeline Header */}
+      <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+            <Calendar className="h-4 w-4 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Cronograma de Atividades</h3>
+            <p className="text-sm text-gray-600">
+              {groupedActivities.length} {groupedActivities.length === 1 ? 'dia' : 'dias'} com atividades planejadas
+            </p>
+          </div>
+        </div>
+        <div className="flex-1"></div>
+        <div className="text-sm text-gray-500">
+          Total: {activities.length} {activities.length === 1 ? 'atividade' : 'atividades'}
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="relative">
+        {/* Timeline Line */}
+        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200"></div>
+        
+        <div className="space-y-8">
+          {groupedActivities.map((dayGroup, dayIndex) => (
+            <motion.div
+              key={dayGroup.date}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: dayIndex * 0.1 }}
+              className="relative"
+            >
+              {/* Date Header */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative z-10 w-12 h-12 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <Calendar className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
+                  <h4 className="font-semibold text-gray-900 capitalize">{dayGroup.displayDate}</h4>
+                  <p className="text-sm text-gray-600">
+                    {dayGroup.activities.length} {dayGroup.activities.length === 1 ? 'atividade' : 'atividades'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Activities for this day */}
+              <div className="ml-16 space-y-3">
+                {dayGroup.activities.map((activity, activityIndex) => {
+                  const categoryConfig = getCategoryConfig(activity.category);
+                  const IconComponent = categoryConfig.icon;
+                  
+                  return (
+                    <motion.div
+                      key={activity.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: (dayIndex * 0.1) + (activityIndex * 0.05) }}
+                      className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+                    >
+                      <div className="p-4">
+                        <div className="flex items-start gap-3">
+                          {/* Activity Icon */}
+                          <div className={`flex-shrink-0 w-10 h-10 rounded-lg border flex items-center justify-center ${categoryConfig.color}`}>
+                            <IconComponent className="h-5 w-5" />
+                          </div>
+                          
+                          {/* Activity Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between mb-2">
+                              <h5 className="font-medium text-gray-900 truncate pr-2">{activity.title}</h5>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <Badge variant="outline" className={`text-xs px-2 py-1 ${getPriorityColor(activity.priority)}`}>
+                                  {activity.priority === 'high' ? 'Alta' : 
+                                   activity.priority === 'medium' ? 'Média' : 'Baixa'}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {categoryConfig.label}
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            {activity.description && (
+                              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{activity.description}</p>
+                            )}
+                            
+                            {/* Activity Details */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4 text-sm text-gray-500">
+                                {activity.duration && (
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    <span>{activity.duration}</span>
+                                  </div>
+                                )}
+                                {activity.location && (
+                                  <div className="flex items-center gap-1">
+                                    <MapPin className="h-3 w-3" />
+                                    <span className="truncate max-w-32">{activity.location}</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {activity.estimatedCost && (
+                                <div className="flex items-center gap-1 text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded">
+                                  <DollarSign className="h-3 w-3" />
+                                  <span>R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Summary Card */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+            <Trophy className="h-4 w-4 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <h4 className="font-medium text-gray-900">Resumo do Planejamento</h4>
+            <p className="text-sm text-gray-600">
+              {activities.length} atividades distribuídas em {groupedActivities.length} {groupedActivities.length === 1 ? 'dia' : 'dias'}
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-lg font-bold text-blue-600">
+              R$ {activities.reduce((sum, activity) => sum + (activity.estimatedCost || 0), 0).toLocaleString('pt-BR')}
+            </div>
+            <div className="text-xs text-gray-500">Custo total estimado</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -773,58 +1051,13 @@ export default function TripDetailPage() {
                         className="border-0"
                       />
                     ) : (
-                      <div className="space-y-4">
-                        {plannedActivities.length > 0 ? (
-                          <div className="space-y-3">
-                            {plannedActivities.map((activity, index) => (
-                              <div key={activity.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <div className="flex justify-between items-start mb-2">
-                                  <h4 className="font-medium text-gray-900">{activity.title}</h4>
-                                  <Badge variant="outline" className="text-xs">
-                                    {activity.category === 'sightseeing' ? 'Turismo' :
-                                     activity.category === 'food' ? 'Comida' :
-                                     activity.category === 'adventure' ? 'Aventura' :
-                                     activity.category === 'culture' ? 'Cultura' :
-                                     activity.category === 'relaxation' ? 'Relaxamento' :
-                                     activity.category === 'nightlife' ? 'Vida Noturna' :
-                                     activity.category === 'shopping' ? 'Compras' :
-                                     activity.category}
-                                  </Badge>
-                                </div>
-                                {activity.description && (
-                                  <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
-                                )}
-                                <div className="flex justify-between items-center text-xs text-gray-500">
-                                  <span>
-                                    Prioridade: {activity.priority === 'high' ? 'Alta' : 
-                                                activity.priority === 'medium' ? 'Média' : 'Baixa'}
-                                  </span>
-                                  {activity.estimatedCost && (
-                                    <span className="font-medium text-green-600">
-                                      R$ {activity.estimatedCost.toLocaleString('pt-BR')}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-8">
-                            <Target className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                            <p className="text-gray-600">Nenhuma atividade planejada ainda</p>
-                          </div>
-                        )}
-                        {canJoin && (
-                          <div className="text-center mt-4">
-                            <p className="text-sm text-gray-600 mb-2">
-                              Participe da viagem para ajudar no planejamento!
-                            </p>
-                            <Button onClick={() => setActiveTab("overview")}>
-                              Solicitar Participação
-                            </Button>
-                          </div>
-                        )}
-                      </div>
+                      <ActivitiesTimeline 
+                        activities={plannedActivities}
+                        tripStartDate={trip.startDate}
+                        tripEndDate={trip.endDate}
+                        canJoin={canJoin}
+                        onJoinClick={() => setActiveTab("overview")}
+                      />
                     )}
                   </CardContent>
                 </Card>
