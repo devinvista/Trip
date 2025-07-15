@@ -83,25 +83,19 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   // Create review mutation
   const createReview = useMutation({
     mutationFn: async (data: ReviewFormData) => {
-      console.log('Making API request with data:', data);
       const response = await fetch(`/api/activities/${activityId}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
         credentials: 'include'
       });
-
-      console.log('API response status:', response.status);
       
       if (!response.ok) {
         const error = await response.json();
-        console.error('API error:', error);
         throw new Error(error.message || 'Erro ao criar avaliação');
       }
 
-      const result = await response.json();
-      console.log('API success result:', result);
-      return result;
+      return response.json();
     },
     onSuccess: () => {
       toast({ title: "Avaliação criada com sucesso!" });
@@ -139,16 +133,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   });
 
   const handleSubmit = (data: ReviewFormData) => {
-    console.log('🚀 handleSubmit called with data:', data);
-    console.log('🔐 User authenticated:', !!user);
-    console.log('👤 User details:', user);
-    console.log('🎯 Activity ID:', activityId);
-    console.log('❌ Form errors:', form.formState.errors);
-    console.log('✅ Form valid:', form.formState.isValid);
-    console.log('📝 Form values:', form.getValues());
-    
     if (!user) {
-      console.log('❌ User not authenticated, showing toast');
       toast({ 
         title: "Erro de autenticação", 
         description: "Você precisa estar logado para avaliar atividades",
@@ -157,7 +142,6 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
       return;
     }
     
-    console.log('🔄 Calling createReview.mutate...');
     createReview.mutate(data);
   };
 
@@ -291,17 +275,6 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                           type="submit"
                           disabled={createReview.isPending}
                           className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                          onClick={() => {
-                            console.log('🔥 Button clicked! Form state:', form.formState);
-                            console.log('🔥 Form values:', form.getValues());
-                            console.log('🔥 Form errors:', form.formState.errors);
-                            console.log('🔥 Form isValid:', form.formState.isValid);
-                            console.log('🔥 User:', user);
-                            console.log('🔥 Activity ID:', activityId);
-                            
-                            // Manually trigger submit
-                            form.handleSubmit(handleSubmit)();
-                          }}
                         >
                           {createReview.isPending ? "Enviando..." : "Enviar Avaliação"}
                         </Button>
