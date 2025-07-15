@@ -443,7 +443,16 @@ function ActivitiesTimeline({
     <div className="space-y-6">
       {/* Activity Manager for Participants */}
       {showManagerForParticipants && tripId && onActivitiesChange && (
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <Target className="h-4 w-4 text-green-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Gerenciar Atividades</h3>
+            <Badge variant="outline" className="text-green-700 border-green-200">
+              Participante
+            </Badge>
+          </div>
           <AdvancedActivityManager
             activities={activities}
             onActivitiesChange={onActivitiesChange}
@@ -455,6 +464,15 @@ function ActivitiesTimeline({
             tripEndDate={tripEndDate}
             className="border-0"
           />
+        </div>
+      )}
+
+      {/* Debug Info - remover após teste */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-yellow-50 p-2 rounded text-xs text-yellow-800 mb-4">
+          Debug: showManagerForParticipants={String(showManagerForParticipants)}, 
+          tripId={tripId}, 
+          hasOnActivitiesChange={Boolean(onActivitiesChange)}
         </div>
       )}
 
