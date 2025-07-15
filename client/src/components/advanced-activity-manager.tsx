@@ -36,7 +36,8 @@ import {
   FileText,
   Star,
   Search,
-  Users
+  Users,
+  Save
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -613,16 +614,44 @@ function ActivityManagementDialog({
 }) {
   const [activeTab, setActiveTab] = useState(activity ? "manual" : "search");
   
+  // Se está editando uma atividade existente, mostrar apenas o formulário de edição
+  if (activity) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="w-[95vw] max-w-3xl max-h-[95vh] overflow-y-auto" aria-describedby="activity-dialog-description">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit2 className="h-5 w-5" />
+              Editar Atividade
+            </DialogTitle>
+            <p id="activity-dialog-description" className="sr-only">
+              Formulário para editar informações da atividade existente
+            </p>
+          </DialogHeader>
+          
+          <EditActivityForm 
+            activity={activity} 
+            onSave={onSave} 
+            onClose={onClose}
+            tripStartDate={tripStartDate}
+            tripEndDate={tripEndDate}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+  
+  // Para adicionar nova atividade, mostrar as abas de busca e criação manual
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[95vw] max-w-5xl max-h-[95vh] overflow-y-auto" aria-describedby="activity-dialog-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            {activity ? 'Editar Atividade' : 'Adicionar Atividade'}
+            Adicionar Atividade
           </DialogTitle>
           <p id="activity-dialog-description" className="sr-only">
-            {activity ? 'Formulário para editar uma atividade existente' : 'Formulário para adicionar uma nova atividade à viagem'}
+            Formulário para adicionar uma nova atividade à viagem
           </p>
         </DialogHeader>
         
@@ -1327,6 +1356,161 @@ function ActivityFormTab({
           className="bg-primary hover:bg-primary/90"
         >
           {activity ? 'Salvar Alterações' : 'Adicionar Atividade'}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// Edit Activity Form - Simplified form for editing existing activities
+function EditActivityForm({ 
+  activity, 
+  onSave, 
+  onClose,
+  tripStartDate,
+  tripEndDate
+}: {
+  activity: PlannedActivity;
+  onSave: (activity: PlannedActivity) => void;
+  onClose: () => void;
+  tripStartDate?: string;
+  tripEndDate?: string;
+}) {
+  const [formData, setFormData] = useState({
+    estimatedCost: activity.estimatedCost || 0,
+    dateTime: activity.dateTime || '',
+    notes: activity.notes || '',
+    priority: activity.priority || 'medium',
+    duration: activity.duration || '',
+    location: activity.location || ''
+  });
+
+  const handleSave = () => {
+    const updatedActivity: PlannedActivity = {
+      ...activity,
+      estimatedCost: formData.estimatedCost,
+      dateTime: formData.dateTime,
+      notes: formData.notes,
+      priority: formData.priority as 'high' | 'medium' | 'low',
+      duration: formData.duration,
+      location: formData.location
+    };
+
+    onSave(updatedActivity);
+    onClose();
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Activity Info (Read-Only) */}
+      <div className="bg-gray-50 rounded-lg p-4 border">
+        <h3 className="font-semibold text-gray-900 mb-2">{activity.title}</h3>
+        {activity.description && (
+          <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
+        )}
+        <div className="flex items-center gap-4 text-sm text-gray-500">
+          <Badge variant="outline">{activityCategories[activity.category as keyof typeof activityCategories]?.label}</Badge>
+          <span>Status: {activity.status}</span>
+        </div>
+      </div>
+
+      {/* Editable Fields */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="cost">Custo Estimado (R$)</Label>
+          <Input
+            id="cost"
+            type="number"
+            min="0"
+            step="0.01"
+            value={formData.estimatedCost}
+            onChange={(e) => setFormData(prev => ({ ...prev, estimatedCost: parseFloat(e.target.value) || 0 }))}
+            placeholder="0.00"
+            className="border-2 focus:border-primary"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="priority">Prioridade</Label>
+          <Select value={formData.priority} onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="high">Alta</SelectItem>
+              <SelectItem value="medium">Média</SelectItem>
+              <SelectItem value="low">Baixa</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="duration">Duração</Label>
+          <Input
+            id="duration"
+            value={formData.duration}
+            onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
+            placeholder="Ex: 2 horas, meio dia"
+            className="border-2 focus:border-primary"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="location">Localização</Label>
+          <Input
+            id="location"
+            value={formData.location}
+            onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+            placeholder="Ex: Centro da cidade"
+            className="border-2 focus:border-primary"
+          />
+        </div>
+      </div>
+
+      {/* Date and Time */}
+      <div className="space-y-2">
+        <Label htmlFor="datetime">Data e Hora</Label>
+        <Input
+          id="datetime"
+          type="datetime-local"
+          value={formData.dateTime}
+          onChange={(e) => setFormData(prev => ({ ...prev, dateTime: e.target.value }))}
+          min={tripStartDate ? new Date(tripStartDate).toISOString().slice(0, 16) : undefined}
+          max={tripEndDate ? new Date(tripEndDate).toISOString().slice(0, 16) : undefined}
+          className="border-2 focus:border-primary"
+        />
+      </div>
+
+      {/* Notes */}
+      <div className="space-y-2">
+        <Label htmlFor="notes">Observações</Label>
+        <Textarea
+          id="notes"
+          value={formData.notes}
+          onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+          placeholder="Adicione observações sobre a atividade..."
+          className="border-2 focus:border-primary resize-none"
+          rows={3}
+        />
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex items-center gap-3 pt-4">
+        <Button
+          onClick={handleSave}
+          className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
+        >
+          <Save className="h-4 w-4 mr-2" />
+          Salvar Alterações
+        </Button>
+        <Button
+          variant="outline"
+          onClick={onClose}
+          className="flex-1 border-2 border-gray-300 hover:bg-gray-50"
+        >
+          Cancelar
         </Button>
       </div>
     </div>
