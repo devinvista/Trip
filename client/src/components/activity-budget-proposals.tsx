@@ -424,30 +424,53 @@ export function ActivityBudgetProposals({
                   </div>
                 </div>
 
-                {(proposal.inclusions.length > 0 || proposal.exclusions.length > 0) && (
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    {proposal.inclusions.length > 0 && (
-                      <div>
-                        <h5 className="font-medium text-green-700 mb-2">✅ Inclui:</h5>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {proposal.inclusions.map((item, idx) => (
-                            <li key={idx}>• {item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {proposal.exclusions.length > 0 && (
-                      <div>
-                        <h5 className="font-medium text-red-700 mb-2">❌ Não inclui:</h5>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {proposal.exclusions.map((item, idx) => (
-                            <li key={idx}>• {item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {(() => {
+                  const safeParseArray = (data: any) => {
+                    if (Array.isArray(data)) return data;
+                    if (typeof data === 'string') {
+                      try {
+                        // Handle double-escaped JSON strings from database
+                        let parsed = JSON.parse(data);
+                        // If it's still a string, parse again
+                        if (typeof parsed === 'string') {
+                          parsed = JSON.parse(parsed);
+                        }
+                        return Array.isArray(parsed) ? parsed : [];
+                      } catch {
+                        return [];
+                      }
+                    }
+                    return [];
+                  };
+                  
+                  const inclusions = safeParseArray(proposal.inclusions);
+                  const exclusions = safeParseArray(proposal.exclusions);
+                  
+                  return (inclusions.length > 0 || exclusions.length > 0) && (
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      {inclusions.length > 0 && (
+                        <div>
+                          <h5 className="font-medium text-green-700 mb-2">✅ Inclui:</h5>
+                          <ul className="text-sm text-gray-600 space-y-1">
+                            {inclusions.map((item, idx) => (
+                              <li key={idx}>• {item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {exclusions.length > 0 && (
+                        <div>
+                          <h5 className="font-medium text-red-700 mb-2">❌ Não inclui:</h5>
+                          <ul className="text-sm text-gray-600 space-y-1">
+                            {exclusions.map((item, idx) => (
+                              <li key={idx}>• {item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div className="flex items-center justify-between pt-3 border-t">
                   <div className="flex items-center gap-2">
