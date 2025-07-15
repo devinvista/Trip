@@ -218,6 +218,41 @@ export default function ActivitiesPage() {
     return sorted.slice(0, 6); // Top 6 suggestions
   }, [activities]);
 
+  // Get suggestions based on user's upcoming trips destinations
+  const upcomingTripsSuggestions = useMemo(() => {
+    if (!activities || !userTrips || !user) return [];
+    
+    // Get upcoming trips destinations
+    const upcomingTrips = userTrips.filter((trip: any) => {
+      const tripDate = new Date(trip.startDate);
+      const now = new Date();
+      return tripDate > now;
+    });
+    
+    if (upcomingTrips.length === 0) return [];
+    
+    // Extract destinations from upcoming trips
+    const upcomingDestinations = upcomingTrips.map((trip: any) => trip.destination);
+    
+    // Filter activities that match upcoming destinations
+    const matchingActivities = activities.filter(activity => {
+      const activityCity = activity.location.split(',')[0].trim();
+      return upcomingDestinations.some(destination => 
+        destination.toLowerCase().includes(activityCity.toLowerCase()) || 
+        activityCity.toLowerCase().includes(destination.toLowerCase())
+      );
+    });
+    
+    // Sort by rating and return top suggestions
+    const sorted = matchingActivities.sort((a, b) => {
+      const aScore = Number(a.averageRating) * Math.log(a.totalRatings + 1);
+      const bScore = Number(b.averageRating) * Math.log(b.totalRatings + 1);
+      return bScore - aScore;
+    });
+    
+    return sorted.slice(0, 6);
+  }, [activities, userTrips, user]);
+
   const cities = Object.keys(groupedActivities).sort();
 
   // Show full preloader only on initial load
@@ -308,6 +343,66 @@ export default function ActivitiesPage() {
                         <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
                           <Star className="w-3 h-3 fill-[#FFA500] text-[#FFA500]" />
                           <span className="text-xs font-medium">{Number(activity.averageRating).toFixed(1)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <CardContent className="p-3">
+                      <h3 className="font-medium text-sm line-clamp-2 text-[#1B2B49] mb-1">
+                        {activity.title}
+                      </h3>
+                      <p className="text-xs text-[#AAB0B7] mb-2">
+                        {activity.location.split(',')[0]}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-[#1B2B49]">
+                          {formatPrice(activity.priceType, activity.priceAmount)}
+                        </span>
+                        <Badge variant="secondary" className="text-xs">
+                          {activityCategories[activity.category as keyof typeof activityCategories]?.icon}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Trips Suggestions - Only show if user is logged in and has upcoming trips */}
+      {user && upcomingTripsSuggestions.length > 0 && (
+        <div className="bg-gradient-to-r from-[#41B6FF]/5 to-[#41B6FF]/10 border-b border-[#AAB0B7]/20">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-[#41B6FF]" />
+                <h2 className="text-lg font-semibold text-[#1B2B49]">Sugestões para Suas Próximas Viagens</h2>
+                <Badge variant="outline" className="bg-[#41B6FF]/10 text-[#41B6FF] border-[#41B6FF]/20">
+                  Baseado nos seus destinos
+                </Badge>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              {upcomingTripsSuggestions.map((activity) => (
+                <Link key={activity.id} to={`/activities/${activity.id}`}>
+                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-[#41B6FF]/20">
+                    <div className="relative">
+                      <img
+                        src={activity.coverImage}
+                        alt={activity.title}
+                        className="w-full h-24 object-cover rounded-t-lg"
+                      />
+                      <div className="absolute top-2 right-2">
+                        <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
+                          <Star className="w-3 h-3 fill-[#FFA500] text-[#FFA500]" />
+                          <span className="text-xs font-medium">{Number(activity.averageRating).toFixed(1)}</span>
+                        </div>
+                      </div>
+                      <div className="absolute top-2 left-2">
+                        <div className="bg-[#41B6FF] text-white rounded-full px-2 py-1 text-xs font-medium">
+                          Próxima viagem
                         </div>
                       </div>
                     </div>
