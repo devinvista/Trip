@@ -85,6 +85,18 @@ export function ActivityBudgetProposals({
     }
   });
 
+  // Check if user has voted on this activity
+  const { data: userVoteData } = useQuery({
+    queryKey: ['/api/activities', activityId, 'user-vote'],
+    queryFn: async () => {
+      if (!user) return { hasVoted: false, vote: null };
+      const response = await fetch(`/api/activities/${activityId}/user-vote`);
+      if (!response.ok) throw new Error('Falha ao verificar voto');
+      return response.json() as Promise<{ hasVoted: boolean; vote: any }>;
+    },
+    enabled: !!user
+  });
+
   // Filter unique proposals to avoid duplicate keys
   const proposals = proposalsData ? proposalsData.filter((proposal, index, arr) => 
     arr.findIndex(p => p.id === proposal.id) === index
@@ -129,11 +141,12 @@ export function ActivityBudgetProposals({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/activities', activityId, 'proposals'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/activities', activityId, 'user-vote'] });
     },
-    onError: () => {
+    onError: (error: any) => {
       toast({ 
         title: "Erro ao votar", 
-        description: "Tente novamente mais tarde",
+        description: userVoteData?.hasVoted ? "Você já votou nesta atividade" : "Tente novamente mais tarde",
         variant: "destructive" 
       });
     }
@@ -589,10 +602,17 @@ export function ActivityBudgetProposals({
                             variant="outline"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleVote(proposal.id, true);
+                              if (!userVoteData?.hasVoted) {
+                                handleVote(proposal.id, true);
+                              }
                             }}
-                            disabled={voteProposal.isPending}
-                            className="h-8 px-2 flex items-center gap-1"
+                            disabled={voteProposal.isPending || userVoteData?.hasVoted}
+                            className={`h-8 px-2 flex items-center gap-1 ${
+                              userVoteData?.hasVoted 
+                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                                : ''
+                            }`}
+                            title={userVoteData?.hasVoted ? 'Você já votou nesta atividade' : 'Votar nesta proposta'}
                           >
                             <ThumbsUp className="h-3 w-3" />
                             <span className="text-xs">{proposal.votes}</span>
@@ -602,6 +622,11 @@ export function ActivityBudgetProposals({
                           <Badge variant="secondary" className="text-xs">
                             <ThumbsUp className="h-3 w-3 mr-1" />
                             {proposal.votes}
+                          </Badge>
+                        )}
+                        {user && userVoteData?.hasVoted && (
+                          <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
+                            ✓ Você já votou nesta atividade
                           </Badge>
                         )}
                       </div>

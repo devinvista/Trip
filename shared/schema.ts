@@ -328,6 +328,16 @@ export const activityBudgetProposals = mysqlTable("activity_budget_proposals", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Activity Budget Proposal Votes - Track user votes on proposals
+export const activityBudgetProposalVotes = mysqlTable("activity_budget_proposal_votes", {
+  id: int("id").primaryKey().autoincrement(),
+  proposalId: int("proposal_id").notNull().references(() => activityBudgetProposals.id),
+  userId: int("user_id").notNull().references(() => users.id),
+  activityId: int("activity_id").notNull().references(() => activities.id),
+  voteType: varchar("vote_type", { length: 10 }).notNull(), // "up" or "down"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Trip Activities - Links activities to trips with selected budget proposal
 export const tripActivities = mysqlTable("trip_activities", {
   id: int("id").primaryKey().autoincrement(),
@@ -365,6 +375,7 @@ export type Activity = typeof activities.$inferSelect;
 export type ActivityReview = typeof activityReviews.$inferSelect;
 export type ActivityBooking = typeof activityBookings.$inferSelect;
 export type ActivityBudgetProposal = typeof activityBudgetProposals.$inferSelect;
+export type ActivityBudgetProposalVote = typeof activityBudgetProposalVotes.$inferSelect;
 export type TripActivity = typeof tripActivities.$inferSelect;
 
 export const insertActivitySchema = createInsertSchema(activities).omit({

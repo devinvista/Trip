@@ -1246,8 +1246,9 @@ export function registerRoutes(app: Express): Server {
     try {
       const proposalId = parseInt(req.params.id);
       const { increment } = req.body; // true for upvote, false for downvote
+      const userId = req.user.id;
       
-      const updatedProposal = await storage.voteActivityBudgetProposal(proposalId, increment);
+      const updatedProposal = await storage.voteActivityBudgetProposal(proposalId, userId, increment);
       
       if (!updatedProposal) {
         return res.status(404).json({ message: "Proposta não encontrada" });
@@ -1257,6 +1258,21 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao votar na proposta:', error);
       res.status(400).json({ message: "Erro ao votar na proposta" });
+    }
+  });
+
+  // Check if user has voted on an activity
+  app.get("/api/activities/:id/user-vote", requireAuth, async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.id);
+      const userId = req.user.id;
+      
+      const vote = await storage.getUserVoteForActivity(userId, activityId);
+      
+      res.json({ hasVoted: !!vote, vote });
+    } catch (error) {
+      console.error('Erro ao verificar voto do usuário:', error);
+      res.status(500).json({ message: "Erro ao verificar voto" });
     }
   });
 

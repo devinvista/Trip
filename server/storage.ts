@@ -1,4 +1,4 @@
-import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, tripActivities, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, popularDestinations } from "@shared/schema";
+import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, activityBudgetProposalVotes, tripActivities, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type ActivityBudgetProposalVote, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, popularDestinations } from "@shared/schema";
 import { fixCreatorsAsParticipants } from "./fix-creators-as-participants";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -1906,11 +1906,35 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async voteActivityBudgetProposal(id: number, increment: boolean): Promise<ActivityBudgetProposal | undefined> {
+  async voteActivityBudgetProposal(id: number, userId: number, increment: boolean): Promise<ActivityBudgetProposal | undefined> {
     try {
       const [proposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
       if (!proposal) return undefined;
       
+      // Check if user has already voted on this activity
+      const [existingVote] = await db.select().from(activityBudgetProposalVotes)
+        .where(and(
+          eq(activityBudgetProposalVotes.userId, userId),
+          eq(activityBudgetProposalVotes.activityId, proposal.activityId)
+        ));
+      
+      if (existingVote) {
+        // User has already voted on this activity
+        console.log(`⚠️ Usuário ${userId} já votou na atividade ${proposal.activityId}`);
+        return proposal; // Return current proposal without changes
+      }
+      
+      // Create new vote record
+      const voteType = increment ? 'up' : 'down';
+      await db.insert(activityBudgetProposalVotes).values({
+        proposalId: id,
+        userId: userId,
+        activityId: proposal.activityId,
+        voteType: voteType,
+        createdAt: new Date(),
+      });
+      
+      // Update proposal vote count
       const newVotes = increment ? proposal.votes + 1 : Math.max(0, proposal.votes - 1);
       
       await db.update(activityBudgetProposals).set({
@@ -1922,6 +1946,21 @@ export class DatabaseStorage implements IStorage {
       return updatedProposal;
     } catch (error) {
       console.error('❌ Erro ao votar na proposta de orçamento da atividade:', error);
+      return undefined;
+    }
+  }
+
+  async getUserVoteForActivity(userId: number, activityId: number): Promise<ActivityBudgetProposalVote | undefined> {
+    try {
+      const [vote] = await db.select().from(activityBudgetProposalVotes)
+        .where(and(
+          eq(activityBudgetProposalVotes.userId, userId),
+          eq(activityBudgetProposalVotes.activityId, activityId)
+        ));
+      
+      return vote;
+    } catch (error) {
+      console.error('❌ Erro ao buscar voto do usuário:', error);
       return undefined;
     }
   }
