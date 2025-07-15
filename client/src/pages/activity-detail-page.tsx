@@ -100,9 +100,9 @@ export default function ActivityDetailPage() {
 
   // Buscar propostas já incluídas nas viagens do usuário
   const { data: userTrips } = useQuery({
-    queryKey: ['/api/trips/my-trips'],
+    queryKey: ['/api/my-trips'],
     queryFn: async () => {
-      const response = await fetch('/api/trips/my-trips');
+      const response = await fetch('/api/my-trips');
       if (!response.ok) throw new Error("Erro ao buscar viagens");
       return response.json();
     },
@@ -111,7 +111,7 @@ export default function ActivityDetailPage() {
 
   // Extrair IDs das propostas já incluídas nas viagens do usuário
   const includedProposalIds = userTrips ? 
-    userTrips.flatMap((trip: any) => {
+    [...(userTrips.created || []), ...(userTrips.participating || [])].flatMap((trip: any) => {
       const plannedActivities = parseJsonArray(trip.plannedActivities);
       return plannedActivities
         .filter((activity: any) => activity.activityId === Number(id))

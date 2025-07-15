@@ -1180,24 +1180,10 @@ export function registerRoutes(app: Express): Server {
       console.log('🔍 Dados recebidos para criação de proposta:', {
         activityId,
         userId,
-        body: req.body,
-        bodyType: typeof req.body,
-        inclusionsType: typeof req.body.inclusions,
-        exclusionsType: typeof req.body.exclusions,
-        inclusionsValue: req.body.inclusions,
-        exclusionsValue: req.body.exclusions
+        body: req.body
       });
       
-      // Pré-processar dados se necessário
-      const processedBody = {
-        ...req.body,
-        inclusions: Array.isArray(req.body.inclusions) ? req.body.inclusions : [],
-        exclusions: Array.isArray(req.body.exclusions) ? req.body.exclusions : []
-      };
-      
-      console.log('🔧 Dados pré-processados:', processedBody);
-      
-      const proposalData = insertActivityBudgetProposalSchema.parse(processedBody);
+      const proposalData = insertActivityBudgetProposalSchema.parse(req.body);
       
       console.log('✅ Dados validados:', proposalData);
       

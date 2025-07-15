@@ -140,23 +140,8 @@ export function ActivityBudgetProposals({
   });
 
   const onSubmit = (data: ProposalFormData) => {
-    // Parse inclusions and exclusions from textarea
-    const inclusions = data.inclusions as any;
-    const exclusions = data.exclusions as any;
-    
-    const processedData = {
-      ...data,
-      inclusions: typeof inclusions === 'string' 
-        ? inclusions.split('\n').filter(Boolean) 
-        : (Array.isArray(inclusions) ? inclusions : []),
-      exclusions: typeof exclusions === 'string' 
-        ? exclusions.split('\n').filter(Boolean) 
-        : (Array.isArray(exclusions) ? exclusions : []),
-    };
-    
-    console.log('🔍 Dados processados para envio:', processedData);
-    
-    createProposal.mutate(processedData);
+    console.log('🔍 Dados para envio:', data);
+    createProposal.mutate(data);
   };
 
   const handleVote = (proposalId: number, increment: boolean) => {
@@ -385,8 +370,11 @@ export function ActivityBudgetProposals({
                             <Textarea 
                               placeholder="Guia especializado&#10;Equipamentos&#10;Lanche"
                               className="min-h-[120px]"
-                              {...field}
-                              value={Array.isArray(field.value) ? field.value.join('\n') : field.value}
+                              value={Array.isArray(field.value) ? field.value.join('\n') : (field.value || '')}
+                              onChange={(e) => {
+                                const lines = e.target.value.split('\n').filter(line => line.trim());
+                                field.onChange(lines);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -403,8 +391,11 @@ export function ActivityBudgetProposals({
                             <Textarea 
                               placeholder="Transporte&#10;Alimentação&#10;Seguro"
                               className="min-h-[120px]"
-                              {...field}
-                              value={Array.isArray(field.value) ? field.value.join('\n') : field.value}
+                              value={Array.isArray(field.value) ? field.value.join('\n') : (field.value || '')}
+                              onChange={(e) => {
+                                const lines = e.target.value.split('\n').filter(line => line.trim());
+                                field.onChange(lines);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
