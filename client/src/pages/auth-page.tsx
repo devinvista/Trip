@@ -372,8 +372,8 @@ export default function AuthPage() {
                       <div className="flex items-center space-x-2 py-2">
                         <Checkbox id="terms" required className="border-slate-300" />
                         <Label htmlFor="terms" className="text-sm text-slate-600">
-                          Aceito os <a href="/terms" className="text-blue-600 hover:text-blue-800 font-medium">termos de uso</a> e{" "}
-                          <a href="/privacy" className="text-blue-600 hover:text-blue-800 font-medium">política de privacidade</a>
+                          Aceito os <a href="/terms-of-service" className="text-blue-600 hover:text-blue-800 font-medium">termos de uso</a> e{" "}
+                          <a href="/privacy-policy" className="text-blue-600 hover:text-blue-800 font-medium">política de privacidade</a>
                         </Label>
                       </div>
 

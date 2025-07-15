@@ -19,6 +19,8 @@ import ProfilePage from "@/pages/profile";
 import PreloaderDemo from "@/pages/preloader-demo";
 import ActivitiesPage from "@/pages/activities-page";
 import ActivityDetailPage from "@/pages/activity-detail-page";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
 
 import NotFound from "@/pages/not-found";
 
@@ -54,6 +56,8 @@ function App() {
               <Route path="/preloader-demo" component={PreloaderDemo} />
               <Route path="/activities" component={ActivitiesPage} />
               <Route path="/activities/:id" component={ActivityDetailPage} />
+              <Route path="/privacy-policy" component={PrivacyPolicy} />
+              <Route path="/terms-of-service" component={TermsOfService} />
 
               <Route component={NotFound} />
             </Switch>

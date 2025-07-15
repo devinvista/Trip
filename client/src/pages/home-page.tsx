@@ -886,8 +886,8 @@ export default function HomePage() {
               <ul className="space-y-2 text-slate-400">
                 <li><Link href="/profile" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Central de Ajuda</Link></li>
                 <li><Link href="/profile" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Segurança</Link></li>
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Termos de Uso</span></li>
-                <li><span className="hover:text-yellow-400 cursor-pointer transition-colors">Privacidade</span></li>
+                <li><Link href="/terms-of-service" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Termos de Uso</Link></li>
+                <li><Link href="/privacy-policy" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Privacidade</Link></li>
               </ul>
             </div>
           </div>

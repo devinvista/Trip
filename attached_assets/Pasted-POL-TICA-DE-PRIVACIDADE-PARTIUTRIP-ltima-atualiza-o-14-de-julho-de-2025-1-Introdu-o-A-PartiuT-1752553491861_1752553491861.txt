@@ -1,0 +1,94 @@
+POLÍTICA DE PRIVACIDADE - PARTIUTRIP
+Última atualização: 14 de julho de 2025
+1. Introdução
+A PartiuTrip ("nós", "nosso") valoriza sua privacidade. Esta Política explica como coletamos, usamos, compartilhamos e protegemos seus dados pessoais, em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018). Ao usar nossa plataforma, você concorda com estas práticas.
+________________________________________
+2. Dados Coletados
+a) Dados fornecidos por você:
+•	Identificação: Nome, e-mail, telefone, foto de perfil
+•	Preferências de viagem: Estilo (praia, aventura, etc.), destinos de interesse, orçamento médio
+•	Conteúdo gerado: Mensagens, planos de viagem, atividades, upload de recibos
+•	Dados financeiros: Valores de despesas compartilhadas (não coletamos dados bancários ou cartões)
+b) Coletados automaticamente:
+•	Dados técnicos: IP, tipo de navegador, dispositivo
+•	Uso da plataforma: Páginas visitadas, interações, tempo de sessão
+•	Localização aproximada: Com base no IP (para sugestões de destinos)
+________________________________________
+3. Finalidades do Tratamento
+Usamos seus dados para:
+Finalidade	Base Legal (LGPD)
+Criar e gerenciar sua conta	Execução de contrato (Art. 7º, V)
+Conectar você a companheiros de viagem	Legítimo interesse (Art. 7º, IX)
+Calcular divisão de despesas	Consentimento (Art. 7º, I)
+Enviar notificações sobre viagens	Execução de contrato
+Melhorar nossos serviços	Legítimo interesse
+Cumprir obrigações legais	Obrigação legal (Art. 7º, II)
+________________________________________
+4. Compartilhamento de Dados
+Compartilhamos informações apenas quando necessário:
+•	Com outros usuários: Perfil básico (nome, foto) e mensagens para participantes da mesma viagem
+•	Com prestadores de serviço: Hospedagem em nuvem (AWS Brasil), ferramentas de análise (Google Analytics anonimizado)
+•	Com autoridades: Para cumprir ordens judiciais ou leis aplicáveis
+Nunca vendemos seus dados pessoais.
+________________________________________
+5. Segurança de Dados
+Implementamos:
+•	Criptografia: Dados em trânsito (HTTPS) e em repouso
+•	Acesso restrito: Apenas pessoal autorizado
+•	Monitoramento contínuo: Para detectar violações
+•	Backups diários: Em servidores seguros no Brasil
+________________________________________
+6. Retenção de Dados
+Mantemos seus dados:
+•	Conta ativa: Enquanto você usar a plataforma
+•	Após inatividade: 2 anos (exceto dados legais)
+•	Recibos: Excluídos automaticamente após 180 dias
+•	Exclusão total: Solicitação via Seção 8
+________________________________________
+7. Cookies e Tecnologias Similares
+Usamos:
+•	Cookies essenciais: Para login e funcionalidades básicas
+•	Cookies analíticos: Google Analytics (dados agregados)
+•	Controle: Gerencie preferências no banner de cookies ou configurações do navegador
+________________________________________
+8. Seus Direitos LGPD
+Você pode solicitar:
+Direito	Como exercer
+Acesso aos dados	Via portal do usuário ou e-mail
+Correção de dados	Atualize seu perfil ou solicite
+Exclusão ("esquecimento")	Solicite em privacidade@partiutrip.com
+
+Portabilidade	Receba dados em formato legível
+Revogar consentimento	Ajuste configurações de conta
+Prazo de resposta: 15 dias úteis.
+________________________________________
+9. Menores de Idade
+•	Idade mínima: 18 anos
+•	Verificação: Solicitamos confirmação de idade no cadastro
+•	Menores inadvertidos: Excluiremos dados se identificados
+________________________________________
+10. Alterações nesta Política
+Notificaremos sobre mudanças:
+•	Comunicação: E-mail ou notificação na plataforma
+•	Aceitação: Uso contínuo após 30 dias implica concordância
+________________________________________
+11. Encarregado de Dados (DPO)
+Entre em contato para exercer seus direitos:
+E-mail: dpo@partiutrip.com
+________________________________________
+Anexo: Medidas Específicas
+Para funcionalidades do PartiuTrip:
+1.	Compartilhamento de custos:
+o	Dados financeiros são exclusivamente para cálculo
+o	Recibos compartilhados têm acesso restrito aos participantes
+2.	Sistema de mensagens:
+o	Moderamos proativamente conteúdo ofensivo
+o	Mensagens são armazenadas por 2 anos
+3.	Perfil público:
+o	Controle de visibilidade nas configurações
+o	Dados sensíveis (e.g., telefone) são sempre privados
+4.	Upload de documentos:
+o	Recibos são armazenados com criptografia de ponta a ponta
+o	Metadados (localização, data) são removidos automaticamente
+________________________________________
+Esta política foi elaborada para refletir os princípios de transparência da LGPD e as práticas de plataformas líderes de viagens. Para dúvidas, contate nosso DPO.
