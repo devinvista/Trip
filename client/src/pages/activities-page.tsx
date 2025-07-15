@@ -570,13 +570,13 @@ export default function ActivitiesPage() {
 
       {/* Upcoming Trips Suggestions - Only show if user is logged in and has upcoming trips */}
       {user && upcomingTripsSuggestions.length > 0 && (
-        <div className="bg-gradient-to-r from-[#41B6FF]/5 to-[#41B6FF]/10 border-b border-[#AAB0B7]/20">
+        <div className="bg-gradient-to-r from-slate-50 to-orange-50/30 border-b border-slate-200/40">
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#41B6FF]" />
-                <h2 className="text-lg font-semibold text-[#1B2B49]">Sugestões para Suas Próximas Viagens</h2>
-                <Badge variant="outline" className="bg-[#41B6FF]/10 text-[#41B6FF] border-[#41B6FF]/20">
+                <Calendar className="w-5 h-5 text-orange-600" />
+                <h2 className="text-lg font-semibold text-slate-900">Sugestões para Suas Próximas Viagens</h2>
+                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
                   Baseado nos seus destinos
                 </Badge>
               </div>
@@ -585,7 +585,7 @@ export default function ActivitiesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
               {upcomingTripsSuggestions.map((activity) => (
                 <Link key={activity.id} to={`/activities/${activity.id}`}>
-                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-[#41B6FF]/20">
+                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-slate-200/60 hover:border-orange-300/60">
                     <div className="relative">
                       <img
                         src={activity.coverImage}
@@ -599,7 +599,7 @@ export default function ActivitiesPage() {
                         </div>
                       </div>
                       <div className="absolute top-2 left-2">
-                        <div className="bg-[#41B6FF] text-white rounded-full px-2 py-1 text-xs font-medium">
+                        <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-full px-2 py-1 text-xs font-medium shadow-sm">
                           Próxima viagem
                         </div>
                       </div>
