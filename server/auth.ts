@@ -63,6 +63,23 @@ export function setupAuth(app: Express) {
 
   // Custom authentication middleware to handle both session and manual session ID
   app.use(async (req: any, res, next) => {
+    // Log session information for debugging
+    if (req.path.startsWith('/api/')) {
+      console.log('🔍 Session debug:', {
+        url: req.url,
+        method: req.method,
+        sessionID: req.sessionID,
+        isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : 'undefined',
+        hasUser: !!req.user,
+        sessionData: req.session,
+        cookies: Object.keys(req.cookies || {}),
+        headers: {
+          cookie: req.headers.cookie ? 'presente' : 'ausente',
+          sessionIdHeader: req.headers['x-session-id'] ? 'presente' : 'ausente'
+        }
+      });
+    }
+    
     // If already authenticated via session, continue
     if (req.isAuthenticated && req.isAuthenticated() && req.user) {
       return next();
@@ -226,15 +243,6 @@ export function setupAuth(app: Express) {
 
   // Rota de verificação do usuário
   app.get("/api/user", async (req, res) => {
-    console.log('🔍 Verificando usuário atual:', {
-      isAuthenticated: req.isAuthenticated(),
-      hasUser: !!req.user,
-      user: req.user,
-      sessionID: req.sessionID,
-      session: req.session,
-      cookies: req.cookies
-    });
-    
     if (req.isAuthenticated() && req.user) {
       // Always fetch fresh user data from database to ensure latest verification status
       try {
@@ -260,6 +268,14 @@ export function setupAuth(app: Express) {
         res.status(500).json({ message: "Erro interno do servidor" });
       }
     } else {
+      console.log('🔍 Verificando usuário atual:', {
+        isAuthenticated: req.isAuthenticated(),
+        hasUser: !!req.user,
+        user: req.user,
+        sessionID: req.sessionID,
+        session: req.session,
+        cookies: req.cookies
+      });
       res.status(401).json({ message: "Não autorizado" });
     }
   });
