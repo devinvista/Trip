@@ -870,6 +870,7 @@ interface AdvancedActivityManagerProps {
   className?: string;
   tripDestination?: string;
   trip?: any; // Trip object for calculating real participants
+  tripParticipants?: number; // Fallback for participant count
 }
 
 export function AdvancedActivityManager({ 
@@ -877,9 +878,10 @@ export function AdvancedActivityManager({
   onActivitiesChange, 
   className = '',
   tripDestination,
-  trip
+  trip,
+  tripParticipants = 1
 }: AdvancedActivityManagerProps) {
-  const realParticipantsCount = trip ? getRealParticipantsCount(trip) : 1;
+  const realParticipantsCount = trip ? getRealParticipantsCount(trip) : tripParticipants;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
 
