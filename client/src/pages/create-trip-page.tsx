@@ -883,7 +883,8 @@ function CreateTripPageContent() {
                           activities={plannedActivities}
                           onActivitiesChange={setPlannedActivities}
                           tripDestination={form.watch('destination')}
-                          tripParticipants={form.watch('maxParticipants') || 1}
+                          tripParticipants={1}
+                          tripMaxParticipants={form.watch('maxParticipants') || 1}
                           className="border-2 border-gray-200 rounded-lg p-4"
                         />
                       </motion.div>

@@ -765,7 +765,9 @@ export default function TripDetailPage() {
                         activities={plannedActivities}
                         onActivitiesChange={setPlannedActivities}
                         tripDestination={trip.destination}
+                        trip={trip}
                         tripParticipants={realParticipants.length}
+                        tripMaxParticipants={trip.maxParticipants}
                         className="border-0"
                       />
                     ) : (

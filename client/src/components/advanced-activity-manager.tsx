@@ -217,7 +217,8 @@ function ActivityManagementDialog({
   onClose, 
   onSave,
   tripDestination,
-  tripParticipants = 1
+  tripParticipants = 1,
+  tripMaxParticipants
 }: {
   activity?: PlannedActivity;
   isOpen: boolean;
@@ -225,6 +226,7 @@ function ActivityManagementDialog({
   onSave: (activity: PlannedActivity) => void;
   tripDestination?: string;
   tripParticipants?: number;
+  tripMaxParticipants?: number;
 }) {
   const [activeTab, setActiveTab] = useState(activity ? "manual" : "search");
   
@@ -256,6 +258,7 @@ function ActivityManagementDialog({
               onClose={onClose} 
               tripDestination={tripDestination}
               tripParticipants={tripParticipants}
+              tripMaxParticipants={tripMaxParticipants}
             />
           </TabsContent>
           
@@ -277,19 +280,21 @@ function ActivitySearchTab({
   onSave, 
   onClose, 
   tripDestination,
-  tripParticipants = 1
+  tripParticipants = 1,
+  tripMaxParticipants
 }: { 
   onSave: (activity: PlannedActivity) => void; 
   onClose: () => void;
   tripDestination?: string;
   tripParticipants?: number;
+  tripMaxParticipants?: number;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedActivity, setSelectedActivity] = useState<any>(null);
   
-  // Use trip participants automatically instead of manual input
-  const participants = tripParticipants;
+  // Use max participants for cost estimation (planning for full trip capacity)
+  const participants = tripMaxParticipants || tripParticipants;
 
   // Query for activities by trip destination (shown by default)
   const { data: destinationActivities, isLoading: isLoadingDestination } = useQuery({
@@ -870,7 +875,8 @@ interface AdvancedActivityManagerProps {
   className?: string;
   tripDestination?: string;
   trip?: any; // Trip object for calculating real participants
-  tripParticipants?: number; // Fallback for participant count
+  tripParticipants?: number; // Current accepted participants
+  tripMaxParticipants?: number; // Max participants for cost estimation
 }
 
 export function AdvancedActivityManager({ 
@@ -879,9 +885,11 @@ export function AdvancedActivityManager({
   className = '',
   tripDestination,
   trip,
-  tripParticipants = 1
+  tripParticipants = 1,
+  tripMaxParticipants
 }: AdvancedActivityManagerProps) {
   const realParticipantsCount = trip ? getRealParticipantsCount(trip) : tripParticipants;
+  const maxParticipantsCount = trip ? trip.maxParticipants : (tripMaxParticipants || tripParticipants);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
 
@@ -1017,6 +1025,7 @@ export function AdvancedActivityManager({
         onSave={handleSaveActivity}
         tripDestination={tripDestination}
         tripParticipants={realParticipantsCount}
+        tripMaxParticipants={maxParticipantsCount}
       />
     </div>
   );
