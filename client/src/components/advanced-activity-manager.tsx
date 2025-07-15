@@ -53,8 +53,7 @@ import {
   FileText,
   Star,
   Search,
-  Users,
-  CalendarDays
+  Users
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -248,8 +247,8 @@ function ActivityManagementDialog({
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="search" className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4" />
-              Timeline
+              <Search className="h-4 w-4" />
+              Buscar Atividades
             </TabsTrigger>
             <TabsTrigger value="manual" className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
