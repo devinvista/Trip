@@ -20,7 +20,9 @@ import {
   Plus,
   ChevronRight,
   Target,
-  Sparkles
+  Sparkles,
+  Sliders,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -498,158 +500,219 @@ export default function ActivitiesPage() {
           </div>
         </div>
 
-        {/* Enhanced Filters */}
-        {showFilters && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-8 bg-white rounded-xl border border-[#AAB0B7]/20 p-4 md:p-6 shadow-sm"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              <div>
-                <label className="block text-sm font-medium text-[#1B2B49] mb-3">
-                  Categoria
-                </label>
-                <Select 
-                  value={filters.category} 
-                  onValueChange={(value) => updateFilter("category", value)}
-                >
-                  <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
-                    <SelectValue placeholder="Todas as categorias" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas as categorias</SelectItem>
-                    {Object.entries(activityCategories).map(([key, cat]) => (
-                      <SelectItem key={key} value={key}>
-                        {cat.icon} {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+        {/* Modern Filter Tabs - Similar to Dashboard */}
+        <div className="mb-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Sliders className="w-5 h-5 text-[#1B2B49]" />
+                <span className="text-lg font-semibold text-[#1B2B49]">Filtros</span>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[#1B2B49] mb-3">
-                  Preço
-                </label>
-                <Select 
-                  value={filters.priceRange} 
-                  onValueChange={(value) => updateFilter("priceRange", value)}
+              <div className="bg-slate-100 rounded-lg p-1 flex gap-1 overflow-x-auto min-w-fit">
+                <Button
+                  variant={filters.category === "all" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => updateFilter("category", "all")}
+                  className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap ${
+                    filters.category === "all" 
+                      ? "bg-white shadow-sm text-slate-900" 
+                      : "text-slate-600 hover:bg-white/50"
+                  }`}
                 >
-                  <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
-                    <SelectValue placeholder="Todos os preços" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRICE_RANGES.map(range => (
-                      <SelectItem key={range.value} value={range.value}>
-                        {range.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[#1B2B49] mb-3">
-                  Dificuldade
-                </label>
-                <Select 
-                  value={filters.difficulty} 
-                  onValueChange={(value) => updateFilter("difficulty", value)}
-                >
-                  <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
-                    <SelectValue placeholder="Todos os níveis" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DIFFICULTY_LEVELS.map(level => (
-                      <SelectItem key={level.value} value={level.value}>
-                        {level.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-[#1B2B49] mb-3">
-                  Ordenar por
-                </label>
-                <Select 
-                  value={filters.sortBy} 
-                  onValueChange={(value) => updateFilter("sortBy", value)}
-                >
-                  <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#41B6FF]">
-                    <SelectValue placeholder="Ordenar por" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SORT_OPTIONS.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  🗂️ Todas
+                  <span className="ml-1 bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs">
+                    {activities?.length || 0}
+                  </span>
+                </Button>
+                
+                {Object.entries(activityCategories).slice(0, 4).map(([key, cat]) => {
+                  const count = activities?.filter(a => a.category === key).length || 0;
+                  return (
+                    <Button
+                      key={key}
+                      variant={filters.category === key ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => updateFilter("category", key)}
+                      className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap truncate ${
+                        filters.category === key 
+                          ? "bg-white shadow-sm text-slate-900" 
+                          : "text-slate-600 hover:bg-white/50"
+                      }`}
+                    >
+                      {cat.icon} <span className="hidden sm:inline">{cat.label}</span>
+                      <span className="ml-1 bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs">
+                        {count}
+                      </span>
+                    </Button>
+                  );
+                })}
               </div>
             </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 border-slate-200 hover:bg-slate-50"
+            >
+              <Filter className="w-4 h-4" />
+              Mais filtros
+              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+            </Button>
+          </div>
 
-            {/* Special Filters */}
-            {user && (
-              <div className="mt-6 pt-4 border-t border-[#AAB0B7]/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-[#41B6FF]" />
-                    <label className="text-sm font-medium text-[#1B2B49]">
-                      Apenas destinos das minhas viagens
-                    </label>
-                  </div>
-                  <Switch
-                    checked={filters.onlyMyTrips}
-                    onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
-                  />
+          {/* Advanced Filters */}
+          {showFilters && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="bg-white rounded-xl border border-slate-200/60 p-4 md:p-6 shadow-sm"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">
+                    Faixa de Preço
+                  </label>
+                  <Select 
+                    value={filters.priceRange} 
+                    onValueChange={(value) => updateFilter("priceRange", value)}
+                  >
+                    <SelectTrigger className="border-slate-200 focus:border-blue-400">
+                      <SelectValue placeholder="Todos os preços" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRICE_RANGES.map(range => (
+                        <SelectItem key={range.value} value={range.value}>
+                          {range.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <p className="text-xs text-[#AAB0B7] mt-1">
-                  Mostra apenas atividades nos destinos onde você tem viagens planejadas
-                </p>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">
+                    Nível de Dificuldade
+                  </label>
+                  <Select 
+                    value={filters.difficulty} 
+                    onValueChange={(value) => updateFilter("difficulty", value)}
+                  >
+                    <SelectTrigger className="border-slate-200 focus:border-blue-400">
+                      <SelectValue placeholder="Todos os níveis" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DIFFICULTY_LEVELS.map(level => (
+                        <SelectItem key={level.value} value={level.value}>
+                          {level.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">
+                    Ordenar por
+                  </label>
+                  <Select 
+                    value={filters.sortBy} 
+                    onValueChange={(value) => updateFilter("sortBy", value)}
+                  >
+                    <SelectTrigger className="border-slate-200 focus:border-blue-400">
+                      <SelectValue placeholder="Ordenar por" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SORT_OPTIONS.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            )}
-          </motion.div>
-        )}
 
-        {/* Activities Grouped by City */}
-        {cities.length > 0 ? (
-          <div className="space-y-12">
-            {cities.map((city) => (
-              <div key={city} className="space-y-6">
-                {/* City Header */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-2xl font-bold text-[#1B2B49]">
-                      {city}
-                    </h2>
-                    <Badge variant="outline" className="bg-[#41B6FF]/10 text-[#41B6FF] border-[#41B6FF]/20">
-                      {groupedActivities[city].length} atividades
-                    </Badge>
+              {/* Special Filters */}
+              {user && (
+                <div className="mt-6 pt-4 border-t border-slate-200">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-100 p-2 rounded-lg">
+                        <Target className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-900">
+                          Apenas destinos das minhas viagens
+                        </label>
+                        <p className="text-xs text-slate-600 mt-1">
+                          Mostra apenas atividades nos destinos onde você tem viagens planejadas
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={filters.onlyMyTrips}
+                      onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
+                    />
                   </div>
-                  <Button variant="ghost" size="sm" className="text-[#41B6FF] hover:bg-[#41B6FF]/10">
-                    Ver todas em {city} <ChevronRight className="w-4 h-4 ml-1" />
-                  </Button>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Activities Grouped by City - Enhanced Layout */}
+        {cities.length > 0 ? (
+          <div className="space-y-8">
+            {cities.map((city) => (
+              <div key={city} className="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
+                {/* City Header - Enhanced */}
+                <div className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200/60 p-4 md:p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-blue-100 p-3 rounded-xl">
+                        <MapPin className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl md:text-2xl font-bold text-slate-900">
+                          {city}
+                        </h2>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                            {groupedActivities[city].length} atividades
+                          </Badge>
+                          <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
+                            {Math.round(groupedActivities[city].reduce((acc, a) => acc + Number(a.averageRating), 0) / groupedActivities[city].length * 10) / 10}★ média
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-blue-200 text-blue-600 hover:bg-blue-50 hidden sm:flex"
+                    >
+                      Ver todas <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Activities Grid */}
-                <div className={`grid gap-4 md:gap-6 ${
-                  viewMode === "grid" 
-                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" 
-                    : "grid-cols-1"
-                }`}>
-                  {groupedActivities[city].map((activity) => (
-                    <motion.div
-                      key={activity.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-[#AAB0B7]/20 hover:border-[#41B6FF]/30">
+                {/* Activities Grid - Improved */}
+                <div className="p-4 md:p-6">
+                  <div className={`grid gap-4 md:gap-6 ${
+                    viewMode === "grid" 
+                      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" 
+                      : "grid-cols-1"
+                  }`}>
+                    {groupedActivities[city].map((activity) => (
+                      <motion.div
+                        key={activity.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-blue-300/60 group">
                         <div className="relative">
                           <img
                             src={activity.coverImage}
@@ -774,6 +837,7 @@ export default function ActivitiesPage() {
                       </Card>
                     </motion.div>
                   ))}
+                  </div>
                 </div>
               </div>
             ))}
