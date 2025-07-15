@@ -401,7 +401,7 @@ export function ActivityBudgetProposals({
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-green-600">
-                      R$ {proposal.amount?.toFixed(2) || '0.00'}
+                      R$ {Number(proposal.amount || 0).toFixed(2)}
                     </div>
                     <div className="text-sm text-gray-500 capitalize">
                       {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
@@ -415,7 +415,7 @@ export function ActivityBudgetProposals({
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <DollarSign className="h-4 w-4 text-gray-500" />
-                    <span>R$ {proposal.amount?.toFixed(2) || '0.00'}</span>
+                    <span>R$ {Number(proposal.amount || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Badge variant="outline" className="capitalize">

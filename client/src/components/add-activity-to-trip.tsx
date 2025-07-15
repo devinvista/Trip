@@ -63,26 +63,18 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch all user trips (both created and participated)
+  // Fetch user trips in same location as activity (like in the trip page)
   const { data: userTrips = [], isLoading: tripsLoading } = useQuery({
-    queryKey: ['/api/my-trips'],
+    queryKey: ['/api/users', user?.id, 'trips-in-location', activity.location],
     queryFn: async () => {
       if (!user) return [];
-      const response = await fetch('/api/my-trips');
+      const response = await fetch(`/api/users/${user.id}/trips-in-location?location=${encodeURIComponent(activity.location)}`);
       if (!response.ok) {
         if (response.status === 401) return [];
         throw new Error('Falha ao buscar viagens');
       }
-      const data = await response.json();
-      // Combine created and participated trips, filter only future trips
-      const allTrips = [...(data.created || []), ...(data.participating || [])];
-      const now = new Date();
-      const result = allTrips.filter(trip => {
-        const tripEnd = new Date(trip.endDate);
-        return tripEnd >= now; // Only show future trips or trips in progress
-      });
-      
-      console.log('🔍 AddActivityToTrip userTrips result:', result);
+      const result = await response.json();
+      console.log('🔍 AddActivityToTrip trips in location result:', result);
       return result;
     },
     enabled: !!user && isOpen
@@ -211,7 +203,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
               <MapPin className="h-4 w-4" />
-              <span>Buscando viagens em {activity.location}</span>
+              <span>Buscando suas viagens em {activity.location}</span>
             </div>
 
             {tripsLoading ? (
@@ -228,10 +220,10 @@ export function AddActivityToTrip({ activity, isOpen, onClose }: AddActivityToTr
                     Nenhuma viagem encontrada
                   </h4>
                   <p className="text-gray-500 mb-4">
-                    Você não tem viagens programadas ou futuras.
+                    Você não tem viagens programadas para {activity.location}.
                   </p>
                   <p className="text-sm text-gray-400">
-                    Para adicionar esta atividade, crie uma viagem primeiro.
+                    Para adicionar esta atividade, crie uma viagem para este destino primeiro.
                   </p>
                 </CardContent>
               </Card>
