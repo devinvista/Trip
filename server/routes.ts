@@ -1138,7 +1138,60 @@ export function registerRoutes(app: Express): Server {
         .limit(1);
 
       if (existingReview.length > 0) {
-        return res.status(400).json({ message: "Você já avaliou esta atividade" });
+        // Update existing review instead of creating new one
+        await db.update(activityReviews)
+          .set({
+            rating: validatedData.rating,
+            review: validatedData.review,
+            photos: validatedData.photos || [],
+            visitDate: validatedData.visitDate || null
+          })
+          .where(eq(activityReviews.id, existingReview[0].id));
+        
+        const reviewId = existingReview[0].id;
+        
+        // Update activity's average rating
+        const allReviews = await db
+          .select({ rating: activityReviews.rating })
+          .from(activityReviews)
+          .where(eq(activityReviews.activityId, activityId));
+
+        const averageRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+
+        await db.update(activities)
+          .set({
+            averageRating: parseFloat(averageRating.toFixed(2)),
+            totalRatings: allReviews.length
+          })
+          .where(eq(activities.id, activityId));
+
+        // Return the updated review with user data
+        const reviewWithUser = await db
+          .select({
+            id: activityReviews.id,
+            activityId: activityReviews.activityId,
+            rating: activityReviews.rating,
+            review: activityReviews.review,
+            photos: activityReviews.photos,
+            visitDate: activityReviews.visitDate,
+            helpfulVotes: activityReviews.helpfulVotes,
+            isVerified: activityReviews.isVerified,
+            createdAt: activityReviews.createdAt,
+            user: {
+              id: users.id,
+              username: users.username,
+              fullName: users.fullName,
+              profilePhoto: users.profilePhoto,
+              averageRating: users.averageRating,
+              isVerified: users.isVerified
+            }
+          })
+          .from(activityReviews)
+          .innerJoin(users, eq(activityReviews.userId, users.id))
+          .where(eq(activityReviews.id, reviewId))
+          .limit(1);
+
+        return res.status(200).json(reviewWithUser[0]);
       }
 
       // Create the review
