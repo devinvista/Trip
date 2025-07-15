@@ -1295,12 +1295,22 @@ export function registerRoutes(app: Express): Server {
       const userId = req.user!.id;
       const tripActivityData = insertTripActivitySchema.parse(req.body);
       
+      console.log('🔍 Adicionando atividade à viagem:', {
+        tripId,
+        userId,
+        activityId: tripActivityData.activityId,
+        budgetProposalId: tripActivityData.budgetProposalId,
+        totalCost: tripActivityData.totalCost,
+        participants: tripActivityData.participants
+      });
+      
       const tripActivity = await storage.addActivityToTrip({
         ...tripActivityData,
         tripId,
         addedBy: userId
       });
       
+      console.log('✅ Atividade adicionada com sucesso:', tripActivity);
       res.status(201).json(tripActivity);
     } catch (error) {
       console.error('Erro ao adicionar atividade à viagem:', error);
