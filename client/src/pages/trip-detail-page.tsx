@@ -308,27 +308,13 @@ function ActivitiesTimeline({
   tripStartDate, 
   tripEndDate, 
   canJoin, 
-  onJoinClick,
-  showManagerForParticipants = false,
-  tripId,
-  tripDestination,
-  tripParticipants,
-  tripMaxParticipants,
-  onActivitiesChange,
-  trip
+  onJoinClick 
 }: {
   activities: PlannedActivity[];
   tripStartDate: string;
   tripEndDate: string;
   canJoin: boolean;
   onJoinClick: () => void;
-  showManagerForParticipants?: boolean;
-  tripId?: number;
-  tripDestination?: string;
-  tripParticipants?: number;
-  tripMaxParticipants?: number;
-  onActivitiesChange?: (activities: PlannedActivity[]) => void;
-  trip?: any;
 }) {
   // Function to get category icon and color
   const getCategoryConfig = (category: string) => {
@@ -441,40 +427,6 @@ function ActivitiesTimeline({
 
   return (
     <div className="space-y-6">
-      {/* Activity Manager for Participants */}
-      {showManagerForParticipants && tripId && onActivitiesChange && (
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <Target className="h-4 w-4 text-green-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900">Gerenciar Atividades</h3>
-            <Badge variant="outline" className="text-green-700 border-green-200">
-              Participante
-            </Badge>
-          </div>
-          <AdvancedActivityManager
-            activities={activities}
-            onActivitiesChange={onActivitiesChange}
-            tripDestination={tripDestination}
-            trip={trip}
-            tripParticipants={tripParticipants || 1}
-            tripMaxParticipants={tripMaxParticipants || 1}
-            tripStartDate={tripStartDate}
-            tripEndDate={tripEndDate}
-            className="border-0"
-          />
-        </div>
-      )}
-
-      {/* Debug Info - remover após teste */}
-      <div className="bg-yellow-50 p-2 rounded text-xs text-yellow-800 mb-4">
-        Debug: showManagerForParticipants={String(showManagerForParticipants)}, 
-        tripId={tripId}, 
-        hasOnActivitiesChange={Boolean(onActivitiesChange)},
-        activitiesLength={activities.length}
-      </div>
-
       {/* Timeline Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
@@ -653,15 +605,6 @@ export default function TripDetailPage() {
   // Calculate user permissions
   const isCreator = trip && user && trip.creatorId === user.id;
   const isParticipant = trip && user && trip.participants?.some((p: any) => p.userId === user.id && p.status === 'accepted');
-  
-  // Debug permissions
-  console.log('Permission Debug:', {
-    user: user?.username,
-    isCreator,
-    isParticipant,
-    participants: trip?.participants,
-    showManagerForParticipants: isCreator || isParticipant
-  });
 
   const { data: expenses = [] } = useQuery<any[]>({
     queryKey: ["/api/trips", id, "expenses"],
@@ -1095,21 +1038,27 @@ export default function TripDetailPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {/* Timeline always visible for everyone */}
-                    <ActivitiesTimeline 
-                      activities={plannedActivities}
-                      tripStartDate={trip.startDate}
-                      tripEndDate={trip.endDate}
-                      canJoin={canJoin}
-                      onJoinClick={() => setActiveTab("overview")}
-                      showManagerForParticipants={isCreator || isParticipant}
-                      tripId={parseInt(id!)}
-                      tripDestination={trip.destination}
-                      tripParticipants={realParticipants.length}
-                      tripMaxParticipants={trip.maxParticipants}
-                      onActivitiesChange={setPlannedActivities}
-                      trip={trip}
-                    />
+                    {(isCreator || isParticipant) ? (
+                      <AdvancedActivityManager
+                        activities={plannedActivities}
+                        onActivitiesChange={setPlannedActivities}
+                        tripDestination={trip.destination}
+                        trip={trip}
+                        tripParticipants={realParticipants.length}
+                        tripMaxParticipants={trip.maxParticipants}
+                        tripStartDate={trip.startDate}
+                        tripEndDate={trip.endDate}
+                        className="border-0"
+                      />
+                    ) : (
+                      <ActivitiesTimeline 
+                        activities={plannedActivities}
+                        tripStartDate={trip.startDate}
+                        tripEndDate={trip.endDate}
+                        canJoin={canJoin}
+                        onJoinClick={() => setActiveTab("overview")}
+                      />
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
