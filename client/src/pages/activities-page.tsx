@@ -794,7 +794,7 @@ export default function ActivitiesPage() {
                                   Ver detalhes
                                 </Button>
                               </Link>
-                              <Button size="sm" className="bg-[#FFA500] hover:bg-[#FFA500]/90 hover:shadow-md transition-all duration-300 text-white text-xs sm:text-sm">
+                              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 text-xs sm:text-sm">
                                 <Plus className="w-4 h-4 mr-1" />
                                 Adicionar
                               </Button>

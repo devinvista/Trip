@@ -408,6 +408,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                 <Button
                   onClick={handleAddExpense}
                   disabled={createExpenseMutation.isPending}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   {createExpenseMutation.isPending ? "Adicionando..." : "Adicionar"}
                 </Button>

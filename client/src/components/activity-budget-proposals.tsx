@@ -616,19 +616,13 @@ export function ActivityBudgetProposals({
                       {(onSelectProposal || allowMultipleSelection) && (
                         <Button 
                           size="sm"
-                          variant={
-                            includedProposalIds.includes(proposal.id) 
-                              ? "secondary" 
-                              : isSelected 
-                              ? "default" 
-                              : "outline"
-                          }
+                          variant="outline"
                           className={
                             includedProposalIds.includes(proposal.id)
-                              ? "h-8 bg-green-100 hover:bg-green-200 text-green-800 border-green-300"
+                              ? "h-8 bg-green-100 hover:bg-green-200 text-green-800 border-green-300 cursor-not-allowed"
                               : isSelected 
-                              ? "bg-blue-600 hover:bg-blue-700 text-white h-8" 
-                              : "h-8 hover:bg-blue-50 hover:border-blue-300"
+                              ? "h-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-blue-600 shadow-md" 
+                              : "h-8 border-blue-300 text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-400 hover:text-blue-700 transition-all duration-200"
                           }
                           disabled={includedProposalIds.includes(proposal.id)}
                           onClick={(e) => {
@@ -644,9 +638,15 @@ export function ActivityBudgetProposals({
                               Já incluído
                             </>
                           ) : isSelected ? (
-                            allowMultipleSelection ? "Selecionado" : "Selecionado"
+                            <>
+                              <Check className="h-3 w-3 mr-1" />
+                              {allowMultipleSelection ? "Selecionado" : "Selecionado"}
+                            </>
                           ) : (
-                            allowMultipleSelection ? "Adicionar" : "Selecionar"
+                            <>
+                              <Plus className="h-3 w-3 mr-1" />
+                              {allowMultipleSelection ? "Adicionar" : "Selecionar"}
+                            </>
                           )}
                         </Button>
                       )}

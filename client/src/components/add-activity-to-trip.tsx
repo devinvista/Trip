@@ -292,7 +292,13 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                               </span>
                             </div>
                           </div>
-                          <Button size="sm">Selecionar</Button>
+                          <Button 
+                            size="sm" 
+                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Selecionar
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>

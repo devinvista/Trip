@@ -613,7 +613,7 @@ export default function ActivityDetailPage() {
 
               <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
                 <DialogTrigger asChild>
-                  <Button className="w-full mb-3 bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200">
                     <Calendar className="w-4 h-4 mr-2" />
                     Reservar Agora
                   </Button>
@@ -623,7 +623,7 @@ export default function ActivityDetailPage() {
               <Button 
                 onClick={() => setShowAddToTripDialog(true)}
                 variant="outline" 
-                className="w-full mb-4 border-blue-600 text-blue-600 hover:bg-blue-50"
+                className="w-full mb-4 border-blue-300 text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-400 hover:text-blue-700 transition-all duration-200"
               >
                 <Plane className="w-4 h-4 mr-2" />
                 Adicionar à Viagem
