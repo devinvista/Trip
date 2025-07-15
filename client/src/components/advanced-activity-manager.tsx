@@ -566,13 +566,13 @@ function ActivitySearchTab({
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                min={tripStartDate ? new Date(tripStartDate).toISOString().split('T')[0] : undefined}
-                max={tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : undefined}
+                min={tripStartDate ? formatDateForInput(tripStartDate) : undefined}
+                max={tripEndDate ? formatDateForInput(tripEndDate) : undefined}
                 className="mt-1"
               />
               {tripStartDate && tripEndDate && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
+                  Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')} (incluindo ambos os dias)
                 </p>
               )}
             </div>
@@ -596,6 +596,16 @@ function ActivitySearchTab({
       </div>
     </div>
   );
+}
+
+// Helper function to convert date to YYYY-MM-DD format without timezone issues
+function formatDateForInput(dateString: string): string {
+  const date = new Date(dateString);
+  // Ensure we get the correct local date regardless of timezone
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 // Activity Form Tab
@@ -789,8 +799,8 @@ function ActivityFormTab({
             type="date"
             value={formData.dateTime}
             onChange={(e) => setFormData(prev => ({ ...prev, dateTime: e.target.value }))}
-            min={tripStartDate ? new Date(tripStartDate).toISOString().split('T')[0] : undefined}
-            max={tripEndDate ? new Date(tripEndDate).toISOString().split('T')[0] : undefined}
+            min={tripStartDate ? formatDateForInput(tripStartDate) : undefined}
+            max={tripEndDate ? formatDateForInput(tripEndDate) : undefined}
             className="border-2 focus:border-primary"
           />
           {tripStartDate && tripEndDate && (
