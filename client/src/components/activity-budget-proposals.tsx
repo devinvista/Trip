@@ -12,20 +12,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertActivityBudgetProposalSchema } from "@shared/schema";
 import type { z } from "zod";
-import { Plus, Users, Clock, DollarSign, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Plus, DollarSign, ThumbsUp, ThumbsDown, Check, User, Package, Star, TrendingUp } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 type ActivityBudgetProposal = {
   id: number;
   activityId: number;
   title: string;
   description: string;
-  totalCost: number;
+  amount: number;
   currency: string;
-  duration: string;
-  minParticipants: number;
-  maxParticipants: number;
+  priceType: string;
   inclusions: string[];
   exclusions: string[];
   votes: number;
@@ -159,48 +158,85 @@ export function ActivityBudgetProposals({
     voteProposal.mutate({ proposalId, increment });
   };
 
+  // Helper function to safely parse JSON arrays
+  const safeParseArray = (data: any): string[] => {
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'string') {
+      try {
+        let parsed = JSON.parse(data);
+        if (typeof parsed === 'string') {
+          parsed = JSON.parse(parsed);
+        }
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  // Calculate best value proposal
+  const getBestValueProposal = () => {
+    if (!proposals || proposals.length === 0) return null;
+    return proposals.reduce((best, current) => {
+      if (!best) return current;
+      const bestScore = best.votes / (Number(best.amount) || 1);
+      const currentScore = current.votes / (Number(current.amount) || 1);
+      return currentScore > bestScore ? current : best;
+    }, null as ActivityBudgetProposal | null);
+  };
+
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Propostas de Orçamento</h3>
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900">Propostas de Orçamento</h3>
+            <p className="text-gray-600">Compare as opções disponíveis para esta atividade</p>
+          </div>
         </div>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
+            <div key={i} className="h-64 bg-gray-100 rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
     );
   }
 
+  const bestValue = getBestValueProposal();
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Propostas de Orçamento</h3>
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900">Propostas de Orçamento</h3>
+          <p className="text-gray-600">Compare as opções disponíveis para esta atividade</p>
+        </div>
         {user && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
+              <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg">
+                <Plus className="h-4 w-4 mr-2" />
                 Nova Proposta
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Criar Nova Proposta de Orçamento</DialogTitle>
+                <DialogTitle className="text-xl font-bold">Criar Nova Proposta de Orçamento</DialogTitle>
               </DialogHeader>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="title"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Título da Proposta</FormLabel>
+                          <FormLabel className="text-sm font-medium">Título da Proposta</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: Pacote Premium" {...field} />
+                            <Input placeholder="Ex: Pacote Premium" {...field} className="h-11" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -211,11 +247,13 @@ export function ActivityBudgetProposals({
                       name="amount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Custo Total (R$)</FormLabel>
+                          <FormLabel className="text-sm font-medium">Valor (R$)</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               step="0.01"
+                              placeholder="0.00"
+                              className="h-11"
                               {...field}
                               onChange={e => {
                                 const value = e.target.value;
@@ -234,10 +272,11 @@ export function ActivityBudgetProposals({
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Descrição</FormLabel>
+                        <FormLabel className="text-sm font-medium">Descrição</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Descreva o que está incluído nesta proposta..."
+                            className="min-h-[100px]"
                             {...field} 
                           />
                         </FormControl>
@@ -246,16 +285,16 @@ export function ActivityBudgetProposals({
                     )}
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="priceType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Tipo de Preço</FormLabel>
+                          <FormLabel className="text-sm font-medium">Tipo de Preço</FormLabel>
                           <FormControl>
                             <Select value={field.value} onValueChange={field.onChange}>
-                              <SelectTrigger>
+                              <SelectTrigger className="h-11">
                                 <SelectValue placeholder="Selecione o tipo" />
                               </SelectTrigger>
                               <SelectContent>
@@ -273,10 +312,10 @@ export function ActivityBudgetProposals({
                       name="currency"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Moeda</FormLabel>
+                          <FormLabel className="text-sm font-medium">Moeda</FormLabel>
                           <FormControl>
                             <Select value={field.value} onValueChange={field.onChange}>
-                              <SelectTrigger>
+                              <SelectTrigger className="h-11">
                                 <SelectValue placeholder="Selecione a moeda" />
                               </SelectTrigger>
                               <SelectContent>
@@ -292,16 +331,17 @@ export function ActivityBudgetProposals({
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="inclusions"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Inclui (uma por linha)</FormLabel>
+                          <FormLabel className="text-sm font-medium">Inclui (uma por linha)</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Guia especializado&#10;Equipamentos&#10;Lanche"
+                              className="min-h-[120px]"
                               {...field}
                               value={Array.isArray(field.value) ? field.value.join('\n') : field.value}
                             />
@@ -315,10 +355,11 @@ export function ActivityBudgetProposals({
                       name="exclusions"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Não Inclui (uma por linha)</FormLabel>
+                          <FormLabel className="text-sm font-medium">Não Inclui (uma por linha)</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Transporte&#10;Alimentação&#10;Seguro"
+                              className="min-h-[120px]"
                               {...field}
                               value={Array.isArray(field.value) ? field.value.join('\n') : field.value}
                             />
@@ -329,18 +370,19 @@ export function ActivityBudgetProposals({
                     />
                   </div>
 
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-3 pt-4 border-t">
                     <Button 
                       type="button" 
                       variant="outline" 
                       onClick={() => setIsDialogOpen(false)}
+                      className="h-11"
                     >
                       Cancelar
                     </Button>
                     <Button 
                       type="submit" 
                       disabled={createProposal.isPending}
-                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-11"
                     >
                       {createProposal.isPending ? "Criando..." : "Criar Proposta"}
                     </Button>
@@ -352,171 +394,198 @@ export function ActivityBudgetProposals({
         )}
       </div>
 
+      {/* Statistics Bar */}
+      {proposals && proposals.length > 0 && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{proposals.length}</div>
+              <div className="text-sm text-gray-600">Propostas</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">
+                R$ {Math.min(...proposals.map(p => Number(p.amount) || 0)).toFixed(0)}
+              </div>
+              <div className="text-sm text-gray-600">Menor Preço</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">
+                R$ {Math.max(...proposals.map(p => Number(p.amount) || 0)).toFixed(0)}
+              </div>
+              <div className="text-sm text-gray-600">Maior Preço</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">
+                {Math.round(proposals.reduce((sum, p) => sum + (p.votes || 0), 0) / proposals.length)}
+              </div>
+              <div className="text-sm text-gray-600">Votos Médios</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Proposals Grid */}
       {!proposals || proposals.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-center">
-            <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h4 className="text-lg font-medium text-gray-600 mb-2">
-              Nenhuma proposta ainda
-            </h4>
-            <p className="text-gray-500 mb-4">
-              Seja o primeiro a criar uma proposta de orçamento para esta atividade.
-            </p>
-            {user && (
-              <Button 
-                onClick={() => setIsDialogOpen(true)}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Criar Primeira Proposta
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {proposals.map((proposal) => (
-            <Card 
-              key={proposal.id} 
-              className={`transition-all cursor-pointer ${
-                selectedProposalId === proposal.id 
-                  ? 'ring-2 ring-blue-500 bg-blue-50' 
-                  : 'hover:shadow-md'
-              }`}
-              onClick={() => onSelectProposal?.(proposal)}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <DollarSign className="h-12 w-12 text-gray-400" />
+          </div>
+          <h4 className="text-xl font-semibold text-gray-900 mb-2">
+            Nenhuma proposta ainda
+          </h4>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Seja o primeiro a criar uma proposta de orçamento para esta atividade e ajude outros viajantes.
+          </p>
+          {user && (
+            <Button 
+              onClick={() => setIsDialogOpen(true)}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg"
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      {proposal.title}
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        <ThumbsUp className="h-3 w-3" />
-                        {proposal.votes}
-                      </Badge>
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      por {proposal.creator.fullName} (@{proposal.creator.username})
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-green-600">
-                      R$ {Number(proposal.amount || 0).toFixed(2)}
+              <Plus className="h-4 w-4 mr-2" />
+              Criar Primeira Proposta
+            </Button>
+          )}
+        </motion.div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {proposals.map((proposal, index) => {
+            const inclusions = safeParseArray(proposal.inclusions);
+            const exclusions = safeParseArray(proposal.exclusions);
+            const isBestValue = bestValue?.id === proposal.id;
+            const isSelected = selectedProposalId === proposal.id;
+            
+            return (
+              <motion.div
+                key={proposal.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card 
+                  className={`relative h-full transition-all duration-300 cursor-pointer group ${
+                    isSelected 
+                      ? 'ring-2 ring-blue-500 shadow-lg transform scale-[1.02]' 
+                      : 'hover:shadow-lg hover:transform hover:scale-[1.01]'
+                  } ${isBestValue ? 'border-green-500 border-2' : ''}`}
+                  onClick={() => onSelectProposal?.(proposal)}
+                >
+                  {/* Best Value Badge */}
+                  {isBestValue && (
+                    <div className="absolute -top-3 left-4 right-4">
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-medium px-3 py-1 rounded-full text-center shadow-lg">
+                        <Star className="h-3 w-3 inline mr-1" />
+                        Melhor Custo-Benefício
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500 capitalize">
-                      {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 mb-3">{proposal.description}</p>
-                
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="h-4 w-4 text-gray-500" />
-                    <span>R$ {Number(proposal.amount || 0).toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Badge variant="outline" className="capitalize">
-                      {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
-                    </Badge>
-                  </div>
-                </div>
-
-                {(() => {
-                  const safeParseArray = (data: any) => {
-                    if (Array.isArray(data)) return data;
-                    if (typeof data === 'string') {
-                      try {
-                        // Handle double-escaped JSON strings from database
-                        let parsed = JSON.parse(data);
-                        // If it's still a string, parse again
-                        if (typeof parsed === 'string') {
-                          parsed = JSON.parse(parsed);
-                        }
-                        return Array.isArray(parsed) ? parsed : [];
-                      } catch {
-                        return [];
-                      }
-                    }
-                    return [];
-                  };
-                  
-                  const inclusions = safeParseArray(proposal.inclusions);
-                  const exclusions = safeParseArray(proposal.exclusions);
-                  
-                  return (inclusions.length > 0 || exclusions.length > 0) && (
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      {inclusions.length > 0 && (
-                        <div>
-                          <h5 className="font-medium text-green-700 mb-2">✅ Inclui:</h5>
-                          <ul className="text-sm text-gray-600 space-y-1">
-                            {inclusions.map((item, idx) => (
-                              <li key={idx}>• {item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {exclusions.length > 0 && (
-                        <div>
-                          <h5 className="font-medium text-red-700 mb-2">❌ Não inclui:</h5>
-                          <ul className="text-sm text-gray-600 space-y-1">
-                            {exclusions.map((item, idx) => (
-                              <li key={idx}>• {item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-
-                <div className="flex items-center justify-between pt-3 border-t">
-                  <div className="flex items-center gap-2">
-                    {user && (
-                      <>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleVote(proposal.id, true);
-                          }}
-                          disabled={voteProposal.isPending}
-                          className="flex items-center gap-1"
-                        >
-                          <ThumbsUp className="h-3 w-3" />
-                          Curtir
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleVote(proposal.id, false);
-                          }}
-                          disabled={voteProposal.isPending}
-                          className="flex items-center gap-1"
-                        >
-                          <ThumbsDown className="h-3 w-3" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                  
-                  {onSelectProposal && (
-                    <Button 
-                      size="sm"
-                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
-                    >
-                      {selectedProposalId === proposal.id ? "Selecionado" : "Selecionar"}
-                    </Button>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+                          {proposal.title}
+                          {isSelected && (
+                            <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                              <Check className="h-3 w-3 text-white" />
+                            </div>
+                          )}
+                        </CardTitle>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+                          <User className="h-4 w-4" />
+                          <span>{proposal.creator.fullName}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Price Display */}
+                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-gray-900 mb-1">
+                          R$ {Number(proposal.amount || 0).toFixed(2)}
+                        </div>
+                        <Badge variant="outline" className="capitalize text-xs">
+                          {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="pt-0">
+                    <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+                      {proposal.description}
+                    </p>
+
+                    {/* Inclusions */}
+                    {inclusions.length > 0 && (
+                      <div className="mb-4">
+                        <h5 className="font-semibold text-green-700 text-sm mb-2 flex items-center gap-1">
+                          <Package className="h-4 w-4" />
+                          Inclui:
+                        </h5>
+                        <div className="space-y-1">
+                          {inclusions.slice(0, 3).map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-2 text-xs text-gray-600">
+                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                              <span className="line-clamp-1">{item}</span>
+                            </div>
+                          ))}
+                          {inclusions.length > 3 && (
+                            <div className="text-xs text-gray-500">
+                              +{inclusions.length - 3} itens
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Voting and Selection */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-center gap-2">
+                        {user && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleVote(proposal.id, true);
+                            }}
+                            disabled={voteProposal.isPending}
+                            className="h-8 px-2 flex items-center gap-1"
+                          >
+                            <ThumbsUp className="h-3 w-3" />
+                            <span className="text-xs">{proposal.votes}</span>
+                          </Button>
+                        )}
+                        {!user && (
+                          <Badge variant="secondary" className="text-xs">
+                            <ThumbsUp className="h-3 w-3 mr-1" />
+                            {proposal.votes}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      {onSelectProposal && (
+                        <Button 
+                          size="sm"
+                          variant={isSelected ? "default" : "outline"}
+                          className={isSelected 
+                            ? "bg-blue-600 hover:bg-blue-700 text-white h-8" 
+                            : "h-8 hover:bg-blue-50 hover:border-blue-300"
+                          }
+                        >
+                          {isSelected ? "Selecionado" : "Selecionar"}
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </div>

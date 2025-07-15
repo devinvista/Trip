@@ -476,9 +476,7 @@ export default function ActivityDetailPage() {
               </TabsContent>
 
               <TabsContent value="proposals" className="mt-6">
-                <div className="bg-white rounded-lg border p-6">
-                  <ActivityBudgetProposals activityId={Number(id)} />
-                </div>
+                <ActivityBudgetProposals activityId={Number(id)} />
               </TabsContent>
 
               <TabsContent value="reviews" className="mt-6">
