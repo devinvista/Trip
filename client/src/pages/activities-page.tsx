@@ -297,7 +297,7 @@ export default function ActivitiesPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div className="flex items-center gap-3 sm:gap-6">
               <Link to="/search">
-                <Button variant="ghost" size="sm" className="text-[#1B2B49] hover:bg-[#FFA500]/10 hover:text-[#FFA500] transition-all duration-300">
+                <Button variant="ghost" size="sm" className="text-[#1B2B49] hover:bg-blue-50 hover:text-blue-600 transition-all duration-300">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar
                 </Button>
@@ -318,7 +318,7 @@ export default function ActivitiesPage() {
                 variant="outline" 
                 size="sm"
                 onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="border-[#AAB0B7]/30 hover:bg-[#FFA500]/10 hover:border-[#FFA500]/30 hover:text-[#FFA500] transition-all duration-300"
+                className="border-[#AAB0B7]/30 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300"
               >
                 {viewMode === "grid" ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
                 <span className="hidden sm:inline ml-2">
@@ -350,12 +350,12 @@ export default function ActivitiesPage() {
                   handleSearch();
                 }
               }}
-              className="pl-10 pr-24 h-12 text-base border-[#AAB0B7]/30 focus:border-[#FFA500] bg-white rounded-lg"
+              className="pl-10 pr-24 h-12 text-base border-[#AAB0B7]/30 focus:border-blue-500 bg-white rounded-lg"
             />
             <Button 
               onClick={handleSearch}
               size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#FFA500] hover:bg-[#FFA500]/90 hover:shadow-md transition-all duration-300 text-white"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
             >
               Buscar
             </Button>
@@ -400,7 +400,7 @@ export default function ActivitiesPage() {
                       <span className={`px-1 py-0.5 rounded text-xs transition-colors duration-300 ${
                         filters.category === key 
                           ? "bg-white/20 text-current" 
-                          : "bg-slate-100 text-slate-600 group-hover:bg-[#FFA500]/20 group-hover:text-[#FFA500]"
+                          : "bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600"
                       }`}>
                         {count}
                       </span>
@@ -519,9 +519,9 @@ export default function ActivitiesPage() {
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#FFA500]" />
+                <Sparkles className="w-5 h-5 text-blue-600" />
                 <h2 className="text-lg font-semibold text-[#1B2B49]">Sugestões para Você</h2>
-                <Badge variant="outline" className="bg-[#FFA500]/10 text-[#FFA500] border-[#FFA500]/20">
+                <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
                   Mais escolhidas
                 </Badge>
               </div>
@@ -539,7 +539,7 @@ export default function ActivitiesPage() {
                       />
                       <div className="absolute top-2 right-2">
                         <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                          <Star className="w-3 h-3 fill-[#FFA500] text-[#FFA500]" />
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                           <span className="text-xs font-medium">{Number(activity.averageRating).toFixed(1)}</span>
                         </div>
                       </div>
@@ -594,7 +594,7 @@ export default function ActivitiesPage() {
                       />
                       <div className="absolute top-2 right-2">
                         <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                          <Star className="w-3 h-3 fill-[#FFA500] text-[#FFA500]" />
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                           <span className="text-xs font-medium">{Number(activity.averageRating).toFixed(1)}</span>
                         </div>
                       </div>
@@ -790,7 +790,7 @@ export default function ActivitiesPage() {
 
                             <div className="flex gap-2">
                               <Link to={`/activities/${activity.id}`}>
-                                <Button size="sm" variant="outline" className="border-[#AAB0B7]/30 hover:bg-[#FFA500]/10 hover:border-[#FFA500]/30 hover:text-[#FFA500] transition-all duration-300 text-xs sm:text-sm">
+                                <Button size="sm" variant="outline" className="border-[#AAB0B7]/30 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 text-xs sm:text-sm">
                                   Ver detalhes
                                 </Button>
                               </Link>
@@ -835,7 +835,7 @@ export default function ActivitiesPage() {
                 });
                 setSearchInput("");
               }}
-              className="bg-[#FFA500] hover:bg-[#FFA500]/90 hover:shadow-md transition-all duration-300 text-white"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
             >
               Limpar filtros
             </Button>
