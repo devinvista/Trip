@@ -254,7 +254,7 @@ export function OnboardingTour({ isOpen, onClose, onComplete, userPreferences }:
                   >
                     <Button
                       asChild
-                      className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold"
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold"
                       onClick={() => {
                         if (currentStepData.action?.onClick) {
                           currentStepData.action.onClick();

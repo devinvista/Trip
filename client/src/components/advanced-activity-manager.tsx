@@ -178,8 +178,8 @@ function ActivitiesTimeline({
   if (activities.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="w-20 h-20 bg-[#FFA500]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Calendar className="w-8 h-8 text-[#FFA500]" />
+        <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Calendar className="w-8 h-8 text-blue-600" />
         </div>
         <h3 className="text-xl font-semibold text-[#1B2B49] mb-3">
           Nenhuma atividade planejada ainda
@@ -266,7 +266,7 @@ function ActivitiesTimeline({
                       <div className="text-sm font-medium text-gray-900">
                         Custo estimado
                       </div>
-                      <div className="text-lg font-bold text-[#FFA500]">
+                      <div className="text-lg font-bold text-blue-600">
                         R$ {groupedActivities[dateGroup].reduce((sum, activity) => sum + (activity.estimatedCost || 0), 0).toLocaleString('pt-BR')}
                       </div>
                     </div>
@@ -355,7 +355,7 @@ function ActivitiesTimeline({
                         transition={{ duration: 0.4, delay: activityIndex * 0.1 }}
                         className="group"
                       >
-                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-[#FFA500]/60">
+                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-blue-400">
                           <div className="relative">
                             {/* Priority Stripe */}
                             <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${priorityConfig.gradient}`}></div>
@@ -379,7 +379,7 @@ function ActivitiesTimeline({
                             <div className="p-6 pt-16">
                               <div className="flex items-start justify-between mb-3">
                                 <div className="flex-1">
-                                  <h3 className="font-bold text-lg text-[#1B2B49] mb-2 group-hover:text-[#FFA500] transition-colors">
+                                  <h3 className="font-bold text-lg text-[#1B2B49] mb-2 group-hover:text-blue-600 transition-colors">
                                     {activity.title}
                                   </h3>
                                   
@@ -432,13 +432,13 @@ function ActivitiesTimeline({
                               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                                 {activity.location && (
                                   <div className="flex items-center gap-2 text-xs text-slate-600 bg-[#F5F9FC] px-3 py-2 rounded-lg">
-                                    <MapPin className="h-4 w-4 text-[#FFA500] flex-shrink-0" />
+                                    <MapPin className="h-4 w-4 text-blue-600 flex-shrink-0" />
                                     <span className="truncate font-medium">{activity.location}</span>
                                   </div>
                                 )}
 
                                 {activity.estimatedCost && activity.estimatedCost > 0 && (
-                                  <div className="flex items-center gap-2 text-xs text-[#FFA500] bg-orange-50 px-3 py-2 rounded-lg border border-orange-200">
+                                  <div className="flex items-center gap-2 text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
                                     <DollarSign className="h-4 w-4 flex-shrink-0" />
                                     <span className="font-bold">R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
                                   </div>

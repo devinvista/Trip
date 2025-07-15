@@ -330,7 +330,7 @@ export default function ActivitiesPage() {
                 variant="outline" 
                 size="sm"
                 onClick={() => setShowFilters(!showFilters)}
-                className="border-[#AAB0B7]/30 hover:bg-[#FFA500]/10 hover:border-[#FFA500]/30 hover:text-[#FFA500] transition-all duration-300"
+                className="border-[#AAB0B7]/30 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300"
               >
                 <SlidersHorizontal className="w-4 h-4 mr-2" />
                 Filtros
@@ -371,8 +371,8 @@ export default function ActivitiesPage() {
                   onClick={() => updateFilter("category", "all")}
                   className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 transition-all duration-300 ${
                     filters.category === "all" 
-                      ? "bg-[#FFA500] text-white shadow-sm" 
-                      : "text-[#1B2B49] hover:bg-[#FFA500]/10 hover:text-[#FFA500]"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm" 
+                      : "text-[#1B2B49] hover:bg-blue-50 hover:text-blue-600"
                   }`}
                 >
                   🗂️ <span className="hidden xs:inline">Todas</span>
@@ -391,8 +391,8 @@ export default function ActivitiesPage() {
                       onClick={() => updateFilter("category", key)}
                       className={`group px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 transition-all duration-300 ${
                         filters.category === key 
-                          ? "bg-[#FFA500] text-white shadow-sm scale-105" 
-                          : "text-[#1B2B49] hover:bg-[#FFA500]/10 hover:text-[#FFA500] hover:shadow-md hover:scale-102 hover:border-[#FFA500]/30"
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm scale-105" 
+                          : "text-[#1B2B49] hover:bg-blue-50 hover:text-blue-600 hover:shadow-md hover:scale-102 hover:border-blue-300"
                       }`}
                     >
                       <span className="text-sm transition-transform duration-300 group-hover:scale-110">{cat.icon}</span>
@@ -585,7 +585,7 @@ export default function ActivitiesPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
               {upcomingTripsSuggestions.map((activity) => (
                 <Link key={activity.id} to={`/activities/${activity.id}`}>
-                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-slate-200/60 hover:border-orange-300/60">
+                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-slate-200/60 hover:border-blue-300">
                     <div className="relative">
                       <img
                         src={activity.coverImage}
@@ -658,7 +658,7 @@ export default function ActivitiesPage() {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 hidden sm:flex"
+                      className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 hidden sm:flex"
                     >
                       Ver todas <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>

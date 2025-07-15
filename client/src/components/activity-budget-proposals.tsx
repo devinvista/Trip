@@ -452,7 +452,7 @@ export function ActivityBudgetProposals({
               <div className="text-sm text-gray-600">Menor Preço</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl font-bold text-blue-600">
                 R$ {Math.max(...proposals.map(p => Number(p.amount) || 0)).toFixed(0)}
               </div>
               <div className="text-sm text-gray-600">Maior Preço</div>

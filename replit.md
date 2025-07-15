@@ -158,6 +158,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Implementada lógica dinâmica para verificar propostas realmente incluídas nas viagens do usuário
 - July 15, 2025. Padronizado design de botões azuis em todos os componentes da aplicação com gradientes e estados consistentes
 - July 15, 2025. Removido efeitos hover amarelo/laranja inconsistentes da página de atividades e aplicado tema azul uniforme
+- July 15, 2025. Corrigido todos os efeitos hover amarelos em botões das páginas de atividades, detalhamento, perfil e home - aplicado tema azul consistente
 - July 15, 2025. Corrigido card "melhor custo-benefício" para manter padrão visual verde consistente (borda, botão, badge)
 - July 15, 2025. Corrigido sistema de adição de atividades a viagens - agora mostra todas as viagens do usuário sem filtro de localização
 - July 15, 2025. Implementado filtro por localização da atividade para mostrar apenas viagens na mesma cidade

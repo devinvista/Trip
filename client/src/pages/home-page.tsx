@@ -862,10 +862,10 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Plataforma</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link href="/search" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Buscar Viagens</Link></li>
-                <li><Link href="/create-trip" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Criar Viagem</Link></li>
-                <li><Link href="/dashboard" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Meu Painel</Link></li>
-                <li><Link href="/auth" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Cadastrar-se</Link></li>
+                <li><Link href="/search" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Buscar Viagens</Link></li>
+                <li><Link href="/create-trip" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Criar Viagem</Link></li>
+                <li><Link href="/dashboard" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Meu Painel</Link></li>
+                <li><Link href="/auth" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Cadastrar-se</Link></li>
               </ul>
             </div>
 
@@ -873,10 +873,10 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Destinos Populares</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link href="/search?region=europa" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Europa</Link></li>
-                <li><Link href="/search?region=asia" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Ásia</Link></li>
-                <li><Link href="/search?region=america" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">América do Sul</Link></li>
-                <li><Link href="/search?region=oceania" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Oceania</Link></li>
+                <li><Link href="/search?region=europa" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Europa</Link></li>
+                <li><Link href="/search?region=asia" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Ásia</Link></li>
+                <li><Link href="/search?region=america" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">América do Sul</Link></li>
+                <li><Link href="/search?region=oceania" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Oceania</Link></li>
               </ul>
             </div>
 
@@ -884,10 +884,10 @@ export default function HomePage() {
             <div className="space-y-4">
               <h3 className="font-bold text-lg text-white">Suporte</h3>
               <ul className="space-y-2 text-slate-400">
-                <li><Link href="/profile" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Central de Ajuda</Link></li>
-                <li><Link href="/profile" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Segurança</Link></li>
-                <li><Link href="/terms-of-service" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Termos de Uso</Link></li>
-                <li><Link href="/privacy-policy" className="relative z-10 hover:text-yellow-400 transition-colors cursor-pointer">Privacidade</Link></li>
+                <li><Link href="/profile" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Central de Ajuda</Link></li>
+                <li><Link href="/profile" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Segurança</Link></li>
+                <li><Link href="/terms-of-service" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Termos de Uso</Link></li>
+                <li><Link href="/privacy-policy" className="relative z-10 hover:text-blue-400 transition-colors cursor-pointer">Privacidade</Link></li>
               </ul>
             </div>
           </div>
