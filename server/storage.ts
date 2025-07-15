@@ -658,7 +658,7 @@ export interface IStorage {
   getUserTripsInLocation(userId: number, location: string): Promise<Trip[]>;
 }
 
-export class MemStorage implements IStorage {
+export class DatabaseStorage implements IStorage {
   public sessionStore: session.Store;
 
   // Helper function to remove sensitive information from user objects
@@ -2072,7 +2072,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
 
 // Create default test user
 async function createDefaultTestUser() {
