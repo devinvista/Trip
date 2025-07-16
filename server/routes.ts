@@ -2176,18 +2176,23 @@ export function registerRoutes(app: Express): Server {
         });
       } else {
         // Create new rating
-        const newRating = await db.insert(userRatings).values({
+        await db.insert(userRatings).values({
           tripId: sharedTripId,
           ratedUserId: companionId,
           raterUserId: userId,
           rating: rating,
           comment: comment || null,
-          categories: null,
           isHidden: false,
           reportCount: 0
-        }).returning();
+        });
         
-        console.log('📝 Avaliação de companheiro criada:', newRating[0]);
+        console.log('📝 Avaliação de companheiro criada:', {
+          tripId: sharedTripId,
+          ratedUserId: companionId,
+          raterUserId: userId,
+          rating: rating,
+          comment: comment || null
+        });
       }
       
       // Update user's average rating
