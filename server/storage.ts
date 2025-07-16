@@ -1320,12 +1320,12 @@ export class DatabaseStorage implements IStorage {
     for (const expense of expenses) {
       // Payer gets credit for the full amount
       const payerBalance = balances.get(expense.paidBy) || 0;
-      balances.set(expense.paidBy, payerBalance + expense.amount);
+      balances.set(expense.paidBy, payerBalance + parseFloat(expense.amount));
 
       // Each person in the split owes their portion
       for (const split of expense.splits) {
         const splitBalance = balances.get(split.userId) || 0;
-        balances.set(split.userId, splitBalance - split.amount);
+        balances.set(split.userId, splitBalance - parseFloat(split.amount));
       }
     }
 
