@@ -2,152 +2,256 @@ import { db } from './db.js';
 import { sql } from 'drizzle-orm';
 
 async function addSampleActivities() {
-  console.log('🌱 Adicionando atividades complementares para o sistema...');
+  console.log('🌱 Criando propostas de orçamento para todas as atividades...');
 
   try {
-    // Verificar quantas atividades já existem
-    const existingCount = await db.execute(sql`SELECT COUNT(*) as count FROM activities`);
-    console.log(`📊 Atividades existentes: ${existingCount[0].count}`);
+    // 1. Verificar se a tabela activity_budget_proposals existe e criar se necessário
+    console.log('🔧 Verificando/criando estrutura de propostas...');
+    
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS activity_budget_proposals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        activity_id INT NOT NULL,
+        created_by INT DEFAULT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        price_type VARCHAR(50) DEFAULT 'per_person' NOT NULL,
+        amount DECIMAL(10,2),
+        currency VARCHAR(10) DEFAULT 'BRL' NOT NULL,
+        inclusions JSON,
+        exclusions JSON,
+        valid_until TIMESTAMP NULL,
+        is_active BOOLEAN DEFAULT TRUE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE
+      )
+    `);
 
-    // Adicionar atividades do arquivo fornecido pelo usuário
-    const newActivities = [
-      {
-        title: 'Pão de Açúcar (Bondinho)',
-        description: 'Passeio no famoso bondinho do Pão de Açúcar com vista espetacular da Baía de Guanabara. O percurso inclui duas estações: primeiro a Urca e depois o topo do Pão de Açúcar a 396m de altura.',
-        location: 'Rio de Janeiro, RJ',
-        category: 'pontos_turisticos',
-        priceType: 'per_person',
-        priceAmount: '120.00',
-        duration: '3 horas',
-        difficultyLevel: 'easy',
-        minParticipants: 1,
-        maxParticipants: 65,
-        requirements: '["Não possui restrições", "Adequado para todas as idades"]',
-        cancellationPolicy: 'Cancelamento gratuito até 24h antes',
-        contactInfo: '"Bondinho Pão de Açúcar: (21) 2546-8400"',
-        coverImage: 'https://images.unsplash.com/photo-1516712713233-d11f7fa20395?w=800&h=600&fit=crop',
-        averageRating: '4.70',
-        totalRatings: 0,
-        createdById: 1
-      },
-      {
-        title: 'Praia de Copacabana / Ipanema + Esportes',
-        description: 'Aproveite as praias mais famosas do Rio de Janeiro. Atividades incluem aulas de surf, vôlei de praia, futevôlei e passeios de bike pela orla. Desfrute da energia carioca e da beleza natural.',
-        location: 'Rio de Janeiro, RJ',
-        category: 'water_sports',
-        priceType: 'per_person',
-        priceAmount: '100.00',
-        duration: '6 horas',
-        difficultyLevel: 'easy',
-        minParticipants: 1,
-        maxParticipants: 50,
-        requirements: '["Saber nadar para atividades aquáticas", "Protetor solar", "Roupa de banho"]',
-        cancellationPolicy: 'Cancelamento gratuito até 12h antes',
-        contactInfo: '"WhatsApp: (21) 99999-1234"',
-        coverImage: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800&h=600&fit=crop',
-        averageRating: '4.50',
-        totalRatings: 0,
-        createdById: 1
-      },
-      {
-        title: 'MASP + Avenida Paulista',
-        description: 'Visite o icônico Museu de Arte de São Paulo e explore a Avenida Paulista, coração financeiro e cultural da cidade. Conheça as obras de arte mais importantes do Brasil.',
-        location: 'São Paulo, SP',
-        category: 'cultural',
-        priceType: 'per_person',
-        priceAmount: '40.00',
-        duration: '4 horas',
-        difficultyLevel: 'easy',
-        minParticipants: 1,
-        maxParticipants: 30,
-        requirements: '["Interesse em arte", "Sapatos confortáveis"]',
-        cancellationPolicy: 'Cancelamento gratuito até 2h antes',
-        contactInfo: '"MASP: (11) 3149-5959"',
-        coverImage: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop',
-        averageRating: '4.50',
-        totalRatings: 0,
-        createdById: 1
-      },
-      {
-        title: 'Pelourinho + Elevador Lacerda',
-        description: 'Explore o centro histórico de Salvador, Patrimônio Mundial da UNESCO. Visite as igrejas barrocas, casarões coloniais e sinta a energia da cultura afro-brasileira no coração da Bahia.',
-        location: 'Salvador, BA',
-        category: 'cultural',
-        priceType: 'per_person',
-        priceAmount: '60.00',
-        duration: '5 horas',
-        difficultyLevel: 'easy',
-        minParticipants: 1,
-        maxParticipants: 20,
-        requirements: '["Sapatos confortáveis", "Protetor solar", "Câmera fotográfica"]',
-        cancellationPolicy: 'Cancelamento gratuito até 24h antes',
-        contactInfo: '"Turismo Bahia: (71) 3117-3000"',
-        coverImage: 'https://images.unsplash.com/photo-1562788869-4ed32648eb72?w=800&h=600&fit=crop',
-        averageRating: '4.60',
-        totalRatings: 0,
-        createdById: 1
-      },
-      {
-        title: 'Cataratas do Iguaçu (lado brasileiro)',
-        description: 'Conheça uma das maiores quedas d água do mundo. Vista panorâmica impressionante das 275 quedas que formam as Cataratas do Iguaçu, Patrimônio Natural da Humanidade.',
-        location: 'Foz do Iguaçu, PR',
-        category: 'nature',
-        priceType: 'per_person',
-        priceAmount: '85.00',
-        duration: '6 horas',
-        difficultyLevel: 'easy',
-        minParticipants: 1,
-        maxParticipants: 40,
-        requirements: '["Sapatos confortáveis", "Protetor solar", "Capa de chuva", "Câmera à prova d\'água"]',
-        cancellationPolicy: 'Cancelamento gratuito até 24h antes',
-        contactInfo: '"Parque Nacional: (45) 3521-4400"',
-        coverImage: 'https://images.unsplash.com/photo-1569586580648-f5152c716fde?w=800&h=600&fit=crop',
-        averageRating: '4.90',
-        totalRatings: 0,
-        createdById: 1
-      }
-    ];
+    console.log('✅ Estrutura da tabela verificada');
 
-    // Inserir cada atividade
-    for (const activity of newActivities) {
-      await db.execute(sql`
-        INSERT INTO activities (
-          title, description, location, category, price_type, price_amount,
-          duration, difficulty_level, min_participants, max_participants,
-          requirements, cancellation_policy, contact_info, cover_image,
-          average_rating, total_ratings, created_by_id
-        ) VALUES (
-          ${activity.title},
-          ${activity.description},
-          ${activity.location},
-          ${activity.category},
-          ${activity.priceType},
-          ${activity.priceAmount},
-          ${activity.duration},
-          ${activity.difficultyLevel},
-          ${activity.minParticipants},
-          ${activity.maxParticipants},
-          ${activity.requirements},
-          ${activity.cancellationPolicy},
-          ${activity.contactInfo},
-          ${activity.coverImage},
-          ${activity.averageRating},
-          ${activity.totalRatings},
-          ${activity.createdById}
-        )
-      `);
+    // 2. Limpar propostas existentes e criar novas
+    await db.execute(sql`DELETE FROM activity_budget_proposals`);
+    console.log('🧹 Propostas existentes removidas');
+
+    // 3. Obter atividades ativas
+    const activities = await db.execute(sql`
+      SELECT id, title, location FROM activities 
+      WHERE is_active = TRUE AND title IS NOT NULL 
+      ORDER BY id
+    `);
+    
+    console.log(`📊 Encontradas ${activities.length} atividades para criar propostas`);
+
+    // 4. Criar propostas específicas para atividades conhecidas
+    const proposalsByActivity = {
+      'Cristo Redentor / Corcovado': [
+        {
+          title: 'Van Oficial',
+          description: 'Transporte em van oficial até o Cristo Redentor com entrada incluída',
+          amount: 85.00,
+          inclusions: ['Transporte em van oficial', 'Entrada para o monumento', 'Seguro de viagem'],
+          exclusions: ['Alimentação', 'Bebidas', 'Compras pessoais']
+        },
+        {
+          title: 'Trem do Corcovado',
+          description: 'Experiência completa com trem histórico e guia especializado',
+          amount: 160.00,
+          inclusions: ['Trem do Corcovado ida e volta', 'Entrada para o monumento', 'Guia turístico', 'Material informativo'],
+          exclusions: ['Bebidas alcoólicas', 'Compras pessoais']
+        },
+        {
+          title: 'Tour Premium VIP',
+          description: 'Tour privativo com transporte executivo e fotografia profissional',
+          amount: 320.00,
+          inclusions: ['Transporte privativo executivo', 'Guia exclusivo bilíngue', 'Entrada VIP', 'Sessão de fotos profissional'],
+          exclusions: ['Compras pessoais']
+        }
+      ],
+      'Pão de Açúcar (Bondinho)': [
+        {
+          title: 'Ingresso Padrão',
+          description: 'Bondinho ida e volta com acesso aos dois morros',
+          amount: 120.00,
+          inclusions: ['Bondinho ida e volta', 'Acesso aos mirantes', 'Mapa turístico'],
+          exclusions: ['Alimentação', 'Bebidas', 'Fotos profissionais']
+        },
+        {
+          title: 'Experiência Guiada',
+          description: 'Bondinho com guia especializado e material educativo',
+          amount: 190.00,
+          inclusions: ['Bondinho ida e volta', 'Guia turístico especializado', 'Material informativo', 'Binóculo'],
+          exclusions: ['Bebidas alcoólicas', 'Fotos profissionais']
+        },
+        {
+          title: 'Experiência Completa',
+          description: 'Bondinho + voo panorâmico de helicóptero + jantar',
+          amount: 650.00,
+          inclusions: ['Bondinho ida e volta', 'Voo de helicóptero 15 min', 'Jantar com vista panorâmica', 'Fotos aéreas'],
+          exclusions: ['Compras pessoais', 'Bebidas premium']
+        }
+      ],
+      'Praia de Copacabana / Ipanema + Esportes': [
+        {
+          title: 'Aula de Surf Básica',
+          description: 'Aula de surf com instrutor certificado na praia',
+          amount: 100.00,
+          inclusions: ['Aula de surf 2h', 'Prancha', 'Lycra', 'Instrutor certificado'],
+          exclusions: ['Transporte', 'Alimentação', 'Bebidas']
+        },
+        {
+          title: 'Dia Completo de Esportes',
+          description: 'Surf + vôlei de praia + bike tour pela orla',
+          amount: 180.00,
+          inclusions: ['Aula de surf', 'Vôlei de praia', 'Bike tour 2h', 'Todos os equipamentos', 'Instrutor'],
+          exclusions: ['Refeições', 'Bebidas alcoólicas']
+        },
+        {
+          title: 'Experiência Premium',
+          description: 'Aulas privadas + almoço frente ao mar + massagem relaxante',
+          amount: 350.00,
+          inclusions: ['Aulas privadas personalizadas', 'Almoço frente ao mar', 'Massagem relaxante 30min', 'Bebidas incluídas'],
+          exclusions: ['Compras pessoais', 'Gorjetas']
+        }
+      ],
+      'MASP + Avenida Paulista': [
+        {
+          title: 'Entrada Livre',
+          description: 'Visita livre ao MASP com mapa autoguiado',
+          amount: 40.00,
+          inclusions: ['Entrada do MASP', 'Mapa autoguiado', 'Guarda-volumes'],
+          exclusions: ['Guia turístico', 'Audioguia', 'Transporte']
+        },
+        {
+          title: 'Tour Cultural Guiado',
+          description: 'MASP + Paulista com guia especializado em arte',
+          amount: 75.00,
+          inclusions: ['Entrada do MASP', 'Guia especializado em arte', 'Tour pela Avenida Paulista', 'Material educativo'],
+          exclusions: ['Transporte', 'Alimentação']
+        },
+        {
+          title: 'Experiência Cultural Completa',
+          description: 'MASP + Paulista + Pinacoteca com almoço cultural',
+          amount: 120.00,
+          inclusions: ['MASP', 'Avenida Paulista', 'Pinacoteca do Estado', 'Guia especializado', 'Almoço cultural', 'Transporte'],
+          exclusions: ['Compras pessoais', 'Bebidas extras']
+        }
+      ],
+      'Pelourinho + Elevador Lacerda': [
+        {
+          title: 'Caminhada Histórica',
+          description: 'Tour a pé pelo centro histórico de Salvador',
+          amount: 60.00,
+          inclusions: ['Tour guiado 3h', 'Elevador Lacerda', 'Entrada igrejas principais', 'Material informativo'],
+          exclusions: ['Alimentação', 'Bebidas', 'Compras']
+        },
+        {
+          title: 'Experiência Cultural',
+          description: 'Tour histórico + show de capoeira + degustação típica',
+          amount: 120.00,
+          inclusions: ['Tour guiado completo', 'Show de capoeira', 'Degustação de comidas típicas', 'Aula básica de capoeira'],
+          exclusions: ['Bebidas alcoólicas', 'Compras pessoais']
+        },
+        {
+          title: 'Vivência Completa',
+          description: 'Tour + oficinas + almoço típico + apresentação folclórica',
+          amount: 200.00,
+          inclusions: ['Tour histórico completo', 'Oficina de artesanato', 'Almoço baiano completo', 'Apresentação folclórica', 'Aula de samba de roda'],
+          exclusions: ['Compras pessoais', 'Gorjetas']
+        }
+      ],
+      'Cataratas do Iguaçu (lado brasileiro)': [
+        {
+          title: 'Entrada Básica do Parque',
+          description: 'Acesso ao parque com trilha panorâmica principal',
+          amount: 85.00,
+          inclusions: ['Entrada do Parque Nacional', 'Trilha panorâmica', 'Ônibus interno', 'Mapa do parque'],
+          exclusions: ['Transporte até o parque', 'Alimentação', 'Atividades extras']
+        },
+        {
+          title: 'Tour Completo Guiado',
+          description: 'Parque + transporte + guia especializado + equipamentos',
+          amount: 150.00,
+          inclusions: ['Entrada do parque', 'Transporte ida/volta', 'Guia especializado', 'Capa de chuva', 'Binóculo'],
+          exclusions: ['Refeições', 'Bebidas', 'Souvenirs']
+        },
+        {
+          title: 'Experiência Premium Aérea',
+          description: 'Tour completo + voo panorâmico de helicóptero + almoço',
+          amount: 450.00,
+          inclusions: ['Tour completo terrestre', 'Voo de helicóptero 10min', 'Almoço com vista', 'Fotos aéreas profissionais', 'Transfer executivo'],
+          exclusions: ['Compras pessoais', 'Bebidas premium']
+        }
+      ]
+    };
+
+    // 5. Criar propostas para cada atividade
+    for (const activity of activities) {
+      console.log(`💡 Criando propostas para: ${activity.title}`);
       
-      console.log(`✅ Atividade adicionada: ${activity.title}`);
+      let proposals = proposalsByActivity[activity.title];
+      
+      // Se não tem propostas específicas, criar propostas genéricas
+      if (!proposals) {
+        const basePrice = Math.floor(Math.random() * 80) + 50; // Entre 50-130
+        proposals = [
+          {
+            title: 'Opção Básica',
+            description: 'Experiência padrão da atividade com o essencial',
+            amount: basePrice,
+            inclusions: ['Atividade principal', 'Equipamentos básicos', 'Seguro básico'],
+            exclusions: ['Alimentação', 'Bebidas', 'Transporte']
+          },
+          {
+            title: 'Opção Completa',
+            description: 'Experiência com guia especializado e comodidades extras',
+            amount: Math.floor(basePrice * 1.8),
+            inclusions: ['Atividade principal', 'Guia especializado', 'Equipamentos completos', 'Lanche', 'Material informativo'],
+            exclusions: ['Bebidas alcoólicas', 'Compras pessoais']
+          },
+          {
+            title: 'Opção Premium',
+            description: 'Experiência exclusiva e totalmente personalizada',
+            amount: Math.floor(basePrice * 3.2),
+            inclusions: ['Experiência privativa', 'Guia exclusivo', 'Transporte incluído', 'Refeição completa', 'Fotografia profissional'],
+            exclusions: ['Compras pessoais', 'Gorjetas']
+          }
+        ];
+      }
+      
+      // Inserir propostas na base de dados
+      for (const proposal of proposals) {
+        await db.execute(sql`
+          INSERT INTO activity_budget_proposals 
+          (activity_id, title, description, amount, currency, inclusions, exclusions, price_type, is_active) 
+          VALUES 
+          (${activity.id}, ${proposal.title}, ${proposal.description}, ${proposal.amount}, 'BRL', 
+           ${JSON.stringify(proposal.inclusions)}, ${JSON.stringify(proposal.exclusions)}, 'per_person', true)
+        `);
+      }
     }
 
-    console.log('🎉 Todas as atividades complementares foram adicionadas!');
+    // 6. Verificar resultados
+    const totalProposals = await db.execute(sql`SELECT COUNT(*) as count FROM activity_budget_proposals`);
+    console.log(`✅ ${totalProposals[0].count} propostas de orçamento criadas com sucesso!`);
 
-    // Verificar total final
-    const finalCount = await db.execute(sql`SELECT COUNT(*) as count FROM activities`);
-    console.log(`📊 Total de atividades agora: ${finalCount[0].count}`);
+    // 7. Mostrar algumas propostas criadas
+    const sampleProposals = await db.execute(sql`
+      SELECT abp.title, abp.amount, a.title as activity_title 
+      FROM activity_budget_proposals abp 
+      JOIN activities a ON abp.activity_id = a.id 
+      LIMIT 5
+    `);
+    
+    console.log('\n📋 Exemplos de propostas criadas:');
+    sampleProposals.forEach(p => {
+      console.log(`   ${p.activity_title}: ${p.title} - R$ ${p.amount}`);
+    });
+
+    console.log('\n🎉 Sistema de propostas de orçamento completamente implementado!');
 
   } catch (error) {
-    console.error('❌ Erro ao adicionar atividades:', error);
+    console.error('❌ Erro ao criar propostas:', error);
     throw error;
   }
 }
