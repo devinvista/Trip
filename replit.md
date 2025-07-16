@@ -198,6 +198,14 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. Integrado sistema de avaliações na página de detalhes de atividades com aba dedicada
 - July 15, 2025. Criados dados de exemplo de avaliações para demonstração do sistema funcionando
 - July 15, 2025. Sistema de avaliações permite upload de fotos, data da visita e badges de verificação
+- July 16, 2025. **SISTEMA DE AVALIAÇÕES APRIMORADO**: Implementado sistema completo com verificação de usuários e controle de edição
+- July 16, 2025. Apenas usuários verificados podem criar avaliações para usuários, destinos e atividades
+- July 16, 2025. Cada usuário pode fazer apenas uma avaliação por item com janela de edição de 7 dias
+- July 16, 2025. Sistema de reportes de avaliações: avaliações são automaticamente ocultadas após 5 reports
+- July 16, 2025. Avaliações ocultas não aparecem nas listagens públicas, mantendo qualidade do conteúdo
+- July 16, 2025. Rotas PUT e DELETE para editar/excluir avaliações dentro do prazo de 7 dias
+- July 16, 2025. Verificação de duplicatas: usuários não podem avaliar o mesmo item duas vezes
+- July 16, 2025. Sistema de reports implementado para usuários, destinos e atividades com auto-moderação
 - July 12, 2025. Enhanced trip detail page with modern dynamic layout, contagem regressiva em tempo real, and improved budget tracking visualization
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips

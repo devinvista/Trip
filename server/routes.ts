@@ -5,9 +5,9 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema } from "@shared/schema";
+import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, activityBudgetProposalVotes, users } from "@shared/schema";
+import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, destinationRatings, ratingReports, activityRatingHelpfulVotes } from "@shared/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { z } from "zod";
 
@@ -816,12 +816,16 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  // User Rating routes
+  // Enhanced User Rating routes with verification checks
   app.get("/api/users/:id/ratings", async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
       const ratings = await storage.getUserRatings(userId);
-      res.json(ratings);
+      
+      // Filter out hidden ratings
+      const visibleRatings = ratings.filter(rating => !rating.isHidden);
+      
+      res.json(visibleRatings);
     } catch (error) {
       console.error('Erro ao buscar avaliações do usuário:', error);
       res.status(500).json({ message: "Erro ao buscar avaliações" });
@@ -833,9 +837,28 @@ export function registerRoutes(app: Express): Server {
       const ratedUserId = parseInt(req.params.id);
       const raterUserId = req.user!.id;
       
+      // Only verified users can rate
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: "Apenas usuários verificados podem avaliar" });
+      }
+      
       // Prevent self-rating
       if (ratedUserId === raterUserId) {
         return res.status(400).json({ message: "Não é possível avaliar a si mesmo" });
+      }
+      
+      // Check if user already rated this user
+      const existingRating = await db
+        .select()
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.ratedUserId, ratedUserId),
+          eq(userRatings.raterUserId, raterUserId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length > 0) {
+        return res.status(400).json({ message: "Você já avaliou este usuário" });
       }
       
       const ratingData = insertUserRatingSchema.parse(req.body);
@@ -852,12 +875,105 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  // Destination Rating routes
+  // Edit user rating (only within 7 days)
+  app.put("/api/users/:id/ratings/:ratingId", requireAuth, async (req, res) => {
+    try {
+      const ratingId = parseInt(req.params.ratingId);
+      const userId = req.user!.id;
+      
+      // Only verified users can edit ratings
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: "Apenas usuários verificados podem editar avaliações" });
+      }
+      
+      // Check if rating exists and belongs to user
+      const existingRating = await db
+        .select()
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.id, ratingId),
+          eq(userRatings.raterUserId, userId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const rating = existingRating[0];
+      
+      // Check if rating is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
+      }
+      
+      const ratingData = insertUserRatingSchema.parse(req.body);
+      
+      await db
+        .update(userRatings)
+        .set({
+          ...ratingData,
+          updatedAt: new Date()
+        })
+        .where(eq(userRatings.id, ratingId));
+      
+      res.json({ message: "Avaliação atualizada com sucesso" });
+    } catch (error) {
+      console.error('Erro ao editar avaliação:', error);
+      res.status(400).json({ message: "Erro ao editar avaliação" });
+    }
+  });
+
+  // Delete user rating (only within 7 days)
+  app.delete("/api/users/:id/ratings/:ratingId", requireAuth, async (req, res) => {
+    try {
+      const ratingId = parseInt(req.params.ratingId);
+      const userId = req.user!.id;
+      
+      // Check if rating exists and belongs to user
+      const existingRating = await db
+        .select()
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.id, ratingId),
+          eq(userRatings.raterUserId, userId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const rating = existingRating[0];
+      
+      // Check if rating is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
+      }
+      
+      await db
+        .delete(userRatings)
+        .where(eq(userRatings.id, ratingId));
+      
+      res.json({ message: "Avaliação excluída com sucesso" });
+    } catch (error) {
+      console.error('Erro ao excluir avaliação:', error);
+      res.status(500).json({ message: "Erro ao excluir avaliação" });
+    }
+  });
+
+  // Enhanced Destination Rating routes
   app.get("/api/destinations/:destination/ratings", async (req, res) => {
     try {
       const destination = decodeURIComponent(req.params.destination);
       const ratings = await storage.getDestinationRatings(destination);
-      res.json(ratings);
+      
+      // Filter out hidden ratings
+      const visibleRatings = ratings.filter(rating => !rating.isHidden);
+      
+      res.json(visibleRatings);
     } catch (error) {
       console.error('Erro ao buscar avaliações do destino:', error);
       res.status(500).json({ message: "Erro ao buscar avaliações do destino" });
@@ -868,6 +984,25 @@ export function registerRoutes(app: Express): Server {
     try {
       const destination = decodeURIComponent(req.params.destination);
       const userId = req.user!.id;
+      
+      // Only verified users can rate
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: "Apenas usuários verificados podem avaliar destinos" });
+      }
+      
+      // Check if user already rated this destination
+      const existingRating = await db
+        .select()
+        .from(destinationRatings)
+        .where(and(
+          eq(destinationRatings.destination, destination),
+          eq(destinationRatings.userId, userId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length > 0) {
+        return res.status(400).json({ message: "Você já avaliou este destino" });
+      }
       
       const ratingData = insertDestinationRatingSchema.parse(req.body);
       const rating = await storage.createDestinationRating({
@@ -880,6 +1015,95 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao criar avaliação do destino:', error);
       res.status(400).json({ message: "Erro ao criar avaliação do destino" });
+    }
+  });
+
+  // Edit destination rating (only within 7 days)
+  app.put("/api/destinations/:destination/ratings/:ratingId", requireAuth, async (req, res) => {
+    try {
+      const ratingId = parseInt(req.params.ratingId);
+      const userId = req.user!.id;
+      
+      // Only verified users can edit ratings
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: "Apenas usuários verificados podem editar avaliações" });
+      }
+      
+      // Check if rating exists and belongs to user
+      const existingRating = await db
+        .select()
+        .from(destinationRatings)
+        .where(and(
+          eq(destinationRatings.id, ratingId),
+          eq(destinationRatings.userId, userId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const rating = existingRating[0];
+      
+      // Check if rating is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
+      }
+      
+      const ratingData = insertDestinationRatingSchema.parse(req.body);
+      
+      await db
+        .update(destinationRatings)
+        .set({
+          ...ratingData,
+          updatedAt: new Date()
+        })
+        .where(eq(destinationRatings.id, ratingId));
+      
+      res.json({ message: "Avaliação atualizada com sucesso" });
+    } catch (error) {
+      console.error('Erro ao editar avaliação:', error);
+      res.status(400).json({ message: "Erro ao editar avaliação" });
+    }
+  });
+
+  // Delete destination rating (only within 7 days)
+  app.delete("/api/destinations/:destination/ratings/:ratingId", requireAuth, async (req, res) => {
+    try {
+      const ratingId = parseInt(req.params.ratingId);
+      const userId = req.user!.id;
+      
+      // Check if rating exists and belongs to user
+      const existingRating = await db
+        .select()
+        .from(destinationRatings)
+        .where(and(
+          eq(destinationRatings.id, ratingId),
+          eq(destinationRatings.userId, userId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const rating = existingRating[0];
+      
+      // Check if rating is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
+      }
+      
+      await db
+        .delete(destinationRatings)
+        .where(eq(destinationRatings.id, ratingId));
+      
+      res.json({ message: "Avaliação excluída com sucesso" });
+    } catch (error) {
+      console.error('Erro ao excluir avaliação:', error);
+      res.status(500).json({ message: "Erro ao excluir avaliação" });
     }
   });
 
@@ -944,6 +1168,107 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao atualizar solicitação de verificação:', error);
       res.status(400).json({ message: "Erro ao atualizar solicitação de verificação" });
+    }
+  });
+
+  // ============ RATING REPORT ROUTES ============
+  
+  // Report a rating
+  app.post("/api/ratings/report", requireAuth, async (req, res) => {
+    try {
+      const reporterId = req.user!.id;
+      const reportData = insertRatingReportSchema.parse(req.body);
+      
+      // Check if user already reported this rating
+      const existingReport = await db
+        .select()
+        .from(ratingReports)
+        .where(and(
+          eq(ratingReports.reporterId, reporterId),
+          eq(ratingReports.ratingType, reportData.ratingType),
+          eq(ratingReports.ratingId, reportData.ratingId)
+        ))
+        .limit(1);
+      
+      if (existingReport.length > 0) {
+        return res.status(400).json({ message: "Você já reportou esta avaliação" });
+      }
+      
+      const report = await db.insert(ratingReports).values({
+        ...reportData,
+        reporterId
+      }).returning();
+      
+      // Increment report count on the rating
+      if (reportData.ratingType === 'user') {
+        await db
+          .update(userRatings)
+          .set({
+            reportCount: sql`${userRatings.reportCount} + 1`
+          })
+          .where(eq(userRatings.id, reportData.ratingId));
+          
+        // Auto-hide if report count >= 5
+        const updatedRating = await db
+          .select()
+          .from(userRatings)
+          .where(eq(userRatings.id, reportData.ratingId))
+          .limit(1);
+          
+        if (updatedRating.length > 0 && updatedRating[0].reportCount >= 5) {
+          await db
+            .update(userRatings)
+            .set({ isHidden: true })
+            .where(eq(userRatings.id, reportData.ratingId));
+        }
+      } else if (reportData.ratingType === 'destination') {
+        await db
+          .update(destinationRatings)
+          .set({
+            reportCount: sql`${destinationRatings.reportCount} + 1`
+          })
+          .where(eq(destinationRatings.id, reportData.ratingId));
+          
+        // Auto-hide if report count >= 5
+        const updatedRating = await db
+          .select()
+          .from(destinationRatings)
+          .where(eq(destinationRatings.id, reportData.ratingId))
+          .limit(1);
+          
+        if (updatedRating.length > 0 && updatedRating[0].reportCount >= 5) {
+          await db
+            .update(destinationRatings)
+            .set({ isHidden: true })
+            .where(eq(destinationRatings.id, reportData.ratingId));
+        }
+      } else if (reportData.ratingType === 'activity') {
+        await db
+          .update(activityReviews)
+          .set({
+            reportCount: sql`${activityReviews.reportCount} + 1`
+          })
+          .where(eq(activityReviews.id, reportData.ratingId));
+          
+        // Auto-hide if report count >= 5
+        const updatedRating = await db
+          .select()
+          .from(activityReviews)
+          .where(eq(activityReviews.id, reportData.ratingId))
+          .limit(1);
+          
+        if (updatedRating.length > 0 && updatedRating[0].reportCount >= 5) {
+          await db
+            .update(activityReviews)
+            .set({ isHidden: true })
+            .where(eq(activityReviews.id, reportData.ratingId));
+        }
+      }
+      
+      res.status(201).json(report[0]);
+    } catch (error) {
+      console.error('Erro ao reportar avaliação:', error);
+      res.status(400).json({ message: "Erro ao reportar avaliação" });
     }
   });
 
@@ -1067,7 +1392,7 @@ export function registerRoutes(app: Express): Server {
 
   // ============ ACTIVITY REVIEWS ROUTES ============
 
-  // Get reviews for an activity
+  // Get reviews for an activity (filter out hidden reviews)
   app.get("/api/activities/:id/reviews", async (req, res) => {
     try {
       const activityId = parseInt(req.params.id);
@@ -1084,6 +1409,8 @@ export function registerRoutes(app: Express): Server {
           visitDate: activityReviews.visitDate,
           helpfulVotes: activityReviews.helpfulVotes,
           isVerified: activityReviews.isVerified,
+          isHidden: activityReviews.isHidden,
+          reportCount: activityReviews.reportCount,
           createdAt: activityReviews.createdAt,
           user: {
             id: users.id,
@@ -1096,7 +1423,10 @@ export function registerRoutes(app: Express): Server {
         })
         .from(activityReviews)
         .innerJoin(users, eq(activityReviews.userId, users.id))
-        .where(eq(activityReviews.activityId, activityId))
+        .where(and(
+          eq(activityReviews.activityId, activityId),
+          eq(activityReviews.isHidden, false)
+        ))
         .orderBy(desc(activityReviews.createdAt))
         .limit(limit)
         .offset(offset);
@@ -1108,11 +1438,16 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  // Create a new activity review
+  // Create a new activity review (enhanced with verification)
   app.post("/api/activities/:id/reviews", requireAuth, async (req, res) => {
     try {
       const activityId = parseInt(req.params.id);
       const userId = req.user!.id;
+      
+      // Only verified users can create reviews
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: "Apenas usuários verificados podem criar avaliações" });
+      }
       
       console.log('🔍 Creating review - Activity ID:', activityId, 'User ID:', userId);
       console.log('🔍 Request body:', req.body);
@@ -1138,13 +1473,20 @@ export function registerRoutes(app: Express): Server {
         .limit(1);
 
       if (existingReview.length > 0) {
+        // Check if review is within 7 days edit window
+        const daysSinceCreation = Math.floor((Date.now() - existingReview[0].createdAt.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysSinceCreation > 7) {
+          return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
+        }
+        
         // Update existing review instead of creating new one
         await db.update(activityReviews)
           .set({
             rating: validatedData.rating,
             review: validatedData.review,
             photos: validatedData.photos || [],
-            visitDate: validatedData.visitDate || null
+            visitDate: validatedData.visitDate || null,
+            updatedAt: new Date()
           })
           .where(eq(activityReviews.id, existingReview[0].id));
         
@@ -1255,6 +1597,95 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
       }
       res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Edit activity review (only within 7 days and by verified users)
+  app.put("/api/activities/:id/reviews/:reviewId", requireAuth, async (req, res) => {
+    try {
+      const reviewId = parseInt(req.params.reviewId);
+      const userId = req.user!.id;
+      
+      // Only verified users can edit reviews
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: "Apenas usuários verificados podem editar avaliações" });
+      }
+      
+      // Check if review exists and belongs to user
+      const existingReview = await db
+        .select()
+        .from(activityReviews)
+        .where(and(
+          eq(activityReviews.id, reviewId),
+          eq(activityReviews.userId, userId)
+        ))
+        .limit(1);
+      
+      if (existingReview.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const review = existingReview[0];
+      
+      // Check if review is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - review.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
+      }
+      
+      const reviewData = insertActivityReviewSchema.parse(req.body);
+      
+      await db
+        .update(activityReviews)
+        .set({
+          ...reviewData,
+          updatedAt: new Date()
+        })
+        .where(eq(activityReviews.id, reviewId));
+      
+      res.json({ message: "Avaliação atualizada com sucesso" });
+    } catch (error) {
+      console.error('Erro ao editar avaliação:', error);
+      res.status(400).json({ message: "Erro ao editar avaliação" });
+    }
+  });
+
+  // Delete activity review (only within 7 days)
+  app.delete("/api/activities/:id/reviews/:reviewId", requireAuth, async (req, res) => {
+    try {
+      const reviewId = parseInt(req.params.reviewId);
+      const userId = req.user!.id;
+      
+      // Check if review exists and belongs to user
+      const existingReview = await db
+        .select()
+        .from(activityReviews)
+        .where(and(
+          eq(activityReviews.id, reviewId),
+          eq(activityReviews.userId, userId)
+        ))
+        .limit(1);
+      
+      if (existingReview.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const review = existingReview[0];
+      
+      // Check if review is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - review.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
+      }
+      
+      await db
+        .delete(activityReviews)
+        .where(eq(activityReviews.id, reviewId));
+      
+      res.json({ message: "Avaliação excluída com sucesso" });
+    } catch (error) {
+      console.error('Erro ao excluir avaliação:', error);
+      res.status(500).json({ message: "Erro ao excluir avaliação" });
     }
   });
 

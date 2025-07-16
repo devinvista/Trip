@@ -100,7 +100,10 @@ export const userRatings = mysqlTable("user_ratings", {
   rating: int("rating").notNull(), // 1-5 stars
   comment: text("comment"), // Optional comment
   categories: json("categories"), // { reliability: 5, friendliness: 4, communication: 5, etc. }
+  isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
+  reportCount: int("report_count").default(0).notNull(), // Number of reports
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Destination ratings - for rating destinations
@@ -114,7 +117,10 @@ export const destinationRatings = mysqlTable("destination_ratings", {
   categories: json("categories"), // { attractions: 5, food: 4, safety: 5, value: 3, etc. }
   photos: json("photos"), // Array of photo URLs
   visitDate: timestamp("visit_date"), // When they visited
+  isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
+  reportCount: int("report_count").default(0).notNull(), // Number of reports
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // User verification requests
@@ -128,6 +134,28 @@ export const verificationRequests = mysqlTable("verification_requests", {
   reviewedAt: timestamp("reviewed_at"),
   reviewedBy: int("reviewed_by").references(() => users.id), // Admin who reviewed
   rejectionReason: text("rejection_reason"), // If rejected, why
+});
+
+// Rating reports - for reporting inappropriate reviews
+export const ratingReports = mysqlTable("rating_reports", {
+  id: int("id").primaryKey().autoincrement(),
+  reporterId: int("reporter_id").notNull().references(() => users.id), // User who reported
+  ratingType: varchar("rating_type", { length: 50 }).notNull(), // 'user', 'destination', 'activity'
+  ratingId: int("rating_id").notNull(), // ID of the rating being reported
+  reason: varchar("reason", { length: 100 }).notNull(), // 'offensive', 'spam', 'inappropriate', 'fake'
+  description: text("description"), // Optional detailed description
+  status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, reviewed, dismissed
+  reviewedAt: timestamp("reviewed_at"),
+  reviewedBy: int("reviewed_by").references(() => users.id), // Admin who reviewed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Activity rating helpful votes - track who found reviews helpful
+export const activityRatingHelpfulVotes = mysqlTable("activity_rating_helpful_votes", {
+  id: int("id").primaryKey().autoincrement(),
+  reviewId: int("review_id").notNull().references(() => activityReviews.id),
+  userId: int("user_id").notNull().references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -186,6 +214,20 @@ export const insertTripRequestSchema = createInsertSchema(tripRequests).omit({
   createdAt: true,
 });
 
+export const insertRatingReportSchema = createInsertSchema(ratingReports).omit({
+  id: true,
+  reporterId: true,
+  status: true,
+  reviewedAt: true,
+  reviewedBy: true,
+  createdAt: true,
+}).extend({
+  reason: z.enum(["offensive", "spam", "inappropriate", "fake"], {
+    errorMap: () => ({ message: "Motivo inválido" })
+  }),
+  description: z.string().optional(),
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertTrip = z.infer<typeof insertTripSchema>;
@@ -224,34 +266,46 @@ export type UserRating = typeof userRatings.$inferSelect;
 export type DestinationRating = typeof destinationRatings.$inferSelect;
 export type VerificationRequest = typeof verificationRequests.$inferSelect;
 
-// Rating insert schemas
+// Rating insert schemas (updated for enhanced system)
 export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   id: true,
+  raterUserId: true,
+  isHidden: true,
+  reportCount: true,
   createdAt: true,
+  updatedAt: true,
 }).extend({
-  rating: z.number().min(1).max(5),
+  rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
+  comment: z.string().optional(),
   categories: z.object({
     reliability: z.number().min(1).max(5).optional(),
     friendliness: z.number().min(1).max(5).optional(),
     communication: z.number().min(1).max(5).optional(),
     punctuality: z.number().min(1).max(5).optional(),
-    cleanliness: z.number().min(1).max(5).optional(),
+    helpfulness: z.number().min(1).max(5).optional(),
   }).optional(),
 });
 
 export const insertDestinationRatingSchema = createInsertSchema(destinationRatings).omit({
   id: true,
+  userId: true,
+  isHidden: true,
+  reportCount: true,
   createdAt: true,
+  updatedAt: true,
 }).extend({
-  rating: z.number().min(1).max(5),
+  rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
+  comment: z.string().optional(),
   categories: z.object({
     attractions: z.number().min(1).max(5).optional(),
     food: z.number().min(1).max(5).optional(),
     safety: z.number().min(1).max(5).optional(),
     value: z.number().min(1).max(5).optional(),
     transportation: z.number().min(1).max(5).optional(),
-    accommodation: z.number().min(1).max(5).optional(),
+    nightlife: z.number().min(1).max(5).optional(),
   }).optional(),
+  photos: z.array(z.string()).optional(),
+  visitDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 export const insertVerificationRequestSchema = createInsertSchema(verificationRequests).omit({
@@ -265,6 +319,9 @@ export const insertVerificationRequestSchema = createInsertSchema(verificationRe
 export type InsertUserRating = z.infer<typeof insertUserRatingSchema>;
 export type InsertDestinationRating = z.infer<typeof insertDestinationRatingSchema>;
 export type InsertVerificationRequest = z.infer<typeof insertVerificationRequestSchema>;
+export type InsertRatingReport = z.infer<typeof insertRatingReportSchema>;
+export type RatingReport = typeof ratingReports.$inferSelect;
+export type ActivityRatingHelpfulVote = typeof activityRatingHelpfulVotes.$inferSelect;
 
 // Activities System - TripAdvisor-style activities
 export const activities = mysqlTable("activities", {
@@ -306,7 +363,10 @@ export const activityReviews = mysqlTable("activity_reviews", {
   visitDate: timestamp("visit_date"), // When they participated
   helpfulVotes: int("helpful_votes").default(0).notNull(), // How many found this helpful
   isVerified: boolean("is_verified").default(false).notNull(), // Verified purchase/participation
+  isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
+  reportCount: int("report_count").default(0).notNull(), // Number of reports
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Activity Budget Proposals - Multiple budget options per activity

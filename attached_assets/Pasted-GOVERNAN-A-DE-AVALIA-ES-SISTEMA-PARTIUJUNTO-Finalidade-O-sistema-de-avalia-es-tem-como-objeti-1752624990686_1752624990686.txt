@@ -1,0 +1,65 @@
+GOVERNANÇA DE AVALIAÇÕES – SISTEMA PARTIUJUNTO
+🎯 Finalidade
+O sistema de avaliações tem como objetivo permitir que usuários verificados possam expressar sua opinião e experiência sobre outros usuários, destinos (cidades) e atividades oferecidas na plataforma. Isso fortalece a confiança entre os participantes e melhora a qualidade dos serviços e conexões.
+
+✅ Quem pode avaliar
+Apenas usuários verificados podem realizar avaliações. A verificação deve ser feita por meio de validação de identidade, como envio de documento oficial ou selfie, conforme o processo estabelecido pela plataforma.
+
+Usuários não verificados não terão acesso à funcionalidade de avaliação.
+
+🔁 Limite de avaliações
+Cada usuário poderá fazer somente uma avaliação por tipo de item:
+
+Uma única avaliação para cada outro usuário (avaliação pessoal).
+
+Uma única avaliação para cada destino (cidade).
+
+Uma única avaliação para cada atividade (ex: passeio, trilha, tour guiado).
+
+Se o usuário tentar avaliar novamente um item já avaliado, o sistema poderá permitir a edição da avaliação existente, mas nunca a criação de uma nova avaliação para o mesmo item.
+
+🧾 Estrutura das avaliações
+Cada avaliação será composta pelos seguintes elementos:
+
+Número de estrelas, variando de 1 (péssimo) a 5 (excelente).
+
+Comentário descritivo e pessoal, com limite de caracteres (por exemplo, até 300).
+
+Nome visível do avaliador (anonimato não permitido).
+
+Data da avaliação.
+
+As avaliações serão públicas, visíveis nos perfis dos usuários, nas páginas dos destinos e nas páginas das atividades.
+
+🔒 Segurança e regras
+Apenas o autor da avaliação pode editar ou excluir sua própria avaliação.
+
+A edição só será permitida por um período limitado (ex: 7 dias após publicação).
+
+É proibido o uso de linguagem ofensiva, preconceituosa, spam, ou qualquer comentário que viole os termos da comunidade.
+
+Avaliações com denúncias recorrentes (por exemplo, mais de cinco denúncias) serão automaticamente ocultadas até análise da moderação.
+
+👀 Moderação
+A equipe de moderação da plataforma terá autoridade para revisar, editar ou remover avaliações que infrinjam as regras. Também poderá banir usuários que utilizem o sistema de avaliações de forma abusiva.
+
+📈 Exibição das avaliações
+Nas interfaces da plataforma, as avaliações serão exibidas de forma clara e útil:
+
+Média de estrelas visível em destaque.
+
+Número total de avaliações recebidas.
+
+Lista de comentários mais recentes ou mais úteis.
+
+Filtro por estrelas ou por data.
+
+🕵️‍♂️ Prevenção de fraudes
+Para garantir a integridade do sistema, as seguintes medidas serão aplicadas:
+
+Detecção de múltiplas contas com mesmo IP ou dispositivo tentando burlar o limite de uma avaliação.
+
+Análise automatizada de padrões suspeitos (como muitas avaliações em um curto período).
+
+Validação do comportamento do usuário antes da liberação do direito de avaliar.
+
