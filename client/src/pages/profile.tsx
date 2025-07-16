@@ -130,8 +130,8 @@ export default function ProfilePage() {
       phone: user?.phone ? formatPhoneNumber(user.phone) : "",
       bio: user?.bio || "",
       location: user?.location || "",
-      languages: user?.languages ? (Array.isArray(user.languages) ? user.languages : JSON.parse(user.languages || '[]')) : [],
-      interests: user?.interests ? (Array.isArray(user.interests) ? user.interests : JSON.parse(user.interests || '[]')) : [],
+      languages: user?.languages ? (Array.isArray(user.languages) ? user.languages : (typeof user.languages === 'string' ? JSON.parse(user.languages || '[]') : [])) : [],
+      interests: user?.interests ? (Array.isArray(user.interests) ? user.interests : (typeof user.interests === 'string' ? JSON.parse(user.interests || '[]') : [])) : [],
       travelStyles: user?.travelStyles || []
     }
   });
@@ -391,7 +391,7 @@ export default function ProfilePage() {
               {user.languages && user.languages.length > 0 && (
                 <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
                   <Languages className="h-4 w-4" />
-                  <span>{Array.isArray(user.languages) ? user.languages.join(', ') : (typeof user.languages === 'string' ? JSON.parse(user.languages).join(', ') : '')}</span>
+                  <span>{Array.isArray(user.languages) ? user.languages.join(', ') : (typeof user.languages === 'string' ? (() => { try { const parsed = JSON.parse(user.languages); return Array.isArray(parsed) ? parsed.join(', ') : ''; } catch { return ''; } })() : '')}</span>
                 </div>
               )}
             </div>
@@ -416,11 +416,25 @@ export default function ProfilePage() {
             )}
             
             {/* Interesses */}
-            {user.interests && (Array.isArray(user.interests) ? user.interests.length > 0 : JSON.parse(user.interests || '[]').length > 0) && (
+            {user.interests && (() => {
+              try {
+                const interests = Array.isArray(user.interests) ? user.interests : JSON.parse(user.interests || '[]');
+                return Array.isArray(interests) && interests.length > 0;
+              } catch {
+                return false;
+              }
+            })() && (
               <div className="mb-4">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Interesses</h4>
                 <div className="flex flex-wrap gap-2">
-                  {(Array.isArray(user.interests) ? user.interests : JSON.parse(user.interests || '[]')).map((interest) => (
+                  {(() => {
+                    try {
+                      const interests = Array.isArray(user.interests) ? user.interests : JSON.parse(user.interests || '[]');
+                      return Array.isArray(interests) ? interests : [];
+                    } catch {
+                      return [];
+                    }
+                  })().map((interest) => (
                     <Badge key={interest} variant="outline" className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200">
                       {interest}
                     </Badge>
