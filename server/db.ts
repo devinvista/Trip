@@ -180,7 +180,10 @@ export async function initializeTables() {
         trip_id INT NOT NULL,
         rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
         comment TEXT,
+        is_hidden BOOLEAN DEFAULT FALSE NOT NULL,
+        report_count INT DEFAULT 0 NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (rated_user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (rater_user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE,
@@ -196,7 +199,10 @@ export async function initializeTables() {
         user_id INT NOT NULL,
         rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
         comment TEXT,
+        is_hidden BOOLEAN DEFAULT FALSE NOT NULL,
+        report_count INT DEFAULT 0 NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
@@ -255,7 +261,10 @@ export async function initializeTables() {
         visit_date TIMESTAMP NULL,
         helpful_votes INT DEFAULT 0 NOT NULL,
         is_verified BOOLEAN DEFAULT FALSE NOT NULL,
+        is_hidden BOOLEAN DEFAULT FALSE NOT NULL,
+        report_count INT DEFAULT 0 NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         UNIQUE KEY unique_review (activity_id, user_id)

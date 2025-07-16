@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Test script for the enhanced rating system
-const axios = require('axios');
+import axios from 'axios';
 
 const BASE_URL = 'http://localhost:5000';
 
