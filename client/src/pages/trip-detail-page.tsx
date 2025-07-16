@@ -1495,74 +1495,8 @@ export default function TripDetailPage() {
                   </CardContent>
                 </Card>
 
-                {/* Modern Budget Section */}
+                {/* Budget Section */}
                 <div className="space-y-6">
-                  {/* Budget Overview Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Total Budget Card */}
-                    <Card className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 hover:shadow-lg transition-all duration-300">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-blue-600 uppercase tracking-wide">Orçamento Total</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
-                              R$ {trip.budget.toLocaleString('pt-BR')}
-                            </p>
-                          </div>
-                          <div className="p-3 bg-blue-500 rounded-full">
-                            <DollarSign className="h-6 w-6 text-white" />
-                          </div>
-                        </div>
-                        <div className="mt-3 flex items-center text-sm text-blue-600">
-                          <TrendingUp className="h-4 w-4 mr-1" />
-                          Planejamento financeiro
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Per Person Card */}
-                    <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 hover:shadow-lg transition-all duration-300">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-emerald-600 uppercase tracking-wide">Por Pessoa</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
-                              R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </p>
-                          </div>
-                          <div className="p-3 bg-emerald-500 rounded-full">
-                            <Users className="h-6 w-6 text-white" />
-                          </div>
-                        </div>
-                        <div className="mt-3 flex items-center text-sm text-emerald-600">
-                          <Calculator className="h-4 w-4 mr-1" />
-                          {getRealParticipantsCount(trip)} participantes
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Budget Status Card */}
-                    <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200 hover:shadow-lg transition-all duration-300">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-amber-600 uppercase tracking-wide">Status</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
-                              {trip.budgetBreakdown ? 'Detalhado' : 'Simples'}
-                            </p>
-                          </div>
-                          <div className="p-3 bg-amber-500 rounded-full">
-                            <BarChart3 className="h-6 w-6 text-white" />
-                          </div>
-                        </div>
-                        <div className="mt-3 flex items-center text-sm text-amber-600">
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          {trip.budgetBreakdown ? 'Com categorias' : 'Valor único'}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
                   {/* Detailed Budget Breakdown */}
                   <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
                     <CardHeader className="border-b border-gray-100 bg-gray-50/50">
