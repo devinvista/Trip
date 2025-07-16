@@ -182,6 +182,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. **MIGRAÇÃO CONFIRMADA**: Migração do Replit Agent para ambiente Replit padrão confirmada pelo usuário - todas as funcionalidades operacionais
 - July 15, 2025. **MIGRAÇÃO FINALIZADA**: Migração do Replit Agent para ambiente Replit concluída com sucesso - aplicação 100% funcional no ambiente padrão
 - July 16, 2025. **MIGRAÇÃO CONFIRMADA PELO USUÁRIO**: Migração do Replit Agent para ambiente Replit oficialmente confirmada e finalizada - PartiuTrip totalmente operacional
+- July 16, 2025. **INTERFACE DE ORÇAMENTO OTIMIZADA**: Detalhamento de orçamento redesenhado com layout compacto e clean
+- July 16, 2025. Grid de categorias otimizado: layout horizontal, ícones menores, espaçamentos reduzidos para melhor aproveitamento da tela
+- July 16, 2025. Formatação padronizada: todos os valores "por pessoa" agora exibem 2 casas decimais (ex: R$ 1.234,56) para maior precisão
 - July 15, 2025. Implementado sistema de votação por proposta individual com toggle: usuários podem votar e remover voto clicando novamente
 - July 15, 2025. Alterado texto de "Você já votou nesta atividade" para "Já deu like!" em toda interface de propostas de orçamento
 - July 15, 2025. Criado endpoint /api/proposals/:id/user-vote para verificar votos individuais por proposta

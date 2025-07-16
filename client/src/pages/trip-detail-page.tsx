@@ -246,7 +246,7 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
             R$ {stats.totalBudget.toLocaleString('pt-BR')}
           </div>
           <div className="text-xs text-emerald-600">
-            R$ {stats.perPerson.toLocaleString('pt-BR')} /pessoa
+            R$ {stats.perPerson.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} /pessoa
           </div>
         </CardContent>
       </Card>
@@ -1527,7 +1527,7 @@ export default function TripDetailPage() {
                           <div>
                             <p className="text-sm font-medium text-emerald-600 uppercase tracking-wide">Por Pessoa</p>
                             <p className="text-2xl font-bold text-gray-900 mt-1">
-                              R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR')}
+                              R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </p>
                           </div>
                           <div className="p-3 bg-emerald-500 rounded-full">
@@ -1622,7 +1622,7 @@ export default function TripDetailPage() {
                                         {budgetCategories[category as keyof typeof budgetCategories] || category}
                                       </p>
                                       <p className="text-xs text-gray-500">
-                                        R$ {perPerson.toLocaleString('pt-BR')}/pessoa
+                                        R$ {perPerson.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/pessoa
                                       </p>
                                     </div>
                                   </div>
@@ -1656,7 +1656,7 @@ export default function TripDetailPage() {
                                   R$ {trip.budget.toLocaleString('pt-BR')}
                                 </p>
                                 <p className="text-blue-100 text-xs">
-                                  R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR')} cada
+                                  R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} cada
                                 </p>
                               </div>
                             </div>
@@ -1674,7 +1674,7 @@ export default function TripDetailPage() {
                                 R$ {trip.budget.toLocaleString('pt-BR')}
                               </h3>
                               <p className="text-lg text-gray-600">
-                                R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR')} por pessoa
+                                R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} por pessoa
                               </p>
                             </div>
                             <div className="max-w-md mx-auto">
@@ -2005,7 +2005,7 @@ export default function TripDetailPage() {
                         <span className="text-xs font-medium text-blue-900">Custo Individual</span>
                       </div>
                       <div className="text-base font-bold text-blue-900 tabular-nums">
-                        R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR')}
+                        R$ {(((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </div>
                       <div className="text-xs text-blue-700">
                         {trip.maxParticipants} participantes
