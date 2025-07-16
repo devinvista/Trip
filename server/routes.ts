@@ -694,7 +694,7 @@ export function registerRoutes(app: Express): Server {
   // Profile routes
   app.put("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const { fullName, email, phone, bio, location, languages, interests, travelStyle } = req.body;
+      const { fullName, email, phone, bio, location, languages, interests, travelStyle, travelStyles } = req.body;
       
       console.log('🔍 Dados recebidos para atualização de perfil:', {
         userId: req.user!.id,
@@ -705,7 +705,7 @@ export function registerRoutes(app: Express): Server {
         location,
         languages,
         interests,
-        travelStyle
+        travelStyles: travelStyles || (travelStyle ? [travelStyle] : [])
       });
       
       // Prepare update data with proper field names
@@ -717,7 +717,7 @@ export function registerRoutes(app: Express): Server {
         location,
         languages,
         interests,
-        travelStyle
+        travelStyles: travelStyles || (travelStyle ? [travelStyle] : [])
       };
       
       console.log('🔍 Dados para atualização no banco:', updateData);

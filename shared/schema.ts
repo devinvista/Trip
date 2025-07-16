@@ -14,7 +14,7 @@ export const users = mysqlTable("users", {
   profilePhoto: text("profile_photo"),
   languages: json("languages"),
   interests: json("interests"),
-  travelStyle: varchar("travel_style", { length: 100 }), // User's main travel style preference
+  travelStyles: json("travel_styles"), // User's travel style preferences (array)
   referredBy: varchar("referred_by", { length: 50 }), // Referral code used during registration
   isVerified: boolean("is_verified").default(false).notNull(), // User verification status
   verificationMethod: varchar("verification_method", { length: 50 }), // email, phone, document, etc.
@@ -166,7 +166,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   location: true,
   languages: true,
   interests: true,
-  travelStyle: true,
+  travelStyles: true,
 }).extend({
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
 });
