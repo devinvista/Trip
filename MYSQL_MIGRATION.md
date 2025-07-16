@@ -52,6 +52,10 @@ Migração completa de todos os schemas:
 - `pgTable` → `mysqlTable`
 - `pgEnum` → `mysqlEnum`
 
+**Incompatibilidades do MySQL:**
+- `.returning()` → **Não suportado** (remover de queries INSERT/UPDATE/DELETE)
+- Use queries separadas para obter dados após inserção/atualização
+
 ### 4. Variáveis de Ambiente
 
 #### Antes (PostgreSQL):
@@ -142,6 +146,44 @@ npm run dev
 2. **Performance**: Pool de conexões MySQL otimizado para produção
 3. **Segurança**: Credenciais armazenadas em variáveis de ambiente
 4. **Monitoramento**: Logs detalhados para debug e monitoramento
+
+## Melhores Práticas para MySQL
+
+### 1. Método `.returning()` - NÃO SUPORTADO
+```typescript
+// ❌ ERRO - Não funciona no MySQL
+const result = await db.insert(users).values({
+  name: 'João'
+}).returning();
+
+// ✅ CORRETO - Padrão MySQL
+await db.insert(users).values({
+  name: 'João'
+});
+
+// Para obter dados após inserção, use query separada
+const insertedUser = await db
+  .select()
+  .from(users)
+  .where(eq(users.name, 'João'))
+  .limit(1);
+```
+
+### 2. Queries INSERT/UPDATE/DELETE
+```typescript
+// ✅ Padrão correto para MySQL
+await db.insert(table).values(data);
+await db.update(table).set(data).where(condition);
+await db.delete(table).where(condition);
+
+// Para logs, use console.log após operação
+console.log('✅ Dados inseridos com sucesso');
+```
+
+### 3. Verificação de Compatibilidade
+- Sempre teste queries após alterações
+- Use logs para debug em desenvolvimento
+- Evite métodos específicos do PostgreSQL
 
 ## Próximos Passos
 

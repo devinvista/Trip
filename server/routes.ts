@@ -1213,10 +1213,17 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ message: "Você já reportou esta avaliação" });
       }
       
-      const report = await db.insert(ratingReports).values({
+      await db.insert(ratingReports).values({
         ...reportData,
         reporterId
-      }).returning();
+      });
+      
+      console.log('📝 Report de avaliação criado:', {
+        reporterId,
+        ratingType: reportData.ratingType,
+        ratingId: reportData.ratingId,
+        reason: reportData.reason
+      });
       
       // Increment report count on the rating
       if (reportData.ratingType === 'user') {
