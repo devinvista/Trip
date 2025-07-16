@@ -212,6 +212,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 16, 2025. Interface com animações suaves, contadores de filtros ativos e sistema de busca com debounce
 - July 16, 2025. Criado sistema de cards modernos com hover effects, badges de categoria e preços destacados
 - July 16, 2025. Sistema de filtros visuais por categoria com ícones, contador de atividades e estados de loading otimizados
+- July 16, 2025. **CORREÇÃO CRÍTICA DOS FILTROS**: Corrigido mapeamento de categorias entre frontend e backend - activityCategories agora reflete as categorias reais do MySQL
+- July 16, 2025. Sincronizado categorias do schema (adventure, cultural, food_tours, hiking, nature, pontos_turisticos, water_sports, wildlife) com dados do banco
+- July 16, 2025. Todos os filtros de categoria, preço, dificuldade e outros agora funcionam perfeitamente na página de atividades
 - July 12, 2025. Enhanced trip detail page with modern dynamic layout, contagem regressiva em tempo real, and improved budget tracking visualization
 - July 12, 2025. Added advanced activity management system with drag-and-drop functionality, file attachments, cost estimation, and automatic budget integration
 - July 12, 2025. Implemented real-time countdown timer with animations, enhanced budget breakdown with progress tracking, and contextual budget tips

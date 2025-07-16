@@ -532,15 +532,16 @@ export interface PlannedActivity {
   createdAt: string;
 }
 
-// Activity categories with labels and icons
+// Activity categories with labels and icons (matching database categories)
 export const activityCategories = {
-  sightseeing: { label: "Pontos Turísticos", icon: "🏛️" },
-  food: { label: "Gastronomia", icon: "🍽️" },
   adventure: { label: "Aventura", icon: "🏔️" },
-  culture: { label: "Cultura", icon: "🎭" },
-  relaxation: { label: "Relaxamento", icon: "🧘" },
-  nightlife: { label: "Vida Noturna", icon: "🌙" },
-  shopping: { label: "Compras", icon: "🛍️" },
+  cultural: { label: "Cultura", icon: "🎭" },
+  food_tours: { label: "Gastronomia", icon: "🍽️" },
+  hiking: { label: "Caminhadas", icon: "🥾" },
+  nature: { label: "Natureza", icon: "🌿" },
+  pontos_turisticos: { label: "Pontos Turísticos", icon: "🏛️" },
+  water_sports: { label: "Esportes Aquáticos", icon: "🏄" },
+  wildlife: { label: "Vida Selvagem", icon: "🦎" },
   other: { label: "Outros", icon: "📋" }
 } as const;
 
