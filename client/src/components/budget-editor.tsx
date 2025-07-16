@@ -38,10 +38,21 @@ export function BudgetEditor({
 
   const updateBudgetMutation = useMutation({
     mutationFn: async (data: { budget: number; budgetBreakdown?: BudgetBreakdown }) => {
+      console.log('Enviando dados de orçamento:', data);
       const response = await apiRequest('PATCH', `/api/trips/${tripId}/budget`, data);
-      return response.json();
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Erro na resposta:', response.status, errorData);
+        throw new Error(errorData || 'Erro ao atualizar orçamento');
+      }
+      
+      const result = await response.json();
+      console.log('Orçamento atualizado com sucesso:', result);
+      return result;
     },
     onSuccess: (updatedTrip) => {
+      console.log('Invalidando cache e atualizando UI');
       queryClient.invalidateQueries({ queryKey: ['/api/trips', tripId] });
       onBudgetUpdate?.(updatedTrip.budget, updatedTrip.budgetBreakdown);
       setIsOpen(false);
@@ -51,9 +62,10 @@ export function BudgetEditor({
       });
     },
     onError: (error: Error) => {
+      console.error('Erro na mutação:', error);
       toast({
         title: "Erro ao atualizar orçamento",
-        description: error.message,
+        description: error.message || "Erro desconhecido ao atualizar orçamento",
         variant: "destructive",
       });
     },
@@ -111,12 +123,15 @@ export function BudgetEditor({
           Editar Orçamento
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="budget-editor-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
             Editar Orçamento da Viagem
           </DialogTitle>
+          <p id="budget-editor-description" className="text-sm text-gray-600 mt-2">
+            Ajuste o orçamento total da viagem ou defina valores específicos por categoria
+          </p>
         </DialogHeader>
         
         <div className="space-y-6">
