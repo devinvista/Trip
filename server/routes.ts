@@ -694,7 +694,7 @@ export function registerRoutes(app: Express): Server {
   // Profile routes
   app.put("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const { fullName, email, phone, bio, location, languages, interests, travelStyles } = req.body;
+      const { fullName, email, phone, bio, location, languages, interests, travelStyle } = req.body;
       
       console.log('🔍 Dados recebidos para atualização de perfil:', {
         userId: req.user!.id,
@@ -705,19 +705,24 @@ export function registerRoutes(app: Express): Server {
         location,
         languages,
         interests,
-        travelStyles
+        travelStyle
       });
       
-      const updatedUser = await storage.updateUser(req.user!.id, {
+      // Prepare update data with proper field names
+      const updateData = {
         fullName,
         email,
-        phone,
+        phone: phone.replace(/\D/g, ''), // Remove formatting from phone
         bio,
         location,
         languages,
         interests,
-        travelStyles
-      });
+        travelStyle
+      };
+      
+      console.log('🔍 Dados para atualização no banco:', updateData);
+      
+      const updatedUser = await storage.updateUser(req.user!.id, updateData);
       
       if (!updatedUser) {
         return res.status(404).json({ message: "Usuário não encontrado" });

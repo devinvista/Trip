@@ -168,7 +168,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   location: true,
   languages: true,
   interests: true,
-  travelStyles: true,
+  travelStyle: true,
 }).extend({
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
 });
