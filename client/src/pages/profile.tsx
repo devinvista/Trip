@@ -358,9 +358,9 @@ export default function ProfilePage() {
                   <Camera className="h-4 w-4 text-gray-600" />
                 </button>
                 
-                {/* Medalha flutuante com nível do viajante */}
-                <div className="absolute -top-2 -right-2">
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-lg`}>
+                {/* Badge centralizado na base inferior com design moderno */}
+                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+                  <div className={`px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-lg border-2 border-white/20 backdrop-blur-sm`}>
                     {getTravelerLevel(userStats?.completedTrips || 0).level}
                   </div>
                 </div>
