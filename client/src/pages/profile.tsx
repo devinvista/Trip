@@ -358,9 +358,9 @@ export default function ProfilePage() {
                   <Camera className="h-4 w-4 text-gray-600" />
                 </button>
                 
-                {/* Badge centralizado na base inferior com design moderno */}
-                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
-                  <div className={`px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-lg border-2 border-white/20 backdrop-blur-sm`}>
+                {/* Badge centralizado na base inferior com design moderno - versão compacta */}
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-md border border-white/30 backdrop-blur-sm`}>
                     {getTravelerLevel(userStats?.completedTrips || 0).level}
                   </div>
                 </div>

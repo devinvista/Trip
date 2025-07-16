@@ -184,6 +184,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 16, 2025. **MIGRAÇÃO CONFIRMADA PELO USUÁRIO**: Migração do Replit Agent para ambiente Replit oficialmente confirmada e finalizada - PartiuTrip totalmente operacional
 - July 16, 2025. **SISTEMA DE PERFIL CORRIGIDO**: Corrigido problema na página de perfil onde alterações não estavam sendo salvas - ajustado campo travelStyle (singular) no frontend e backend
 - July 16, 2025. **AVATAR MODERNIZADO**: Badge "Explorador" agora centralizado na base inferior do avatar com design moderno e clean, incluindo bordas brancas e efeito backdrop-blur
+- July 16, 2025. **BADGE COMPACTO**: Badge "Explorador" otimizado para tamanho mais compacto - reduzido padding, sombra e espessura de borda para visual mais clean
 - July 16, 2025. **DETALHAMENTO DE ORÇAMENTO OTIMIZADO**: Categorias do orçamento agora são exibidas condicionalmente - aparecem apenas quando a opção "Divida o orçamento em categorias específicas" é selecionada no editor de orçamento
 - July 16, 2025. **SISTEMA DE ORÇAMENTO APRIMORADO**: Quando a opção "Divida o orçamento em categorias específicas" é desabilitada, o sistema zera automaticamente os valores das categorias (budgetBreakdown = null)
 - July 16, 2025. **CORREÇÃO CRÍTICA DO ORÇAMENTO**: Corrigido parsing que criava categorias automáticas mesmo quando usuário desabilitava a opção - agora respeita budgetBreakdown = null
