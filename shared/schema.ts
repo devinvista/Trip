@@ -99,7 +99,6 @@ export const userRatings = mysqlTable("user_ratings", {
   raterUserId: int("rater_user_id").notNull().references(() => users.id), // User giving the rating
   rating: int("rating").notNull(), // 1-5 stars
   comment: text("comment"), // Optional comment
-  categories: json("categories"), // { reliability: 5, friendliness: 4, communication: 5, etc. }
   isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
   reportCount: int("report_count").default(0).notNull(), // Number of reports
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -114,7 +113,6 @@ export const destinationRatings = mysqlTable("destination_ratings", {
   tripId: int("trip_id").references(() => trips.id), // Optional: trip this rating is from
   rating: int("rating").notNull(), // 1-5 stars
   comment: text("comment"), // Optional comment
-  categories: json("categories"), // { attractions: 5, food: 4, safety: 5, value: 3, etc. }
   photos: json("photos"), // Array of photo URLs
   visitDate: timestamp("visit_date"), // When they visited
   isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
