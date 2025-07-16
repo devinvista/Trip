@@ -1071,8 +1071,9 @@ export default function TripDetailPage() {
       }
     }
     
-    // If budgetBreakdown is still null or empty but we have a budget, create a default breakdown
-    if (!parsedBudgetBreakdown && rawTrip.budget && rawTrip.budget > 0) {
+    // If budgetBreakdown is explicitly null, keep it null (user disabled categories)
+    // Only create default breakdown if budgetBreakdown is undefined (legacy trips)
+    if (parsedBudgetBreakdown === undefined && rawTrip.budget && rawTrip.budget > 0) {
       parsedBudgetBreakdown = {
         transport: Math.round(rawTrip.budget * 0.4),
         accommodation: Math.round(rawTrip.budget * 0.4),

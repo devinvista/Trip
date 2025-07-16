@@ -184,6 +184,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 16, 2025. **MIGRAÇÃO CONFIRMADA PELO USUÁRIO**: Migração do Replit Agent para ambiente Replit oficialmente confirmada e finalizada - PartiuTrip totalmente operacional
 - July 16, 2025. **DETALHAMENTO DE ORÇAMENTO OTIMIZADO**: Categorias do orçamento agora são exibidas condicionalmente - aparecem apenas quando a opção "Divida o orçamento em categorias específicas" é selecionada no editor de orçamento
 - July 16, 2025. **SISTEMA DE ORÇAMENTO APRIMORADO**: Quando a opção "Divida o orçamento em categorias específicas" é desabilitada, o sistema zera automaticamente os valores das categorias (budgetBreakdown = null)
+- July 16, 2025. **CORREÇÃO CRÍTICA DO ORÇAMENTO**: Corrigido parsing que criava categorias automáticas mesmo quando usuário desabilitava a opção - agora respeita budgetBreakdown = null
 - July 16, 2025. **MIGRAÇÃO CONCLUÍDA COM SUCESSO**: Migração completa do Replit Agent para ambiente Replit padrão finalizada - todas as checklist items verificadas
 - July 16, 2025. Simplificado detalhamento de orçamento: removidas categorias da versão simplificada conforme solicitado pelo usuário
 - July 16, 2025. **INTERFACE DE ORÇAMENTO OTIMIZADA**: Detalhamento de orçamento redesenhado com layout compacto e clean
