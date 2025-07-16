@@ -2049,7 +2049,7 @@ export function registerRoutes(app: Express): Server {
       const participatingTrips = await storage.getTripsByParticipant(userId);
       
       const allTrips = [...createdTrips, ...participatingTrips];
-      const companions = new Set();
+      const companionsMap = new Map(); // Use Map to track unique companions
       
       // Get all unique companions from all trips
       for (const trip of allTrips) {
@@ -2058,25 +2058,39 @@ export function registerRoutes(app: Express): Server {
           if (participant.userId !== userId && participant.status === 'accepted') {
             const user = await storage.getUser(participant.userId);
             if (user) {
-              companions.add(JSON.stringify({
-                id: user.id,
-                fullName: user.fullName,
-                username: user.username,
-                email: user.email,
-                location: user.location,
-                profilePhoto: user.profilePhoto,
-                isVerified: user.isVerified,
-                bio: user.bio,
-                averageRating: "5.0", // Mock rating
-                tripsCount: 1, // Mock count
-                lastTrip: trip.endDate
-              }));
+              const companionId = user.id;
+              
+              // Check if we already have this companion
+              if (!companionsMap.has(companionId)) {
+                companionsMap.set(companionId, {
+                  id: user.id,
+                  fullName: user.fullName,
+                  username: user.username,
+                  email: user.email,
+                  location: user.location,
+                  profilePhoto: user.profilePhoto,
+                  isVerified: user.isVerified,
+                  bio: user.bio,
+                  averageRating: "5.0", // Mock rating
+                  tripsCount: 1,
+                  lastTrip: trip.endDate
+                });
+              } else {
+                // Update trip count and last trip date if this trip is more recent
+                const existingCompanion = companionsMap.get(companionId);
+                existingCompanion.tripsCount += 1;
+                
+                // Update last trip if this trip is more recent
+                if (new Date(trip.endDate) > new Date(existingCompanion.lastTrip)) {
+                  existingCompanion.lastTrip = trip.endDate;
+                }
+              }
             }
           }
         }
       }
       
-      const uniqueCompanions = Array.from(companions).map(c => JSON.parse(c));
+      const uniqueCompanions = Array.from(companionsMap.values());
       res.json(uniqueCompanions);
     } catch (error) {
       console.error('Erro ao buscar companheiros de viagem:', error);
