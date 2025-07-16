@@ -204,6 +204,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 16, 2025. Interface de perfil atualizada: estilos de viagem agora permitem seleção múltipla com badges clicáveis
 - July 16, 2025. Backend e frontend sincronizados para suportar múltiplos estilos de viagem por usuário
 - July 16, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso
+- July 16, 2025. **PÁGINA DE PESQUISA CORRIGIDA**: Corrigido problema que não carregava todas as viagens - removido filtro de data muito restritivo
+- July 16, 2025. **FILTRO DE VIAGENS FUTURAS**: Implementado filtro para mostrar apenas viagens que ainda não começaram nas pesquisas
 - July 16, 2025. Removidos cards visuais de estatísticas da seção orçamento: interface mais limpa focando apenas no detalhamento das categorias
 - July 16, 2025. **BADGE DE VERIFICAÇÃO MODERNIZADO**: Badge de usuário verificado agora é verde com gradiente moderno, proporcional ao tamanho do avatar e efeitos visuais aprimorados
 - July 15, 2025. Implementado sistema de votação por proposta individual com toggle: usuários podem votar e remover voto clicando novamente

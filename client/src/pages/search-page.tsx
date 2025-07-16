@@ -200,12 +200,9 @@ export default function SearchPage() {
     queryKey: ["/api/trips", queryParams],
     queryFn: async () => {
       const searchParams = new URLSearchParams(queryParams);
-      console.log('🔍 Buscando viagens com parâmetros:', queryParams);
       const res = await fetch(`/api/trips?${searchParams}`);
       if (!res.ok) throw new Error('Failed to fetch trips');
-      const data = await res.json();
-      console.log('📊 Viagens recebidas do servidor:', data.length, data);
-      return data;
+      return res.json();
     },
     staleTime: 30 * 1000,
     refetchOnWindowFocus: false,
@@ -213,16 +210,16 @@ export default function SearchPage() {
 
   // Advanced client-side filtering
   const filteredTrips = useMemo(() => {
-    console.log('🔍 Aplicando filtros client-side:', {
-      totalTrips: trips.length,
-      searchTerm,
-      selectedTravelTypes,
-      budgetRange,
-      selectedContinent,
-      selectedDateFilter
-    });
-    
     const filtered = trips.filter((trip: any) => {
+      // Filter out trips that have already started
+      const currentDate = new Date();
+      const tripStartDate = new Date(trip.startDate);
+      
+      // Only show trips that haven't started yet (future trips)
+      if (tripStartDate <= currentDate) {
+        return false;
+      }
+
       // Text search filter
       if (searchTerm && searchTerm.trim()) {
         const searchLower = searchTerm.toLowerCase().trim();
@@ -283,12 +280,6 @@ export default function SearchPage() {
       }
 
       return true;
-    });
-    
-    console.log('📊 Resultado da filtragem:', {
-      originalCount: trips.length,
-      filteredCount: filtered.length,
-      filtered: filtered.map(t => ({ id: t.id, title: t.title, destination: t.destination }))
     });
     
     return filtered;
