@@ -194,7 +194,7 @@ export function BudgetEditor({
                         Custo por pessoa:
                       </span>
                       <span className="text-lg font-bold text-blue-900">
-                        R$ {(budget / maxParticipants).toLocaleString('pt-BR')}
+                        R$ {(budget / maxParticipants).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                   </div>
@@ -245,7 +245,7 @@ export function BudgetEditor({
                         Custo por pessoa:
                       </span>
                       <span className="text-lg font-bold text-green-900">
-                        R$ {(calculateTotalFromBreakdown() / maxParticipants).toLocaleString('pt-BR')}
+                        R$ {(calculateTotalFromBreakdown() / maxParticipants).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                   </div>
