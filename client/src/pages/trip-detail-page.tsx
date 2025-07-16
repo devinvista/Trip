@@ -1531,37 +1531,104 @@ export default function TripDetailPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
-                      {/* Simplified Budget Display - No Categories Shown */}
-                      <div className="text-center py-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4">
-                          <DollarSign className="h-8 w-8 text-white" />
-                        </div>
-                        <div className="space-y-3">
-                          <div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                              R$ {trip.budget.toLocaleString('pt-BR')}
-                            </h3>
-                            <p className="text-lg text-gray-600">
-                              R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} por pessoa
-                            </p>
+                      {trip.budgetBreakdown ? (
+                        <div className="space-y-4">
+                          {/* Compact Category Grid */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {Object.entries(trip.budgetBreakdown).map(([category, amount]) => {
+                              const percentage = ((amount / trip.budget) * 100);
+                              const perPerson = amount / getRealParticipantsCount(trip);
+                              
+                              return (
+                                <div key={category} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+                                  <div className="flex items-center gap-2">
+                                    <div className="p-1.5 bg-white rounded-md shadow-sm">
+                                      {category === 'transport' && <Plane className="h-3.5 w-3.5 text-blue-600" />}
+                                      {category === 'accommodation' && <Home className="h-3.5 w-3.5 text-green-600" />}
+                                      {category === 'food' && <Utensils className="h-3.5 w-3.5 text-orange-600" />}
+                                      {category === 'insurance' && <Shield className="h-3.5 w-3.5 text-purple-600" />}
+                                      {category === 'medical' && <Shield className="h-3.5 w-3.5 text-red-600" />}
+                                      {!['transport', 'accommodation', 'food', 'insurance', 'medical'].includes(category) && 
+                                        <MoreHorizontal className="h-3.5 w-3.5 text-gray-600" />}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="text-sm font-medium text-gray-900 truncate">
+                                        {budgetCategories[category as keyof typeof budgetCategories] || category}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        R$ {perPerson.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/pessoa
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right flex-shrink-0">
+                                    <p className="text-sm font-bold text-gray-900 tabular-nums">
+                                      R$ {amount.toLocaleString('pt-BR')}
+                                    </p>
+                                    <Badge variant="secondary" className="text-xs">
+                                      {percentage.toFixed(0)}%
+                                    </Badge>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
-                          <div className="max-w-sm mx-auto">
-                            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                              <p className="text-sm text-gray-600 mb-1">Participantes confirmados</p>
-                              <div className="flex items-center justify-center gap-2">
-                                <Users className="h-4 w-4 text-gray-500" />
-                                <span className="font-medium text-gray-900">{getRealParticipantsCount(trip)} de {trip.maxParticipants}</span>
+                          
+                          {/* Compact Total Summary */}
+                          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-4 text-white">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Calculator className="h-5 w-5 text-white" />
+                                <div>
+                                  <h4 className="text-base font-semibold">Total da Viagem</h4>
+                                  <p className="text-blue-100 text-xs">
+                                    {getRealParticipantsCount(trip)} participantes
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-2xl font-bold tabular-nums">
+                                  R$ {trip.budget.toLocaleString('pt-BR')}
+                                </p>
+                                <p className="text-blue-100 text-xs">
+                                  R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} cada
+                                </p>
                               </div>
                             </div>
                           </div>
-                          {isCreator && (
-                            <p className="text-xs text-gray-500 mt-4">
-                              <Info className="h-4 w-4 inline mr-1" />
-                              Use o botão "Editar Orçamento" para adicionar detalhamento por categoria
-                            </p>
-                          )}
                         </div>
-                      </div>
+                      ) : (
+                        /* Simple Budget Display - No Categories Shown */
+                        <div className="text-center py-8">
+                          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-4">
+                            <DollarSign className="h-8 w-8 text-white" />
+                          </div>
+                          <div className="space-y-3">
+                            <div>
+                              <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                                R$ {trip.budget.toLocaleString('pt-BR')}
+                              </h3>
+                              <p className="text-lg text-gray-600">
+                                R$ {(trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} por pessoa
+                              </p>
+                            </div>
+                            <div className="max-w-sm mx-auto">
+                              <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                <p className="text-sm text-gray-600 mb-1">Participantes confirmados</p>
+                                <div className="flex items-center justify-center gap-2">
+                                  <Users className="h-4 w-4 text-gray-500" />
+                                  <span className="font-medium text-gray-900">{getRealParticipantsCount(trip)} de {trip.maxParticipants}</span>
+                                </div>
+                              </div>
+                            </div>
+                            {isCreator && (
+                              <p className="text-xs text-gray-500 mt-4">
+                                <Info className="h-4 w-4 inline mr-1" />
+                                Use o botão "Editar Orçamento" para adicionar detalhamento por categoria
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )}
                       
                       {/* Call to Action for Non-Participants */}
                       {!(isCreator || isParticipant) && canJoin && (
