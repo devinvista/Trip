@@ -1,48 +1,53 @@
-import { db } from './db';
+import { db } from './db.js';
+import { sql } from 'drizzle-orm';
 
 async function addRatingColumns() {
-  console.log('🔧 Adding missing rating system columns...');
-  
+  console.log('🔧 Adicionando colunas de rating necessárias...');
+
   try {
-    // Add columns to activity_reviews table
-    await db.execute(`
-      ALTER TABLE activity_reviews 
-      ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN DEFAULT FALSE NOT NULL,
-      ADD COLUMN IF NOT EXISTS report_count INT DEFAULT 0 NOT NULL
-    `);
+    // Verificar se a coluna total_ratings já existe
+    const columns = await db.execute(sql`DESCRIBE activities`);
+    const hasRatingColumns = columns.some(col => col.Field === 'total_ratings');
     
-    // Add columns to user_ratings table
-    await db.execute(`
-      ALTER TABLE user_ratings 
-      ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN DEFAULT FALSE NOT NULL,
-      ADD COLUMN IF NOT EXISTS report_count INT DEFAULT 0 NOT NULL
-    `);
+    if (!hasRatingColumns) {
+      // Adicionar colunas de rating se não existirem
+      await db.execute(sql`
+        ALTER TABLE activities 
+        ADD COLUMN total_ratings INT DEFAULT 0 NOT NULL,
+        ADD COLUMN rating_sum DECIMAL(10,2) DEFAULT 0.00 NOT NULL
+      `);
+      console.log('✅ Colunas de rating adicionadas!');
+    } else {
+      console.log('ℹ️ Colunas de rating já existem');
+    }
+
+    // Verificar se a tabela activity_budget_proposals tem as colunas necessárias
+    const proposalColumns = await db.execute(sql`DESCRIBE activity_budget_proposals`);
+    const hasProposalColumns = proposalColumns.some(col => col.Field === 'votes');
     
-    // Add columns to destination_ratings table
-    await db.execute(`
-      ALTER TABLE destination_ratings 
-      ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN DEFAULT FALSE NOT NULL,
-      ADD COLUMN IF NOT EXISTS report_count INT DEFAULT 0 NOT NULL
-    `);
-    
-    console.log('✅ Rating system columns added successfully!');
+    if (!hasProposalColumns) {
+      await db.execute(sql`
+        ALTER TABLE activity_budget_proposals 
+        ADD COLUMN votes INT DEFAULT 0 NOT NULL,
+        ADD COLUMN is_popular BOOLEAN DEFAULT FALSE NOT NULL
+      `);
+      console.log('✅ Colunas de propostas adicionadas!');
+    }
+
   } catch (error) {
-    console.error('❌ Error adding rating columns:', error);
-    throw error;
+    console.error('❌ Erro ao adicionar colunas:', error);
   }
 }
 
-// Run if called directly
-if (import.meta.url === new URL(import.meta.url).href) {
+// Executar se chamado diretamente
+if (import.meta.url === `file://${process.argv[1]}`) {
   addRatingColumns()
     .then(() => {
-      console.log('✅ Migration completed successfully!');
+      console.log('✅ Processo concluído!');
       process.exit(0);
     })
     .catch((error) => {
-      console.error('❌ Migration failed:', error);
+      console.error('❌ Erro no processo:', error);
       process.exit(1);
     });
 }
-
-export { addRatingColumns };
