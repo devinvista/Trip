@@ -1006,7 +1006,7 @@ export default function TripDetailPage() {
   const [plannedActivities, setPlannedActivities] = useState<PlannedActivity[]>([]);
   const [activeTab, setActiveTab] = useState("overview");
 
-  const { data: trip, isLoading } = useQuery<any>({
+  const { data: rawTrip, isLoading } = useQuery<any>({
     queryKey: ["/api/trips", id],
     queryFn: async () => {
       const res = await apiRequest("GET", `/api/trips/${id}`);
@@ -1018,9 +1018,9 @@ export default function TripDetailPage() {
 
   // Initialize planned activities when trip data is loaded
   useEffect(() => {
-    if (trip?.plannedActivities) {
+    if (rawTrip?.plannedActivities) {
       try {
-        let parsedActivities = trip.plannedActivities;
+        let parsedActivities = rawTrip.plannedActivities;
         
         // Handle double-escaped JSON strings
         if (typeof parsedActivities === 'string') {
@@ -1048,7 +1048,43 @@ export default function TripDetailPage() {
     } else {
       setPlannedActivities([]);
     }
-  }, [trip?.plannedActivities]);
+  }, [rawTrip?.plannedActivities]);
+
+  // Parse budgetBreakdown if it's a string (similar to plannedActivities)
+  const trip = useMemo(() => {
+    if (!rawTrip) return null;
+
+    let parsedBudgetBreakdown = rawTrip.budgetBreakdown;
+    
+    // Handle budgetBreakdown parsing - it might be stored as string JSON in database
+    if (typeof parsedBudgetBreakdown === 'string') {
+      try {
+        parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
+      } catch (e) {
+        // If parsing fails, try again in case it's double-escaped
+        try {
+          parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
+        } catch (e2) {
+          console.error('Error parsing budgetBreakdown:', e2);
+          parsedBudgetBreakdown = null;
+        }
+      }
+    }
+    
+    // If budgetBreakdown is still null or empty but we have a budget, create a default breakdown
+    if (!parsedBudgetBreakdown && rawTrip.budget && rawTrip.budget > 0) {
+      parsedBudgetBreakdown = {
+        transport: Math.round(rawTrip.budget * 0.4),
+        accommodation: Math.round(rawTrip.budget * 0.4),
+        food: Math.round(rawTrip.budget * 0.2)
+      };
+    }
+
+    return {
+      ...rawTrip,
+      budgetBreakdown: parsedBudgetBreakdown
+    };
+  }, [rawTrip]);
 
   const { data: requests = [] } = useQuery<any[]>({
     queryKey: ["/api/trips", id, "requests"],
