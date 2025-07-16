@@ -1006,7 +1006,7 @@ export default function TripDetailPage() {
   const [plannedActivities, setPlannedActivities] = useState<PlannedActivity[]>([]);
   const [activeTab, setActiveTab] = useState("overview");
 
-  const { data: rawTrip, isLoading } = useQuery<any>({
+  const { data: rawTrip, isLoading, refetch } = useQuery<any>({
     queryKey: ["/api/trips", id],
     queryFn: async () => {
       const res = await apiRequest("GET", `/api/trips/${id}`);
