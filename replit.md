@@ -182,6 +182,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 15, 2025. **MIGRAÇÃO CONFIRMADA**: Migração do Replit Agent para ambiente Replit padrão confirmada pelo usuário - todas as funcionalidades operacionais
 - July 15, 2025. **MIGRAÇÃO FINALIZADA**: Migração do Replit Agent para ambiente Replit concluída com sucesso - aplicação 100% funcional no ambiente padrão
 - July 16, 2025. **MIGRAÇÃO CONFIRMADA PELO USUÁRIO**: Migração do Replit Agent para ambiente Replit oficialmente confirmada e finalizada - PartiuTrip totalmente operacional
+- July 16, 2025. **MIGRAÇÃO CONCLUÍDA COM SUCESSO**: Migração completa do Replit Agent para ambiente Replit padrão finalizada - todas as checklist items verificadas
+- July 16, 2025. Simplificado detalhamento de orçamento: removidas categorias da versão simplificada conforme solicitado pelo usuário
 - July 16, 2025. **INTERFACE DE ORÇAMENTO OTIMIZADA**: Detalhamento de orçamento redesenhado com layout compacto e clean
 - July 16, 2025. Grid de categorias otimizado: layout horizontal, ícones menores, espaçamentos reduzidos para melhor aproveitamento da tela
 - July 16, 2025. Formatação padronizada: todos os valores "por pessoa" agora exibem 2 casas decimais (ex: R$ 1.234,56) para maior precisão
