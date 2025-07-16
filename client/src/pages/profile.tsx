@@ -16,6 +16,8 @@ import { UserAvatar } from "@/components/ui/user-avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import { 
   User, 
@@ -56,7 +58,10 @@ import {
   WhatsApp,
   Camera,
   Image,
-  Upload
+  Upload,
+  Trash2,
+  MoreVertical,
+  UserMinus
 } from "lucide-react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { motion } from "framer-motion";
@@ -119,6 +124,10 @@ export default function ProfilePage() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [showAvatarUpload, setShowAvatarUpload] = useState(false);
   const [showCoverUpload, setShowCoverUpload] = useState(false);
+  const [selectedCompanion, setSelectedCompanion] = useState<any>(null);
+  const [showRateDialog, setShowRateDialog] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [ratingComment, setRatingComment] = useState("");
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -164,6 +173,20 @@ export default function ProfilePage() {
     retry: 1
   });
 
+  // Fetch travel companions
+  const { data: travelCompanions, isLoading: companionsLoading, error: companionsError } = useQuery({
+    queryKey: ["/api/user/travel-companions"],
+    queryFn: async () => {
+      const response = await fetch("/api/user/travel-companions", {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch travel companions');
+      return response.json();
+    },
+    enabled: !!user,
+    retry: 1
+  });
+
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
       const response = await fetch("/api/user/profile", {
@@ -192,6 +215,66 @@ export default function ProfilePage() {
     }
   });
 
+  // Mutation to rate a travel companion
+  const rateCompanionMutation = useMutation({
+    mutationFn: async ({ companionId, rating, comment }: { companionId: number, rating: number, comment: string }) => {
+      const response = await fetch("/api/user/rate-companion", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
+        },
+        credentials: 'include',
+        body: JSON.stringify({ companionId, rating, comment })
+      });
+      
+      if (!response.ok) throw new Error("Erro ao avaliar companheiro");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Avaliação enviada com sucesso!" });
+      setShowRateDialog(false);
+      setRating(5);
+      setRatingComment("");
+      queryClient.invalidateQueries({ queryKey: ["/api/user/travel-companions"] });
+    },
+    onError: () => {
+      toast({ 
+        title: "Erro ao enviar avaliação", 
+        description: "Tente novamente mais tarde",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Mutation to remove a travel companion
+  const removeCompanionMutation = useMutation({
+    mutationFn: async (companionId: number) => {
+      const response = await fetch(`/api/user/remove-companion/${companionId}`, {
+        method: "DELETE",
+        headers: { 
+          "Cache-Control": "no-cache"
+        },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) throw new Error("Erro ao remover companheiro");
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Companheiro removido da sua rede!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/travel-companions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
+    },
+    onError: () => {
+      toast({ 
+        title: "Erro ao remover companheiro", 
+        description: "Tente novamente mais tarde",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleUpdateProfile = (data: ProfileFormData) => {
     updateProfileMutation.mutate(data);
   };
@@ -207,6 +290,47 @@ export default function ProfilePage() {
 
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+
+  // Handle rating companion
+  const handleRateCompanion = (companion: any) => {
+    setSelectedCompanion(companion);
+    setShowRateDialog(true);
+  };
+
+  // Handle remove companion
+  const handleRemoveCompanion = (companionId: number) => {
+    removeCompanionMutation.mutate(companionId);
+  };
+
+  // Submit rating
+  const submitRating = () => {
+    if (selectedCompanion) {
+      rateCompanionMutation.mutate({
+        companionId: selectedCompanion.id,
+        rating,
+        comment: ratingComment
+      });
+    }
+  };
+
+  // Render star rating component
+  const renderStarRating = (currentRating: number, onRatingChange?: (rating: number) => void) => {
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => onRatingChange?.(star)}
+            className={`text-2xl ${star <= currentRating ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400 transition-colors`}
+            disabled={!onRatingChange}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+    );
   };
 
   // Debug logging
@@ -729,30 +853,118 @@ export default function ProfilePage() {
 
           {/* Aba de Conexões */}
           <TabsContent value="connections" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Minha Rede */}
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
-                    <Users className="h-5 w-5" />
-                    Minha Rede de Viagem
-                  </CardTitle>
-                  <CardDescription>
-                    Conecte-se com companheiros de viagem
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+            {/* Minha Rede de Companheiros */}
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                  <Users className="h-5 w-5" />
+                  Minha Rede de Companheiros ({travelCompanions?.length || 0})
+                </CardTitle>
+                <CardDescription>
+                  Companheiros de viagem que você conheceu em suas jornadas
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {companionsLoading ? (
+                  <div className="flex justify-center py-8">
+                    <LoadingSpinner />
+                  </div>
+                ) : travelCompanions && travelCompanions.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {travelCompanions.map((companion: any) => (
+                      <motion.div
+                        key={companion.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="relative group"
+                      >
+                        <Card className="hover:shadow-lg transition-shadow duration-200 border-0 bg-gradient-to-br from-white to-gray-50">
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="relative">
+                                <UserAvatar 
+                                  user={companion}
+                                  size="md"
+                                  className="h-12 w-12 border-2 border-white shadow-md"
+                                />
+                                {companion.isVerified && (
+                                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                                    <Check className="h-2 w-2 text-white" />
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between">
+                                  <h3 className="font-semibold text-sm truncate" style={{ color: '#1B2B49' }}>
+                                    {companion.fullName}
+                                  </h3>
+                                  
+                                  {/* Menu de ações */}
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <MoreVertical className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-48">
+                                      <DropdownMenuItem onClick={() => handleRateCompanion(companion)}>
+                                        <Star className="mr-2 h-4 w-4" />
+                                        Avaliar Companheiro
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        onClick={() => handleRemoveCompanion(companion.id)}
+                                        className="text-red-600 hover:text-red-700"
+                                      >
+                                        <UserMinus className="mr-2 h-4 w-4" />
+                                        Remover da Rede
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                                
+                                <p className="text-xs text-gray-600 mb-2">
+                                  {companion.location}
+                                </p>
+                                
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="flex items-center gap-1">
+                                    <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                                    <span className="text-xs font-medium">
+                                      {companion.averageRating || '5.0'}
+                                    </span>
+                                  </div>
+                                  <span className="text-xs text-gray-400">•</span>
+                                  <span className="text-xs text-gray-500">
+                                    {companion.tripsCount || 1} viagem{(companion.tripsCount || 1) > 1 ? 's' : ''}
+                                  </span>
+                                </div>
+                                
+                                <div className="text-xs text-gray-500">
+                                  Última viagem: {companion.lastTrip ? new Date(companion.lastTrip).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }) : 'Recente'}
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
                   <div className="text-center py-12">
                     <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <p className="text-gray-500 mb-2">Sua rede está crescendo!</p>
+                    <p className="text-gray-500 mb-2">Nenhum companheiro na sua rede ainda</p>
                     <p className="text-sm text-gray-400">
-                      {userStats?.travelPartners || 0} conexões de viagem
+                      Participe de viagens para conectar-se com outros viajantes!
                     </p>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </CardContent>
+            </Card>
 
-              {/* Convites para Viagem */}
+            {/* Convites para Viagem */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
@@ -767,6 +979,37 @@ export default function ProfilePage() {
                     <p className="text-sm text-gray-400">
                       Seus próximos convites aparecerão aqui
                     </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
+                    <Trophy className="h-5 w-5" />
+                    Estatísticas da Rede
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Total de Companheiros</span>
+                      <span className="font-semibold" style={{ color: '#1B2B49' }}>
+                        {travelCompanions?.length || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Países Visitados</span>
+                      <span className="font-semibold" style={{ color: '#1B2B49' }}>
+                        {userStats?.countriesVisited || 0}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Avaliação Média</span>
+                      <span className="font-semibold" style={{ color: '#1B2B49' }}>
+                        {userStats?.averageRating || '5.0'} ⭐
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1363,6 +1606,61 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Dialog para Avaliar Companheiro */}
+      <Dialog open={showRateDialog} onOpenChange={setShowRateDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Avaliar Companheiro de Viagem</DialogTitle>
+            <DialogDescription>
+              Avalie sua experiência com {selectedCompanion?.fullName}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Avaliação</Label>
+              <div className="flex justify-center">
+                {renderStarRating(rating, setRating)}
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="rating-comment" className="text-sm font-medium mb-2 block">
+                Comentário (opcional)
+              </Label>
+              <Textarea
+                id="rating-comment"
+                placeholder="Compartilhe sua experiência de viagem..."
+                value={ratingComment}
+                onChange={(e) => setRatingComment(e.target.value)}
+                rows={3}
+                className="resize-none"
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowRateDialog(false)}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={submitRating}
+                disabled={rateCompanionMutation.isPending}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+              >
+                {rateCompanionMutation.isPending ? (
+                  <LoadingSpinner size="sm" />
+                ) : (
+                  "Enviar Avaliação"
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

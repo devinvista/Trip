@@ -2037,6 +2037,130 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // ===== TRAVEL COMPANIONS ROUTES =====
+
+  // Get user's travel companions
+  app.get("/api/user/travel-companions", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      // Get user's trips where they participated
+      const createdTrips = await storage.getTripsByCreator(userId);
+      const participatingTrips = await storage.getTripsByParticipant(userId);
+      
+      const allTrips = [...createdTrips, ...participatingTrips];
+      const companions = new Set();
+      
+      // Get all unique companions from all trips
+      for (const trip of allTrips) {
+        const participants = await storage.getTripParticipants(trip.id);
+        for (const participant of participants) {
+          if (participant.userId !== userId && participant.status === 'accepted') {
+            const user = await storage.getUser(participant.userId);
+            if (user) {
+              companions.add(JSON.stringify({
+                id: user.id,
+                fullName: user.fullName,
+                username: user.username,
+                email: user.email,
+                location: user.location,
+                profilePhoto: user.profilePhoto,
+                isVerified: user.isVerified,
+                bio: user.bio,
+                averageRating: "5.0", // Mock rating
+                tripsCount: 1, // Mock count
+                lastTrip: trip.endDate
+              }));
+            }
+          }
+        }
+      }
+      
+      const uniqueCompanions = Array.from(companions).map(c => JSON.parse(c));
+      res.json(uniqueCompanions);
+    } catch (error) {
+      console.error('Erro ao buscar companheiros de viagem:', error);
+      res.status(500).json({ message: "Erro ao buscar companheiros de viagem" });
+    }
+  });
+
+  // Rate a travel companion
+  app.post("/api/user/rate-companion", requireAuth, async (req, res) => {
+    try {
+      const { companionId, rating, comment } = req.body;
+      const userId = req.user!.id;
+      
+      // Validate input
+      if (!companionId || !rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Dados inválidos para avaliação" });
+      }
+      
+      // Check if users have traveled together
+      const userTrips = await storage.getTripsByCreator(userId);
+      const participatingTrips = await storage.getTripsByParticipant(userId);
+      const allUserTrips = [...userTrips, ...participatingTrips];
+      
+      let hasSharedTrip = false;
+      for (const trip of allUserTrips) {
+        const participants = await storage.getTripParticipants(trip.id);
+        if (participants.some(p => p.userId === companionId && p.status === 'accepted')) {
+          hasSharedTrip = true;
+          break;
+        }
+      }
+      
+      if (!hasSharedTrip) {
+        return res.status(400).json({ message: "Você só pode avaliar companheiros de viagem que já viajaram com você" });
+      }
+      
+      // Create rating entry - for now we'll return success
+      // In a real implementation, this would save to a companion_ratings table
+      const ratingData = {
+        raterId: userId,
+        ratedUserId: companionId,
+        rating,
+        comment: comment || null,
+        createdAt: new Date().toISOString()
+      };
+      
+      console.log('📝 Avaliação de companheiro criada:', ratingData);
+      
+      res.json({ 
+        message: "Avaliação enviada com sucesso!",
+        rating: ratingData 
+      });
+    } catch (error) {
+      console.error('Erro ao avaliar companheiro:', error);
+      res.status(500).json({ message: "Erro ao enviar avaliação" });
+    }
+  });
+
+  // Remove a travel companion from network
+  app.delete("/api/user/remove-companion/:companionId", requireAuth, async (req, res) => {
+    try {
+      const companionId = parseInt(req.params.companionId);
+      const userId = req.user!.id;
+      
+      // Check if companion exists
+      const companion = await storage.getUser(companionId);
+      if (!companion) {
+        return res.status(404).json({ message: "Companheiro não encontrado" });
+      }
+      
+      // For now, we'll just return success - in a real implementation,
+      // this would remove from a companions/connections table
+      console.log(`🗑️ Removendo companheiro ${companionId} da rede do usuário ${userId}`);
+      
+      res.json({ 
+        message: "Companheiro removido da sua rede com sucesso!",
+        removedCompanion: companion.fullName
+      });
+    } catch (error) {
+      console.error('Erro ao remover companheiro:', error);
+      res.status(500).json({ message: "Erro ao remover companheiro" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
