@@ -47,6 +47,8 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/trips", async (req, res) => {
     try {
       const { destination, startDate, endDate, budget, travelStyle } = req.query;
+      console.log('🔍 GET /api/trips - Query params:', req.query);
+      
       const filters: any = {};
       
       if (destination) filters.destination = destination as string;
@@ -55,7 +57,10 @@ export function registerRoutes(app: Express): Server {
       if (budget) filters.budget = parseInt(budget as string);
       if (travelStyle) filters.travelStyle = travelStyle as string;
       
+      console.log('📊 Filtros aplicados:', filters);
+      
       const trips = await storage.getTrips(filters);
+      console.log('📋 Viagens retornadas do storage:', trips.length);
       
       // Include creator info for each trip
       const tripsWithCreators = await Promise.all(
@@ -65,9 +70,10 @@ export function registerRoutes(app: Express): Server {
         })
       );
       
+      console.log('✅ Viagens com criadores:', tripsWithCreators.length);
       res.json(tripsWithCreators);
     } catch (error) {
-      console.error('Erro ao buscar viagens:', error);
+      console.error('❌ Erro ao buscar viagens:', error);
       res.status(500).json({ message: "Erro ao buscar viagens" });
     }
   });

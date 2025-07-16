@@ -200,9 +200,12 @@ export default function SearchPage() {
     queryKey: ["/api/trips", queryParams],
     queryFn: async () => {
       const searchParams = new URLSearchParams(queryParams);
+      console.log('🔍 Buscando viagens com parâmetros:', queryParams);
       const res = await fetch(`/api/trips?${searchParams}`);
       if (!res.ok) throw new Error('Failed to fetch trips');
-      return res.json();
+      const data = await res.json();
+      console.log('📊 Viagens recebidas do servidor:', data.length, data);
+      return data;
     },
     staleTime: 30 * 1000,
     refetchOnWindowFocus: false,
@@ -210,17 +213,16 @@ export default function SearchPage() {
 
   // Advanced client-side filtering
   const filteredTrips = useMemo(() => {
-    return trips.filter((trip: any) => {
-      // Filter out past or completed trips - only show future trips
-      const currentDate = new Date();
-      const tripStartDate = new Date(trip.startDate);
-      const tripEndDate = new Date(trip.endDate);
-      
-      // Show only trips that haven't started yet or are currently in progress
-      if (tripEndDate < currentDate) {
-        return false; // Trip is completed
-      }
-
+    console.log('🔍 Aplicando filtros client-side:', {
+      totalTrips: trips.length,
+      searchTerm,
+      selectedTravelTypes,
+      budgetRange,
+      selectedContinent,
+      selectedDateFilter
+    });
+    
+    const filtered = trips.filter((trip: any) => {
       // Text search filter
       if (searchTerm && searchTerm.trim()) {
         const searchLower = searchTerm.toLowerCase().trim();
@@ -282,7 +284,15 @@ export default function SearchPage() {
 
       return true;
     });
-  }, [trips, searchTerm, selectedTravelTypes, budgetRange, selectedContinent]);
+    
+    console.log('📊 Resultado da filtragem:', {
+      originalCount: trips.length,
+      filteredCount: filtered.length,
+      filtered: filtered.map(t => ({ id: t.id, title: t.title, destination: t.destination }))
+    });
+    
+    return filtered;
+  }, [trips, searchTerm, selectedTravelTypes, budgetRange, selectedContinent, selectedDateFilter]);
 
   // Client-side sorting
   const sortedTrips = useMemo(() => {
