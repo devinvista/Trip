@@ -1288,7 +1288,7 @@ export default function TripDetailPage() {
           className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-4"
         >
           {/* Cover Image */}
-          <div className="relative h-32 lg:h-40">
+          <div className="relative h-48">
             {trip.coverImage && (
               <img 
                 src={trip.coverImage}
