@@ -18,7 +18,7 @@ export const users = mysqlTable("users", {
   referredBy: varchar("referred_by", { length: 50 }), // Referral code used during registration
   isVerified: boolean("is_verified").default(false).notNull(), // User verification status
   verificationMethod: varchar("verification_method", { length: 50 }), // email, phone, document, etc.
-  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("0.00"), // Average rating from other users
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("5.00"), // Average rating from other users
   totalRatings: int("total_ratings").default(0).notNull(), // Total number of ratings received
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

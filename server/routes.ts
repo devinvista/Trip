@@ -2206,7 +2206,7 @@ export function registerRoutes(app: Express): Server {
 
       const averageRating = allUserRatings.length > 0 
         ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
-        : 0;
+        : 5.0;
 
       await db.update(users)
         .set({
@@ -2318,7 +2318,7 @@ export function registerRoutes(app: Express): Server {
 
       const averageRating = allUserRatings.length > 0 
         ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
-        : 0;
+        : 5.0;
 
       await db.update(users)
         .set({
@@ -2377,7 +2377,7 @@ export function registerRoutes(app: Express): Server {
 
       const averageRating = allUserRatings.length > 0 
         ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
-        : 0;
+        : 5.0;
 
       await db.update(users)
         .set({
