@@ -84,9 +84,15 @@ export function BudgetEditor({
 
   const handleSubmit = () => {
     let finalBudget = budget;
+    let finalBreakdown = undefined;
     
     if (showBreakdown) {
       finalBudget = calculateTotalFromBreakdown();
+      finalBreakdown = budgetBreakdown;
+    } else {
+      // Se a opção de breakdown estiver desabilitada, enviar budgetBreakdown como null
+      // para indicar que as categorias devem ser zeradas
+      finalBreakdown = null;
     }
     
     if (finalBudget <= 0) {
@@ -100,7 +106,7 @@ export function BudgetEditor({
 
     updateBudgetMutation.mutate({
       budget: finalBudget,
-      budgetBreakdown: showBreakdown ? budgetBreakdown : undefined
+      budgetBreakdown: finalBreakdown
     });
   };
 
