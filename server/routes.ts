@@ -694,26 +694,40 @@ export function registerRoutes(app: Express): Server {
   // Profile routes
   app.put("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const { fullName, email, bio, location, languages, interests, travelStyle } = req.body;
+      const { fullName, email, phone, bio, location, languages, interests, travelStyles } = req.body;
       
-      const updatedUser = await storage.updateUser(req.user!.id, {
+      console.log('🔍 Dados recebidos para atualização de perfil:', {
+        userId: req.user!.id,
         fullName,
         email,
+        phone,
         bio,
         location,
         languages,
         interests,
-        travelStyle
+        travelStyles
+      });
+      
+      const updatedUser = await storage.updateUser(req.user!.id, {
+        fullName,
+        email,
+        phone,
+        bio,
+        location,
+        languages,
+        interests,
+        travelStyles
       });
       
       if (!updatedUser) {
         return res.status(404).json({ message: "Usuário não encontrado" });
       }
       
+      console.log('✅ Perfil atualizado com sucesso:', updatedUser);
       res.json(updatedUser);
     } catch (error) {
-      console.error('Erro ao atualizar perfil:', error);
-      res.status(500).json({ message: "Erro ao atualizar perfil" });
+      console.error('❌ Erro ao atualizar perfil:', error);
+      res.status(500).json({ message: "Erro ao atualizar perfil", error: error.message });
     }
   });
 
