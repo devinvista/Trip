@@ -199,6 +199,11 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 16, 2025. Simplificado detalhamento de orçamento: removidas categorias da versão simplificada conforme solicitado pelo usuário
 - July 16, 2025. **INTERFACE DE ORÇAMENTO OTIMIZADA**: Detalhamento de orçamento redesenhado com layout compacto e clean
 - July 16, 2025. Grid de categorias otimizado: layout horizontal, ícones menores, espaçamentos reduzidos para melhor aproveitamento da tela
+- July 16, 2025. **SISTEMA DE ESTILOS DE VIAGEM APRIMORADO**: Alterado para permitir seleção múltipla de estilos de viagem por usuário
+- July 16, 2025. Migração de banco de dados: campo `travel_style` (string) convertido para `travel_styles` (JSON array) com migração automática
+- July 16, 2025. Interface de perfil atualizada: estilos de viagem agora permitem seleção múltipla com badges clicáveis
+- July 16, 2025. Backend e frontend sincronizados para suportar múltiplos estilos de viagem por usuário
+- July 16, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso
 - July 16, 2025. Removidos cards visuais de estatísticas da seção orçamento: interface mais limpa focando apenas no detalhamento das categorias
 - July 16, 2025. **BADGE DE VERIFICAÇÃO MODERNIZADO**: Badge de usuário verificado agora é verde com gradiente moderno, proporcional ao tamanho do avatar e efeitos visuais aprimorados
 - July 15, 2025. Implementado sistema de votação por proposta individual com toggle: usuários podem votar e remover voto clicando novamente
