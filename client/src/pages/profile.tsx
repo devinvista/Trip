@@ -228,20 +228,30 @@ export default function ProfilePage() {
         body: JSON.stringify({ companionId, rating, comment })
       });
       
-      if (!response.ok) throw new Error("Erro ao avaliar companheiro");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Erro ao avaliar companheiro");
+      }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({ title: "Avaliação enviada com sucesso!" });
       setShowRateDialog(false);
       setRating(5);
       setRatingComment("");
+      // Invalidate multiple queries to update the UI
       queryClient.invalidateQueries({ queryKey: ["/api/user/travel-companions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      // Invalidate the specific user's ratings if showing their profile
+      if (selectedCompanion?.id) {
+        queryClient.invalidateQueries({ queryKey: [`/api/user/${selectedCompanion.id}/ratings`] });
+      }
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({ 
         title: "Erro ao enviar avaliação", 
-        description: "Tente novamente mais tarde",
+        description: error.message || "Tente novamente mais tarde",
         variant: "destructive"
       });
     }

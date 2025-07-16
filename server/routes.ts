@@ -2071,7 +2071,7 @@ export function registerRoutes(app: Express): Server {
                   profilePhoto: user.profilePhoto,
                   isVerified: user.isVerified,
                   bio: user.bio,
-                  averageRating: "5.0", // Mock rating
+                  averageRating: user.averageRating || "0.0",
                   tripsCount: 1,
                   lastTrip: trip.endDate
                 });
@@ -2104,6 +2104,11 @@ export function registerRoutes(app: Express): Server {
       const { companionId, rating, comment } = req.body;
       const userId = req.user!.id;
       
+      // Only verified users can create ratings
+      if (!req.user!.isVerified) {
+        return res.status(403).json({ message: "Apenas usuários verificados podem criar avaliações" });
+      }
+      
       // Validate input
       if (!companionId || !rating || rating < 1 || rating > 5) {
         return res.status(400).json({ message: "Dados inválidos para avaliação" });
@@ -2114,38 +2119,264 @@ export function registerRoutes(app: Express): Server {
       const participatingTrips = await storage.getTripsByParticipant(userId);
       const allUserTrips = [...userTrips, ...participatingTrips];
       
-      let hasSharedTrip = false;
+      let sharedTripId = null;
       for (const trip of allUserTrips) {
         const participants = await storage.getTripParticipants(trip.id);
         if (participants.some(p => p.userId === companionId && p.status === 'accepted')) {
-          hasSharedTrip = true;
+          sharedTripId = trip.id;
           break;
         }
       }
       
-      if (!hasSharedTrip) {
+      if (!sharedTripId) {
         return res.status(400).json({ message: "Você só pode avaliar companheiros de viagem que já viajaram com você" });
       }
       
-      // Create rating entry - for now we'll return success
-      // In a real implementation, this would save to a companion_ratings table
-      const ratingData = {
-        raterId: userId,
-        ratedUserId: companionId,
-        rating,
-        comment: comment || null,
-        createdAt: new Date().toISOString()
-      };
+      // Check if user already rated this companion for this trip
+      const existingRating = await db
+        .select()
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.ratedUserId, companionId),
+          eq(userRatings.raterUserId, userId),
+          eq(userRatings.tripId, sharedTripId)
+        ))
+        .limit(1);
+
+      if (existingRating.length > 0) {
+        // Check if rating is within 7 days edit window
+        const daysSinceCreation = Math.floor((Date.now() - existingRating[0].createdAt.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysSinceCreation > 7) {
+          return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
+        }
+        
+        // Update existing rating
+        await db.update(userRatings)
+          .set({
+            rating: rating,
+            comment: comment || null,
+            updatedAt: new Date()
+          })
+          .where(eq(userRatings.id, existingRating[0].id));
+        
+        console.log('📝 Avaliação de companheiro atualizada:', {
+          ratingId: existingRating[0].id,
+          raterId: userId,
+          ratedUserId: companionId,
+          rating,
+          comment: comment || null
+        });
+      } else {
+        // Create new rating
+        const newRating = await db.insert(userRatings).values({
+          tripId: sharedTripId,
+          ratedUserId: companionId,
+          raterUserId: userId,
+          rating: rating,
+          comment: comment || null,
+          categories: null,
+          isHidden: false,
+          reportCount: 0
+        }).returning();
+        
+        console.log('📝 Avaliação de companheiro criada:', newRating[0]);
+      }
       
-      console.log('📝 Avaliação de companheiro criada:', ratingData);
+      // Update user's average rating
+      const allUserRatings = await db
+        .select({ rating: userRatings.rating })
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.ratedUserId, companionId),
+          eq(userRatings.isHidden, false)
+        ));
+
+      const averageRating = allUserRatings.length > 0 
+        ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
+        : 0;
+
+      await db.update(users)
+        .set({
+          averageRating: averageRating,
+          totalRatings: allUserRatings.length
+        })
+        .where(eq(users.id, companionId));
+      
+      console.log('📊 Média de avaliações atualizada para usuário', companionId, ':', averageRating);
       
       res.json({ 
         message: "Avaliação enviada com sucesso!",
-        rating: ratingData 
+        averageRating: averageRating
       });
     } catch (error) {
       console.error('Erro ao avaliar companheiro:', error);
       res.status(500).json({ message: "Erro ao enviar avaliação" });
+    }
+  });
+
+  // Get user ratings for a specific user
+  app.get("/api/user/:userId/ratings", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const limit = parseInt(req.query.limit as string) || 10;
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      const ratings = await db
+        .select({
+          id: userRatings.id,
+          rating: userRatings.rating,
+          comment: userRatings.comment,
+          createdAt: userRatings.createdAt,
+          rater: {
+            id: users.id,
+            username: users.username,
+            fullName: users.fullName,
+            profilePhoto: users.profilePhoto,
+            isVerified: users.isVerified
+          }
+        })
+        .from(userRatings)
+        .innerJoin(users, eq(userRatings.raterUserId, users.id))
+        .where(and(
+          eq(userRatings.ratedUserId, userId),
+          eq(userRatings.isHidden, false)
+        ))
+        .orderBy(desc(userRatings.createdAt))
+        .limit(limit)
+        .offset(offset);
+
+      res.json(ratings);
+    } catch (error) {
+      console.error('❌ Erro ao buscar avaliações do usuário:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Edit user rating (within 7 days)
+  app.put("/api/user/ratings/:ratingId", requireAuth, async (req, res) => {
+    try {
+      const ratingId = parseInt(req.params.ratingId);
+      const userId = req.user!.id;
+      const { rating, comment } = req.body;
+      
+      // Validate input
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Avaliação deve ser entre 1 e 5 estrelas" });
+      }
+      
+      // Check if rating exists and belongs to user
+      const existingRating = await db
+        .select()
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.id, ratingId),
+          eq(userRatings.raterUserId, userId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const ratingData = existingRating[0];
+      
+      // Check if rating is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - ratingData.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
+      }
+      
+      await db.update(userRatings)
+        .set({
+          rating: rating,
+          comment: comment || null,
+          updatedAt: new Date()
+        })
+        .where(eq(userRatings.id, ratingId));
+      
+      // Update user's average rating
+      const allUserRatings = await db
+        .select({ rating: userRatings.rating })
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.ratedUserId, ratingData.ratedUserId),
+          eq(userRatings.isHidden, false)
+        ));
+
+      const averageRating = allUserRatings.length > 0 
+        ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
+        : 0;
+
+      await db.update(users)
+        .set({
+          averageRating: averageRating,
+          totalRatings: allUserRatings.length
+        })
+        .where(eq(users.id, ratingData.ratedUserId));
+      
+      res.json({ message: "Avaliação atualizada com sucesso" });
+    } catch (error) {
+      console.error('Erro ao editar avaliação:', error);
+      res.status(400).json({ message: "Erro ao editar avaliação" });
+    }
+  });
+
+  // Delete user rating (within 7 days)
+  app.delete("/api/user/ratings/:ratingId", requireAuth, async (req, res) => {
+    try {
+      const ratingId = parseInt(req.params.ratingId);
+      const userId = req.user!.id;
+      
+      // Check if rating exists and belongs to user
+      const existingRating = await db
+        .select()
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.id, ratingId),
+          eq(userRatings.raterUserId, userId)
+        ))
+        .limit(1);
+      
+      if (existingRating.length === 0) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+      }
+      
+      const ratingData = existingRating[0];
+      
+      // Check if rating is within 7 days edit window
+      const daysSinceCreation = Math.floor((Date.now() - ratingData.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceCreation > 7) {
+        return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
+      }
+      
+      await db
+        .delete(userRatings)
+        .where(eq(userRatings.id, ratingId));
+      
+      // Update user's average rating
+      const allUserRatings = await db
+        .select({ rating: userRatings.rating })
+        .from(userRatings)
+        .where(and(
+          eq(userRatings.ratedUserId, ratingData.ratedUserId),
+          eq(userRatings.isHidden, false)
+        ));
+
+      const averageRating = allUserRatings.length > 0 
+        ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
+        : 0;
+
+      await db.update(users)
+        .set({
+          averageRating: averageRating,
+          totalRatings: allUserRatings.length
+        })
+        .where(eq(users.id, ratingData.ratedUserId));
+      
+      res.json({ message: "Avaliação excluída com sucesso" });
+    } catch (error) {
+      console.error('Erro ao excluir avaliação:', error);
+      res.status(500).json({ message: "Erro ao excluir avaliação" });
     }
   });
 
