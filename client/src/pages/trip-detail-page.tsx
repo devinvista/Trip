@@ -1588,6 +1588,10 @@ export default function TripDetailPage() {
                             currentBudget={trip.budget}
                             currentBudgetBreakdown={trip.budgetBreakdown}
                             maxParticipants={trip.maxParticipants}
+                            onBudgetUpdate={(newBudget, newBreakdown) => {
+                              // Force refresh the trip data
+                              refetch();
+                            }}
                           />
                         )}
                       </CardTitle>
