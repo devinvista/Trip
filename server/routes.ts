@@ -2133,6 +2133,12 @@ export function registerRoutes(app: Express): Server {
       }
       
       // Check if user already rated this companion for this trip
+      console.log('🔍 Verificando se usuário já avaliou companheiro:', {
+        companionId,
+        userId,
+        sharedTripId
+      });
+      
       const existingRating = await db
         .select()
         .from(userRatings)
@@ -2142,6 +2148,8 @@ export function registerRoutes(app: Express): Server {
           eq(userRatings.tripId, sharedTripId)
         ))
         .limit(1);
+
+      console.log('📋 Avaliação existente encontrada:', existingRating.length > 0 ? existingRating[0] : 'Nenhuma');
 
       if (existingRating.length > 0) {
         // Check if rating is within 7 days edit window
