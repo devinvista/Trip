@@ -10,7 +10,6 @@ import {
   Users, 
   Heart,
   SlidersHorizontal,
-  ArrowLeft,
   Grid,
   List,
   TrendingUp,
@@ -21,8 +20,11 @@ import {
   ChevronRight,
   Target,
   Sparkles,
-  Sliders,
-  ChevronDown
+  ChevronDown,
+  X,
+  ArrowUpDown,
+  Eye,
+  Bookmark
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,8 +35,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { activityCategories } from "@shared/schema";
 import type { Activity } from "@shared/schema";
 
@@ -74,7 +84,15 @@ const SORT_OPTIONS = [
   { value: "newest", label: "Mais recentes" },
 ];
 
-export default function ActivitiesPage() {
+const DURATION_OPTIONS = [
+  { value: "all", label: "Qualquer duração" },
+  { value: "1-2", label: "1-2 horas" },
+  { value: "3-4", label: "3-4 horas" },
+  { value: "5-8", label: "5-8 horas" },
+  { value: "8+", label: "Dia inteiro" },
+];
+
+function ActivitiesPage() {
   const { user } = useAuth();
   const [filters, setFilters] = useState<ActivityFilters>({
     search: "",
@@ -92,13 +110,13 @@ export default function ActivitiesPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const [activeFiltersCount, setActiveFiltersCount] = useState(0);
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchInput);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchInput]);
 
@@ -106,6 +124,19 @@ export default function ActivitiesPage() {
   useEffect(() => {
     setFilters(prev => ({ ...prev, search: debouncedSearch }));
   }, [debouncedSearch]);
+
+  // Count active filters
+  useEffect(() => {
+    let count = 0;
+    if (filters.category !== "all") count++;
+    if (filters.priceRange !== "all") count++;
+    if (filters.location !== "") count++;
+    if (filters.duration !== "all") count++;
+    if (filters.difficulty !== "all") count++;
+    if (filters.rating !== "all") count++;
+    if (filters.onlyMyTrips) count++;
+    setActiveFiltersCount(count);
+  }, [filters]);
 
   // Fetch user's trips to filter activities by destination
   const { data: myTripsData } = useQuery({
@@ -161,8 +192,19 @@ export default function ActivitiesPage() {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleSearch = () => {
-    setFilters(prev => ({ ...prev, search: searchInput }));
+  const clearFilters = () => {
+    setFilters({
+      search: "",
+      category: "all",
+      priceRange: "all",
+      location: "",
+      duration: "all",
+      difficulty: "all",
+      rating: "all",
+      sortBy: "rating",
+      onlyMyTrips: false,
+    });
+    setSearchInput("");
   };
 
   const renderStars = (rating: number) => {
@@ -170,678 +212,474 @@ export default function ActivitiesPage() {
       <Star
         key={i}
         className={`w-4 h-4 ${
-          i < Math.floor(rating) 
-            ? "fill-yellow-400 text-yellow-400" 
+          i < Math.floor(rating)
+            ? "fill-yellow-400 text-yellow-400"
             : "text-gray-300"
         }`}
       />
     ));
   };
 
-  const formatPrice = (priceType: string, priceAmount: number | null) => {
-    if (!priceAmount) return "Grátis";
-    
-    const formatted = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(priceAmount);
-
-    return priceType === "per_person" 
-      ? `${formatted}/pessoa`
-      : priceType === "per_group"
-      ? `${formatted}/grupo`
-      : formatted;
-  };
-
-  // Get user trip destinations for filtering
-  const userTripDestinations = useMemo(() => {
-    if (!userTrips || !user) return new Set();
-    return new Set(userTrips.map((trip: any) => trip.destination));
-  }, [userTrips, user]);
-
-  // Filter activities based on user's trip destinations
   const filteredActivities = useMemo(() => {
     if (!activities) return [];
     
     if (filters.onlyMyTrips && user) {
       return activities.filter(activity => {
         const activityCity = activity.location.split(',')[0].trim();
-        return Array.from(userTripDestinations).some(destination => 
-          destination.includes(activityCity) || activityCity.includes(destination)
-        );
+        return userTrips.some(trip => {
+          const tripCity = trip.destination.split(',')[0].trim();
+          return tripCity.toLowerCase() === activityCity.toLowerCase();
+        });
       });
     }
     
     return activities;
-  }, [activities, filters.onlyMyTrips, userTripDestinations, user]);
+  }, [activities, filters.onlyMyTrips, user, userTrips]);
 
-  // Group activities by city/destination
-  const groupedActivities = useMemo(() => {
-    if (!filteredActivities) return {};
-    
-    const grouped = filteredActivities.reduce((acc, activity) => {
-      const city = activity.location.split(',')[0].trim();
-      if (!acc[city]) acc[city] = [];
-      acc[city].push(activity);
-      return acc;
-    }, {} as Record<string, Activity[]>);
-    
-    return grouped;
-  }, [filteredActivities]);
-
-  // Get suggestions based on most popular and best-rated activities
-  const suggestedActivities = useMemo(() => {
+  const topActivities = useMemo(() => {
     if (!activities) return [];
-    
-    // Sort by rating and popularity (total ratings)
-    const sorted = [...activities].sort((a, b) => {
-      const aScore = Number(a.averageRating) * Math.log(a.totalRatings + 1);
-      const bScore = Number(b.averageRating) * Math.log(b.totalRatings + 1);
-      return bScore - aScore;
-    });
-    
-    return sorted.slice(0, 6); // Top 6 suggestions
+    return activities
+      .filter(activity => (activity.rating || 0) >= 4.5)
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      .slice(0, 6);
   }, [activities]);
 
-  // Get suggestions based on user's upcoming trips destinations
-  const upcomingTripsSuggestions = useMemo(() => {
-    if (!activities || !userTrips || !user) return [];
+  const categoryStats = useMemo(() => {
+    if (!activities) return [];
     
-    // Get upcoming trips destinations
-    const upcomingTrips = userTrips.filter((trip: any) => {
-      const tripDate = new Date(trip.startDate);
-      const now = new Date();
-      return tripDate > now;
-    });
+    // Convert activityCategories object to array format
+    const categoriesArray = Object.entries(activityCategories).map(([value, { label, icon }]) => ({
+      value,
+      label,
+      icon,
+      count: activities.filter(a => a.category === value).length
+    }));
     
-    if (upcomingTrips.length === 0) return [];
-    
-    // Extract destinations from upcoming trips
-    const upcomingDestinations = upcomingTrips.map((trip: any) => trip.destination);
-    
-    // Filter activities that match upcoming destinations
-    const matchingActivities = activities.filter(activity => {
-      const activityCity = activity.location.split(',')[0].trim();
-      return upcomingDestinations.some(destination => 
-        destination.toLowerCase().includes(activityCity.toLowerCase()) || 
-        activityCity.toLowerCase().includes(destination.toLowerCase())
-      );
-    });
-    
-    // Sort by rating and return top suggestions
-    const sorted = matchingActivities.sort((a, b) => {
-      const aScore = Number(a.averageRating) * Math.log(a.totalRatings + 1);
-      const bScore = Number(b.averageRating) * Math.log(b.totalRatings + 1);
-      return bScore - aScore;
-    });
-    
-    return sorted.slice(0, 6);
-  }, [activities, userTrips, user]);
+    return categoriesArray;
+  }, [activities]);
 
-  const cities = Object.keys(groupedActivities).sort();
-
-  // Show full preloader only on initial load
-  if (isLoading && !activities) {
-    return (
-      <div className="min-h-screen bg-[#F5F9FC] flex items-center justify-center">
-        <LoadingSpinner variant="travel" />
+  const FilterSidebar = () => (
+    <div className="space-y-6">
+      {/* Category Filter */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <Target className="w-4 h-4" />
+          Categoria
+        </h3>
+        <div className="space-y-2">
+          {categoryStats.map((category) => (
+            <div
+              key={category.value}
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
+                filters.category === category.value
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+              onClick={() => updateFilter("category", category.value)}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{category.icon}</span>
+                <span className="font-medium">{category.label}</span>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                {category.count}
+              </Badge>
+            </div>
+          ))}
+        </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-[#F5F9FC]">
-      {/* Modern Header with Institutional Colors */}
-      <div className="bg-white shadow-sm border-b border-[#AAB0B7]/20">
-        <div className="max-w-7xl mx-auto px-4 py-4 md:py-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3 sm:gap-6">
-              <Link to="/search">
-                <Button variant="ghost" size="sm" className="text-[#1B2B49] hover:bg-blue-50 hover:text-blue-600 transition-all duration-300">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar
-                </Button>
-              </Link>
-              
+      <Separator />
+
+      {/* Price Range */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <DollarSign className="w-4 h-4" />
+          Preço
+        </h3>
+        <Select value={filters.priceRange} onValueChange={(value) => updateFilter("priceRange", value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PRICE_RANGES.map((range) => (
+              <SelectItem key={range.value} value={range.value}>
+                {range.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Duration */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <Clock className="w-4 h-4" />
+          Duração
+        </h3>
+        <Select value={filters.duration} onValueChange={(value) => updateFilter("duration", value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DURATION_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Difficulty */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4" />
+          Dificuldade
+        </h3>
+        <Select value={filters.difficulty} onValueChange={(value) => updateFilter("difficulty", value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DIFFICULTY_LEVELS.map((level) => (
+              <SelectItem key={level.value} value={level.value}>
+                {level.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* My Trips Only */}
+      {user && (
+        <>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-900">
+                Apenas meus destinos
+              </label>
+              <p className="text-xs text-gray-500">
+                Mostrar apenas atividades nos destinos das minhas viagens
+              </p>
+            </div>
+            <Switch
+              checked={filters.onlyMyTrips}
+              onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Clear Filters */}
+      {activeFiltersCount > 0 && (
+        <Button 
+          variant="outline" 
+          onClick={clearFilters}
+          className="w-full"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Limpar Filtros ({activeFiltersCount})
+        </Button>
+      )}
+    </div>
+  );
+
+  const ActivityCard = ({ activity, index }: { activity: Activity; index: number }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+    >
+      <Link to={`/activities/${activity.id}`}>
+        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden">
+          <div className="relative">
+            <img
+              src={activity.coverImage}
+              alt={activity.title}
+              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute top-3 left-3">
+              <Badge className="bg-white/90 text-gray-900 backdrop-blur-sm">
+                {activityCategories[activity.category as keyof typeof activityCategories]?.icon} {activityCategories[activity.category as keyof typeof activityCategories]?.label}
+              </Badge>
+            </div>
+            <div className="absolute top-3 right-3">
+              <Button size="sm" variant="secondary" className="bg-white/90 backdrop-blur-sm p-2">
+                <Heart className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="absolute bottom-3 right-3">
+              <Badge variant="secondary" className="bg-black/70 text-white backdrop-blur-sm">
+                {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
+              </Badge>
+            </div>
+          </div>
+          
+          <CardContent className="p-4">
+            <div className="space-y-3">
               <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#1B2B49] mb-1 md:mb-2">
-                  Atividades e Experiências
-                </h1>
-                <p className="text-[#AAB0B7] text-sm md:text-lg">
-                  Descubra experiências incríveis para sua viagem • {filteredActivities?.length || 0} atividades disponíveis
+                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                  {activity.title}
+                </h3>
+                <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+                  {activity.description}
                 </p>
               </div>
-            </div>
-
-            <div className="flex items-center gap-3 self-end sm:self-auto">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-                className="border-[#AAB0B7]/30 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300"
-              >
-                {viewMode === "grid" ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
-                <span className="hidden sm:inline ml-2">
-                  {viewMode === "grid" ? "Lista" : "Grade"}
-                </span>
-              </Button>
               
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-                className="border-[#AAB0B7]/30 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300"
-              >
-                <SlidersHorizontal className="w-4 h-4 mr-2" />
-                Filtros
-              </Button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  {renderStars(activity.rating || 0)}
+                  <span className="text-sm text-gray-600 ml-1">
+                    {(activity.rating || 0).toFixed(1)} ({activity.reviewCount || 0})
+                  </span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>{activity.location}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  <span>{activity.duration}h</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Users className="w-4 h-4" />
+                  <span>{activity.minParticipants}-{activity.maxParticipants} pessoas</span>
+                </div>
+                <Badge variant="outline" className="text-xs">
+                  {DIFFICULTY_LEVELS.find(d => d.value === activity.difficulty)?.label || 'N/A'}
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    </motion.div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="text-center space-y-4">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold"
+            >
+              Descubra Experiências Incríveis
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-xl text-blue-100 max-w-2xl mx-auto"
+            >
+              Encontre as melhores atividades e experiências para suas viagens. 
+              Aventuras inesquecíveis estão esperando por você.
+            </motion.p>
+          </div>
+          
+          {/* Search Bar */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8 max-w-2xl mx-auto"
+          >
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Buscar atividades, experiências ou destinos..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 shadow-lg"
+              />
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Top Activities Section */}
+      {topActivities.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between mb-6"
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-yellow-500" />
+              <h2 className="text-2xl font-bold text-gray-900">Mais Populares</h2>
+              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                Melhor avaliadas
+              </Badge>
+            </div>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topActivities.map((activity, index) => (
+              <ActivityCard key={activity.id} activity={activity} index={index} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block w-80 flex-shrink-0">
+            <div className="sticky top-4">
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-semibold text-gray-900">Filtros</h2>
+                  {activeFiltersCount > 0 && (
+                    <Badge variant="secondary">{activeFiltersCount}</Badge>
+                  )}
+                </div>
+                <FilterSidebar />
+              </Card>
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#AAB0B7] w-5 h-5" />
-            <Input
-              placeholder="Buscar por atividades, locais ou experiências..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearch();
-                }
-              }}
-              className="pl-10 pr-24 h-12 text-base border-[#AAB0B7]/30 focus:border-blue-500 bg-white rounded-lg"
-            />
-            <Button 
-              onClick={handleSearch}
-              size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              Buscar
-            </Button>
-          </div>
-
-          {/* Category Filters */}
-          <div className="space-y-4">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap gap-2 sm:gap-3">
-                <Button
-                  variant={filters.category === "all" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => updateFilter("category", "all")}
-                  className={`px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 transition-all duration-300 ${
-                    filters.category === "all" 
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm" 
-                      : "text-[#1B2B49] hover:bg-blue-50 hover:text-blue-600"
-                  }`}
-                >
-                  🗂️ <span className="hidden xs:inline">Todas</span>
-                  <span className="bg-white/20 text-current px-1 py-0.5 rounded text-xs">
-                    {activities?.length || 0}
-                  </span>
-                </Button>
-                
-                {Object.entries(activityCategories).slice(0, 4).map(([key, cat]) => {
-                  const count = activities?.filter(a => a.category === key).length || 0;
-                  return (
-                    <Button
-                      key={key}
-                      variant={filters.category === key ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => updateFilter("category", key)}
-                      className={`group px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 transition-all duration-300 ${
-                        filters.category === key 
-                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm scale-105" 
-                          : "text-[#1B2B49] hover:bg-blue-50 hover:text-blue-600 hover:shadow-md hover:scale-102 hover:border-blue-300"
-                      }`}
-                    >
-                      <span className="text-sm transition-transform duration-300 group-hover:scale-110">{cat.icon}</span>
-                      <span className="hidden sm:inline">{cat.label}</span>
-                      <span className={`px-1 py-0.5 rounded text-xs transition-colors duration-300 ${
-                        filters.category === key 
-                          ? "bg-white/20 text-current" 
-                          : "bg-slate-100 text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600"
-                      }`}>
-                        {count}
-                      </span>
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Toolbar */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                {/* Mobile Filter Button */}
+                <Sheet open={showFilters} onOpenChange={setShowFilters}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="lg:hidden">
+                      <SlidersHorizontal className="w-4 h-4 mr-2" />
+                      Filtros
+                      {activeFiltersCount > 0 && (
+                        <Badge variant="secondary" className="ml-2">
+                          {activeFiltersCount}
+                        </Badge>
+                      )}
                     </Button>
-                  );
-                })}
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-80">
+                    <SheetHeader>
+                      <SheetTitle>Filtros</SheetTitle>
+                      <SheetDescription>
+                        Refine sua busca para encontrar a experiência perfeita
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <FilterSidebar />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
+                <div className="text-gray-600">
+                  {isLoading ? (
+                    "Carregando..."
+                  ) : (
+                    `${filteredActivities?.length || 0} atividades encontradas`
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Sort */}
+                <Select value={filters.sortBy} onValueChange={(value) => updateFilter("sortBy", value)}>
+                  <SelectTrigger className="w-48">
+                    <ArrowUpDown className="w-4 h-4 mr-2" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* View Mode */}
+                <div className="flex border rounded-lg p-1">
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                  >
+                    <Grid className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
-            {/* Advanced Filters */}
-            {showFilters && (
+            {/* Activities Grid */}
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Card key={i} className="overflow-hidden">
+                    <div className="w-full h-48 bg-gray-200 animate-pulse" />
+                    <CardContent className="p-4 space-y-3">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-3 bg-gray-200 rounded w-3/4 animate-pulse" />
+                      <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredActivities?.length === 0 ? (
               <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="bg-[#F5F9FC] rounded-xl border border-[#AAB0B7]/20 p-4 md:p-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-[#1B2B49] mb-3">
-                      Faixa de Preço
-                    </label>
-                    <Select 
-                      value={filters.priceRange} 
-                      onValueChange={(value) => updateFilter("priceRange", value)}
-                    >
-                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#FFA500]">
-                        <SelectValue placeholder="Todos os preços" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PRICE_RANGES.map(range => (
-                          <SelectItem key={range.value} value={range.value}>
-                            {range.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#1B2B49] mb-3">
-                      Nível de Dificuldade
-                    </label>
-                    <Select 
-                      value={filters.difficulty} 
-                      onValueChange={(value) => updateFilter("difficulty", value)}
-                    >
-                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#FFA500]">
-                        <SelectValue placeholder="Todos os níveis" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DIFFICULTY_LEVELS.map(level => (
-                          <SelectItem key={level.value} value={level.value}>
-                            {level.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#1B2B49] mb-3">
-                      Ordenar por
-                    </label>
-                    <Select 
-                      value={filters.sortBy} 
-                      onValueChange={(value) => updateFilter("sortBy", value)}
-                    >
-                      <SelectTrigger className="border-[#AAB0B7]/30 focus:border-[#FFA500]">
-                        <SelectValue placeholder="Ordenar por" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SORT_OPTIONS.map(option => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
                 </div>
-
-                {/* Special Filters */}
-                {user && (
-                  <div className="mt-6 pt-4 border-t border-[#AAB0B7]/20">
-                    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-[#AAB0B7]/20">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-[#FFA500]/10 p-2 rounded-lg">
-                          <Target className="w-4 h-4 text-[#FFA500]" />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-[#1B2B49]">
-                            Apenas destinos das minhas viagens
-                          </label>
-                          <p className="text-xs text-[#AAB0B7] mt-1">
-                            Mostra apenas atividades nos destinos onde você tem viagens planejadas
-                          </p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={filters.onlyMyTrips}
-                        onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
-                      />
-                    </div>
-                  </div>
-                )}
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Nenhuma atividade encontrada
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Tente ajustar seus filtros ou buscar por outros termos
+                </p>
+                <Button onClick={clearFilters} variant="outline">
+                  <X className="w-4 h-4 mr-2" />
+                  Limpar Filtros
+                </Button>
               </motion.div>
+            ) : (
+              <div className={`grid gap-6 ${
+                viewMode === "grid" 
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+                  : "grid-cols-1"
+              }`}>
+                <AnimatePresence>
+                  {filteredActivities?.map((activity, index) => (
+                    <ActivityCard key={activity.id} activity={activity} index={index} />
+                  ))}
+                </AnimatePresence>
+              </div>
             )}
           </div>
         </div>
       </div>
-
-      {/* Suggestions Section */}
-      {suggestedActivities.length > 0 && (
-        <div className="bg-white border-b border-[#AAB0B7]/20">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-600" />
-                <h2 className="text-lg font-semibold text-[#1B2B49]">Sugestões para Você</h2>
-                <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
-                  Mais escolhidas
-                </Badge>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-              {suggestedActivities.map((activity) => (
-                <Link key={activity.id} to={`/activities/${activity.id}`}>
-                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                    <div className="relative">
-                      <img
-                        src={activity.coverImage}
-                        alt={activity.title}
-                        className="w-full h-24 object-cover rounded-t-lg"
-                      />
-                      <div className="absolute top-2 right-2">
-                        <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-xs font-medium">{Number(activity.averageRating).toFixed(1)}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <CardContent className="p-3">
-                      <h3 className="font-medium text-sm line-clamp-2 text-[#1B2B49] mb-1">
-                        {activity.title}
-                      </h3>
-                      <p className="text-xs text-[#AAB0B7] mb-2">
-                        {activity.location.split(',')[0]}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-[#1B2B49]">
-                          {formatPrice(activity.priceType, activity.priceAmount)}
-                        </span>
-                        <Badge variant="secondary" className="text-xs">
-                          {activityCategories[activity.category as keyof typeof activityCategories]?.icon}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Upcoming Trips Suggestions - Only show if user is logged in and has upcoming trips */}
-      {user && upcomingTripsSuggestions.length > 0 && (
-        <div className="bg-gradient-to-r from-slate-50 to-orange-50/30 border-b border-slate-200/40">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-orange-600" />
-                <h2 className="text-lg font-semibold text-slate-900">Sugestões para Suas Próximas Viagens</h2>
-                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                  Baseado nos seus destinos
-                </Badge>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-              {upcomingTripsSuggestions.map((activity) => (
-                <Link key={activity.id} to={`/activities/${activity.id}`}>
-                  <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white border-slate-200/60 hover:border-blue-300">
-                    <div className="relative">
-                      <img
-                        src={activity.coverImage}
-                        alt={activity.title}
-                        className="w-full h-24 object-cover rounded-t-lg"
-                      />
-                      <div className="absolute top-2 right-2">
-                        <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-xs font-medium">{Number(activity.averageRating).toFixed(1)}</span>
-                        </div>
-                      </div>
-                      <div className="absolute top-2 left-2">
-                        <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-full px-2 py-1 text-xs font-medium shadow-sm">
-                          Próxima viagem
-                        </div>
-                      </div>
-                    </div>
-                    <CardContent className="p-3">
-                      <h3 className="font-medium text-sm line-clamp-2 text-[#1B2B49] mb-1">
-                        {activity.title}
-                      </h3>
-                      <p className="text-xs text-[#AAB0B7] mb-2">
-                        {activity.location.split(',')[0]}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-[#1B2B49]">
-                          {formatPrice(activity.priceType, activity.priceAmount)}
-                        </span>
-                        <Badge variant="secondary" className="text-xs">
-                          {activityCategories[activity.category as keyof typeof activityCategories]?.icon}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Activities Grouped by City - Enhanced Layout */}
-        {cities.length > 0 ? (
-          <div className="space-y-8">
-            {cities.map((city) => (
-              <div key={city} className="bg-white rounded-xl border border-slate-200/60 shadow-sm overflow-hidden">
-                {/* City Header - Enhanced */}
-                <div className="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-200/60 p-4 md:p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-orange-100 p-3 rounded-xl">
-                        <MapPin className="w-6 h-6 text-orange-600" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl md:text-2xl font-bold text-slate-900">
-                          {city}
-                        </h2>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                            {groupedActivities[city].length} atividades
-                          </Badge>
-                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                            {Math.round(groupedActivities[city].reduce((acc, a) => acc + Number(a.averageRating), 0) / groupedActivities[city].length * 10) / 10}★ média
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 hidden sm:flex"
-                    >
-                      Ver todas <ChevronRight className="w-4 h-4 ml-1" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Activities Grid - Improved */}
-                <div className="p-4 md:p-6">
-                  <div className={`grid gap-4 md:gap-6 ${
-                    viewMode === "grid" 
-                      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" 
-                      : "grid-cols-1"
-                  }`}>
-                    {groupedActivities[city].map((activity) => (
-                      <motion.div
-                        key={activity.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white border-slate-200/60 hover:border-blue-300 group">
-                        <div className="relative">
-                          <img
-                            src={activity.coverImage}
-                            alt={activity.title}
-                            className="w-full h-48 object-cover"
-                          />
-                          <div className="absolute top-3 right-3">
-                            <Button size="sm" variant="outline" className="bg-white/90 hover:bg-white backdrop-blur-sm">
-                              <Heart className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          
-                          {/* Category Badge */}
-                          <div className="absolute bottom-3 left-3">
-                            <Badge variant="secondary" className="bg-white/90 text-[#1B2B49] backdrop-blur-sm">
-                              {activityCategories[activity.category as keyof typeof activityCategories]?.label}
-                            </Badge>
-                          </div>
-
-                          {/* Trending Badge */}
-                          {Number(activity.averageRating) >= 4.5 && (
-                            <div className="absolute top-3 left-3">
-                              <Badge className="bg-[#FFA500] text-white">
-                                <TrendingUp className="w-3 h-3 mr-1" />
-                                Trending
-                              </Badge>
-                            </div>
-                          )}
-                        </div>
-
-                        <CardHeader className="pb-3 p-4 md:p-6">
-                          <div className="flex items-start justify-between">
-                            <h3 className="font-semibold text-base md:text-lg line-clamp-2 text-[#1B2B49]">
-                              {activity.title}
-                            </h3>
-                            <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                              <Star className="w-4 h-4 fill-[#FFA500] text-[#FFA500]" />
-                              <span className="text-sm font-medium text-[#1B2B49]">
-                                {Number(activity.averageRating).toFixed(1)}
-                              </span>
-                              <span className="text-xs text-[#AAB0B7]">
-                                ({activity.totalRatings})
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-[#AAB0B7]">
-                            <div className="flex items-center gap-1">
-                              <MapPin className="w-4 h-4" />
-                              <span className="truncate">{activity.location}</span>
-                            </div>
-                            {activity.duration && (
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {activity.duration}
-                              </div>
-                            )}
-                          </div>
-                        </CardHeader>
-
-                        <CardContent className="p-4 md:p-6">
-                          <p className="text-[#AAB0B7] text-sm mb-4 line-clamp-3">
-                            {activity.description}
-                          </p>
-
-                          {/* Multiple Budget Options - Mobile Optimized */}
-                          <div className="mb-4">
-                            <div className="flex items-center gap-2 mb-3">
-                              <DollarSign className="w-4 h-4 text-[#FFA500]" />
-                              <span className="text-sm font-medium text-[#1B2B49]">Opções de Orçamento</span>
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                              <div className="flex items-center justify-between p-2 bg-[#F5F9FC] rounded-lg">
-                                <span className="text-xs sm:text-sm">Básica</span>
-                                <span className="text-xs sm:text-sm font-medium text-[#1B2B49]">
-                                  {formatPrice(activity.priceType, activity.priceAmount)}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between p-2 bg-[#F5F9FC] rounded-lg">
-                                <span className="text-xs sm:text-sm">Completa</span>
-                                <span className="text-xs sm:text-sm font-medium text-[#1B2B49]">
-                                  {formatPrice(activity.priceType, (activity.priceAmount || 0) * 1.5)}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between p-2 bg-[#F5F9FC] rounded-lg">
-                                <span className="text-xs sm:text-sm">Premium</span>
-                                <span className="text-xs sm:text-sm font-medium text-[#1B2B49]">
-                                  {formatPrice(activity.priceType, (activity.priceAmount || 0) * 2)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {activity.difficultyLevel && (
-                                <Badge variant="outline" className="text-xs border-[#AAB0B7]/30">
-                                  {activity.difficultyLevel === "easy" && "Fácil"}
-                                  {activity.difficultyLevel === "moderate" && "Moderado"}
-                                  {activity.difficultyLevel === "challenging" && "Desafiador"}
-                                </Badge>
-                              )}
-                              <Badge variant="outline" className="text-xs border-[#AAB0B7]/30">
-                                <Users className="w-3 h-3 mr-1" />
-                                {activity.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
-                              </Badge>
-                            </div>
-
-                            <div className="flex gap-2">
-                              <Link to={`/activities/${activity.id}`}>
-                                <Button size="sm" variant="outline" className="border-[#AAB0B7]/30 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 text-xs sm:text-sm">
-                                  Ver detalhes
-                                </Button>
-                              </Link>
-                              <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 text-xs sm:text-sm">
-                                <Plus className="w-4 h-4 mr-1" />
-                                Adicionar
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 bg-[#FFA500]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="w-8 h-8 text-[#FFA500]" />
-            </div>
-            <h3 className="text-xl font-semibold text-[#1B2B49] mb-3">
-              Nenhuma atividade encontrada
-            </h3>
-            <p className="text-[#AAB0B7] mb-6">
-              Tente ajustar os filtros ou fazer uma nova busca para encontrar atividades incríveis.
-            </p>
-            <Button 
-              onClick={() => {
-                setFilters({
-                  search: "",
-                  category: "all",
-                  priceRange: "all",
-                  location: "",
-                  duration: "all",
-                  difficulty: "all",
-                  rating: "all",
-                  sortBy: "rating",
-                  onlyMyTrips: false,
-                });
-                setSearchInput("");
-              }}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              Limpar filtros
-            </Button>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
+
+export default ActivitiesPage;
