@@ -40,6 +40,7 @@ import {
   Save
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { activityCategories } from '@shared/schema';
 
 // Types
 interface PlannedActivity {
@@ -62,18 +63,6 @@ interface PlannedActivity {
   status: 'planned' | 'booked' | 'completed' | 'cancelled';
   createdAt?: string;
 }
-
-// Activity Categories
-const activityCategories = {
-  sightseeing: { label: 'Pontos Turísticos', icon: '🏛️' },
-  adventure: { label: 'Aventura', icon: '🏔️' },
-  culture: { label: 'Cultura', icon: '🎨' },
-  food: { label: 'Gastronomia', icon: '🍽️' },
-  shopping: { label: 'Compras', icon: '🛍️' },
-  nature: { label: 'Natureza', icon: '🌲' },
-  nightlife: { label: 'Vida Noturna', icon: '🌙' },
-  wellness: { label: 'Bem-estar', icon: '🧘' }
-};
 
 // Priority colors
 const priorityColors = {
