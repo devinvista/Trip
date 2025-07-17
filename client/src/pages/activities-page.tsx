@@ -24,12 +24,7 @@ import {
   X,
   ArrowUpDown,
   Eye,
-  Bookmark,
-  Trophy,
-  Plane,
-  Navigation,
-  TrendingDown,
-  ArrowRight
+  Bookmark
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -167,13 +162,6 @@ function ActivitiesPage() {
     return [...(myTripsData.created || []), ...(myTripsData.participating || [])];
   }, [myTripsData]);
 
-  // Get upcoming trips (future trips)
-  const upcomingTrips = useMemo(() => {
-    if (!userTrips) return [];
-    const now = new Date();
-    return userTrips.filter((trip: any) => new Date(trip.startDate) > now);
-  }, [userTrips]);
-
   const { data: activities, isLoading, isFetching } = useQuery<Activity[]>({
     queryKey: ["/api/activities", filters],
     queryFn: async () => {
@@ -232,136 +220,242 @@ function ActivitiesPage() {
     ));
   };
 
-  // Top rated activities (4.5+ rating)
-  const topActivities = useMemo(() => {
+  const filteredActivities = useMemo(() => {
     if (!activities) return [];
-    return activities
-      .filter(activity => parseFloat(activity.averageRating) >= 4.5)
-      .sort((a, b) => parseFloat(b.averageRating) - parseFloat(a.averageRating))
-      .slice(0, 6);
-  }, [activities]);
-
-  // Activities for upcoming trips
-  const activitiesForUpcomingTrips = useMemo(() => {
-    if (!activities || !upcomingTrips.length) return [];
     
-    // Get destination cities from upcoming trips
-    const upcomingDestinations = upcomingTrips.map((trip: any) => {
-      const city = trip.destination.split(',')[0].trim().toLowerCase();
-      return city;
-    });
-
-    // Filter activities that match upcoming trip destinations
-    return activities.filter(activity => {
-      const activityCity = activity.location.split(',')[0].trim().toLowerCase();
-      return upcomingDestinations.includes(activityCity);
-    }).slice(0, 8);
-  }, [activities, upcomingTrips]);
-
-  // Group activities by travel style > destination > activity
-  const groupedActivities = useMemo(() => {
-    if (!activities) return {};
-    
-    const filtered = filters.onlyMyTrips && user ? 
-      activities.filter(activity => {
+    if (filters.onlyMyTrips && user) {
+      return activities.filter(activity => {
         const activityCity = activity.location.split(',')[0].trim();
-        return userTrips.some((trip: any) => {
+        return userTrips.some(trip => {
           const tripCity = trip.destination.split(',')[0].trim();
           return tripCity.toLowerCase() === activityCity.toLowerCase();
         });
-      }) : activities;
-
-    const grouped: Record<string, Record<string, Activity[]>> = {};
+      });
+    }
     
-    filtered.forEach(activity => {
-      const category = activity.category || 'outros';
-      const destination = activity.location.split(',')[0].trim();
-      
-      if (!grouped[category]) {
-        grouped[category] = {};
-      }
-      
-      if (!grouped[category][destination]) {
-        grouped[category][destination] = [];
-      }
-      
-      grouped[category][destination].push(activity);
-    });
-
-    return grouped;
+    return activities;
   }, [activities, filters.onlyMyTrips, user, userTrips]);
 
-  const formatPrice = (priceType: string, priceAmount: number | null) => {
-    if (!priceAmount) return "Grátis";
+  const topActivities = useMemo(() => {
+    if (!activities) return [];
+    return activities
+      .filter(activity => (activity.rating || 0) >= 4.5)
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      .slice(0, 6);
+  }, [activities]);
+
+  const categoryStats = useMemo(() => {
+    if (!activities) return [];
     
-    const formatted = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(priceAmount);
+    // Convert activityCategories object to array format
+    const categoriesArray = Object.entries(activityCategories).map(([value, { label, icon }]) => ({
+      value,
+      label,
+      icon,
+      count: activities.filter(a => a.category === value).length
+    }));
+    
+    return categoriesArray;
+  }, [activities]);
 
-    return priceType === "per_person" 
-      ? `${formatted}/pessoa`
-      : priceType === "per_group"
-      ? `${formatted}/grupo`
-      : formatted;
-  };
+  const FilterSidebar = () => (
+    <div className="space-y-6">
+      {/* Category Filter */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <Target className="w-4 h-4" />
+          Categoria
+        </h3>
+        <div className="space-y-2">
+          {categoryStats.map((category) => (
+            <div
+              key={category.value}
+              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
+                filters.category === category.value
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+              onClick={() => updateFilter("category", category.value)}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{category.icon}</span>
+                <span className="font-medium">{category.label}</span>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                {category.count}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </div>
 
+      <Separator />
 
+      {/* Price Range */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <DollarSign className="w-4 h-4" />
+          Preço
+        </h3>
+        <Select value={filters.priceRange} onValueChange={(value) => updateFilter("priceRange", value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PRICE_RANGES.map((range) => (
+              <SelectItem key={range.value} value={range.value}>
+                {range.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-  // Activity Card Component
-  const ActivityCard = ({ activity }: { activity: Activity }) => (
+      {/* Duration */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <Clock className="w-4 h-4" />
+          Duração
+        </h3>
+        <Select value={filters.duration} onValueChange={(value) => updateFilter("duration", value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DURATION_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Difficulty */}
+      <div className="space-y-3">
+        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4" />
+          Dificuldade
+        </h3>
+        <Select value={filters.difficulty} onValueChange={(value) => updateFilter("difficulty", value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DIFFICULTY_LEVELS.map((level) => (
+              <SelectItem key={level.value} value={level.value}>
+                {level.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* My Trips Only */}
+      {user && (
+        <>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-900">
+                Apenas meus destinos
+              </label>
+              <p className="text-xs text-gray-500">
+                Mostrar apenas atividades nos destinos das minhas viagens
+              </p>
+            </div>
+            <Switch
+              checked={filters.onlyMyTrips}
+              onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Clear Filters */}
+      {activeFiltersCount > 0 && (
+        <Button 
+          variant="outline" 
+          onClick={clearFilters}
+          className="w-full"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Limpar Filtros ({activeFiltersCount})
+        </Button>
+      )}
+    </div>
+  );
+
+  const ActivityCard = ({ activity, index }: { activity: Activity; index: number }) => (
     <motion.div
-      layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="group"
+      transition={{ delay: index * 0.1 }}
     >
-      <Link href={`/activities/${activity.id}`}>
-        <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-white hover:shadow-xl hover:-translate-y-1">
+      <Link to={`/activities/${activity.id}`}>
+        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden">
           <div className="relative">
             <img
-              src={activity.imageUrl || "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&q=80"}
+              src={activity.coverImage}
               alt={activity.title}
               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
             />
             <div className="absolute top-3 left-3">
-              <Badge className="bg-white/90 text-gray-800 border-0">
-                {activityCategories[activity.category]?.icon} {activityCategories[activity.category]?.label}
+              <Badge className="bg-white/90 text-gray-900 backdrop-blur-sm">
+                {activityCategories[activity.category as keyof typeof activityCategories]?.icon} {activityCategories[activity.category as keyof typeof activityCategories]?.label}
               </Badge>
             </div>
             <div className="absolute top-3 right-3">
-              <div className="flex items-center gap-1 bg-white/90 px-2 py-1 rounded-full">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium text-gray-800">
-                  {parseFloat(activity.averageRating).toFixed(1)}
-                </span>
-              </div>
+              <Button size="sm" variant="secondary" className="bg-white/90 backdrop-blur-sm p-2">
+                <Heart className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="absolute bottom-3 right-3">
+              <Badge variant="secondary" className="bg-black/70 text-white backdrop-blur-sm">
+                {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
+              </Badge>
             </div>
           </div>
+          
           <CardContent className="p-4">
-            <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-              {activity.title}
-            </h3>
-            <div className="flex items-center gap-2 text-gray-600 mb-2">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">{activity.location}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="space-y-3">
+              <div>
+                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                  {activity.title}
+                </h3>
+                <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+                  {activity.description}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{activity.duration || "2h"}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  <span>{activity.difficultyLevel || "Fácil"}</span>
+                  {renderStars(activity.rating || 0)}
+                  <span className="text-sm text-gray-600 ml-1">
+                    {(activity.rating || 0).toFixed(1)} ({activity.reviewCount || 0})
+                  </span>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="font-semibold text-lg text-blue-600">
-                  {formatPrice(activity.priceType, activity.priceAmount)}
+              
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>{activity.location}</span>
                 </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  <span>{activity.duration}h</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Users className="w-4 h-4" />
+                  <span>{activity.minParticipants}-{activity.maxParticipants} pessoas</span>
+                </div>
+                <Badge variant="outline" className="text-xs">
+                  {DIFFICULTY_LEVELS.find(d => d.value === activity.difficulty)?.label || 'N/A'}
+                </Badge>
               </div>
             </div>
           </CardContent>
@@ -370,352 +464,219 @@ function ActivitiesPage() {
     </motion.div>
   );
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <LoadingSpinner />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="text-center space-y-4">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl font-bold"
+            >
+              Descubra Experiências Incríveis
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-xl text-blue-100 max-w-2xl mx-auto"
+            >
+              Encontre as melhores atividades e experiências para suas viagens. 
+              Aventuras inesquecíveis estão esperando por você.
+            </motion.p>
+          </div>
+          
+          {/* Search Bar */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8 max-w-2xl mx-auto"
+          >
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Buscar atividades, experiências ou destinos..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 shadow-lg"
+              />
+            </div>
+          </motion.div>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white rounded-xl p-12 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold mb-6">
-              Descubra Atividades Incríveis
-            </h1>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Encontre as melhores experiências e atividades para suas próximas aventuras. 
-              Explore destinos únicos e crie memórias inesquecíveis.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-blue-50">
-                <Sparkles className="w-5 h-5 mr-2" />
-                Explorar Atividades
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                <MapPin className="w-5 h-5 mr-2" />
-                Ver Por Destino
-              </Button>
+      {/* Top Activities Section */}
+      {topActivities.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between mb-6"
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-yellow-500" />
+              <h2 className="text-2xl font-bold text-gray-900">Mais Populares</h2>
+              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                Melhor avaliadas
+              </Badge>
             </div>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topActivities.map((activity, index) => (
+              <ActivityCard key={activity.id} activity={activity} index={index} />
+            ))}
           </div>
         </div>
+      )}
 
-        {/* Suggestions Sections */}
-        {topActivities.length > 0 && (
-          <Card className="p-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3 mb-2">
-                <Trophy className="w-6 h-6 text-yellow-500" />
-                Melhores Avaliadas
-              </h2>
-              <p className="text-gray-600">
-                Atividades com 4.5+ estrelas que você não pode perder
-              </p>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block w-80 flex-shrink-0">
+            <div className="sticky top-4">
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-semibold text-gray-900">Filtros</h2>
+                  {activeFiltersCount > 0 && (
+                    <Badge variant="secondary">{activeFiltersCount}</Badge>
+                  )}
+                </div>
+                <FilterSidebar />
+              </Card>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-              {topActivities.map((activity) => (
-                <ActivityCard key={activity.id} activity={activity} />
-              ))}
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Toolbar */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                {/* Mobile Filter Button */}
+                <Sheet open={showFilters} onOpenChange={setShowFilters}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="lg:hidden">
+                      <SlidersHorizontal className="w-4 h-4 mr-2" />
+                      Filtros
+                      {activeFiltersCount > 0 && (
+                        <Badge variant="secondary" className="ml-2">
+                          {activeFiltersCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-80">
+                    <SheetHeader>
+                      <SheetTitle>Filtros</SheetTitle>
+                      <SheetDescription>
+                        Refine sua busca para encontrar a experiência perfeita
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <FilterSidebar />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
+                <div className="text-gray-600">
+                  {isLoading ? (
+                    "Carregando..."
+                  ) : (
+                    `${filteredActivities?.length || 0} atividades encontradas`
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Sort */}
+                <Select value={filters.sortBy} onValueChange={(value) => updateFilter("sortBy", value)}>
+                  <SelectTrigger className="w-48">
+                    <ArrowUpDown className="w-4 h-4 mr-2" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* View Mode */}
+                <div className="flex border rounded-lg p-1">
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                  >
+                    <Grid className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
-            {topActivities.length >= 6 && (
-              <div className="text-center">
-                <Button 
-                  variant="outline"
-                  onClick={() => updateFilter("rating", "4.5")}
-                >
-                  Ver Todas as Top Avaliadas
-                  <ArrowRight className="w-4 h-4 ml-2" />
+
+            {/* Activities Grid */}
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Card key={i} className="overflow-hidden">
+                    <div className="w-full h-48 bg-gray-200 animate-pulse" />
+                    <CardContent className="p-4 space-y-3">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-3 bg-gray-200 rounded w-3/4 animate-pulse" />
+                      <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredActivities?.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16"
+              >
+                <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Nenhuma atividade encontrada
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Tente ajustar seus filtros ou buscar por outros termos
+                </p>
+                <Button onClick={clearFilters} variant="outline">
+                  <X className="w-4 h-4 mr-2" />
+                  Limpar Filtros
                 </Button>
+              </motion.div>
+            ) : (
+              <div className={`grid gap-6 ${
+                viewMode === "grid" 
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+                  : "grid-cols-1"
+              }`}>
+                <AnimatePresence>
+                  {filteredActivities?.map((activity, index) => (
+                    <ActivityCard key={activity.id} activity={activity} index={index} />
+                  ))}
+                </AnimatePresence>
               </div>
             )}
-          </Card>
-        )}
-
-        {user && activitiesForUpcomingTrips.length > 0 && (
-          <Card className="p-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3 mb-2">
-                <Plane className="w-6 h-6 text-blue-500" />
-                Para Suas Próximas Viagens
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Atividades perfeitas para os {upcomingTrips.length} destinos que você vai visitar
-              </p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {upcomingTrips.slice(0, 3).map((trip: any) => (
-                  <Badge key={trip.id} variant="secondary">
-                    <Calendar className="w-3 h-3 mr-1" />
-                    {trip.destination} - {new Date(trip.startDate).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' })}
-                  </Badge>
-                ))}
-                {upcomingTrips.length > 3 && (
-                  <Badge variant="secondary">
-                    +{upcomingTrips.length - 3} viagens
-                  </Badge>
-                )}
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {activitiesForUpcomingTrips.map((activity) => (
-                <ActivityCard key={activity.id} activity={activity} />
-              ))}
-            </div>
-            <div className="text-center">
-              <Button 
-                variant="outline"
-                onClick={() => updateFilter("onlyMyTrips", true)}
-              >
-                Ver Todas Para Suas Viagens
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        {/* Search and Filters */}
-        <Card className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input
-                  placeholder="Buscar atividades, locais ou experiências..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-10 pr-4 h-12 text-lg"
-                />
-              </div>
-            </div>
-
-            {/* Quick Filters */}
-            <div className="flex gap-2">
-              <Select value={filters.category} onValueChange={(value) => updateFilter("category", value)}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas categorias</SelectItem>
-                  {Object.entries(activityCategories).map(([value, { label, icon }]) => (
-                    <SelectItem key={value} value={value}>
-                      {icon} {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={filters.sortBy} onValueChange={(value) => updateFilter("sortBy", value)}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SORT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Advanced Filters Button */}
-              <Sheet open={showFilters} onOpenChange={setShowFilters}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="relative">
-                    <SlidersHorizontal className="w-4 h-4 mr-2" />
-                    Filtros
-                    {activeFiltersCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                        {activeFiltersCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px]">
-                  <SheetHeader>
-                    <SheetTitle>Filtros Avançados</SheetTitle>
-                    <SheetDescription>
-                      Refine sua busca para encontrar as atividades perfeitas
-                    </SheetDescription>
-                  </SheetHeader>
-                  
-                  <div className="space-y-6 mt-6">
-                    {/* Price Range */}
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <DollarSign className="w-4 h-4" />
-                        Preço
-                      </h3>
-                      <Select value={filters.priceRange} onValueChange={(value) => updateFilter("priceRange", value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PRICE_RANGES.map((range) => (
-                            <SelectItem key={range.value} value={range.value}>
-                              {range.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Duration */}
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        Duração
-                      </h3>
-                      <Select value={filters.duration} onValueChange={(value) => updateFilter("duration", value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DURATION_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Difficulty */}
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4" />
-                        Dificuldade
-                      </h3>
-                      <Select value={filters.difficulty} onValueChange={(value) => updateFilter("difficulty", value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DIFFICULTY_LEVELS.map((level) => (
-                            <SelectItem key={level.value} value={level.value}>
-                              {level.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Location */}
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        Local
-                      </h3>
-                      <Input
-                        placeholder="Cidade, estado ou região..."
-                        value={filters.location}
-                        onChange={(e) => updateFilter("location", e.target.value)}
-                      />
-                    </div>
-
-                    {/* Only My Trips Toggle */}
-                    {user && (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                            <Bookmark className="w-4 h-4" />
-                            Apenas Minhas Viagens
-                          </h3>
-                          <Switch
-                            checked={filters.onlyMyTrips}
-                            onCheckedChange={(checked) => updateFilter("onlyMyTrips", checked)}
-                          />
-                        </div>
-                        <p className="text-sm text-gray-500">
-                          Mostrar apenas atividades nos destinos das suas viagens
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Clear Filters */}
-                    {activeFiltersCount > 0 && (
-                      <Button
-                        variant="outline"
-                        onClick={clearFilters}
-                        className="w-full"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Limpar Filtros ({activeFiltersCount})
-                      </Button>
-                    )}
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
           </div>
-        </Card>
-
-        {/* Grouped Activities */}
-        <div className="space-y-8">
-          {Object.entries(groupedActivities).map(([category, destinations]) => {
-            const categoryInfo = activityCategories[category] || { label: category, icon: '📍' };
-            
-            return (
-              <Card key={category} className="p-6">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                    <span className="text-3xl">{categoryInfo.icon}</span>
-                    {categoryInfo.label}
-                  </h2>
-                  <p className="text-gray-600 mt-1">
-                    {Object.values(destinations).flat().length} atividades em {Object.keys(destinations).length} destinos
-                  </p>
-                </div>
-
-                <div className="space-y-8">
-                  {Object.entries(destinations).map(([destination, activities]) => (
-                    <div key={destination}>
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                          <MapPin className="w-5 h-5 text-blue-600" />
-                          {destination}
-                        </h3>
-                        <Badge variant="outline" className="text-sm">
-                          {activities.length} atividades
-                        </Badge>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {activities.map((activity) => (
-                          <ActivityCard key={activity.id} activity={activity} />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            );
-          })}
         </div>
-
-        {/* Empty State */}
-        {Object.keys(groupedActivities).length === 0 && (
-          <Card className="p-12 text-center">
-            <div className="max-w-md mx-auto">
-              <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Nenhuma atividade encontrada
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Tente ajustar seus filtros ou buscar por outros termos
-              </p>
-              <Button onClick={clearFilters} variant="outline">
-                <X className="w-4 h-4 mr-2" />
-                Limpar Filtros
-              </Button>
-            </div>
-          </Card>
-        )}
       </div>
     </div>
   );
