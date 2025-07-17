@@ -452,6 +452,8 @@ function ActivitiesPage() {
             // - For other categories, show count only when no specific categories are selected
             const showCount = category.value === "all" || filters.categories.length === 0;
             
+
+            
             return (
               <div
                 key={category.value}
