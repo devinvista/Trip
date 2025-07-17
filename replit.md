@@ -268,6 +268,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 17, 2025. **MIGRAÇÃO REPLIT AGENT CONCLUÍDA OFICIALMENTE**: Migração final do Replit Agent para ambiente Replit padrão completada com sucesso - aplicação totalmente operacional e verificada
 - July 17, 2025. **MIGRAÇÃO REPLIT FINALIZADA COM SUCESSO**: Migração completa do Replit Agent para ambiente Replit padrão concluída e confirmada pelo usuário - todas as funcionalidades operacionais
 - July 17, 2025. **ATIVIDADES RIO DE JANEIRO ADICIONADAS**: Cadastradas 5 atividades completas do Rio de Janeiro com 3 propostas de orçamento cada, avaliações autênticas e imagens de capa de qualidade
+- July 17, 2025. **ATIVIDADES BONITO (MS) ADICIONADAS**: Cadastradas 5 atividades completas de Bonito com descrições detalhadas, propostas realistas (R$ 90-730) e categorias variadas (natureza, esportes aquáticos, aventura)
 - July 17, 2025. **CAROUSEL PREMIUM IMPLEMENTADO**: Seção "Mais Populares" transformada em carousel com cards premium e efeitos dourados
 - July 17, 2025. Atividades premium recebem badges especiais, sombras douradas e efeitos visuais aprimorados
 - July 17, 2025. Implementado sistema de navegação por setas no carousel com design consistente laranja/vermelho
