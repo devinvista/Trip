@@ -209,7 +209,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 17, 2025. **SISTEMA DE PERFORMANCE COMPLETO**: Implementado sistema abrangente de otimizações de performance
 - July 17, 2025. Hooks de virtual scroll e infinite scroll criados para listas grandes com performance otimizada
 - July 17, 2025. Componente OptimizedImage com lazy loading, fallback para imagens
-- July 17, 2025. **MIGRAÇÃO REPLIT AGENT CONCLUÍDA**: Migração completa do Replit Agent para ambiente Replit padrão finalizada com sucesso - todas as funcionalidades operacionais e verificadas pelo usuárioback automático e progressive loading implementado
+- July 17, 2025. **MIGRAÇÃO REPLIT AGENT CONCLUÍDA**: Migração completa do Replit Agent para ambiente Replit padrão finalizada com sucesso - todas as funcionalidades operacionais e verificadas pelo usuário
+- July 17, 2025. **FILTROS DE ATIVIDADES MODERNIZADOS**: Botões de categoria reduzidos para design mais compacto e profissional
+- July 17, 2025. **FILTRO VIAGENS ATIVAS IMPLEMENTADO**: Adicionado novo filtro no início da sidebar para mostrar apenas atividades nos destinos de viagens em andamentoback automático e progressive loading implementado
 - July 17, 2025. Sistema de loading states avançado com skeletons específicos para cada componente
 - July 17, 2025. Sistema de notificações completo integrado à navbar com contadores e badges
 - July 17, 2025. **ACESSIBILIDADE CORRIGIDA**: Todos os diálogos agora possuem DialogTitle e DialogDescription para conformidade com padrões de acessibilidade

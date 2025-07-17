@@ -61,6 +61,7 @@ interface ActivityFilters {
   rating: string;
   sortBy: string;
   onlyMyTrips: boolean;
+  onlyActiveTrips: boolean;
 }
 
 const PRICE_RANGES = [
@@ -107,6 +108,7 @@ function ActivitiesPage() {
     rating: "all",
     sortBy: "rating",
     onlyMyTrips: false,
+    onlyActiveTrips: false,
   });
 
   const [searchInput, setSearchInput] = useState("");
@@ -143,6 +145,7 @@ function ActivitiesPage() {
     if (filters.duration !== "all") count++;
     if (filters.difficulty !== "all") count++;
     if (filters.rating !== "all") count++;
+    if (filters.onlyActiveTrips) count++;
     if (filters.onlyMyTrips) count++;
     setActiveFiltersCount(count);
   }, [filters]);
@@ -266,6 +269,7 @@ function ActivitiesPage() {
       rating: "all",
       sortBy: "rating",
       onlyMyTrips: false,
+      onlyActiveTrips: false,
     });
     setSearchInput("");
   };
@@ -286,8 +290,10 @@ function ActivitiesPage() {
   const filteredActivities = useMemo(() => {
     if (!activities) return [];
     
+    let result = activities;
+    
     if (filters.onlyMyTrips && user) {
-      return activities.filter(activity => {
+      result = result.filter(activity => {
         const activityCity = activity.location.split(',')[0].trim();
         return userTrips.some(trip => {
           const tripCity = trip.destination.split(',')[0].trim();
@@ -296,8 +302,24 @@ function ActivitiesPage() {
       });
     }
     
-    return activities;
-  }, [activities, filters.onlyMyTrips, user, userTrips]);
+    if (filters.onlyActiveTrips && user) {
+      result = result.filter(activity => {
+        const activityCity = activity.location.split(',')[0].trim();
+        const now = new Date();
+        return userTrips.some(trip => {
+          const tripCity = trip.destination.split(',')[0].trim();
+          const tripStart = new Date(trip.startDate);
+          const tripEnd = new Date(trip.endDate);
+          return (
+            tripCity.toLowerCase() === activityCity.toLowerCase() &&
+            tripStart <= now && now <= tripEnd
+          );
+        });
+      });
+    }
+    
+    return result;
+  }, [activities, filters.onlyMyTrips, filters.onlyActiveTrips, user, userTrips]);
 
   const topActivities = useMemo(() => {
     if (!activities) return [];
@@ -323,28 +345,49 @@ function ActivitiesPage() {
 
   const FilterSidebar = () => (
     <div className="space-y-4">
+      {/* Active Trips Filter */}
+      {user && (
+        <div className="p-3 rounded-lg border border-blue-200 bg-blue-50">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <label className="text-sm font-medium text-blue-900 flex items-center gap-2">
+                <Calendar className="w-3 h-3" />
+                Viagens ativas
+              </label>
+              <p className="text-xs text-blue-700">
+                Atividades nos destinos das suas viagens em andamento
+              </p>
+            </div>
+            <Switch
+              checked={filters.onlyActiveTrips}
+              onCheckedChange={(checked) => updateFilter("onlyActiveTrips", checked)}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Category Filter */}
       <div className="space-y-2">
         <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
           <Target className="w-3 h-3" />
           Categoria
         </h3>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5">
           {categoryStats.map((category) => (
             <div
               key={category.value}
-              className={`flex items-center justify-between p-2 rounded-md border cursor-pointer transition-all text-sm ${
+              className={`flex items-center justify-between p-1.5 rounded-md border cursor-pointer transition-all text-xs ${
                 filters.category === category.value
                   ? "border-blue-500 bg-blue-50 text-blue-700"
                   : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => updateFilter("category", category.value)}
             >
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-sm">{category.icon}</span>
-                <span className="font-medium truncate">{category.label}</span>
+              <div className="flex items-center gap-1 min-w-0">
+                <span className="text-xs">{category.icon}</span>
+                <span className="font-medium truncate text-xs">{category.label}</span>
               </div>
-              <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto">
+              <Badge variant="outline" className="text-xs px-1 py-0 h-auto">
                 {category.count}
               </Badge>
             </div>
