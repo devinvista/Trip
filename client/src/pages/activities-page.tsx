@@ -188,6 +188,40 @@ function ActivitiesPage() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Fetch popular activities suggestions
+  const { data: popularActivities } = useQuery<Activity[]>({
+    queryKey: ["/api/activities/suggestions/popular"],
+    queryFn: async () => {
+      const response = await fetch("/api/activities/suggestions/popular?limit=6");
+      if (!response.ok) throw new Error("Falha ao carregar atividades populares");
+      return response.json();
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Fetch top-rated activities suggestions
+  const { data: topRatedActivities } = useQuery<Activity[]>({
+    queryKey: ["/api/activities/suggestions/top-rated"],
+    queryFn: async () => {
+      const response = await fetch("/api/activities/suggestions/top-rated?limit=6");
+      if (!response.ok) throw new Error("Falha ao carregar atividades mais bem avaliadas");
+      return response.json();
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Fetch personalized suggestions (only for authenticated users)
+  const { data: personalizedActivities } = useQuery<Activity[]>({
+    queryKey: ["/api/activities/suggestions/personalized"],
+    queryFn: async () => {
+      const response = await fetch("/api/activities/suggestions/personalized?limit=6");
+      if (!response.ok) throw new Error("Falha ao carregar sugestões personalizadas");
+      return response.json();
+    },
+    enabled: !!user,
+    staleTime: 15 * 60 * 1000, // 15 minutes
+  });
+
   const updateFilter = (key: keyof ActivityFilters, value: string | boolean) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
@@ -391,69 +425,100 @@ function ActivitiesPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.02 }}
+      className="group"
     >
       <Link to={`/activities/${activity.id}`}>
-        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden">
+        <Card className="h-full overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 group-hover:border-blue-200 bg-white">
           <div className="relative">
             <img
-              src={activity.coverImage}
+              src={activity.imageUrl || activity.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
               alt={activity.title}
-              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                e.currentTarget.src = `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`;
+              }}
             />
-            <div className="absolute top-3 left-3">
-              <Badge className="bg-white/90 text-gray-900 backdrop-blur-sm">
-                {activityCategories[activity.category as keyof typeof activityCategories]?.icon} {activityCategories[activity.category as keyof typeof activityCategories]?.label}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+            
+            {/* Category Badge */}
+            <div className="absolute top-4 right-4">
+              <Badge className="bg-white/95 text-gray-800 hover:bg-white backdrop-blur-sm shadow-lg">
+                {activityCategories[activity.category as keyof typeof activityCategories]?.icon || '🎯'} {activityCategories[activity.category as keyof typeof activityCategories]?.label || 'Atividade'}
               </Badge>
             </div>
-            <div className="absolute top-3 right-3">
-              <Button size="sm" variant="secondary" className="bg-white/90 backdrop-blur-sm p-2">
-                <Heart className="w-4 h-4" />
-              </Button>
+            
+            {/* Price Badge */}
+            <div className="absolute bottom-4 left-4">
+              <div className="bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg">
+                <span className="text-xl font-bold text-gray-900">
+                  {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
+                </span>
+              </div>
             </div>
-            <div className="absolute bottom-3 right-3">
-              <Badge variant="secondary" className="bg-black/70 text-white backdrop-blur-sm">
-                {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
-              </Badge>
+
+            {/* Rating Badge */}
+            <div className="absolute bottom-4 right-4">
+              <div className="bg-yellow-400/95 backdrop-blur-sm px-3 py-1 rounded-lg shadow-lg flex items-center gap-1">
+                <Star className="w-4 h-4 fill-white text-white" />
+                <span className="text-sm font-bold text-white">
+                  {Number(activity.averageRating || activity.rating || 0).toFixed(1)}
+                </span>
+              </div>
             </div>
           </div>
           
-          <CardContent className="p-4">
-            <div className="space-y-3">
+          <CardContent className="p-6">
+            <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                <h3 className="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
                   {activity.title}
                 </h3>
-                <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+                <p className="text-sm text-gray-600 line-clamp-2 mt-2 leading-relaxed">
                   {activity.description}
                 </p>
               </div>
               
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-1">
-                  {renderStars(activity.rating || 0)}
-                  <span className="text-sm text-gray-600 ml-1">
-                    {(activity.rating || 0).toFixed(1)} ({activity.reviewCount || 0})
+                  {renderStars(Number(activity.averageRating || activity.rating || 0))}
+                  <span className="text-sm text-gray-600 ml-2 font-medium">
+                    ({activity.totalRatings || activity.reviewCount || 0} avaliações)
                   </span>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  <span>{activity.location}</span>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <span className="font-medium truncate">{activity.location}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{activity.duration}h</span>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-green-600" />
+                  </div>
+                  <span className="font-medium">{activity.duration}h</span>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-1 text-gray-600">
+              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                <div className="flex items-center gap-2 text-gray-600">
                   <Users className="w-4 h-4" />
-                  <span>{activity.minParticipants}-{activity.maxParticipants} pessoas</span>
+                  <span className="text-sm font-medium">
+                    {activity.minParticipants || 1}-{activity.maxParticipants || 20} pessoas
+                  </span>
                 </div>
-                <Badge variant="outline" className="text-xs">
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs font-medium ${
+                    activity.difficulty === 'easy' ? 'border-green-200 text-green-700 bg-green-50' :
+                    activity.difficulty === 'moderate' ? 'border-yellow-200 text-yellow-700 bg-yellow-50' :
+                    activity.difficulty === 'challenging' ? 'border-red-200 text-red-700 bg-red-50' :
+                    'border-gray-200 text-gray-700 bg-gray-50'
+                  }`}
+                >
                   {DIFFICULTY_LEVELS.find(d => d.value === activity.difficulty)?.label || 'N/A'}
                 </Badge>
               </div>
@@ -509,30 +574,96 @@ function ActivitiesPage() {
         </div>
       </div>
 
-      {/* Top Activities Section */}
-      {topActivities.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-between mb-6"
-          >
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-yellow-500" />
-              <h2 className="text-2xl font-bold text-gray-900">Mais Populares</h2>
-              <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                Melhor avaliadas
-              </Badge>
-            </div>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topActivities.map((activity, index) => (
-              <ActivityCard key={activity.id} activity={activity} index={index} />
-            ))}
-          </div>
+      {/* Suggestions Sections */}
+      <div className="bg-gray-50 border-b">
+        <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+          {/* Personalized Suggestions (only for authenticated users) */}
+          {user && personalizedActivities && personalizedActivities.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Sugestões Para Você</h2>
+                  <p className="text-gray-600">Baseado em suas próximas viagens</p>
+                </div>
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 ml-auto">
+                  Personalizado
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {personalizedActivities.slice(0, 6).map((activity, index) => (
+                  <ActivityCard key={activity.id} activity={activity} index={index} />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Popular Activities */}
+          {popularActivities && popularActivities.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Mais Populares</h2>
+                  <p className="text-gray-600">As experiências que todo mundo está escolhendo</p>
+                </div>
+                <Badge variant="secondary" className="bg-orange-100 text-orange-800 ml-auto">
+                  Trending
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {popularActivities.slice(0, 6).map((activity, index) => (
+                  <ActivityCard key={activity.id} activity={activity} index={index} />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Top Rated Activities */}
+          {topRatedActivities && topRatedActivities.length > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
+                  <Award className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Melhores Avaliadas</h2>
+                  <p className="text-gray-600">Experiências com 4.5+ estrelas</p>
+                </div>
+                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 ml-auto">
+                  4.5+ ⭐
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {topRatedActivities.slice(0, 6).map((activity, index) => (
+                  <ActivityCard key={activity.id} activity={activity} index={index} />
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -627,6 +758,23 @@ function ActivitiesPage() {
                 </div>
               </div>
             </div>
+
+            {/* Section Header for Filtered Activities */}
+            {!isLoading && filteredActivities && filteredActivities.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 mb-8"
+              >
+                <div className="w-8 h-8 bg-gradient-to-r from-gray-600 to-gray-800 rounded-lg flex items-center justify-center">
+                  <Search className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Todas as Atividades</h2>
+                  <p className="text-gray-600">Explore nossa coleção completa de experiências</p>
+                </div>
+              </motion.div>
+            )}
 
             {/* Activities Grid */}
             {isLoading ? (

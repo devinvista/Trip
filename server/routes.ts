@@ -1323,6 +1323,104 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Get most popular activities (based on ratings count and average)
+  app.get("/api/activities/suggestions/popular", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 6;
+      
+      const activities = await storage.getActivities({});
+      
+      // Sort by popularity score (average rating * log(total ratings + 1))
+      const popularActivities = activities
+        .map(activity => ({
+          ...activity,
+          popularityScore: Number(activity.averageRating || 0) * Math.log((activity.totalRatings || 0) + 1)
+        }))
+        .sort((a, b) => b.popularityScore - a.popularityScore)
+        .slice(0, limit)
+        .map(({ popularityScore, ...activity }) => activity);
+      
+      res.json(popularActivities);
+    } catch (error) {
+      console.error('Erro ao buscar atividades populares:', error);
+      res.status(500).json({ message: "Erro ao buscar atividades populares" });
+    }
+  });
+
+  // Get best rated activities (4.5+ stars)
+  app.get("/api/activities/suggestions/top-rated", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 6;
+      
+      const activities = await storage.getActivities({});
+      
+      // Filter by high ratings and sort by average rating
+      const topRatedActivities = activities
+        .filter(activity => Number(activity.averageRating || 0) >= 4.5)
+        .sort((a, b) => Number(b.averageRating || 0) - Number(a.averageRating || 0))
+        .slice(0, limit);
+      
+      res.json(topRatedActivities);
+    } catch (error) {
+      console.error('Erro ao buscar atividades mais bem avaliadas:', error);
+      res.status(500).json({ message: "Erro ao buscar atividades mais bem avaliadas" });
+    }
+  });
+
+  // Get personalized suggestions based on user's upcoming trips
+  app.get("/api/activities/suggestions/personalized", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      const limit = parseInt(req.query.limit as string) || 6;
+      
+      // Get user's upcoming trips
+      const createdTrips = await storage.getTripsByCreator(userId);
+      const participatingTrips = await storage.getTripsByParticipant(userId);
+      const allTrips = [...createdTrips, ...participatingTrips];
+      
+      const upcomingTrips = allTrips.filter(trip => {
+        const tripDate = new Date(trip.startDate);
+        const now = new Date();
+        return tripDate > now;
+      });
+      
+      if (upcomingTrips.length === 0) {
+        // Fallback to popular activities
+        return res.redirect('/api/activities/suggestions/popular?limit=' + limit);
+      }
+      
+      // Extract destinations from upcoming trips
+      const upcomingDestinations = upcomingTrips.map(trip => trip.destination);
+      
+      // Get all activities
+      const activities = await storage.getActivities({});
+      
+      // Filter activities that match upcoming destinations
+      const matchingActivities = activities.filter(activity => {
+        const activityCity = activity.location.split(',')[0].trim().toLowerCase();
+        return upcomingDestinations.some(destination => {
+          const destCity = destination.split(',')[0].trim().toLowerCase();
+          return activityCity.includes(destCity) || destCity.includes(activityCity);
+        });
+      });
+      
+      // Sort by rating and popularity
+      const personalizedActivities = matchingActivities
+        .map(activity => ({
+          ...activity,
+          popularityScore: Number(activity.averageRating || 0) * Math.log((activity.totalRatings || 0) + 1)
+        }))
+        .sort((a, b) => b.popularityScore - a.popularityScore)
+        .slice(0, limit)
+        .map(({ popularityScore, ...activity }) => activity);
+      
+      res.json(personalizedActivities);
+    } catch (error) {
+      console.error('Erro ao buscar sugestões personalizadas:', error);
+      res.status(500).json({ message: "Erro ao buscar sugestões personalizadas" });
+    }
+  });
+
   // Get single activity
   app.get("/api/activities/:id", async (req, res) => {
     try {
