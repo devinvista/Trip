@@ -331,12 +331,30 @@ function ActivitiesPage() {
       .slice(0, 6);
   }, [activities]);
 
-  // Separate query to get all activities for counting (ignoring current filters)
-  const { data: allActivitiesForCount } = useQuery<Activity[]>({
-    queryKey: ["/api/activities", "count-only"],
+  // Query for counting activities (apply all filters EXCEPT category filters)
+  const { data: activitiesForCount } = useQuery<Activity[]>({
+    queryKey: ["/api/activities", "count-only", {
+      search: filters.search,
+      priceRange: filters.priceRange,
+      location: filters.location,
+      duration: filters.duration,
+      difficulty: filters.difficulty,
+      rating: filters.rating,
+      onlyMyTrips: filters.onlyMyTrips,
+      onlyActiveTrips: filters.onlyActiveTrips,
+      sortBy: filters.sortBy
+    }],
     queryFn: async () => {
       const params = new URLSearchParams();
-      params.set("sortBy", "rating");
+      if (filters.search) params.set("search", filters.search);
+      // NOTE: No category filter here - we want counts that respond to other filters
+      if (filters.priceRange !== "all") params.set("priceRange", filters.priceRange);
+      if (filters.location) params.set("location", filters.location);
+      if (filters.duration !== "all") params.set("duration", filters.duration);
+      if (filters.difficulty !== "all") params.set("difficulty", filters.difficulty);
+      if (filters.rating !== "all") params.set("rating", filters.rating);
+      params.set("sortBy", filters.sortBy);
+      
       const response = await fetch(`/api/activities?${params}`);
       if (!response.ok) throw new Error("Falha ao carregar atividades");
       return response.json();
@@ -345,14 +363,14 @@ function ActivitiesPage() {
   });
 
   const categoryStats = useMemo(() => {
-    if (!allActivitiesForCount) return [];
+    if (!activitiesForCount) return [];
     
-    // Convert activityCategories object to array format using unfiltered data
+    // Convert activityCategories object to array format using filtered data (but not category-filtered)
     const categoriesArray = Object.entries(activityCategories).map(([value, { label, icon }]) => ({
       value,
       label,
       icon,
-      count: allActivitiesForCount.filter(a => a.category === value).length
+      count: activitiesForCount.filter(a => a.category === value).length
     }));
     
     // Add "Todas" option at the beginning
@@ -360,11 +378,11 @@ function ActivitiesPage() {
       value: "all",
       label: "Todas",
       icon: "🎯",
-      count: allActivitiesForCount.length
+      count: activitiesForCount.length
     };
     
     return [allOption, ...categoriesArray];
-  }, [allActivitiesForCount]);
+  }, [activitiesForCount]);
 
   // Function to toggle category selection
   const toggleCategory = (categoryValue: string) => {
