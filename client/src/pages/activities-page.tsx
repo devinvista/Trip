@@ -322,29 +322,29 @@ function ActivitiesPage() {
   }, [activities]);
 
   const FilterSidebar = () => (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Category Filter */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-          <Target className="w-4 h-4" />
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+          <Target className="w-3 h-3" />
           Categoria
         </h3>
-        <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-2">
           {categoryStats.map((category) => (
             <div
               key={category.value}
-              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
+              className={`flex items-center justify-between p-2 rounded-md border cursor-pointer transition-all text-sm ${
                 filters.category === category.value
                   ? "border-blue-500 bg-blue-50 text-blue-700"
-                  : "border-gray-200 hover:border-gray-300"
+                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
               }`}
               onClick={() => updateFilter("category", category.value)}
             >
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{category.icon}</span>
-                <span className="font-medium">{category.label}</span>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-sm">{category.icon}</span>
+                <span className="font-medium truncate">{category.label}</span>
               </div>
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-xs px-1.5 py-0.5 h-auto">
                 {category.count}
               </Badge>
             </div>
@@ -354,77 +354,100 @@ function ActivitiesPage() {
 
       <Separator />
 
-      {/* Price Range */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-          <DollarSign className="w-4 h-4" />
-          Preço
-        </h3>
-        <Select value={filters.priceRange} onValueChange={(value) => updateFilter("priceRange", value)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {PRICE_RANGES.map((range) => (
-              <SelectItem key={range.value} value={range.value}>
-                {range.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Filter Grid - Responsive Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Price Range */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+            <DollarSign className="w-3 h-3" />
+            Preço
+          </h3>
+          <Select value={filters.priceRange} onValueChange={(value) => updateFilter("priceRange", value)}>
+            <SelectTrigger className="h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PRICE_RANGES.map((range) => (
+                <SelectItem key={range.value} value={range.value}>
+                  {range.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* Duration */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-          <Clock className="w-4 h-4" />
-          Duração
-        </h3>
-        <Select value={filters.duration} onValueChange={(value) => updateFilter("duration", value)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {DURATION_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        {/* Duration */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+            <Clock className="w-3 h-3" />
+            Duração
+          </h3>
+          <Select value={filters.duration} onValueChange={(value) => updateFilter("duration", value)}>
+            <SelectTrigger className="h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {DURATION_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* Difficulty */}
-      <div className="space-y-3">
-        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4" />
-          Dificuldade
-        </h3>
-        <Select value={filters.difficulty} onValueChange={(value) => updateFilter("difficulty", value)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {DIFFICULTY_LEVELS.map((level) => (
-              <SelectItem key={level.value} value={level.value}>
-                {level.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {/* Difficulty */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+            <TrendingUp className="w-3 h-3" />
+            Dificuldade
+          </h3>
+          <Select value={filters.difficulty} onValueChange={(value) => updateFilter("difficulty", value)}>
+            <SelectTrigger className="h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {DIFFICULTY_LEVELS.map((level) => (
+                <SelectItem key={level.value} value={level.value}>
+                  {level.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Rating */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+            <Star className="w-3 h-3" />
+            Avaliação
+          </h3>
+          <Select value={filters.rating} onValueChange={(value) => updateFilter("rating", value)}>
+            <SelectTrigger className="h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as avaliações</SelectItem>
+              <SelectItem value="5">⭐⭐⭐⭐⭐ 5 estrelas</SelectItem>
+              <SelectItem value="4">⭐⭐⭐⭐ 4+ estrelas</SelectItem>
+              <SelectItem value="3">⭐⭐⭐ 3+ estrelas</SelectItem>
+              <SelectItem value="2">⭐⭐ 2+ estrelas</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* My Trips Only */}
       {user && (
         <>
           <Separator />
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
+          <div className="flex items-center justify-between p-2 rounded-md border border-gray-200 bg-gray-50">
+            <div className="space-y-0.5">
               <label className="text-sm font-medium text-gray-900">
                 Apenas meus destinos
               </label>
               <p className="text-xs text-gray-500">
-                Mostrar apenas atividades nos destinos das minhas viagens
+                Destinos das minhas viagens
               </p>
             </div>
             <Switch
@@ -440,9 +463,9 @@ function ActivitiesPage() {
         <Button 
           variant="outline" 
           onClick={clearFilters}
-          className="w-full"
+          className="w-full h-8 text-sm"
         >
-          <X className="w-4 h-4 mr-2" />
+          <X className="w-3 h-3 mr-2" />
           Limpar Filtros ({activeFiltersCount})
         </Button>
       )}
@@ -981,7 +1004,7 @@ function ActivitiesPage() {
                       )}
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-80">
+                  <SheetContent side="left" className="w-80 sm:w-96">
                     <SheetHeader>
                       <SheetTitle>Filtros</SheetTitle>
                       <SheetDescription>
