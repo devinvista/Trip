@@ -874,7 +874,7 @@ function ActivitiesPage() {
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                       <Badge 
                         variant="outline" 
-                        className={`text-xs font-bold border transition-all duration-300 ${
+                        className={`text-xs font-medium border px-1.5 py-0.5 transition-all duration-300 ${
                           activity.difficulty === 'easy' ? 'border-green-300 text-green-800 bg-green-50 hover:bg-green-100' :
                           activity.difficulty === 'moderate' ? 'border-yellow-300 text-yellow-800 bg-yellow-50 hover:bg-yellow-100' :
                           activity.difficulty === 'challenging' ? 'border-red-300 text-red-800 bg-red-50 hover:bg-red-100' :
