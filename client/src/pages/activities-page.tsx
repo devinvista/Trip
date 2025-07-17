@@ -331,15 +331,28 @@ function ActivitiesPage() {
       .slice(0, 6);
   }, [activities]);
 
+  // Separate query to get all activities for counting (ignoring current filters)
+  const { data: allActivitiesForCount } = useQuery<Activity[]>({
+    queryKey: ["/api/activities", "count-only"],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set("sortBy", "rating");
+      const response = await fetch(`/api/activities?${params}`);
+      if (!response.ok) throw new Error("Falha ao carregar atividades");
+      return response.json();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   const categoryStats = useMemo(() => {
-    if (!activities) return [];
+    if (!allActivitiesForCount) return [];
     
-    // Convert activityCategories object to array format
+    // Convert activityCategories object to array format using unfiltered data
     const categoriesArray = Object.entries(activityCategories).map(([value, { label, icon }]) => ({
       value,
       label,
       icon,
-      count: activities.filter(a => a.category === value).length
+      count: allActivitiesForCount.filter(a => a.category === value).length
     }));
     
     // Add "Todas" option at the beginning
@@ -347,11 +360,11 @@ function ActivitiesPage() {
       value: "all",
       label: "Todas",
       icon: "🎯",
-      count: activities.length
+      count: allActivitiesForCount.length
     };
     
     return [allOption, ...categoriesArray];
-  }, [activities]);
+  }, [allActivitiesForCount]);
 
   // Function to toggle category selection
   const toggleCategory = (categoryValue: string) => {
@@ -416,8 +429,10 @@ function ActivitiesPage() {
               ? filters.categories.length === 0 
               : filters.categories.includes(category.value);
             
-            // Show count only if no specific category is selected or if this is the "Todas" option
-            const showCount = filters.categories.length === 0 || category.value === "all";
+            // Show count logic: 
+            // - Always show count for "Todas" button
+            // - For other categories, show count only when no specific categories are selected
+            const showCount = category.value === "all" || filters.categories.length === 0;
             
             return (
               <div

@@ -214,7 +214,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 17, 2025. **FILTRO VIAGENS ATIVAS IMPLEMENTADO**: Adicionado novo filtro no início da sidebar para mostrar apenas atividades nos destinos de viagens em andamento
 - July 17, 2025. **SISTEMA DE CATEGORIAS APRIMORADO**: Implementado seleção múltipla de categorias com botão "Todas" e contadores dinâmicos
 - July 17, 2025. Contadores de atividades nos botões de categoria desaparecem quando filtros específicos são aplicados
-- July 17, 2025. Botão "Todas" com número total de atividades substitui opção "Selecionar todas" anteriorback automático e progressive loading implementado
+- July 17, 2025. Botão "Todas" com número total de atividades substitui opção "Selecionar todas" anterior
+- July 17, 2025. **CONTADORES DE CATEGORIAS OTIMIZADOS**: Implementada query separada para contagem sempre precisa, independente dos filtros ativos
+- July 17, 2025. Botão "Todas" sempre exibe contagem total, botões de categoria escondem números quando filtros específicos são aplicadosback automático e progressive loading implementado
 - July 17, 2025. Sistema de loading states avançado com skeletons específicos para cada componente
 - July 17, 2025. Sistema de notificações completo integrado à navbar com contadores e badges
 - July 17, 2025. **ACESSIBILIDADE CORRIGIDA**: Todos os diálogos agora possuem DialogTitle e DialogDescription para conformidade com padrões de acessibilidade
