@@ -278,3 +278,4 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 17, 2025. Textos de localização e duração reduzidos para tamanho xs com ícones menores para visual mais compacto
 - July 17, 2025. Espaçamentos internos otimizados (p-4) e gap reduzidos para melhor aproveitamento do espaço disponível
 - July 17, 2025. Badge de dificuldade reduzido com padding compacto (px-1.5 py-0.5) para melhor equilíbrio visual
+- July 17, 2025. **TEXTO DE DURAÇÃO PADRONIZADO**: Cards premium (compactos) usam "h", cards regulares usam "horas" para melhor legibilidade

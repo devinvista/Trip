@@ -1032,7 +1032,7 @@ function ActivitiesPage() {
                   <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
                     <Clock className="w-4 h-4 text-green-600" />
                   </div>
-                  <span className="font-medium">{activity.duration}h</span>
+                  <span className="font-medium">{activity.duration} horas</span>
                 </div>
               </div>
               
