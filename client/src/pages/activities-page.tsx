@@ -334,7 +334,7 @@ function ActivitiesPage() {
   const categoryStats = useMemo(() => {
     if (!activities) return [];
     
-    // Convert activityCategories object to array format - always use total count, not filtered
+    // Convert activityCategories object to array format
     const categoriesArray = Object.entries(activityCategories).map(([value, { label, icon }]) => ({
       value,
       label,
@@ -342,17 +342,30 @@ function ActivitiesPage() {
       count: activities.filter(a => a.category === value).length
     }));
     
-    return categoriesArray;
+    // Add "Todas" option at the beginning
+    const allOption = {
+      value: "all",
+      label: "Todas",
+      icon: "🎯",
+      count: activities.length
+    };
+    
+    return [allOption, ...categoriesArray];
   }, [activities]);
 
   // Function to toggle category selection
   const toggleCategory = (categoryValue: string) => {
-    setFilters(prev => ({
-      ...prev,
-      categories: prev.categories.includes(categoryValue)
-        ? prev.categories.filter(c => c !== categoryValue)
-        : [...prev.categories, categoryValue]
-    }));
+    if (categoryValue === "all") {
+      // If "Todas" is clicked, clear all categories
+      setFilters(prev => ({ ...prev, categories: [] }));
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        categories: prev.categories.includes(categoryValue)
+          ? prev.categories.filter(c => c !== categoryValue)
+          : [...prev.categories, categoryValue]
+      }));
+    }
   };
 
   const FilterSidebar = () => (
@@ -397,41 +410,37 @@ function ActivitiesPage() {
           )}
         </div>
         
-        {/* Select All/None Toggle */}
-        <div className="flex items-center gap-2 mb-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setFilters(prev => ({ 
-              ...prev, 
-              categories: prev.categories.length === categoryStats.length ? [] : categoryStats.map(c => c.value)
-            }))}
-            className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700"
-          >
-            {filters.categories.length === categoryStats.length ? "Desmarcar todas" : "Selecionar todas"}
-          </Button>
-        </div>
-        
         <div className="grid grid-cols-2 gap-1.5">
-          {categoryStats.map((category) => (
-            <div
-              key={category.value}
-              className={`flex items-center justify-between p-1.5 rounded-md border cursor-pointer transition-all text-xs ${
-                filters.categories.includes(category.value)
-                  ? "border-blue-500 bg-blue-50 text-blue-700"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-              }`}
-              onClick={() => toggleCategory(category.value)}
-            >
-              <div className="flex items-center gap-1 min-w-0">
-                <span className="text-xs">{category.icon}</span>
-                <span className="font-medium truncate text-xs">{category.label}</span>
+          {categoryStats.map((category) => {
+            const isSelected = category.value === "all" 
+              ? filters.categories.length === 0 
+              : filters.categories.includes(category.value);
+            
+            // Show count only if no specific category is selected or if this is the "Todas" option
+            const showCount = filters.categories.length === 0 || category.value === "all";
+            
+            return (
+              <div
+                key={category.value}
+                className={`flex items-center justify-between p-1.5 rounded-md border cursor-pointer transition-all text-xs ${
+                  isSelected
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+                onClick={() => toggleCategory(category.value)}
+              >
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-xs">{category.icon}</span>
+                  <span className="font-medium truncate text-xs">{category.label}</span>
+                </div>
+                {showCount && (
+                  <Badge variant="outline" className="text-xs px-1 py-0 h-auto">
+                    {category.count}
+                  </Badge>
+                )}
               </div>
-              <Badge variant="outline" className="text-xs px-1 py-0 h-auto">
-                {category.count}
-              </Badge>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
