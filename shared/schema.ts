@@ -328,6 +328,10 @@ export const activities = mysqlTable("activities", {
   description: text("description").notNull(),
   location: varchar("location", { length: 255 }).notNull(), // cidade, país
   category: varchar("category", { length: 100 }).notNull(), // sightseeing, food, adventure, culture, etc.
+  // Hierarchical grouping fields
+  countryType: varchar("country_type", { length: 50 }).default("nacional").notNull(), // nacional, internacional, cruzeiro
+  region: varchar("region", { length: 100 }), // Nordeste, Sudeste, Europa, Caribe, etc.
+  city: varchar("city", { length: 100 }).notNull(), // Rio de Janeiro, Paris, Cairo
   priceType: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group, free
   priceAmount: decimal("price_amount", { precision: 10, scale: 2 }), // null for free activities
   duration: varchar("duration", { length: 100 }), // "2 hours", "full day", etc.

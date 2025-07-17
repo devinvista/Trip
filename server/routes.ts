@@ -1324,6 +1324,65 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Get most popular activities (based on ratings count and average)
+  // Activities hierarchical grouping endpoints
+  app.get("/api/activities/hierarchy", async (req, res) => {
+    try {
+      const hierarchyData = await db.select({
+        countryType: activities.countryType,
+        region: activities.region,
+        city: activities.city,
+        count: sql<number>`count(*)`.as('count')
+      })
+      .from(activities)
+      .where(eq(activities.isActive, true))
+      .groupBy(activities.countryType, activities.region, activities.city)
+      .orderBy(activities.countryType, activities.region, activities.city);
+      
+      // Organize data hierarchically
+      const hierarchy: { [key: string]: { [key: string]: { [key: string]: number } } } = {};
+      
+      hierarchyData.forEach(item => {
+        if (!hierarchy[item.countryType]) hierarchy[item.countryType] = {};
+        if (!hierarchy[item.countryType][item.region || 'Sem Região']) hierarchy[item.countryType][item.region || 'Sem Região'] = {};
+        hierarchy[item.countryType][item.region || 'Sem Região'][item.city] = item.count;
+      });
+      
+      res.json(hierarchy);
+    } catch (error) {
+      console.error("Erro ao buscar hierarquia de atividades:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get("/api/activities/by-location", async (req, res) => {
+    try {
+      const { countryType, region, city, ...filters } = req.query;
+      
+      let query = db.select().from(activities).where(eq(activities.isActive, true));
+      
+      if (countryType) {
+        query = query.where(eq(activities.countryType, countryType as string));
+      }
+      if (region) {
+        query = query.where(eq(activities.region, region as string));
+      }
+      if (city) {
+        query = query.where(eq(activities.city, city as string));
+      }
+      
+      // Apply other filters
+      if (filters.category) {
+        query = query.where(eq(activities.category, filters.category as string));
+      }
+      
+      const result = await query.orderBy(desc(activities.averageRating), desc(activities.totalRatings));
+      res.json(result);
+    } catch (error) {
+      console.error("Erro ao buscar atividades por localização:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   app.get("/api/activities/suggestions/popular", async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 6;

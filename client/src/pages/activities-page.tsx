@@ -24,7 +24,10 @@ import {
   X,
   ArrowUpDown,
   Eye,
-  Bookmark
+  Bookmark,
+  Home,
+  Globe,
+  Anchor
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,9 +111,15 @@ function ActivitiesPage() {
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [displayMode, setDisplayMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
+  
+  // Hierarchical navigation state
+  const [selectedCountryType, setSelectedCountryType] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'hierarchy' | 'list'>('hierarchy');
 
   // Debounce search input
   useEffect(() => {
@@ -185,6 +194,35 @@ function ActivitiesPage() {
       }
     },
     retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Fetch hierarchical structure
+  const { data: hierarchy } = useQuery({
+    queryKey: ["/api/activities/hierarchy"],
+    queryFn: async () => {
+      const response = await fetch("/api/activities/hierarchy");
+      if (!response.ok) throw new Error("Falha ao carregar hierarquia");
+      return response.json();
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Fetch activities by location when in hierarchy mode
+  const { data: locationActivities } = useQuery<Activity[]>({
+    queryKey: ["/api/activities/by-location", selectedCountryType, selectedRegion, selectedCity],
+    queryFn: async () => {
+      if (!selectedCountryType) return [];
+      const params = new URLSearchParams();
+      params.set("countryType", selectedCountryType);
+      if (selectedRegion) params.set("region", selectedRegion);
+      if (selectedCity) params.set("city", selectedCity);
+      
+      const response = await fetch(`/api/activities/by-location?${params}`);
+      if (!response.ok) throw new Error("Falha ao carregar atividades por localização");
+      return response.json();
+    },
+    enabled: viewMode === 'hierarchy' && !!selectedCountryType,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -418,6 +456,82 @@ function ActivitiesPage() {
     return rating >= 4.5 && totalRatings >= 5;
   };
 
+  // Get icon for country type
+  const getCountryTypeIcon = (countryType: string) => {
+    switch (countryType) {
+      case 'nacional': return <Home className="w-5 h-5" />;
+      case 'internacional': return <Globe className="w-5 h-5" />;
+      case 'cruzeiro': return <Anchor className="w-5 h-5" />;
+      default: return <MapPin className="w-5 h-5" />;
+    }
+  };
+
+  // Get display name for country type
+  const getCountryTypeDisplayName = (countryType: string) => {
+    switch (countryType) {
+      case 'nacional': return 'Nacionais';
+      case 'internacional': return 'Internacionais';
+      case 'cruzeiro': return 'Cruzeiros';
+      default: return countryType;
+    }
+  };
+
+  // Breadcrumb component for navigation
+  const Breadcrumb = () => (
+    <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => {
+          setSelectedCountryType(null);
+          setSelectedRegion(null);
+          setSelectedCity(null);
+        }}
+        className="h-8 px-2 hover:bg-blue-50"
+      >
+        Todas as Atividades
+      </Button>
+      
+      {selectedCountryType && (
+        <>
+          <ChevronRight className="w-4 h-4" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedRegion(null);
+              setSelectedCity(null);
+            }}
+            className="h-8 px-2 hover:bg-blue-50"
+          >
+            {getCountryTypeDisplayName(selectedCountryType)}
+          </Button>
+        </>
+      )}
+      
+      {selectedRegion && (
+        <>
+          <ChevronRight className="w-4 h-4" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSelectedCity(null)}
+            className="h-8 px-2 hover:bg-blue-50"
+          >
+            {selectedRegion}
+          </Button>
+        </>
+      )}
+      
+      {selectedCity && (
+        <>
+          <ChevronRight className="w-4 h-4" />
+          <span className="font-medium text-gray-900">{selectedCity}</span>
+        </>
+      )}
+    </div>
+  );
+
   const ActivityCard = ({ activity, index, isPopular = false }: { activity: Activity; index: number; isPopular?: boolean }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -578,9 +692,197 @@ function ActivitiesPage() {
         </div>
       </div>
 
-      {/* Suggestions Sections */}
-      <div className="bg-gray-50 border-b">
-        <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+      {/* View Mode Toggle */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <Button
+                variant={viewMode === 'hierarchy' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('hierarchy')}
+                className={`px-4 ${viewMode === 'hierarchy' ? 'bg-blue-600 text-white' : 'text-gray-600'}`}
+              >
+                <MapPin className="w-4 h-4 mr-2" />
+                Por Destino
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className={`px-4 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-gray-600'}`}
+              >
+                <List className="w-4 h-4 mr-2" />
+                Lista Completa
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {viewMode === 'hierarchy' ? (
+        // Hierarchical Navigation
+        <div className="bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <Breadcrumb />
+            
+            {!selectedCountryType && hierarchy && (
+              // Country Type Selection
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="text-center space-y-2">
+                  <h2 className="text-3xl font-bold text-gray-900">Explore Atividades por Destino</h2>
+                  <p className="text-gray-600">Escolha entre experiências nacionais, internacionais ou cruzeiros</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {Object.entries(hierarchy).map(([countryType, regions]) => {
+                    const totalCount = Object.values(regions).reduce((acc: number, cities: any) => 
+                      acc + Object.values(cities).reduce((cityAcc: number, count: any) => cityAcc + count, 0), 0
+                    );
+                    
+                    return (
+                      <motion.div
+                        key={countryType}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setSelectedCountryType(countryType)}
+                        className="cursor-pointer"
+                      >
+                        <Card className="h-full hover:shadow-lg transition-all duration-200 border-2 hover:border-blue-300">
+                          <CardContent className="p-6 text-center space-y-4">
+                            <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white">
+                              {getCountryTypeIcon(countryType)}
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-gray-900">{getCountryTypeDisplayName(countryType)}</h3>
+                              <p className="text-gray-600">{totalCount} atividades disponíveis</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 mx-auto text-gray-400" />
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {selectedCountryType && !selectedRegion && hierarchy && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="text-center space-y-2">
+                  <h2 className="text-3xl font-bold text-gray-900">Escolha a Região</h2>
+                  <p className="text-gray-600">Selecione a região que deseja explorar</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Object.entries(hierarchy[selectedCountryType] || {}).map(([region, cities]) => {
+                    const totalCount = Object.values(cities).reduce((acc: number, count: any) => acc + count, 0);
+                    
+                    return (
+                      <motion.div
+                        key={region}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setSelectedRegion(region)}
+                        className="cursor-pointer"
+                      >
+                        <Card className="hover:shadow-md transition-all duration-200 hover:border-blue-300">
+                          <CardContent className="p-4 flex items-center justify-between">
+                            <div>
+                              <h4 className="font-semibold text-gray-900">{region}</h4>
+                              <p className="text-sm text-gray-600">{totalCount} atividades</p>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-400" />
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {selectedCountryType && selectedRegion && !selectedCity && hierarchy && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="text-center space-y-2">
+                  <h2 className="text-3xl font-bold text-gray-900">Escolha a Cidade</h2>
+                  <p className="text-gray-600">Selecione a cidade para ver as atividades disponíveis</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {Object.entries(hierarchy[selectedCountryType]?.[selectedRegion] || {}).map(([city, count]) => (
+                    <motion.div
+                      key={city}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedCity(city)}
+                      className="cursor-pointer"
+                    >
+                      <Card className="hover:shadow-md transition-all duration-200 hover:border-blue-300">
+                        <CardContent className="p-4 text-center">
+                          <h5 className="font-semibold text-gray-900">{city}</h5>
+                          <p className="text-sm text-gray-600">{count} atividades</p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {selectedCity && locationActivities && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900">Atividades em {selectedCity}</h2>
+                    <p className="text-gray-600">{locationActivities.length} atividades encontradas</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={displayMode === 'grid' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setDisplayMode('grid')}
+                    >
+                      <Grid className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={displayMode === 'list' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setDisplayMode('list')}
+                    >
+                      <List className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className={displayMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+                  {locationActivities.map((activity, index) => (
+                    <ActivityCard key={activity.id} activity={activity} index={index} />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gray-50 border-b">
+          <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
           {/* Personalized Suggestions (only for authenticated users) */}
           {user && personalizedActivities && personalizedActivities.length > 0 && (
             <motion.div 
