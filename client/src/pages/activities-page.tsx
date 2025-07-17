@@ -690,125 +690,204 @@ function ActivitiesPage() {
     
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: index * 0.1 }}
-        whileHover={{ scale: 1.05 }}
-        className="group flex-[0_0_280px] mr-6 last:mr-0"
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ 
+          delay: index * 0.15,
+          duration: 0.6,
+          ease: [0.21, 1.02, 0.73, 1]
+        }}
+        whileHover={{ 
+          y: -8,
+          scale: 1.03,
+          transition: { duration: 0.3, ease: "easeOut" }
+        }}
+        className="group flex-[0_0_320px] mr-6 last:mr-0"
       >
         <Link to={`/activities/${activity.id}`}>
-          <Card className={`h-full overflow-hidden border-0 transition-all duration-500 group-hover:border-yellow-300 bg-white ${
+          <Card className={`relative h-full overflow-hidden border-0 transition-all duration-500 bg-white ${
             isPremium 
-              ? 'shadow-lg shadow-yellow-400/30 ring-2 ring-yellow-300/20 hover:shadow-xl hover:shadow-yellow-500/40 hover:ring-yellow-400/30' 
-              : 'shadow-md hover:shadow-lg'
+              ? 'shadow-2xl shadow-yellow-500/25 ring-1 ring-yellow-300/30 hover:shadow-3xl hover:shadow-yellow-600/40 hover:ring-yellow-400/50' 
+              : 'shadow-xl shadow-gray-500/20 hover:shadow-2xl hover:shadow-blue-500/30'
           }`}>
-            <div className="relative">
-              <img
-                src={activity.imageUrl || activity.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
-                alt={activity.title}
-                className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                onError={(e) => {
-                  e.currentTarget.src = `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`;
-                }}
-              />
-              <div className={`absolute inset-0 transition-all duration-500 ${
-                isPremium 
-                  ? 'bg-gradient-to-t from-yellow-900/60 via-yellow-900/30 to-transparent group-hover:from-yellow-900/70' 
-                  : 'bg-gradient-to-t from-black/50 via-black/20 to-transparent'
-              }`} />
-              
-              {/* Premium Badge */}
-              {isPremium && (
-                <div className="absolute top-3 left-3">
-                  <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 text-white px-3 py-1.5 rounded-full shadow-lg border border-yellow-300/50 flex items-center gap-1.5 backdrop-blur-sm">
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                    <span className="text-xs font-bold tracking-wide">PREMIUM</span>
-                  </div>
-                </div>
-              )}
-              
-              {/* Category Badge */}
-              <div className="absolute top-3 right-3">
-                <Badge className="bg-white/95 text-gray-800 hover:bg-white backdrop-blur-sm shadow-lg border border-white/20">
-                  {activityCategories[activity.category as keyof typeof activityCategories]?.icon || '🎯'} {activityCategories[activity.category as keyof typeof activityCategories]?.label || 'Atividade'}
-                </Badge>
-              </div>
-              
-              {/* Price Badge */}
-              <div className="absolute bottom-3 left-3">
-                <div className={`backdrop-blur-sm px-3 py-2 rounded-lg shadow-lg border ${
-                  isPremium 
-                    ? 'bg-yellow-50/95 border-yellow-200/50' 
-                    : 'bg-white/95 border-white/20'
-                }`}>
-                  <span className={`text-lg font-bold ${isPremium ? 'text-yellow-900' : 'text-gray-900'}`}>
-                    {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
-                  </span>
-                </div>
-              </div>
-
-              {/* Rating Badge */}
-              <div className="absolute bottom-3 right-3">
-                <div className={`backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 border ${
-                  isPremium 
-                    ? 'bg-yellow-400/95 border-yellow-300/50' 
-                    : 'bg-yellow-400/95 border-yellow-300/20'
-                }`}>
-                  <Star className="w-4 h-4 fill-white text-white" />
-                  <span className="text-sm font-bold text-white">
-                    {Number(activity.averageRating || activity.rating || 0).toFixed(1)}
-                  </span>
-                </div>
-              </div>
-            </div>
+            {/* Gradient Background Overlay for Premium */}
+            {isPremium && (
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/80 via-orange-50/60 to-red-50/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+            )}
             
-            <CardContent className="p-5">
-              <div className="space-y-3">
-                <div>
-                  <h3 className={`font-bold text-base leading-tight line-clamp-2 transition-colors ${
-                    isPremium 
-                      ? 'text-gray-900 group-hover:text-yellow-700' 
-                      : 'text-gray-900 group-hover:text-blue-600'
-                  }`}>
-                    {activity.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 line-clamp-2 mt-1.5 leading-relaxed">
-                    {activity.description}
-                  </p>
-                </div>
+            <div className="relative z-10">
+              <div className="relative overflow-hidden">
+                <motion.img
+                  src={activity.imageUrl || activity.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
+                  alt={activity.title}
+                  className="w-full h-52 object-cover transition-all duration-700 group-hover:scale-115"
+                  whileHover={{ scale: 1.1 }}
+                  onError={(e) => {
+                    e.currentTarget.src = `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`;
+                  }}
+                />
                 
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-gray-500" />
-                    <span className="text-gray-600 font-medium truncate max-w-[120px]">{activity.location}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-gray-500" />
-                    <span className="text-gray-600 font-medium">{activity.duration}h</span>
-                  </div>
-                </div>
+                {/* Dynamic Gradient Overlay */}
+                <div className={`absolute inset-0 transition-all duration-700 ${
+                  isPremium 
+                    ? 'bg-gradient-to-t from-amber-900/80 via-orange-900/50 to-transparent group-hover:from-amber-900/90' 
+                    : 'bg-gradient-to-t from-slate-900/70 via-slate-900/40 to-transparent group-hover:from-slate-900/80'
+                }`} />
                 
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                  <div className="flex items-center gap-1">
-                    {renderStars(Number(activity.averageRating || activity.rating || 0))}
-                    <span className="text-xs text-gray-500 ml-1">
-                      ({activity.totalRatings || activity.reviewCount || 0})
-                    </span>
+                {/* Animated Border Effect for Premium */}
+                {isPremium && (
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 border-2 border-yellow-400/50 animate-pulse" />
                   </div>
-                  <Badge 
-                    variant="outline" 
-                    className={`text-xs font-medium ${
-                      activity.difficulty === 'easy' ? 'border-green-200 text-green-700 bg-green-50' :
-                      activity.difficulty === 'moderate' ? 'border-yellow-200 text-yellow-700 bg-yellow-50' :
-                      activity.difficulty === 'challenging' ? 'border-red-200 text-red-700 bg-red-50' :
-                      'border-gray-200 text-gray-700 bg-gray-50'
-                    }`}
+                )}
+                
+                {/* Premium Badge with Animation */}
+                {isPremium && (
+                  <motion.div 
+                    className="absolute top-4 left-4"
+                    initial={{ scale: 0, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: index * 0.1 + 0.5, type: "spring", stiffness: 200 }}
                   >
-                    {DIFFICULTY_LEVELS.find(d => d.value === activity.difficulty)?.label || 'N/A'}
-                  </Badge>
+                    <div className="relative bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-600 text-white px-4 py-2 rounded-full shadow-2xl border border-yellow-300/60 flex items-center gap-2 backdrop-blur-sm">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Sparkles className="w-4 h-4" />
+                      </motion.div>
+                      <span className="text-xs font-black tracking-widest">PREMIUM</span>
+                      {/* Glow effect */}
+                      <div className="absolute inset-0 bg-yellow-400/30 rounded-full blur-md -z-10" />
+                    </div>
+                  </motion.div>
+                )}
+                
+                {/* Enhanced Category Badge */}
+                <div className="absolute top-4 right-4">
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Badge className={`backdrop-blur-md shadow-lg border transition-all duration-300 ${
+                      isPremium 
+                        ? 'bg-white/95 text-amber-800 border-yellow-200/60 hover:bg-yellow-50' 
+                        : 'bg-white/95 text-gray-800 border-white/30 hover:bg-white'
+                    }`}>
+                      <span className="text-sm mr-1">
+                        {activityCategories[activity.category as keyof typeof activityCategories]?.icon || '🎯'}
+                      </span>
+                      <span className="font-semibold">
+                        {activityCategories[activity.category as keyof typeof activityCategories]?.label || 'Atividade'}
+                      </span>
+                    </Badge>
+                  </motion.div>
+                </div>
+                
+                {/* Enhanced Price Badge */}
+                <div className="absolute bottom-4 left-4">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className={`backdrop-blur-md px-4 py-2.5 rounded-xl shadow-xl border transition-all duration-300 ${
+                      isPremium 
+                        ? 'bg-gradient-to-r from-yellow-50/95 to-amber-50/95 border-yellow-300/60 shadow-yellow-500/30' 
+                        : 'bg-white/95 border-white/40 shadow-gray-500/30'
+                    }`}>
+                    <span className={`text-lg font-black ${
+                      isPremium ? 'text-amber-900 bg-gradient-to-r from-yellow-700 to-orange-700 bg-clip-text text-transparent' : 'text-gray-900'
+                    }`}>
+                      {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
+                    </span>
+                  </motion.div>
+                </div>
+
+                {/* Enhanced Rating Badge */}
+                <div className="absolute bottom-4 right-4">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className={`backdrop-blur-md px-3 py-2 rounded-xl shadow-xl flex items-center gap-2 border transition-all duration-300 ${
+                      isPremium 
+                        ? 'bg-gradient-to-r from-yellow-400/95 to-amber-500/95 border-yellow-300/60 shadow-yellow-500/40' 
+                        : 'bg-yellow-400/95 border-yellow-300/40 shadow-yellow-500/30'
+                    }`}>
+                    <motion.div
+                      animate={{ rotate: [0, 15, -15, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <Star className="w-4 h-4 fill-white text-white drop-shadow-sm" />
+                    </motion.div>
+                    <span className="text-sm font-black text-white drop-shadow-sm">
+                      {Number(activity.averageRating || activity.rating || 0).toFixed(1)}
+                    </span>
+                  </motion.div>
                 </div>
               </div>
-            </CardContent>
+              
+              <CardContent className="p-6 relative">
+                <div className="space-y-4">
+                  <div>
+                    <motion.h3 
+                      className={`font-black text-lg leading-tight line-clamp-2 transition-all duration-300 ${
+                        isPremium 
+                          ? 'text-gray-900 group-hover:text-amber-700 group-hover:text-xl' 
+                          : 'text-gray-900 group-hover:text-blue-600'
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      {activity.title}
+                    </motion.h3>
+                    <p className="text-sm text-gray-600 line-clamp-2 mt-2 leading-relaxed font-medium">
+                      {activity.description}
+                    </p>
+                  </div>
+                  
+                  {/* Enhanced Info Row */}
+                  <div className="flex items-center justify-between text-sm">
+                    <motion.div 
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${
+                        isPremium ? 'bg-yellow-50 text-amber-700' : 'bg-gray-50 text-gray-700'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <MapPin className="w-4 h-4" />
+                      <span className="font-semibold truncate max-w-[140px]">{activity.location}</span>
+                    </motion.div>
+                    <motion.div 
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${
+                        isPremium ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <Clock className="w-4 h-4" />
+                      <span className="font-semibold">{activity.duration}h</span>
+                    </motion.div>
+                  </div>
+                  
+                  {/* Enhanced Footer */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-1">
+                      {renderStars(Number(activity.averageRating || activity.rating || 0))}
+                      <span className="text-xs text-gray-500 ml-2 font-medium">
+                        ({activity.totalRatings || activity.reviewCount || 0})
+                      </span>
+                    </div>
+                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs font-bold border-2 transition-all duration-300 ${
+                          activity.difficulty === 'easy' ? 'border-green-300 text-green-800 bg-green-50 hover:bg-green-100' :
+                          activity.difficulty === 'moderate' ? 'border-yellow-300 text-yellow-800 bg-yellow-50 hover:bg-yellow-100' :
+                          activity.difficulty === 'challenging' ? 'border-red-300 text-red-800 bg-red-50 hover:bg-red-100' :
+                          'border-gray-300 text-gray-800 bg-gray-50 hover:bg-gray-100'
+                        }`}
+                      >
+                        {DIFFICULTY_LEVELS.find(d => d.value === activity.difficulty)?.label || 'N/A'}
+                      </Badge>
+                    </motion.div>
+                  </div>
+                </div>
+              </CardContent>
+            </div>
           </Card>
         </Link>
       </motion.div>
@@ -841,24 +920,28 @@ function ActivitiesPage() {
           </div>
         </div>
         
-        {/* Navigation Buttons */}
-        <div className="absolute -top-16 right-0 flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={scrollPrev}
-            className="w-10 h-10 rounded-full border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4 text-orange-600" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={scrollNext}
-            className="w-10 h-10 rounded-full border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-colors"
-          >
-            <ChevronRight className="w-4 h-4 text-orange-600" />
-          </Button>
+        {/* Enhanced Navigation Buttons */}
+        <div className="absolute -top-16 right-0 flex gap-3">
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={scrollPrev}
+              className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 group"
+            >
+              <ChevronLeft className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-200" />
+            </Button>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={scrollNext}
+              className="w-12 h-12 rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 group"
+            >
+              <ChevronRight className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-200" />
+            </Button>
+          </motion.div>
         </div>
       </div>
     );
