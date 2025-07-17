@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { 
@@ -27,8 +27,10 @@ import {
   Bookmark,
   Home,
   Globe,
-  Anchor
+  Anchor,
+  ChevronLeft
 } from "lucide-react";
+import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -682,6 +684,186 @@ function ActivitiesPage() {
     </div>
   );
 
+  // Premium Activity Card Component (for carousel)
+  const PremiumActivityCard = ({ activity, index }: { activity: Activity; index: number }) => {
+    const isPremium = isTopQuality(activity);
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: index * 0.1 }}
+        whileHover={{ scale: 1.05 }}
+        className="group flex-[0_0_280px] mr-6 last:mr-0"
+      >
+        <Link to={`/activities/${activity.id}`}>
+          <Card className={`h-full overflow-hidden border-0 transition-all duration-500 group-hover:border-yellow-300 bg-white ${
+            isPremium 
+              ? 'shadow-lg shadow-yellow-400/30 ring-2 ring-yellow-300/20 hover:shadow-xl hover:shadow-yellow-500/40 hover:ring-yellow-400/30' 
+              : 'shadow-md hover:shadow-lg'
+          }`}>
+            <div className="relative">
+              <img
+                src={activity.imageUrl || activity.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
+                alt={activity.title}
+                className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                onError={(e) => {
+                  e.currentTarget.src = `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`;
+                }}
+              />
+              <div className={`absolute inset-0 transition-all duration-500 ${
+                isPremium 
+                  ? 'bg-gradient-to-t from-yellow-900/60 via-yellow-900/30 to-transparent group-hover:from-yellow-900/70' 
+                  : 'bg-gradient-to-t from-black/50 via-black/20 to-transparent'
+              }`} />
+              
+              {/* Premium Badge */}
+              {isPremium && (
+                <div className="absolute top-3 left-3">
+                  <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 text-white px-3 py-1.5 rounded-full shadow-lg border border-yellow-300/50 flex items-center gap-1.5 backdrop-blur-sm">
+                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                    <span className="text-xs font-bold tracking-wide">PREMIUM</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Category Badge */}
+              <div className="absolute top-3 right-3">
+                <Badge className="bg-white/95 text-gray-800 hover:bg-white backdrop-blur-sm shadow-lg border border-white/20">
+                  {activityCategories[activity.category as keyof typeof activityCategories]?.icon || '🎯'} {activityCategories[activity.category as keyof typeof activityCategories]?.label || 'Atividade'}
+                </Badge>
+              </div>
+              
+              {/* Price Badge */}
+              <div className="absolute bottom-3 left-3">
+                <div className={`backdrop-blur-sm px-3 py-2 rounded-lg shadow-lg border ${
+                  isPremium 
+                    ? 'bg-yellow-50/95 border-yellow-200/50' 
+                    : 'bg-white/95 border-white/20'
+                }`}>
+                  <span className={`text-lg font-bold ${isPremium ? 'text-yellow-900' : 'text-gray-900'}`}>
+                    {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Rating Badge */}
+              <div className="absolute bottom-3 right-3">
+                <div className={`backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 border ${
+                  isPremium 
+                    ? 'bg-yellow-400/95 border-yellow-300/50' 
+                    : 'bg-yellow-400/95 border-yellow-300/20'
+                }`}>
+                  <Star className="w-4 h-4 fill-white text-white" />
+                  <span className="text-sm font-bold text-white">
+                    {Number(activity.averageRating || activity.rating || 0).toFixed(1)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <CardContent className="p-5">
+              <div className="space-y-3">
+                <div>
+                  <h3 className={`font-bold text-base leading-tight line-clamp-2 transition-colors ${
+                    isPremium 
+                      ? 'text-gray-900 group-hover:text-yellow-700' 
+                      : 'text-gray-900 group-hover:text-blue-600'
+                  }`}>
+                    {activity.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-2 mt-1.5 leading-relaxed">
+                    {activity.description}
+                  </p>
+                </div>
+                
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-gray-500" />
+                    <span className="text-gray-600 font-medium truncate max-w-[120px]">{activity.location}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-gray-500" />
+                    <span className="text-gray-600 font-medium">{activity.duration}h</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  <div className="flex items-center gap-1">
+                    {renderStars(Number(activity.averageRating || activity.rating || 0))}
+                    <span className="text-xs text-gray-500 ml-1">
+                      ({activity.totalRatings || activity.reviewCount || 0})
+                    </span>
+                  </div>
+                  <Badge 
+                    variant="outline" 
+                    className={`text-xs font-medium ${
+                      activity.difficulty === 'easy' ? 'border-green-200 text-green-700 bg-green-50' :
+                      activity.difficulty === 'moderate' ? 'border-yellow-200 text-yellow-700 bg-yellow-50' :
+                      activity.difficulty === 'challenging' ? 'border-red-200 text-red-700 bg-red-50' :
+                      'border-gray-200 text-gray-700 bg-gray-50'
+                    }`}
+                  >
+                    {DIFFICULTY_LEVELS.find(d => d.value === activity.difficulty)?.label || 'N/A'}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </motion.div>
+    );
+  };
+
+  // Carousel Component for Popular Activities
+  const PopularActivitiesCarousel = ({ activities }: { activities: Activity[] }) => {
+    const [emblaRef, emblaApi] = useEmblaCarousel({
+      align: 'start',
+      dragFree: true,
+      containScroll: 'trimSnaps',
+    });
+
+    const scrollPrev = useCallback(() => {
+      if (emblaApi) emblaApi.scrollPrev();
+    }, [emblaApi]);
+
+    const scrollNext = useCallback(() => {
+      if (emblaApi) emblaApi.scrollNext();
+    }, [emblaApi]);
+
+    return (
+      <div className="relative">
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex">
+            {activities.map((activity, index) => (
+              <PremiumActivityCard key={activity.id} activity={activity} index={index} />
+            ))}
+          </div>
+        </div>
+        
+        {/* Navigation Buttons */}
+        <div className="absolute -top-16 right-0 flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={scrollPrev}
+            className="w-10 h-10 rounded-full border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4 text-orange-600" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={scrollNext}
+            className="w-10 h-10 rounded-full border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4 text-orange-600" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   const ActivityCard = ({ activity, index, isPopular = false }: { activity: Activity; index: number; isPopular?: boolean }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -1082,11 +1264,7 @@ function ActivitiesPage() {
                 </Badge>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {popularActivities.slice(0, 6).map((activity, index) => (
-                  <ActivityCard key={activity.id} activity={activity} index={index} isPopular={true} />
-                ))}
-              </div>
+              <PopularActivitiesCarousel activities={popularActivities.slice(0, 12)} />
             </motion.div>
           )}
 
