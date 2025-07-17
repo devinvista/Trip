@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
@@ -129,15 +129,15 @@ export function BudgetEditor({
           Editar Orçamento
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" aria-describedby="budget-editor-description">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Calculator className="h-5 w-5" />
             Editar Orçamento da Viagem
           </DialogTitle>
-          <p id="budget-editor-description" className="text-sm text-gray-600 mt-2">
+          <DialogDescription>
             Ajuste o orçamento total da viagem ou defina valores específicos por categoria
-          </p>
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ActivityBudgetProposals } from "./activity-budget-proposals";
@@ -203,6 +203,9 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Faça login para adicionar atividades</DialogTitle>
+            <DialogDescription>
+              Você precisa estar logado para adicionar atividades às suas viagens
+            </DialogDescription>
           </DialogHeader>
           <div className="py-6 text-center">
             <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -224,6 +227,9 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
             <Plane className="h-5 w-5" />
             Adicionar {activity.title} à Viagem
           </DialogTitle>
+          <DialogDescription>
+            Selecione uma viagem para adicionar esta atividade
+          </DialogDescription>
         </DialogHeader>
 
         {step === 'trip' && (

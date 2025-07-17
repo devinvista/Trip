@@ -111,7 +111,7 @@ function ActivitiesPage() {
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [displayMode, setDisplayMode] = useState<"grid" | "list">("grid");
+  const [displayMode, setDisplayMode] = useState<"grid" | "list">("list");
   const [showFilters, setShowFilters] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
   
@@ -119,7 +119,7 @@ function ActivitiesPage() {
   const [selectedCountryType, setSelectedCountryType] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'hierarchy' | 'list'>('hierarchy');
+  const [viewMode, setViewMode] = useState<'hierarchy' | 'list'>('list');
 
   // Debounce search input
   useEffect(() => {
