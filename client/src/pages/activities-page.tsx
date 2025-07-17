@@ -53,7 +53,7 @@ import type { Activity } from "@shared/schema";
 
 interface ActivityFilters {
   search: string;
-  category: string;
+  categories: string[];
   priceRange: string;
   location: string;
   duration: string;
@@ -100,7 +100,7 @@ function ActivitiesPage() {
   const { user } = useAuth();
   const [filters, setFilters] = useState<ActivityFilters>({
     search: "",
-    category: "all",
+    categories: [],
     priceRange: "all",
     location: "",
     duration: "all",
@@ -139,7 +139,7 @@ function ActivitiesPage() {
   // Count active filters
   useEffect(() => {
     let count = 0;
-    if (filters.category !== "all") count++;
+    if (filters.categories.length > 0) count++;
     if (filters.priceRange !== "all") count++;
     if (filters.location !== "") count++;
     if (filters.duration !== "all") count++;
@@ -180,7 +180,9 @@ function ActivitiesPage() {
       try {
         const params = new URLSearchParams();
         if (filters.search) params.set("search", filters.search);
-        if (filters.category !== "all") params.set("category", filters.category);
+        if (filters.categories.length > 0) {
+          filters.categories.forEach(category => params.append("category", category));
+        }
         if (filters.priceRange !== "all") params.set("priceRange", filters.priceRange);
         if (filters.location) params.set("location", filters.location);
         if (filters.duration !== "all") params.set("duration", filters.duration);
@@ -261,7 +263,7 @@ function ActivitiesPage() {
   const clearFilters = () => {
     setFilters({
       search: "",
-      category: "all",
+      categories: [],
       priceRange: "all",
       location: "",
       duration: "all",
@@ -332,7 +334,7 @@ function ActivitiesPage() {
   const categoryStats = useMemo(() => {
     if (!activities) return [];
     
-    // Convert activityCategories object to array format
+    // Convert activityCategories object to array format - always use total count, not filtered
     const categoriesArray = Object.entries(activityCategories).map(([value, { label, icon }]) => ({
       value,
       label,
@@ -342,6 +344,16 @@ function ActivitiesPage() {
     
     return categoriesArray;
   }, [activities]);
+
+  // Function to toggle category selection
+  const toggleCategory = (categoryValue: string) => {
+    setFilters(prev => ({
+      ...prev,
+      categories: prev.categories.includes(categoryValue)
+        ? prev.categories.filter(c => c !== categoryValue)
+        : [...prev.categories, categoryValue]
+    }));
+  };
 
   const FilterSidebar = () => (
     <div className="space-y-4">
@@ -368,20 +380,48 @@ function ActivitiesPage() {
 
       {/* Category Filter */}
       <div className="space-y-2">
-        <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
-          <Target className="w-3 h-3" />
-          Categoria
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+            <Target className="w-3 h-3" />
+            Categoria
+          </h3>
+          {filters.categories.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFilters(prev => ({ ...prev, categories: [] }))}
+              className="h-6 px-2 text-xs text-gray-500 hover:text-gray-700"
+            >
+              Limpar
+            </Button>
+          )}
+        </div>
+        
+        {/* Select All/None Toggle */}
+        <div className="flex items-center gap-2 mb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setFilters(prev => ({ 
+              ...prev, 
+              categories: prev.categories.length === categoryStats.length ? [] : categoryStats.map(c => c.value)
+            }))}
+            className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700"
+          >
+            {filters.categories.length === categoryStats.length ? "Desmarcar todas" : "Selecionar todas"}
+          </Button>
+        </div>
+        
         <div className="grid grid-cols-2 gap-1.5">
           {categoryStats.map((category) => (
             <div
               key={category.value}
               className={`flex items-center justify-between p-1.5 rounded-md border cursor-pointer transition-all text-xs ${
-                filters.category === category.value
+                filters.categories.includes(category.value)
                   ? "border-blue-500 bg-blue-50 text-blue-700"
                   : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
               }`}
-              onClick={() => updateFilter("category", category.value)}
+              onClick={() => toggleCategory(category.value)}
             >
               <div className="flex items-center gap-1 min-w-0">
                 <span className="text-xs">{category.icon}</span>

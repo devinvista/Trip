@@ -1307,7 +1307,11 @@ export function registerRoutes(app: Express): Server {
       
       const filters: any = {};
       if (search) filters.search = search as string;
-      if (category) filters.category = category as string;
+      // Handle multiple categories
+      if (category) {
+        const categories = Array.isArray(category) ? category : [category];
+        filters.categories = categories as string[];
+      }
       if (location) filters.location = location as string;
       if (priceRange) filters.priceRange = priceRange as string;
       if (difficulty) filters.difficulty = difficulty as string;

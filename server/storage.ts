@@ -1557,7 +1557,8 @@ export class DatabaseStorage implements IStorage {
 
   async getActivities(filters?: { 
     search?: string; 
-    category?: string; 
+    category?: string;
+    categories?: string[]; 
     location?: string; 
     priceRange?: string; 
     difficulty?: string; 
@@ -1578,8 +1579,11 @@ export class DatabaseStorage implements IStorage {
           );
         }
 
+        // Support both single category and multiple categories
         if (filters.category && filters.category !== "all") {
           allActivities = allActivities.filter(a => a.category === filters.category);
+        } else if (filters.categories && filters.categories.length > 0) {
+          allActivities = allActivities.filter(a => filters.categories!.includes(a.category));
         }
 
         if (filters.location) {
