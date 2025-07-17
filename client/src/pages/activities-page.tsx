@@ -306,26 +306,7 @@ function ActivitiesPage() {
       : formatted;
   };
 
-  // Hero Section Component
-  const HeroSection = ({ title, subtitle, icon: Icon, children }: { 
-    title: string; 
-    subtitle: string; 
-    icon: any; 
-    children: React.ReactNode;
-  }) => (
-    <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white rounded-xl p-8 mb-8">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
-          <Icon className="w-6 h-6" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold">{title}</h2>
-          <p className="text-blue-100">{subtitle}</p>
-        </div>
-      </div>
-      {children}
-    </div>
-  );
+
 
   // Activity Card Component
   const ActivityCard = ({ activity }: { activity: Activity }) => (
@@ -402,33 +383,50 @@ function ActivitiesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Descubra Atividades Incríveis
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Encontre as melhores experiências e atividades para suas próximas aventuras
-          </p>
+        {/* Hero Section */}
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white rounded-xl p-12 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl font-bold mb-6">
+              Descubra Atividades Incríveis
+            </h1>
+            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+              Encontre as melhores experiências e atividades para suas próximas aventuras. 
+              Explore destinos únicos e crie memórias inesquecíveis.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-blue-50">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Explorar Atividades
+              </Button>
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                <MapPin className="w-5 h-5 mr-2" />
+                Ver Por Destino
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Hero Section 1: Top Rated Activities */}
+        {/* Suggestions Sections */}
         {topActivities.length > 0 && (
-          <HeroSection
-            title="Melhores Avaliadas"
-            subtitle="Atividades com 4.5+ estrelas que você não pode perder"
-            icon={Trophy}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="p-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3 mb-2">
+                <Trophy className="w-6 h-6 text-yellow-500" />
+                Melhores Avaliadas
+              </h2>
+              <p className="text-gray-600">
+                Atividades com 4.5+ estrelas que você não pode perder
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
               {topActivities.map((activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
               ))}
             </div>
             {topActivities.length >= 6 && (
-              <div className="text-center mt-6">
+              <div className="text-center">
                 <Button 
-                  variant="secondary" 
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  variant="outline"
                   onClick={() => updateFilter("rating", "4.5")}
                 >
                   Ver Todas as Top Avaliadas
@@ -436,47 +434,48 @@ function ActivitiesPage() {
                 </Button>
               </div>
             )}
-          </HeroSection>
+          </Card>
         )}
 
-        {/* Hero Section 2: Activities for Upcoming Trips */}
         {user && activitiesForUpcomingTrips.length > 0 && (
-          <HeroSection
-            title="Para Suas Próximas Viagens"
-            subtitle={`Atividades perfeitas para os ${upcomingTrips.length} destinos que você vai visitar`}
-            icon={Plane}
-          >
-            <div className="mb-4">
-              <div className="flex flex-wrap gap-2">
+          <Card className="p-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3 mb-2">
+                <Plane className="w-6 h-6 text-blue-500" />
+                Para Suas Próximas Viagens
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Atividades perfeitas para os {upcomingTrips.length} destinos que você vai visitar
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
                 {upcomingTrips.slice(0, 3).map((trip: any) => (
-                  <Badge key={trip.id} variant="secondary" className="bg-white/20 text-white border-white/30">
+                  <Badge key={trip.id} variant="secondary">
                     <Calendar className="w-3 h-3 mr-1" />
                     {trip.destination} - {new Date(trip.startDate).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' })}
                   </Badge>
                 ))}
                 {upcomingTrips.length > 3 && (
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                  <Badge variant="secondary">
                     +{upcomingTrips.length - 3} viagens
                   </Badge>
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {activitiesForUpcomingTrips.map((activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
               ))}
             </div>
-            <div className="text-center mt-6">
+            <div className="text-center">
               <Button 
-                variant="secondary" 
-                className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                variant="outline"
                 onClick={() => updateFilter("onlyMyTrips", true)}
               >
                 Ver Todas Para Suas Viagens
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
-          </HeroSection>
+          </Card>
         )}
 
         {/* Search and Filters */}
