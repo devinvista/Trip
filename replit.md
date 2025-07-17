@@ -268,6 +268,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 17, 2025. **MIGRAÇÃO REPLIT AGENT CONCLUÍDA OFICIALMENTE**: Migração final do Replit Agent para ambiente Replit padrão completada com sucesso - aplicação totalmente operacional e verificada
 - July 17, 2025. **MIGRAÇÃO REPLIT FINALIZADA COM SUCESSO**: Migração completa do Replit Agent para ambiente Replit padrão concluída e confirmada pelo usuário - todas as funcionalidades operacionais
 - July 17, 2025. **MIGRAÇÃO FINAL CONFIRMADA**: Migração do Replit Agent para ambiente Replit padrão oficialmente finalizada com confirmação do usuário - projeto 100% operacional no ambiente standard
+- July 17, 2025. **ATIVIDADES GRAMADO ADICIONADAS**: Cadastradas 5 atividades completas de Gramado (RS) com 3 propostas de orçamento cada, incluindo Mini Mundo, Dreamland Museu de Cera, GramadoZoo, Tour de Vinícolas no Vale dos Vinhedos e Snowland
 - July 17, 2025. **ATIVIDADES RIO DE JANEIRO ADICIONADAS**: Cadastradas 5 atividades completas do Rio de Janeiro com 3 propostas de orçamento cada, avaliações autênticas e imagens de capa de qualidade
 - July 17, 2025. **ATIVIDADES BONITO (MS) ADICIONADAS**: Cadastradas 5 atividades completas de Bonito com descrições detalhadas, propostas realistas (R$ 90-730) e categorias variadas (natureza, esportes aquáticos, aventura)
 - July 17, 2025. **CAROUSEL PREMIUM IMPLEMENTADO**: Seção "Mais Populares" transformada em carousel com cards premium e efeitos dourados
