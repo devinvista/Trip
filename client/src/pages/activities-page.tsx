@@ -199,16 +199,7 @@ function ActivitiesPage() {
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  // Fetch top-rated activities suggestions
-  const { data: topRatedActivities } = useQuery<Activity[]>({
-    queryKey: ["/api/activities/suggestions/top-rated"],
-    queryFn: async () => {
-      const response = await fetch("/api/activities/suggestions/top-rated?limit=6");
-      if (!response.ok) throw new Error("Falha ao carregar atividades mais bem avaliadas");
-      return response.json();
-    },
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
+
 
   // Fetch personalized suggestions (only for authenticated users)
   const { data: personalizedActivities } = useQuery<Activity[]>({
@@ -420,7 +411,14 @@ function ActivitiesPage() {
     </div>
   );
 
-  const ActivityCard = ({ activity, index }: { activity: Activity; index: number }) => (
+  // Check if activity is both popular and highly rated
+  const isTopQuality = (activity: Activity) => {
+    const rating = Number(activity.averageRating || activity.rating || 0);
+    const totalRatings = activity.totalRatings || activity.reviewCount || 0;
+    return rating >= 4.5 && totalRatings >= 5;
+  };
+
+  const ActivityCard = ({ activity, index, isPopular = false }: { activity: Activity; index: number; isPopular?: boolean }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -442,7 +440,13 @@ function ActivitiesPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
             
             {/* Category Badge */}
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-4 right-4 flex flex-col gap-2">
+              {/* Premium Quality Badge for popular + highly rated */}
+              {isPopular && isTopQuality(activity) && (
+                <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg border-0 font-bold">
+                  ⭐ Premium
+                </Badge>
+              )}
               <Badge className="bg-white/95 text-gray-800 hover:bg-white backdrop-blur-sm shadow-lg">
                 {activityCategories[activity.category as keyof typeof activityCategories]?.icon || '🎯'} {activityCategories[activity.category as keyof typeof activityCategories]?.label || 'Atividade'}
               </Badge>
@@ -619,7 +623,7 @@ function ActivitiesPage() {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Mais Populares</h2>
-                  <p className="text-gray-600">As experiências que todo mundo está escolhendo</p>
+                  <p className="text-gray-600">As experiências que todo mundo está escolhendo • Premium = Popular + 4.5⭐</p>
                 </div>
                 <Badge variant="secondary" className="bg-orange-100 text-orange-800 ml-auto">
                   Trending
@@ -628,40 +632,13 @@ function ActivitiesPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {popularActivities.slice(0, 6).map((activity, index) => (
-                  <ActivityCard key={activity.id} activity={activity} index={index} />
+                  <ActivityCard key={activity.id} activity={activity} index={index} isPopular={true} />
                 ))}
               </div>
             </motion.div>
           )}
 
-          {/* Top Rated Activities */}
-          {topRatedActivities && topRatedActivities.length > 0 && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-6"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center">
-                  <Award className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Melhores Avaliadas</h2>
-                  <p className="text-gray-600">Experiências com 4.5+ estrelas</p>
-                </div>
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 ml-auto">
-                  4.5+ ⭐
-                </Badge>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {topRatedActivities.slice(0, 6).map((activity, index) => (
-                  <ActivityCard key={activity.id} activity={activity} index={index} />
-                ))}
-              </div>
-            </motion.div>
-          )}
+
         </div>
       </div>
 
