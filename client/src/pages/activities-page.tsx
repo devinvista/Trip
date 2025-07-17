@@ -685,7 +685,7 @@ function ActivitiesPage() {
                 placeholder="Buscar atividades, experiências ou destinos..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 shadow-lg"
+                className="pl-12 pr-4 py-4 text-lg bg-white/95 backdrop-blur-sm border-0 shadow-lg text-black"
               />
             </div>
           </motion.div>
