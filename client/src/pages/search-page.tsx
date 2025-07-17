@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "@/components/navbar";
 import { TripCard } from "@/components/trip-card";
-import { TripCardSkeleton } from "@/components/trip-card-skeleton";
+import { SearchResultsSkeleton } from "@/components/ui/loading-states";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { 
   Search, 
   Filter, 
@@ -39,7 +40,8 @@ import {
   Plus
 } from "lucide-react";
 import { PlacesAutocomplete } from "@/components/places-autocomplete";
-import { LoadingSpinner } from "@/components/loading-spinner";
+import { LoadingSpinner } from "@/components/ui/loading-states";
+import { useDebounce } from "@/hooks/use-debounce";
 import { motion, AnimatePresence } from "framer-motion";
 
 const continents = [
@@ -123,6 +125,7 @@ const dateFilters = generateDateFilters();
 
 export default function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [destination, setDestination] = useState("");
   const [selectedContinent, setSelectedContinent] = useState("");
   const [selectedTravelTypes, setSelectedTravelTypes] = useState<string[]>([]);
@@ -684,9 +687,7 @@ export default function SearchPage() {
             {/* Results Grid */}
             <div className="space-y-6">
               {isLoading ? (
-                <div className="flex items-center justify-center min-h-[400px]">
-                  <LoadingSpinner variant="travel" size="lg" message="Buscando viagens incríveis..." />
-                </div>
+                <SearchResultsSkeleton />
               ) : sortedTrips.length > 0 ? (
                 <motion.div 
                   initial={{ opacity: 0 }}

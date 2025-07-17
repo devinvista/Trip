@@ -3,6 +3,7 @@ import { Switch, Route } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { AuthProvider } from "@/hooks/use-auth";
 
 import HomePage from "@/pages/home-page";
@@ -31,41 +32,49 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       retry: 1,
+      refetchOnWindowFocus: false, // Reduce unnecessary refetches
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <div className="min-h-screen bg-background">
-            <Switch>
-              <Route path="/" component={HomePage} />
-              <Route path="/auth" component={AuthPage} />
-              <Route path="/dashboard" component={DashboardPage} />
-              <Route path="/board" component={BoardPage} />
-              <Route path="/search" component={SearchPage} />
-              <Route path="/create-trip" component={CreateTripPage} />
-              <Route path="/edit-trip/:id" component={EditTripPage} />
-              <Route path="/trip/:id" component={TripDetailPage} />
-              <Route path="/chat/:tripId" component={ChatPage} />
-              <Route path="/journey-tracker" component={JourneyTrackerPage} />
-              <Route path="/profile" component={ProfilePage} />
-              <Route path="/preloader-demo" component={PreloaderDemo} />
-              <Route path="/activities" component={ActivitiesPage} />
-              <Route path="/activities/:id" component={ActivityDetailPage} />
-              <Route path="/privacy-policy" component={PrivacyPolicy} />
-              <Route path="/terms-of-service" component={TermsOfService} />
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <AuthProvider>
+            <div className="min-h-screen bg-background">
+              <ErrorBoundary>
+                <Switch>
+                  <Route path="/" component={HomePage} />
+                  <Route path="/auth" component={AuthPage} />
+                  <Route path="/dashboard" component={DashboardPage} />
+                  <Route path="/board" component={BoardPage} />
+                  <Route path="/search" component={SearchPage} />
+                  <Route path="/create-trip" component={CreateTripPage} />
+                  <Route path="/edit-trip/:id" component={EditTripPage} />
+                  <Route path="/trip/:id" component={TripDetailPage} />
+                  <Route path="/chat/:tripId" component={ChatPage} />
+                  <Route path="/journey-tracker" component={JourneyTrackerPage} />
+                  <Route path="/profile" component={ProfilePage} />
+                  <Route path="/preloader-demo" component={PreloaderDemo} />
+                  <Route path="/activities" component={ActivitiesPage} />
+                  <Route path="/activities/:id" component={ActivityDetailPage} />
+                  <Route path="/privacy-policy" component={PrivacyPolicy} />
+                  <Route path="/terms-of-service" component={TermsOfService} />
 
-              <Route component={NotFound} />
-            </Switch>
-          </div>
-          <Toaster />
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+                  <Route component={NotFound} />
+                </Switch>
+              </ErrorBoundary>
+            </div>
+            <Toaster />
+          </AuthProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

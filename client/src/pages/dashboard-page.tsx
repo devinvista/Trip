@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useToast } from "@/hooks/use-toast";
 import { OnboardingTour, useOnboardingTour } from "@/components/onboarding-tour";
 import { WelcomeBanner } from "@/components/welcome-banner";
-import { LoadingSpinner } from "@/components/loading-spinner";
+import { LoadingSpinner, DashboardSkeleton } from "@/components/ui/loading-states";
 import { 
   Briefcase, 
   Users, 

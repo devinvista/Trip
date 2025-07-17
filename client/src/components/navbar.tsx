@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { NotificationSystem } from "@/components/ui/notification-system";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { 
@@ -101,14 +102,9 @@ export function Navbar() {
               {/* User Section */}
               <div className="flex items-center space-x-2">
                 {/* Notifications - Desktop only */}
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="relative p-2 rounded-xl hover:bg-blue-50 text-slate-600 hover:text-blue-600 transition-all duration-300 hidden lg:flex"
-                >
-                  <Bell className="h-5 w-5" />
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-                </Button>
+                <div className="hidden lg:block">
+                  <NotificationSystem />
+                </div>
 
                 {/* User Dropdown */}
                 <DropdownMenu>

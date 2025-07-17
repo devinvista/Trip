@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { 
   MapPin, 
   Calendar, 
@@ -20,7 +21,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { getRealParticipantsCount, getAvailableSpots, isTripFull } from "@/lib/trip-utils";
@@ -30,7 +31,7 @@ interface TripCardProps {
   showActions?: boolean;
 }
 
-export function TripCard({ trip, showActions = true }: TripCardProps) {
+export const TripCard = memo(function TripCard({ trip, showActions = true }: TripCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const { toast } = useToast();
@@ -330,4 +331,4 @@ export function TripCard({ trip, showActions = true }: TripCardProps) {
       </Card>
     </motion.div>
   );
-}
+});
