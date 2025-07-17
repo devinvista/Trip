@@ -316,9 +316,10 @@ async function addRioActivities() {
       for (const proposal of activityData.proposals) {
         const [budgetProposal] = await db.insert(activityBudgetProposals).values({
           activityId: activity.insertId,
+          createdBy: 1, // User tom
           title: proposal.title,
           description: proposal.description,
-          price: proposal.price,
+          amount: proposal.price.toString(),
           inclusions: JSON.stringify(proposal.inclusions),
           exclusions: JSON.stringify(proposal.exclusions),
           votes: Math.floor(Math.random() * 50) + 10, // Random votes between 10-60
