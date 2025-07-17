@@ -702,7 +702,7 @@ function ActivitiesPage() {
           scale: 1.03,
           transition: { duration: 0.3, ease: "easeOut" }
         }}
-        className="group flex-[0_0_320px] mr-6 last:mr-0"
+        className="group flex-[0_0_280px] mr-5 last:mr-0"
       >
         <Link to={`/activities/${activity.id}`}>
           <Card className={`relative h-full overflow-hidden border-0 transition-all duration-500 bg-white ${
@@ -720,7 +720,7 @@ function ActivitiesPage() {
                 <motion.img
                   src={activity.imageUrl || activity.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
                   alt={activity.title}
-                  className="w-full h-52 object-cover transition-all duration-700 group-hover:scale-115"
+                  className="w-full h-44 object-cover transition-all duration-700 group-hover:scale-115"
                   whileHover={{ scale: 1.1 }}
                   onError={(e) => {
                     e.currentTarget.src = `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`;
@@ -823,58 +823,58 @@ function ActivitiesPage() {
                 </div>
               </div>
               
-              <CardContent className="p-6 relative">
-                <div className="space-y-4">
+              <CardContent className="p-4 relative">
+                <div className="space-y-3">
                   <div>
                     <motion.h3 
-                      className={`font-black text-lg leading-tight line-clamp-2 transition-all duration-300 ${
+                      className={`font-black text-base leading-tight line-clamp-2 transition-all duration-300 ${
                         isPremium 
-                          ? 'text-gray-900 group-hover:text-amber-700 group-hover:text-xl' 
+                          ? 'text-gray-900 group-hover:text-amber-700' 
                           : 'text-gray-900 group-hover:text-blue-600'
                       }`}
                       whileHover={{ scale: 1.02 }}
                     >
                       {activity.title}
                     </motion.h3>
-                    <p className="text-sm text-gray-600 line-clamp-2 mt-2 leading-relaxed font-medium">
+                    <p className="text-xs text-gray-600 line-clamp-2 mt-1.5 leading-relaxed font-medium">
                       {activity.description}
                     </p>
                   </div>
                   
                   {/* Enhanced Info Row */}
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-xs">
                     <motion.div 
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${
+                      className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
                         isPremium ? 'bg-yellow-50 text-amber-700' : 'bg-gray-50 text-gray-700'
                       }`}
                       whileHover={{ scale: 1.05 }}
                     >
-                      <MapPin className="w-4 h-4" />
-                      <span className="font-semibold truncate max-w-[140px]">{activity.location}</span>
+                      <MapPin className="w-3 h-3" />
+                      <span className="font-semibold truncate max-w-[100px]">{activity.location}</span>
                     </motion.div>
                     <motion.div 
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors ${
+                      className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
                         isPremium ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'
                       }`}
                       whileHover={{ scale: 1.05 }}
                     >
-                      <Clock className="w-4 h-4" />
+                      <Clock className="w-3 h-3" />
                       <span className="font-semibold">{activity.duration}h</span>
                     </motion.div>
                   </div>
                   
                   {/* Enhanced Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                     <div className="flex items-center gap-1">
                       {renderStars(Number(activity.averageRating || activity.rating || 0))}
-                      <span className="text-xs text-gray-500 ml-2 font-medium">
+                      <span className="text-xs text-gray-500 ml-1 font-medium">
                         ({activity.totalRatings || activity.reviewCount || 0})
                       </span>
                     </div>
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                       <Badge 
                         variant="outline" 
-                        className={`text-xs font-bold border-2 transition-all duration-300 ${
+                        className={`text-xs font-bold border transition-all duration-300 ${
                           activity.difficulty === 'easy' ? 'border-green-300 text-green-800 bg-green-50 hover:bg-green-100' :
                           activity.difficulty === 'moderate' ? 'border-yellow-300 text-yellow-800 bg-yellow-50 hover:bg-yellow-100' :
                           activity.difficulty === 'challenging' ? 'border-red-300 text-red-800 bg-red-50 hover:bg-red-100' :

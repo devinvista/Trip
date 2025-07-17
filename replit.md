@@ -274,3 +274,6 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 17, 2025. Implementadas animações sofisticadas: badges animados, efeitos de hover 3D e transições suaves
 - July 17, 2025. Sistema de gradientes dinâmicos para atividades premium com efeitos de brilho e bordas animadas
 - July 17, 2025. Botões de navegação do carousel modernizados com gradientes laranja/vermelho e animações interativas
+- July 17, 2025. **PROPORTIONS AJUSTADAS**: Cards reduzidos para 280px de largura com altura de imagem otimizada (44px) para melhor proporção
+- July 17, 2025. Textos de localização e duração reduzidos para tamanho xs com ícones menores para visual mais compacto
+- July 17, 2025. Espaçamentos internos otimizados (p-4) e gap reduzidos para melhor aproveitamento do espaço disponível
