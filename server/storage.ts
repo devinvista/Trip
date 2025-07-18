@@ -1587,9 +1587,19 @@ export class DatabaseStorage implements IStorage {
         }
 
         if (filters.location) {
-          allActivities = allActivities.filter(a => 
-            a.location.toLowerCase().includes(filters.location!.toLowerCase())
-          );
+          allActivities = allActivities.filter(a => {
+            const filterLocation = filters.location!.toLowerCase();
+            const activityLocation = a.location.toLowerCase();
+            const activityCity = a.city?.toLowerCase() || '';
+            
+            // Extract city from filter (e.g., "Rio de Janeiro, RJ" -> "rio de janeiro")
+            const filterCity = filterLocation.split(',')[0].trim();
+            
+            // Match by exact city name or location contains the filter
+            return activityCity === filterCity || 
+                   activityLocation.includes(filterCity) ||
+                   activityLocation === filterLocation;
+          });
         }
 
         if (filters.priceRange && filters.priceRange !== "all") {
