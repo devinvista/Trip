@@ -205,6 +205,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 16, 2025. Interface de perfil atualizada: estilos de viagem agora permitem seleção múltipla com badges clicáveis
 - July 16, 2025. Backend e frontend sincronizados para suportar múltiplos estilos de viagem por usuário
 - July 17, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - todas as funcionalidades operacionais
+- July 18, 2025. **CORREÇÃO DE ATIVIDADES POR DESTINO**: Corrigido problema onde atividades não estavam vinculadas aos destinos das viagens - adicionadas atividades específicas para todos os destinos (Pantanal, Mantiqueira, Maragogi, Ouro Preto, Manaus, Gramado, Lençóis Maranhenses, Caruaru)
 - July 17, 2025. **PÁGINA DE ATIVIDADES OTIMIZADA**: Configurada para carregar com visualização "lista completa" como padrão conforme solicitado pelo usuário
 - July 17, 2025. **SISTEMA DE PERFORMANCE COMPLETO**: Implementado sistema abrangente de otimizações de performance
 - July 17, 2025. Hooks de virtual scroll e infinite scroll criados para listas grandes com performance otimizada
