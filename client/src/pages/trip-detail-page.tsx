@@ -1057,16 +1057,33 @@ export default function TripDetailPage() {
     // Handle budgetBreakdown parsing - it might be stored as string JSON in database
     if (typeof parsedBudgetBreakdown === 'string') {
       try {
+        console.log('🔍 Original budgetBreakdown string:', parsedBudgetBreakdown);
         parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
-      } catch (e) {
-        // If parsing fails, try again in case it's double-escaped
-        try {
+        console.log('🔍 After first JSON.parse:', parsedBudgetBreakdown, 'Type:', typeof parsedBudgetBreakdown);
+        
+        // Ensure it's actually an object and not still a string
+        if (typeof parsedBudgetBreakdown === 'string') {
           parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
-        } catch (e2) {
-          console.error('Error parsing budgetBreakdown:', e2);
-          parsedBudgetBreakdown = null;
+          console.log('🔍 After second JSON.parse:', parsedBudgetBreakdown, 'Type:', typeof parsedBudgetBreakdown);
         }
+      } catch (e) {
+        console.error('Error parsing budgetBreakdown:', e);
+        parsedBudgetBreakdown = null;
       }
+    }
+    
+    // Ensure we have a valid object
+    if (parsedBudgetBreakdown && typeof parsedBudgetBreakdown === 'object' && !Array.isArray(parsedBudgetBreakdown)) {
+      console.log('🔍 Processing breakdown object:', parsedBudgetBreakdown);
+      console.log('🔍 Object.entries:', Object.entries(parsedBudgetBreakdown));
+      
+      // Convert string values to numbers if needed
+      const cleanedBreakdown: any = {};
+      for (const [key, value] of Object.entries(parsedBudgetBreakdown)) {
+        cleanedBreakdown[key] = typeof value === 'string' ? parseFloat(value) || 0 : Number(value) || 0;
+      }
+      parsedBudgetBreakdown = cleanedBreakdown;
+      console.log('🔍 Final cleaned breakdown:', parsedBudgetBreakdown);
     }
     
     // If budgetBreakdown is explicitly null, keep it null (user disabled categories)
