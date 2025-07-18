@@ -213,6 +213,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 18, 2025. **SISTEMA DE ORÇAMENTO APRIMORADO**: Implementada categorização detalhada por acomodação, transporte, alimentação e atividades
 - July 18, 2025. **ATIVIDADES PARIS COMPLETAS ADICIONADAS**: Cadastradas 5 atividades autênticas para Paris com todas as informações verificadas
 - July 18, 2025. **MIGRAÇÃO REPLIT AGENT CONCLUÍDA COM SUCESSO**: Migração completa do Replit Agent para ambiente Replit padrão finalizada - aplicação 100% operacional
+- July 18, 2025. **INCONSISTÊNCIA DE PARTICIPANTES CORRIGIDA**: Corrigido problema onde resumo mostrava contagem de participantes diferente do orçamento detalhado - agora ambos usam participantes aceitos reais
+- July 18, 2025. **CÁLCULO DE ORÇAMENTO PADRONIZADO**: Orçamento por pessoa agora usa consistentemente getRealParticipantsCount() (participantes aceitos) em vez de maxParticipants
+- July 18, 2025. **DETALHAMENTO DE ORÇAMENTO CORRIGIDO**: Corrigido parsing de budgetBreakdown do banco de dados - valores agora exibem corretamente em todas as categorias
 - July 18, 2025. **IMAGENS DE ALTA QUALIDADE IMPLEMENTADAS**: Todas as 23 atividades turísticas agora possuem fotos reais de alta qualidade (1200x800px, qualidade 85%) obtidas do Unsplash com parâmetros otimizados para melhor performance e experiência visualtênticas de Paris com fotos reais, descrições detalhadas e 3 propostas de orçamento cada (Econômico, Completo, Premium)
 - July 18, 2025. **ATIVIDADES NOVA YORK COMPLETAS ADICIONADAS**: Cadastradas 5 atividades autênticas de Nova York com fotos reais, descrições detalhadas e 3 propostas de orçamento cada (USD 0-300)
 - July 18, 2025. **ATIVIDADES LONDRES COMPLETAS ADICIONADAS**: Cadastradas 5 atividades autênticas de Londres com fotos reais, descrições detalhadas e 3 propostas de orçamento cada (£0-£200)

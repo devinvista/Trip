@@ -1057,14 +1057,11 @@ export default function TripDetailPage() {
     // Handle budgetBreakdown parsing - it might be stored as string JSON in database
     if (typeof parsedBudgetBreakdown === 'string') {
       try {
-        console.log('🔍 Original budgetBreakdown string:', parsedBudgetBreakdown);
         parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
-        console.log('🔍 After first JSON.parse:', parsedBudgetBreakdown, 'Type:', typeof parsedBudgetBreakdown);
         
         // Ensure it's actually an object and not still a string
         if (typeof parsedBudgetBreakdown === 'string') {
           parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
-          console.log('🔍 After second JSON.parse:', parsedBudgetBreakdown, 'Type:', typeof parsedBudgetBreakdown);
         }
       } catch (e) {
         console.error('Error parsing budgetBreakdown:', e);
@@ -1074,16 +1071,12 @@ export default function TripDetailPage() {
     
     // Ensure we have a valid object
     if (parsedBudgetBreakdown && typeof parsedBudgetBreakdown === 'object' && !Array.isArray(parsedBudgetBreakdown)) {
-      console.log('🔍 Processing breakdown object:', parsedBudgetBreakdown);
-      console.log('🔍 Object.entries:', Object.entries(parsedBudgetBreakdown));
-      
       // Convert string values to numbers if needed
       const cleanedBreakdown: any = {};
       for (const [key, value] of Object.entries(parsedBudgetBreakdown)) {
         cleanedBreakdown[key] = typeof value === 'string' ? parseFloat(value) || 0 : Number(value) || 0;
       }
       parsedBudgetBreakdown = cleanedBreakdown;
-      console.log('🔍 Final cleaned breakdown:', parsedBudgetBreakdown);
     }
     
     // If budgetBreakdown is explicitly null, keep it null (user disabled categories)
@@ -1958,10 +1951,10 @@ export default function TripDetailPage() {
                         <span className="text-xs font-medium text-blue-900">Custo Individual</span>
                       </div>
                       <div className="text-base font-bold text-blue-900 tabular-nums">
-                        R$ {trip.maxParticipants > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
+                        R$ {getRealParticipantsCount(trip) > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
                       </div>
                       <div className="text-xs text-blue-700">
-                        {trip.maxParticipants} participantes
+                        {getRealParticipantsCount(trip)} participantes confirmados
                       </div>
                     </div>
                   </div>
