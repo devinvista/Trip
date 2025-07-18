@@ -9,6 +9,7 @@ import { ActivityBudgetProposals } from "./activity-budget-proposals";
 import { Plane, MapPin, Calendar, Users, DollarSign, Plus } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { getParticipantsForBudgetCalculation } from "@/lib/trip-utils";
 
 type Activity = {
   id: number;
@@ -106,7 +107,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
 
       // Add each proposal as separate activity
       const promises = proposalsToAdd.map(async (proposal) => {
-        const participants = selectedTrip.maxParticipants || 1;
+        const participants = getParticipantsForBudgetCalculation(selectedTrip);
         const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
         const totalCost = proposal.priceType === "per_person" 
           ? amount * participants
@@ -401,7 +402,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                       {selectedProposals.map((proposal, index) => {
                         const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
                         const totalCost = proposal.priceType === "per_person" 
-                          ? amount * selectedTrip.maxParticipants
+                          ? amount * getParticipantsForBudgetCalculation(selectedTrip)
                           : amount;
                         
                         return (
@@ -428,7 +429,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                           R$ {selectedProposals.reduce((total, proposal) => {
                             const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
                             const cost = proposal.priceType === "per_person" 
-                              ? amount * selectedTrip.maxParticipants
+                              ? amount * getParticipantsForBudgetCalculation(selectedTrip)
                               : amount;
                             return total + cost;
                           }, 0).toFixed(2)}
@@ -454,13 +455,13 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                         </div>
                         <div className="flex justify-between">
                           <span>Participantes:</span>
-                          <span>{selectedTrip.maxParticipants}</span>
+                          <span>{getParticipantsForBudgetCalculation(selectedTrip)}</span>
                         </div>
                         <div className="flex justify-between border-t pt-2">
                           <span className="font-semibold">Custo Total:</span>
                           <span className="font-semibold text-green-600">
                             R$ {(selectedProposal.priceType === "per_person" 
-                              ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * selectedTrip.maxParticipants
+                              ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * getParticipantsForBudgetCalculation(selectedTrip)
                               : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))).toFixed(2)}
                           </span>
                         </div>
@@ -484,13 +485,13 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                     ? selectedProposals.reduce((total, proposal) => {
                         const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
                         const cost = proposal.priceType === "per_person" 
-                          ? amount * selectedTrip.maxParticipants
+                          ? amount * getParticipantsForBudgetCalculation(selectedTrip)
                           : amount;
                         return total + cost;
                       }, 0).toFixed(2)
                     : selectedProposal 
                       ? (selectedProposal.priceType === "per_person" 
-                          ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * selectedTrip.maxParticipants
+                          ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * getParticipantsForBudgetCalculation(selectedTrip)
                           : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))).toFixed(2)
                       : '0.00'
                 }</strong>.
@@ -498,10 +499,10 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
               <div className="mt-2 text-xs text-blue-700">
                 <span className="font-medium">Detalhes:</span> {
                   selectedProposals && selectedProposals.length > 0 
-                    ? `${selectedProposals.length} propostas serão adicionadas para ${selectedTrip.maxParticipants} participantes`
+                    ? `${selectedProposals.length} propostas serão adicionadas para ${getParticipantsForBudgetCalculation(selectedTrip)} participantes`
                     : selectedProposal 
                       ? (selectedProposal.priceType === "per_person" 
-                          ? `R$ ${(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)} por pessoa × ${selectedTrip.maxParticipants} participantes`
+                          ? `R$ ${(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)} por pessoa × ${getParticipantsForBudgetCalculation(selectedTrip)} participantes`
                           : `R$ ${(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)} valor fixo por grupo`)
                       : 'Nenhuma proposta selecionada'
                 }

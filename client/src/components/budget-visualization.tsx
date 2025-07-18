@@ -28,11 +28,12 @@ import {
   MoreHorizontal 
 } from "lucide-react";
 import { BudgetBreakdown, budgetCategories } from "@shared/schema";
+import { getParticipantsForBudgetCalculation } from "@/lib/trip-utils";
 
 interface BudgetVisualizationProps {
   budget: number;
   budgetBreakdown?: BudgetBreakdown;
-  maxParticipants: number;
+  trip: any; // Full trip object to determine if started
   className?: string;
 }
 
@@ -57,11 +58,12 @@ const categoryColors: { [key: string]: string } = {
 export function BudgetVisualization({ 
   budget, 
   budgetBreakdown = {}, 
-  maxParticipants,
+  trip,
   className = "" 
 }: BudgetVisualizationProps) {
   const totalBudget = budget;
-  const perPersonBudget = totalBudget / maxParticipants;
+  const participants = getParticipantsForBudgetCalculation(trip);
+  const perPersonBudget = totalBudget / participants;
   
   // Calculate breakdown data
   const breakdownData = Object.entries(budgetCategories).map(([key, label]) => {

@@ -216,6 +216,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 18, 2025. **INCONSISTÊNCIA DE PARTICIPANTES CORRIGIDA**: Corrigido problema onde resumo mostrava contagem de participantes diferente do orçamento detalhado - agora ambos usam participantes aceitos reais
 - July 18, 2025. **CÁLCULO DE ORÇAMENTO PADRONIZADO**: Orçamento por pessoa agora usa consistentemente getRealParticipantsCount() (participantes aceitos) em vez de maxParticipants
 - July 18, 2025. **DETALHAMENTO DE ORÇAMENTO CORRIGIDO**: Corrigido parsing de budgetBreakdown do banco de dados - valores agora exibem corretamente em todas as categorias
+- July 18, 2025. **LÓGICA DE PARTICIPANTES BASEADA EM DATA IMPLEMENTADA**: Criado sistema que usa trip.maxParticipants antes da viagem começar e getRealParticipantsCount() após início da viagem
+- July 18, 2025. **FUNÇÃO getParticipantsForBudgetCalculation() CRIADA**: Centralizada lógica de cálculo de participantes baseada na data de início da viagem para todos os componentes
+- July 18, 2025. **CÁLCULOS CONSISTENTES IMPLEMENTADOS**: Todos os componentes (trip-detail-page, add-activity-to-trip, budget-visualization) agora usam a mesma lógica de participantes
 - July 18, 2025. **IMAGENS DE ALTA QUALIDADE IMPLEMENTADAS**: Todas as 23 atividades turísticas agora possuem fotos reais de alta qualidade (1200x800px, qualidade 85%) obtidas do Unsplash com parâmetros otimizados para melhor performance e experiência visualtênticas de Paris com fotos reais, descrições detalhadas e 3 propostas de orçamento cada (Econômico, Completo, Premium)
 - July 18, 2025. **ATIVIDADES NOVA YORK COMPLETAS ADICIONADAS**: Cadastradas 5 atividades autênticas de Nova York com fotos reais, descrições detalhadas e 3 propostas de orçamento cada (USD 0-300)
 - July 18, 2025. **ATIVIDADES LONDRES COMPLETAS ADICIONADAS**: Cadastradas 5 atividades autênticas de Londres com fotos reais, descrições detalhadas e 3 propostas de orçamento cada (£0-£200)

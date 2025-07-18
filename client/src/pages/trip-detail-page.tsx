@@ -66,7 +66,7 @@ import {
 } from "lucide-react";
 import { format, differenceInDays, differenceInHours, differenceInMinutes, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { getRealParticipantsCount, getTripOccupancy } from "@/lib/trip-utils";
+import { getRealParticipantsCount, getTripOccupancy, getParticipantsForBudgetCalculation, hasTripStarted } from "@/lib/trip-utils";
 import { useState, useEffect, useMemo } from "react";
 import { expenseCategories, budgetCategories, BudgetBreakdown } from "@shared/schema";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -214,7 +214,8 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
   const stats = useMemo(() => {
     const totalBudget = Number(trip.budget) || 0;
     const realParticipants = getRealParticipantsCount(trip);
-    const perPerson = realParticipants > 0 ? totalBudget / realParticipants : 0;
+    const budgetParticipants = getParticipantsForBudgetCalculation(trip);
+    const perPerson = budgetParticipants > 0 ? totalBudget / budgetParticipants : 0;
     const daysUntil = differenceInDays(new Date(trip.startDate), new Date());
     const duration = differenceInDays(new Date(trip.endDate), new Date(trip.startDate));
     const occupancy = getTripOccupancy(trip);
@@ -225,6 +226,7 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
       daysUntil: Math.max(0, daysUntil),
       duration: Math.max(1, duration),
       realParticipants,
+      budgetParticipants,
       occupancy: isNaN(occupancy) ? 0 : occupancy
     };
   }, [trip]);
@@ -1620,7 +1622,7 @@ export default function TripDetailPage() {
                                 R$ {trip.budget.toLocaleString('pt-BR')}
                               </h3>
                               <p className="text-lg text-gray-600">
-                                R$ {getRealParticipantsCount(trip) > 0 ? (trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'} por pessoa
+                                R$ {getParticipantsForBudgetCalculation(trip) > 0 ? (trip.budget / getParticipantsForBudgetCalculation(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'} por pessoa
                               </p>
                             </div>
                             <div className="max-w-sm mx-auto">
@@ -1951,10 +1953,10 @@ export default function TripDetailPage() {
                         <span className="text-xs font-medium text-blue-900">Custo Individual</span>
                       </div>
                       <div className="text-base font-bold text-blue-900 tabular-nums">
-                        R$ {getRealParticipantsCount(trip) > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
+                        R$ {getParticipantsForBudgetCalculation(trip) > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / getParticipantsForBudgetCalculation(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
                       </div>
                       <div className="text-xs text-blue-700">
-                        {getRealParticipantsCount(trip)} participantes confirmados
+                        {hasTripStarted(trip) ? `${getRealParticipantsCount(trip)} participantes confirmados` : `${trip.maxParticipants} participantes planejados`}
                       </div>
                     </div>
                   </div>

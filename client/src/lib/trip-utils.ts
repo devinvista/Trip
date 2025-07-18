@@ -57,3 +57,27 @@ export function getTripOccupancy(trip: Trip): number {
   const currentCount = getRealParticipantsCount(trip);
   return trip.maxParticipants > 0 ? (currentCount / trip.maxParticipants) * 100 : 0;
 }
+
+/**
+ * Determines if a trip has started based on start date
+ */
+export function hasTripStarted(trip: Trip): boolean {
+  if (!trip.startDate) return false;
+  const startDate = new Date(trip.startDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset time to compare only dates
+  startDate.setHours(0, 0, 0, 0);
+  return startDate <= today;
+}
+
+/**
+ * Gets the appropriate participant count for budget calculations
+ * Before trip starts: use maxParticipants (planning phase)
+ * After trip starts: use real participants (execution phase)
+ */
+export function getParticipantsForBudgetCalculation(trip: Trip): number {
+  if (hasTripStarted(trip)) {
+    return getRealParticipantsCount(trip);
+  }
+  return trip.maxParticipants || 1;
+}
