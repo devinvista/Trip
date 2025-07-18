@@ -207,6 +207,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 18, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - todas as funcionalidades operacionais
 - July 18, 2025. **SISTEMA DE LOCALIZAÇÃO PADRONIZADO**: Corrigido problema de vinculação entre atividades e destinos de viagem - implementado sistema de referência única por cidade
 - July 18, 2025. **CORRESPONDÊNCIA PERFEITA ATIVIDADES-DESTINOS**: Todas as viagens agora possuem atividades correspondentes em seus destinos específicos com localização padronizada
+- July 18, 2025. **ATIVIDADES PARIS COMPLETAS ADICIONADAS**: Cadastradas 5 atividades autênticas de Paris com fotos reais, descrições detalhadas e 3 propostas de orçamento cada (Econômico, Completo, Premium)
 - July 18, 2025. **CORREÇÃO DE ATIVIDADES POR DESTINO**: Corrigido problema onde atividades não estavam vinculadas aos destinos das viagens - adicionadas atividades específicas para todos os destinos (Pantanal, Mantiqueira, Maragogi, Ouro Preto, Manaus, Gramado, Lençóis Maranhenses, Caruaru)
 - July 17, 2025. **PÁGINA DE ATIVIDADES OTIMIZADA**: Configurada para carregar com visualização "lista completa" como padrão conforme solicitado pelo usuário
 - July 17, 2025. **SISTEMA DE PERFORMANCE COMPLETO**: Implementado sistema abrangente de otimizações de performance
