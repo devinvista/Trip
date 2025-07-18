@@ -1406,7 +1406,7 @@ export default function TripDetailPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      <span>{getRealParticipantsCount(trip)}/{trip.maxParticipants} participantes</span>
+                      <span>{hasTripStarted(trip) ? getRealParticipantsCount(trip) : trip.maxParticipants}/{trip.maxParticipants} participantes</span>
                     </div>
                   </div>
                   
@@ -1549,7 +1549,7 @@ export default function TripDetailPage() {
                             {Object.entries(trip.budgetBreakdown).map(([category, amount]) => {
                               // Ensure amount is a number (it might be a string from JSON parsing)
                               const numericAmount = typeof amount === 'string' ? parseFloat(amount) || 0 : Number(amount) || 0;
-                              const participantsCount = getRealParticipantsCount(trip);
+                              const participantsCount = getParticipantsForBudgetCalculation(trip);
                               const percentage = trip.budget > 0 ? ((numericAmount / trip.budget) * 100) : 0;
                               const perPerson = participantsCount > 0 ? numericAmount / participantsCount : 0;
                               
@@ -1595,7 +1595,7 @@ export default function TripDetailPage() {
                                 <div>
                                   <h4 className="text-base font-semibold">Total da Viagem</h4>
                                   <p className="text-blue-100 text-xs">
-                                    {getRealParticipantsCount(trip)} participantes
+                                    {getParticipantsForBudgetCalculation(trip)} participantes
                                   </p>
                                 </div>
                               </div>
@@ -1604,7 +1604,7 @@ export default function TripDetailPage() {
                                   R$ {trip.budget.toLocaleString('pt-BR')}
                                 </p>
                                 <p className="text-blue-100 text-xs">
-                                  R$ {getRealParticipantsCount(trip) > 0 ? (trip.budget / getRealParticipantsCount(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'} cada
+                                  R$ {getParticipantsForBudgetCalculation(trip) > 0 ? (trip.budget / getParticipantsForBudgetCalculation(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'} cada
                                 </p>
                               </div>
                             </div>
@@ -1630,7 +1630,7 @@ export default function TripDetailPage() {
                                 <p className="text-sm text-gray-600 mb-1">Participantes confirmados</p>
                                 <div className="flex items-center justify-center gap-2">
                                   <Users className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium text-gray-900">{getRealParticipantsCount(trip)} de {trip.maxParticipants}</span>
+                                  <span className="font-medium text-gray-900">{hasTripStarted(trip) ? getRealParticipantsCount(trip) : trip.maxParticipants} de {trip.maxParticipants}</span>
                                 </div>
                               </div>
                             </div>
