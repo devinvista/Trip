@@ -1406,7 +1406,7 @@ export default function TripDetailPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      <span>{hasTripStarted(trip) ? getRealParticipantsCount(trip) : trip.maxParticipants}/{trip.maxParticipants} participantes</span>
+                      <span>{getRealParticipantsCount(trip)}/{trip.maxParticipants} participantes</span>
                     </div>
                   </div>
                   
@@ -1630,7 +1630,7 @@ export default function TripDetailPage() {
                                 <p className="text-sm text-gray-600 mb-1">Participantes confirmados</p>
                                 <div className="flex items-center justify-center gap-2">
                                   <Users className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium text-gray-900">{hasTripStarted(trip) ? getRealParticipantsCount(trip) : trip.maxParticipants} de {trip.maxParticipants}</span>
+                                  <span className="font-medium text-gray-900">{getRealParticipantsCount(trip)} de {trip.maxParticipants}</span>
                                 </div>
                               </div>
                             </div>
