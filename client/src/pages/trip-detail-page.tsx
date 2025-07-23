@@ -1567,66 +1567,7 @@ export default function TripDetailPage() {
               </div>
 
               <TabsContent value="overview" className="space-y-6">
-                {/* Quick Navigation Cards */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <motion.button
-                    onClick={() => setActiveTab("budget")}
-                    className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 hover:from-amber-100 hover:to-orange-100 transition-all duration-300 text-left group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-amber-500 rounded-lg group-hover:bg-amber-600 transition-colors">
-                        <Calculator className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">Orçamento</div>
-                        <div className="text-sm text-gray-600">
-                          R$ {(trip.budget || 0).toLocaleString('pt-BR')}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.button>
 
-
-                  <motion.button
-                    onClick={() => setActiveTab("expenses")}
-                    className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 hover:from-green-100 hover:to-emerald-100 transition-all duration-300 text-left group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-500 rounded-lg group-hover:bg-green-600 transition-colors">
-                        <DollarSign className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">Despesas</div>
-                        <div className="text-sm text-gray-600">
-                          R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    onClick={() => setActiveTab("participants")}
-                    className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 hover:from-purple-100 hover:to-pink-100 transition-all duration-300 text-left group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-purple-500 rounded-lg group-hover:bg-purple-600 transition-colors">
-                        <Users className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">Participantes</div>
-                        <div className="text-sm text-gray-600">
-                          {getRealParticipantsCount(trip)}/{trip.maxParticipants} pessoas
-                        </div>
-                      </div>
-                    </div>
-                  </motion.button>
-                </div>
 
                 {/* Description */}
                 <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
