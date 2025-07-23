@@ -36,22 +36,22 @@ export function Navbar() {
     logoutMutation.mutate();
   };
 
-  // Loading state
+  // Loading state - Responsivo
   if (isLoading) {
     return (
       <header className="bg-white/95 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             <Link href="/" className="flex items-center hover:opacity-80 transition-all duration-300">
               <img 
                 src={logoImage} 
                 alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-                className="h-10 w-auto max-w-[180px] object-contain"
+                className="h-8 sm:h-10 w-auto max-w-[120px] sm:max-w-[160px] lg:max-w-[180px] object-contain"
               />
             </Link>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div>
-              <div className="w-20 h-8 bg-slate-200 rounded-lg animate-pulse"></div>
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="w-6 sm:w-8 h-6 sm:h-8 bg-slate-200 rounded-full animate-pulse"></div>
+              <div className="w-12 sm:w-20 h-6 sm:h-8 bg-slate-200 rounded-lg animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -61,21 +61,21 @@ export function Navbar() {
 
   return (
     <header className="bg-white/95 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
+        <div className="flex justify-between items-center h-14 sm:h-16">
+          {/* Logo - Responsivo */}
           <Link href="/" className="flex items-center hover:opacity-80 transition-all duration-300 flex-shrink-0">
             <img 
               src={logoImage} 
               alt="PartiuTrip - Viaje Junto, Gaste Menos" 
-              className="h-10 w-auto max-w-[180px] object-contain"
+              className="h-8 sm:h-10 w-auto max-w-[120px] sm:max-w-[160px] lg:max-w-[180px] object-contain"
             />
           </Link>
           
           {user && (
             <>
-              {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-center space-x-1">
+              {/* Desktop Navigation - Adaptativo */}
+              <div className="hidden md:flex items-center space-x-1">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(item.href);
@@ -83,7 +83,7 @@ export function Navbar() {
                     <Link 
                       key={item.href} 
                       href={item.href} 
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
+                      className={`flex items-center gap-1.5 lg:gap-2 px-2 lg:px-3 py-2 rounded-xl transition-all duration-300 font-medium text-xs lg:text-sm ${
                           active
                             ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/25" 
                             : item.highlight
@@ -93,14 +93,14 @@ export function Navbar() {
                       data-tour={item.tourData}
                     >
                         <Icon className={`h-4 w-4 ${active ? 'text-white' : ''} ${item.highlight && !active ? 'text-blue-600 group-hover:text-white' : ''}`} />
-                        <span className="hidden xl:block">{item.label}</span>
+                        <span className="hidden lg:block">{item.label}</span>
                     </Link>
                   );
                 })}
               </div>
 
-              {/* User Section */}
-              <div className="flex items-center space-x-2">
+              {/* User Section - Responsivo */}
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 {/* Notifications - Desktop only */}
                 <div className="hidden lg:block">
                   <NotificationSystem />
@@ -111,22 +111,26 @@ export function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="flex items-center space-x-2 hover:bg-blue-50 rounded-xl px-2 py-2 transition-all duration-300 h-auto"
+                      className="flex items-center space-x-1 sm:space-x-2 hover:bg-blue-50 rounded-xl px-1 sm:px-2 py-2 transition-all duration-300 h-auto"
                     >
                       <UserAvatar 
-                        user={user}
+                        user={{
+                          fullName: user.fullName,
+                          profilePhoto: user.profilePhoto || undefined,
+                          isVerified: user.isVerified
+                        }}
                         size="sm"
-                        className="w-8 h-8 ring-2 ring-white shadow-md"
+                        className="w-7 sm:w-8 h-7 sm:h-8 ring-2 ring-white shadow-md"
                       />
-                      <div className="hidden sm:block text-left">
+                      <div className="hidden md:block text-left">
                         <div className="font-medium text-slate-700 text-sm leading-tight">
                           {user?.fullName?.split(' ')[0]}
                         </div>
-                        <div className="text-xs text-slate-500 leading-tight">
+                        <div className="text-xs text-slate-500 leading-tight max-w-20 truncate">
                           {user?.location || 'Viajante'}
                         </div>
                       </div>
-                      <ChevronDown className="h-3 w-3 text-slate-500 hidden sm:block" />
+                      <ChevronDown className="h-3 w-3 text-slate-500 hidden md:block" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-60 mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/60 shadow-xl rounded-xl">
@@ -134,7 +138,11 @@ export function Navbar() {
                     <div className="px-3 py-3 border-b border-slate-100">
                       <div className="flex items-center space-x-3">
                         <UserAvatar 
-                          user={user}
+                          user={{
+                            fullName: user.fullName,
+                            profilePhoto: user.profilePhoto || undefined,
+                            isVerified: user.isVerified
+                          }}
                           size="md"
                           className="w-10 h-10"
                         />
@@ -176,18 +184,18 @@ export function Navbar() {
                 </DropdownMenu>
 
                 {/* Mobile Menu */}
-                <div className="lg:hidden">
+                <div className="md:hidden">
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        className="p-2 rounded-xl hover:bg-blue-50 text-slate-600 hover:text-blue-600 transition-all duration-300"
+                        className="p-1.5 sm:p-2 rounded-xl hover:bg-blue-50 text-slate-600 hover:text-blue-600 transition-all duration-300"
                       >
-                        <Menu className="h-5 w-5" />
+                        <Menu className="h-4 sm:h-5 w-4 sm:w-5" />
                       </Button>
                     </SheetTrigger>
-                    <SheetContent side="right" className="w-80 sm:w-96 bg-white/95 backdrop-blur-xl border-l border-slate-200/60">
+                    <SheetContent side="right" className="w-72 xs:w-80 sm:w-96 bg-white/95 backdrop-blur-xl border-l border-slate-200/60">
                       <div className="flex flex-col h-full">
                         {/* Header */}
                         <div className="flex items-center justify-between pb-6 border-b border-slate-100">
@@ -201,7 +209,11 @@ export function Navbar() {
                         {/* User Info */}
                         <div className="flex items-center space-x-3 py-6 border-b border-slate-100">
                           <UserAvatar 
-                            user={user}
+                            user={{
+                              fullName: user.fullName,
+                              profilePhoto: user.profilePhoto || undefined,
+                              isVerified: user.isVerified
+                            }}
                             size="lg"
                             className="w-12 h-12 ring-2 ring-blue-100"
                           />
@@ -277,23 +289,24 @@ export function Navbar() {
             </>
           )}
 
-          {/* Guest Navigation - Modern & Professional */}
+          {/* Guest Navigation - Totalmente Responsivo */}
           {!user && (
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-1 xs:space-x-2 sm:space-x-3">
               <Link href="/auth" className="group">
                 <Button 
                   variant="ghost" 
-                  className="relative text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl px-4 sm:px-6 py-2.5 font-medium transition-all duration-300 text-sm backdrop-blur-sm border border-transparent hover:border-blue-100 hover:shadow-md group-hover:scale-105"
+                  className="relative text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl px-2 xs:px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 font-medium transition-all duration-300 text-xs sm:text-sm backdrop-blur-sm border border-transparent hover:border-blue-100 hover:shadow-md group-hover:scale-105"
                 >
                   <span className="relative z-10">Entrar</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
                 </Button>
               </Link>
               <Link href="/auth" className="group">
-                <Button className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-700 text-white font-semibold px-5 sm:px-8 py-2.5 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 text-sm group-hover:scale-105 border border-blue-500/20 overflow-hidden">
-                  <span className="relative z-10 flex items-center gap-2">
-                    Cadastrar
-                    <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <Button className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-600 hover:from-blue-700 hover:via-blue-800 hover:to-indigo-700 text-white font-semibold px-3 xs:px-4 sm:px-5 lg:px-8 py-2 sm:py-2.5 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 text-xs sm:text-sm group-hover:scale-105 border border-blue-500/20 overflow-hidden">
+                  <span className="relative z-10 flex items-center gap-1 sm:gap-2">
+                    <span className="hidden xs:inline">Cadastrar</span>
+                    <span className="xs:hidden">+</span>
+                    <svg className="w-3 sm:w-4 h-3 sm:h-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </span>
