@@ -590,31 +590,31 @@ export default function ProfilePage() {
         </motion.div>
 
         <Tabs defaultValue="stats" className="space-y-6 sm:space-y-8">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-12 sm:h-14 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl gap-1 p-1">
-            <TabsTrigger value="stats" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
-              <Award className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Estatísticas</span>
-              <span className="sm:hidden">Stats</span>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto min-h-[3rem] sm:min-h-[3.5rem] bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl gap-1 p-1">
+            <TabsTrigger value="stats" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl px-2 py-2 sm:px-4 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-all duration-300">
+              <Award className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline truncate">Estatísticas</span>
+              <span className="sm:hidden text-[10px] leading-tight">Stats</span>
             </TabsTrigger>
-            <TabsTrigger value="partiuamigos" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
-              <Gift className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">PartiuAmigos</span>
-              <span className="sm:hidden">Amigos</span>
+            <TabsTrigger value="partiuamigos" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-xl px-2 py-2 sm:px-4 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-all duration-300">
+              <Gift className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline truncate">PartiuAmigos</span>
+              <span className="sm:hidden text-[10px] leading-tight">Amigos</span>
             </TabsTrigger>
-            <TabsTrigger value="connections" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
-              <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden lg:inline">Conexões</span>
-              <span className="lg:hidden">Rede</span>
+            <TabsTrigger value="connections" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-xl px-2 py-2 sm:px-4 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-all duration-300 col-span-2 sm:col-span-1">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline lg:inline truncate">Conexões</span>
+              <span className="sm:hidden lg:hidden text-[10px] leading-tight">Rede</span>
             </TabsTrigger>
-            <TabsTrigger value="achievements" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
-              <Trophy className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden lg:inline">Conquistas</span>
-              <span className="lg:hidden">Prêmios</span>
+            <TabsTrigger value="achievements" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white rounded-xl px-2 py-2 sm:px-4 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-all duration-300">
+              <Trophy className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline lg:inline truncate">Conquistas</span>
+              <span className="sm:hidden lg:hidden text-[10px] leading-tight">Prêmios</span>
             </TabsTrigger>
-            <TabsTrigger value="profile" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-500 data-[state=active]:to-gray-600 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
-              <Settings className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden lg:inline">Configurações</span>
-              <span className="lg:hidden">Config</span>
+            <TabsTrigger value="profile" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-500 data-[state=active]:to-gray-600 data-[state=active]:text-white rounded-xl px-2 py-2 sm:px-4 sm:py-3 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium transition-all duration-300">
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline lg:inline truncate">Configurações</span>
+              <span className="sm:hidden lg:hidden text-[10px] leading-tight">Config</span>
             </TabsTrigger>
           </TabsList>
 
