@@ -275,8 +275,13 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Debug route to test API functionality
+  app.get("/api/auth/test", (req, res) => {
+    res.json({ message: "API está funcionando", timestamp: new Date().toISOString() });
+  });
+
   // Rota de login
-  app.post("/api/login", (req, res, next) => {
+  app.post("/api/auth/login", (req, res, next) => {
     passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
         console.error('Erro na autenticação:', err);
@@ -324,7 +329,7 @@ export function setupAuth(app: Express) {
   });
 
   // Rota de registro
-  app.post("/api/register", async (req, res) => {
+  app.post("/api/auth/register", async (req, res) => {
     try {
       const { username, password, email, fullName, phone, bio, location, languages, interests, travelStyle, referredBy } = req.body;
 
