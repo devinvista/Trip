@@ -6,6 +6,7 @@ import { testConnection, initializeTables, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { syncParticipantsCount } from "./sync-participants.js";
+import { setupReferralSystem } from "./setup-referral-system";
 
 const app = express();
 
@@ -114,5 +115,9 @@ async function fixUserVerificationStatus() {
     // Sync participants count
     console.log("🔄 Sincronizando contagem de participantes...");
     await syncParticipantsCount();
+    
+    // Setup referral system
+    console.log("🎫 Configurando sistema de códigos de indicação...");
+    await setupReferralSystem();
   })().catch(console.error);
 })();

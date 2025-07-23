@@ -2587,6 +2587,142 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // ===== REFERRAL CODE VALIDATION ROUTES =====
+
+  // Initialize default referral codes (development helper)
+  app.post("/api/init-referral-codes", async (req, res) => {
+    try {
+      const codes = [
+        { code: 'BETA2025', maxUses: 100 },
+        { code: 'VIAJANTE', maxUses: 50 },
+        { code: 'AMIGO123', maxUses: 10 },
+        { code: 'TESTE', maxUses: 1 },
+        { code: 'EXPLORER', maxUses: 25 },
+      ];
+
+      let created = 0;
+      for (const codeData of codes) {
+        // Check if code already exists
+        const existing = await db.select()
+          .from(schema.referralCodes)
+          .where(eq(schema.referralCodes.code, codeData.code))
+          .limit(1);
+
+        if (existing.length === 0) {
+          await db.insert(schema.referralCodes).values({
+            code: codeData.code,
+            maxUses: codeData.maxUses,
+            currentUses: 0,
+            isActive: true,
+            createdBy: null,
+            expiresAt: null,
+          });
+          created++;
+        }
+      }
+
+      res.json({ 
+        message: `${created} códigos de indicação criados com sucesso`,
+        codes: codes.map(c => c.code)
+      });
+    } catch (error) {
+      console.error('Erro ao criar códigos de indicação:', error);
+      res.status(500).json({ message: "Erro ao criar códigos de indicação" });
+    }
+  });
+
+  // Validate referral code
+  app.post("/api/validate-referral", async (req, res) => {
+    try {
+      const { referralCode } = req.body;
+      
+      if (!referralCode) {
+        return res.status(400).json({ message: "Código de indicação é obrigatório" });
+      }
+
+      const referral = await db.select()
+        .from(schema.referralCodes)
+        .where(
+          and(
+            eq(schema.referralCodes.code, referralCode),
+            eq(schema.referralCodes.isActive, true)
+          )
+        )
+        .limit(1);
+
+      if (referral.length === 0) {
+        return res.status(400).json({ 
+          message: "Código de indicação inválido",
+          isValid: false
+        });
+      }
+
+      const code = referral[0];
+      
+      // Check if code is expired
+      if (code.expiresAt && new Date() > code.expiresAt) {
+        return res.status(400).json({ 
+          message: "Código de indicação expirado",
+          isValid: false
+        });
+      }
+
+      // Check if code has reached max uses
+      if (code.currentUses >= code.maxUses) {
+        return res.status(400).json({ 
+          message: "Código de indicação esgotado",
+          isValid: false
+        });
+      }
+
+      res.json({ 
+        message: "Código válido",
+        isValid: true
+      });
+    } catch (error) {
+      console.error('Erro ao validar código de indicação:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Add to interest list
+  app.post("/api/interest-list", async (req, res) => {
+    try {
+      const { fullName, email, phone, referralCode } = req.body;
+      
+      if (!fullName || !email || !phone) {
+        return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      }
+
+      // Check if email already exists in interest list
+      const existingEntry = await db.select()
+        .from(schema.interestList)
+        .where(eq(schema.interestList.email, email))
+        .limit(1);
+
+      if (existingEntry.length > 0) {
+        return res.status(400).json({ message: "Este email já está na lista de interesse" });
+      }
+
+      // Add to interest list
+      await db.insert(schema.interestList).values({
+        fullName,
+        email,
+        phone,
+        referralCode: referralCode || null,
+        status: "pending"
+      });
+
+      res.json({ 
+        message: "Obrigado pelo interesse! Entraremos em contato em breve.",
+        success: true
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar à lista de interesse:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

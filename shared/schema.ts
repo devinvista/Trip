@@ -156,6 +156,29 @@ export const activityRatingHelpfulVotes = mysqlTable("activity_rating_helpful_vo
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Interest list table for users without valid referral codes
+export const interestList = mysqlTable("interest_list", {
+  id: int("id").primaryKey().autoincrement(),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  phone: varchar("phone", { length: 20 }).notNull(),
+  referralCode: varchar("referral_code", { length: 50 }), // Invalid code they tried to use
+  status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, contacted, approved, rejected
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Referral codes table to manage valid invitation codes
+export const referralCodes = mysqlTable("referral_codes", {
+  id: int("id").primaryKey().autoincrement(),
+  code: varchar("code", { length: 50 }).notNull().unique(),
+  createdBy: int("created_by").references(() => users.id),
+  maxUses: int("max_uses").default(1).notNull(),
+  currentUses: int("current_uses").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at"),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -258,6 +281,21 @@ export const insertExpenseSplitSchema = createInsertSchema(expenseSplits).omit({
 
 export type InsertExpense = z.infer<typeof insertExpenseSchema>;
 export type InsertExpenseSplit = z.infer<typeof insertExpenseSplitSchema>;
+
+// Interest list schema and types
+export const insertInterestListSchema = createInsertSchema(interestList, {
+  fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  email: z.string().email("Email inválido"),
+  phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
+}).omit({ 
+  id: true, 
+  createdAt: true,
+  status: true
+});
+
+export type InterestList = typeof interestList.$inferSelect;
+export type InsertInterestList = z.infer<typeof insertInterestListSchema>;
+export type ReferralCode = typeof referralCodes.$inferSelect;
 
 // Rating types
 export type UserRating = typeof userRatings.$inferSelect;
