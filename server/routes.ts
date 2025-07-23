@@ -1307,7 +1307,7 @@ export function registerRoutes(app: Express): Server {
         }
       }
       
-      res.status(201).json(report[0]);
+      res.status(201).json({ message: "Avaliação reportada com sucesso" });
     } catch (error) {
       console.error('Erro ao reportar avaliação:', error);
       res.status(400).json({ message: "Erro ao reportar avaliação" });
@@ -1705,7 +1705,7 @@ export function registerRoutes(app: Express): Server {
 
         await db.update(activities)
           .set({
-            averageRating: parseFloat(averageRating.toFixed(2)),
+            averageRating: averageRating.toFixed(2),
             totalRatings: allReviews.length
           })
           .where(eq(activities.id, activityId));
@@ -1750,7 +1750,7 @@ export function registerRoutes(app: Express): Server {
       });
       
       // Get the inserted review ID
-      const reviewId = insertResult.insertId;
+      const reviewId = Number(insertResult.insertId);
 
       // Update activity's average rating
       const allReviews = await db
@@ -1762,7 +1762,7 @@ export function registerRoutes(app: Express): Server {
 
       await db.update(activities)
         .set({
-          averageRating: parseFloat(averageRating.toFixed(2)),
+          averageRating: averageRating.toFixed(2),
           totalRatings: allReviews.length
         })
         .where(eq(activities.id, activityId));
@@ -2073,7 +2073,7 @@ export function registerRoutes(app: Express): Server {
     try {
       const proposalId = parseInt(req.params.id);
       const { increment } = req.body; // true for upvote, false for downvote
-      const userId = req.user.id;
+      const userId = req.user!.id;
       
       const updatedProposal = await storage.voteActivityBudgetProposal(proposalId, userId, increment);
       
@@ -2092,7 +2092,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/activities/:id/user-vote", requireAuth, async (req, res) => {
     try {
       const activityId = parseInt(req.params.id);
-      const userId = req.user.id;
+      const userId = req.user!.id;
       
       const vote = await storage.getUserVoteForActivity(userId, activityId);
       
@@ -2107,7 +2107,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/proposals/:id/user-vote", requireAuth, async (req, res) => {
     try {
       const proposalId = parseInt(req.params.id);
-      const userId = req.user.id;
+      const userId = req.user!.id;
       
       const vote = await storage.getUserVoteForProposal(userId, proposalId);
       
@@ -2394,7 +2394,7 @@ export function registerRoutes(app: Express): Server {
 
       await db.update(users)
         .set({
-          averageRating: averageRating,
+          averageRating: averageRating.toString(),
           totalRatings: allUserRatings.length
         })
         .where(eq(users.id, companionId));

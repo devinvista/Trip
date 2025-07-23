@@ -21,6 +21,9 @@ declare global {
       languages?: string[];
       interests?: string[];
       travelStyles?: string[];
+      isVerified?: boolean;
+      averageRating?: string;
+      totalRatings?: number;
     }
   }
 }
