@@ -20,7 +20,7 @@ const connection = mysql.createPool({
   waitForConnections: true,
   connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || '10'),
   queueLimit: parseInt(process.env.DB_QUEUE_LIMIT || '0'),
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
 });
 
 // Configurar Drizzle com MySQL

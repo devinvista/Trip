@@ -569,6 +569,7 @@ export interface PlannedActivity {
   completed?: boolean;
   scheduledDate?: string; // ISO date string
   location?: string;
+  status?: string; // Add status property for compatibility
   createdAt: string;
 }
 

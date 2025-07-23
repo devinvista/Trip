@@ -428,7 +428,7 @@ function ActivitiesTimeline({
       id: Date.now().toString(),
       title: newActivity.title,
       description: newActivity.description,
-      category: (newActivity.category as any) || 'sightseeing',
+      category: (newActivity.category as PlannedActivity['category']) || 'sightseeing',
       priority: newActivity.priority || 'medium',
       estimatedCost: newActivity.estimatedCost,
       duration: newActivity.duration,
@@ -821,7 +821,7 @@ function ActivitiesTimeline({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-category">Categoria</Label>
-                  <Select value={editingActivity.category} onValueChange={(value) => setEditingActivity({...editingActivity, category: value})}>
+                  <Select value={editingActivity.category} onValueChange={(value) => setEditingActivity({...editingActivity, category: value as PlannedActivity['category']})}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -929,7 +929,7 @@ function ActivitiesTimeline({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="new-category">Categoria</Label>
-                <Select value={newActivity.category} onValueChange={(value) => setNewActivity({...newActivity, category: value})}>
+                <Select value={newActivity.category} onValueChange={(value) => setNewActivity({...newActivity, category: value as PlannedActivity['category']})}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -1128,29 +1128,36 @@ export default function TripDetailPage() {
   const isParticipant = trip && user && trip.participants?.some((p: any) => p.userId === user.id && p.status === 'accepted');
 
   // Handle activities change and save to database
-  const handleActivitiesChange = async (newActivities: PlannedActivity[]) => {
+  const handleActivitiesChange = React.useCallback(async (newActivities: PlannedActivity[]) => {
     setPlannedActivities(newActivities);
     
-    // Save to database
-    try {
-      const response = await apiRequest("PATCH", `/api/trips/${id}/activities`, {
-        plannedActivities: JSON.stringify(newActivities)
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao salvar atividades');
+    if (!trip) return;
+    
+    // Save to database asynchronously
+    setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/trips/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ plannedActivities: newActivities })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Erro ao salvar atividades');
+        }
+        
+        queryClient.invalidateQueries({ queryKey: ["/api/trips", id] });
+      } catch (error) {
+        console.error('Erro ao salvar atividades:', error);
+        toast({
+          title: "Erro ao salvar atividades",
+          description: "Não foi possível salvar as alterações.",
+          variant: "destructive",
+        });
       }
-      
-      queryClient.invalidateQueries({ queryKey: ["/api/trips", id] });
-    } catch (error) {
-      console.error('Erro ao salvar atividades:', error);
-      toast({
-        title: "Erro ao salvar atividades",
-        description: "Não foi possível salvar as alterações.",
-        variant: "destructive",
-      });
-    }
-  };
+    }, 100);
+  }, [id, trip, queryClient, toast]);
 
   const { data: expenses = [] } = useQuery<any[]>({
     queryKey: ["/api/trips", id, "expenses"],
@@ -1784,7 +1791,7 @@ export default function TripDetailPage() {
 
                 {(isCreator || isParticipant) ? (
                   <AdvancedActivityManager 
-                    activities={plannedActivities as any}
+                    activities={plannedActivities}
                     onActivitiesChange={handleActivitiesChange}
                     tripDestination={trip.destination}
                     trip={trip}
