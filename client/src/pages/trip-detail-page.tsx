@@ -1476,7 +1476,7 @@ export default function TripDetailPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               {/* Enhanced Tab Navigation */}
               <div className="bg-white border border-gray-200 rounded-xl p-2 shadow-sm">
-                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-transparent gap-1 h-auto">
+                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 bg-transparent gap-1 h-auto">
                   <TabsTrigger 
                     value="overview" 
                     className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
@@ -1489,6 +1489,17 @@ export default function TripDetailPage() {
                       </span>
                     </div>
                     {/* Progress indicator for active tab */}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="budget" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
+                  >
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <Calculator className="h-4 w-4 group-data-[state=active]:text-blue-600" />
+                      <span className="text-xs sm:text-sm font-medium">Orçamento</span>
+                    </div>
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
                   </TabsTrigger>
                   
@@ -1542,7 +1553,7 @@ export default function TripDetailPage() {
                 {/* Tab Content Indicators */}
                 <div className="mt-4 flex justify-center">
                   <div className="flex items-center gap-1">
-                    {["overview", "activities", "expenses", "participants"].map((tab, index) => (
+                    {["overview", "budget", "activities", "expenses", "participants"].map((tab, index) => (
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -1557,7 +1568,26 @@ export default function TripDetailPage() {
 
               <TabsContent value="overview" className="space-y-6">
                 {/* Quick Navigation Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <motion.button
+                    onClick={() => setActiveTab("budget")}
+                    className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 hover:from-amber-100 hover:to-orange-100 transition-all duration-300 text-left group"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-amber-500 rounded-lg group-hover:bg-amber-600 transition-colors">
+                        <Calculator className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">Orçamento</div>
+                        <div className="text-sm text-gray-600">
+                          R$ {(trip.budget || 0).toLocaleString('pt-BR')}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.button>
+
                   <motion.button
                     onClick={() => setActiveTab("activities")}
                     className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 text-left group"
@@ -1590,7 +1620,7 @@ export default function TripDetailPage() {
                       <div>
                         <div className="font-semibold text-gray-900">Despesas</div>
                         <div className="text-sm text-gray-600">
-                          R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                          R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
                         </div>
                       </div>
                     </div>
@@ -1632,36 +1662,51 @@ export default function TripDetailPage() {
                     </p>
                   </CardContent>
                 </Card>
+              </TabsContent>
 
-                {/* Budget Section */}
-                <div className="space-y-6">
-                  {/* Detailed Budget Breakdown */}
-                  <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
-                    <CardHeader className="border-b border-gray-100 bg-gray-50/50">
-                      <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-500 rounded-lg">
-                            <PieChart className="h-5 w-5 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-semibold text-gray-900">Detalhamento do Orçamento</h3>
-                            <p className="text-sm text-gray-600 mt-1">Distribuição dos custos por categoria</p>
-                          </div>
-                          {!(isCreator || isParticipant) && (
-                            <Badge variant="outline" className="text-xs bg-gray-100">
-                              <Eye className="h-3 w-3 mr-1" />
-                              Somente Visualização
-                            </Badge>
-                          )}
+              <TabsContent value="budget" className="space-y-6">
+                {/* Tab Header */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-amber-500 rounded-lg">
+                      <Calculator className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">Detalhamento do Orçamento</h2>
+                      <p className="text-sm text-gray-600">
+                        Distribuição dos custos por categoria
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Detailed Budget Breakdown */}
+                <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
+                  <CardHeader className="border-b border-gray-100 bg-gray-50/50">
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-blue-500 rounded-lg">
+                          <PieChart className="h-5 w-5 text-white" />
                         </div>
-                        {isCreator && (
-                          <BudgetEditor
-                            tripId={parseInt(id!)}
-                            currentBudget={trip.budget}
-                            currentBudgetBreakdown={trip.budgetBreakdown}
-                            maxParticipants={trip.maxParticipants}
-                            onBudgetUpdate={(newBudget, newBreakdown) => {
-                              // Force refresh the trip data
+                        <div>
+                          <h3 className="text-xl font-semibold text-gray-900">Orçamento da Viagem</h3>
+                          <p className="text-sm text-gray-600 mt-1">Análise detalhada dos custos</p>
+                        </div>
+                        {!(isCreator || isParticipant) && (
+                          <Badge variant="outline" className="text-xs bg-gray-100">
+                            <Eye className="h-3 w-3 mr-1" />
+                            Somente Visualização
+                          </Badge>
+                        )}
+                      </div>
+                      {isCreator && (
+                        <BudgetEditor
+                          tripId={parseInt(id!)}
+                          currentBudget={trip.budget}
+                          currentBudgetBreakdown={trip.budgetBreakdown}
+                          maxParticipants={trip.maxParticipants}
+                          onBudgetUpdate={(newBudget, newBreakdown) => {
+                            // Force refresh the trip data
                               refetch();
                             }}
                           />
@@ -1796,7 +1841,6 @@ export default function TripDetailPage() {
                       )}
                     </CardContent>
                   </Card>
-                </div>
               </TabsContent>
 
               <TabsContent value="activities" className="space-y-6">
