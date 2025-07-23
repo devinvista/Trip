@@ -3,20 +3,24 @@ import mysql from "mysql2/promise";
 import * as schema from "@shared/schema";
 import { sql } from "drizzle-orm";
 import { users } from "@shared/schema";
+import dotenv from "dotenv";
+
+// Carregar variáveis de ambiente
+dotenv.config();
 
 console.log(`🔗 Conectando ao MySQL...`);
 
-// Configuração do banco MySQL (srv1661.hstgr.io)
+// Configuração do banco MySQL usando variáveis de ambiente
 const connection = mysql.createPool({
-  host: 'srv1661.hstgr.io',
-  port: 3306,
-  user: 'u905571261_trip',
-  password: 'Dracarys23@',
-  database: 'u905571261_trip',
+  host: process.env.DB_HOST || 'srv1661.hstgr.io',
+  port: parseInt(process.env.DB_PORT || '3306'),
+  user: process.env.DB_USER || 'u905571261_trip',
+  password: process.env.DB_PASSWORD || 'Dracarys23@',
+  database: process.env.DB_NAME || 'u905571261_trip',
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  ssl: false
+  connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || '10'),
+  queueLimit: parseInt(process.env.DB_QUEUE_LIMIT || '0'),
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
 });
 
 // Configurar Drizzle com MySQL
