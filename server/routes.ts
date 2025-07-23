@@ -135,8 +135,14 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
 
-      if (trip.creatorId !== req.user.id) {
-        return res.status(403).json({ message: "Apenas o criador pode editar a viagem" });
+      // Check if user is creator or accepted participant
+      const isCreator = trip.creatorId === req.user.id;
+      const isAcceptedParticipant = trip.participants?.some(
+        (p: any) => p.userId === req.user.id && p.status === 'accepted'
+      );
+      
+      if (!isCreator && !isAcceptedParticipant) {
+        return res.status(403).json({ message: "Apenas o criador e participantes aceitos podem editar a viagem" });
       }
 
       // Validate that maxParticipants is not less than current participants

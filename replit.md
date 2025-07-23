@@ -353,3 +353,5 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 23, 2025. **APLICAÇÃO 100% OPERACIONAL**: Todas as funcionalidades testadas e funcionando perfeitamente no ambiente Replit padrão
 - July 23, 2025. **ERRO DE ADIÇÃO DE ATIVIDADES CORRIGIDO**: Resolvido problema de tipos TypeScript e permissões - sistema de atividades planejadas funcionando perfeitamente
 - July 23, 2025. **TIPOS PLANNEDACTIVITY PADRONIZADOS**: Corrigidos conflitos de tipos entre schema compartilhado e componentes, implementado controle de permissões por criador
+- July 23, 2025. **PERMISSÕES DE EDIÇÃO EXPANDIDAS**: Sistema alterado para permitir que tanto criadores quanto participantes aceitos possam editar e adicionar atividades nas viagens
+- July 23, 2025. **COLABORAÇÃO TOTAL IMPLEMENTADA**: Frontend e backend atualizados para suportar edição colaborativa - todos os participantes da viagem podem contribuir no planejamento
