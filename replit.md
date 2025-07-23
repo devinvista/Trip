@@ -317,6 +317,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 23, 2025. Indicadores visuais: badges numeradas para atividades e participantes, indicadores de progresso por pontos
 - July 23, 2025. Headers contextuais: cada aba possui cabeçalho colorido com informações específicas e gradientes temáticos
 - July 23, 2025. Botões de navegação cruzada removidos da aba atividades conforme solicitação do usuário
+- July 23, 2025. **NAVEGAÇÃO OTIMIZADA**: Removidos todos os botões de navegação das abas despesas e participantes por redundância
+- July 23, 2025. Interface de navegação centralizada nos cards interativos da aba "Visão Geral" para melhor experiência do usuário
+- July 23, 2025. Headers das abas simplificados mantendo apenas informações contextuais relevantes
 - July 23, 2025. **CORREÇÕES TÉCNICAS LSP**: Corrigidos todos os 7 erros de TypeScript para garantir compatibilidade total com MySQL
 - July 23, 2025. Corrigidas mutations usando fetch em vez de apiRequest incorreto para operações CRUD de atividades
 - July 23, 2025. Adicionado campo status e casting de tipos para PlannedActivity para resolver incompatibilidades de schema

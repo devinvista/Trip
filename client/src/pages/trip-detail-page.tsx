@@ -1846,8 +1846,8 @@ export default function TripDetailPage() {
               </TabsContent>
 
               <TabsContent value="expenses" className="space-y-6">
-                {/* Tab Header with Navigation */}
-                <div className="flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                {/* Tab Header */}
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-green-500 rounded-lg">
                       <DollarSign className="h-5 w-5 text-white" />
@@ -1858,26 +1858,6 @@ export default function TripDetailPage() {
                         Total: R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActiveTab("activities")}
-                      className="bg-white/70 hover:bg-white"
-                    >
-                      <Target className="h-4 w-4 mr-2" />
-                      Atividades
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActiveTab("participants")}
-                      className="bg-white/70 hover:bg-white"
-                    >
-                      <Users className="h-4 w-4 mr-2" />
-                      Participantes
-                    </Button>
                   </div>
                 </div>
 
@@ -1910,8 +1890,8 @@ export default function TripDetailPage() {
               </TabsContent>
 
               <TabsContent value="participants" className="space-y-6">
-                {/* Tab Header with Navigation */}
-                <div className="flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                {/* Tab Header */}
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-purple-500 rounded-lg">
                       <Users className="h-5 w-5 text-white" />
@@ -1922,26 +1902,6 @@ export default function TripDetailPage() {
                         {getRealParticipantsCount(trip)} de {trip.maxParticipants} vagas ocupadas
                       </p>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActiveTab("overview")}
-                      className="bg-white/70 hover:bg-white"
-                    >
-                      <Star className="h-4 w-4 mr-2" />
-                      Visão Geral
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActiveTab("expenses")}
-                      className="bg-white/70 hover:bg-white"
-                    >
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Despesas
-                    </Button>
                   </div>
                 </div>
 
