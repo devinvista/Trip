@@ -67,7 +67,7 @@ import {
 import { format, differenceInDays, differenceInHours, differenceInMinutes, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { getRealParticipantsCount, getTripOccupancy, getParticipantsForBudgetCalculation, hasTripStarted } from "@/lib/trip-utils";
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { expenseCategories, budgetCategories, BudgetBreakdown } from "@shared/schema";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { BudgetVisualization } from "@/components/budget-visualization";
