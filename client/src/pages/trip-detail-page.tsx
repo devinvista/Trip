@@ -1587,24 +1587,7 @@ export default function TripDetailPage() {
                       </div>
                     </div>
                   </motion.button>
-                  <motion.button
-                    onClick={() => setActiveTab("activities")}
-                    className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 text-left group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-500 rounded-lg group-hover:bg-blue-600 transition-colors">
-                        <Target className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">Atividades</div>
-                        <div className="text-sm text-gray-600">
-                          {plannedActivities.length} {plannedActivities.length === 1 ? 'atividade' : 'atividades'}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.button>
+
 
                   <motion.button
                     onClick={() => setActiveTab("expenses")}
