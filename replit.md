@@ -323,3 +323,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 23, 2025. **CORREÇÕES TÉCNICAS LSP**: Corrigidos todos os 7 erros de TypeScript para garantir compatibilidade total com MySQL
 - July 23, 2025. Corrigidas mutations usando fetch em vez de apiRequest incorreto para operações CRUD de atividades
 - July 23, 2025. Adicionado campo status e casting de tipos para PlannedActivity para resolver incompatibilidades de schema
+- July 23, 2025. **NOVA ABA DE ORÇAMENTO DETALHADO**: Implementada aba dedicada para visualização detalhada do orçamento
+- July 23, 2025. Sistema de navegação expandido para 5 abas: Visão Geral, Atividades, Despesas, Orçamento e Participantes
+- July 23, 2025. Cards de navegação rápida atualizados com layout responsivo 2x2/4 colunas para incluir novo card do orçamento
+- July 23, 2025. Integração completa do componente BudgetVisualization na nova aba com controle de acesso baseado em participação
+- July 23, 2025. Interface adaptativa: usuários não participantes veem resumo básico com chamada para ação de participação
