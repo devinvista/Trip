@@ -137,7 +137,8 @@ export function registerRoutes(app: Express): Server {
 
       // Check if user is creator or accepted participant
       const isCreator = trip.creatorId === req.user.id;
-      const isAcceptedParticipant = trip.participants?.some(
+      const participants = await storage.getTripParticipants(tripId);
+      const isAcceptedParticipant = participants.some(
         (p: any) => p.userId === req.user.id && p.status === 'accepted'
       );
       
