@@ -7,7 +7,7 @@ import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
 import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, destinationRatings, ratingReports, activityRatingHelpfulVotes } from "@shared/schema";
+import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, destinationRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { z } from "zod";
 
@@ -2604,12 +2604,12 @@ export function registerRoutes(app: Express): Server {
       for (const codeData of codes) {
         // Check if code already exists
         const existing = await db.select()
-          .from(schema.referralCodes)
-          .where(eq(schema.referralCodes.code, codeData.code))
+          .from(referralCodes)
+          .where(eq(referralCodes.code, codeData.code))
           .limit(1);
 
         if (existing.length === 0) {
-          await db.insert(schema.referralCodes).values({
+          await db.insert(referralCodes).values({
             code: codeData.code,
             maxUses: codeData.maxUses,
             currentUses: 0,
@@ -2641,11 +2641,11 @@ export function registerRoutes(app: Express): Server {
       }
 
       const referral = await db.select()
-        .from(schema.referralCodes)
+        .from(referralCodes)
         .where(
           and(
-            eq(schema.referralCodes.code, referralCode),
-            eq(schema.referralCodes.isActive, true)
+            eq(referralCodes.code, referralCode),
+            eq(referralCodes.isActive, true)
           )
         )
         .limit(1);
@@ -2696,8 +2696,8 @@ export function registerRoutes(app: Express): Server {
 
       // Check if email already exists in interest list
       const existingEntry = await db.select()
-        .from(schema.interestList)
-        .where(eq(schema.interestList.email, email))
+        .from(interestList)
+        .where(eq(interestList.email, email))
         .limit(1);
 
       if (existingEntry.length > 0) {
@@ -2705,7 +2705,7 @@ export function registerRoutes(app: Express): Server {
       }
 
       // Add to interest list
-      await db.insert(schema.interestList).values({
+      await db.insert(interestList).values({
         fullName,
         email,
         phone,
