@@ -438,63 +438,63 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen" style={{ background: '#F5F9FC' }}>
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 max-w-7xl">
         {/* Header Moderno do Perfil */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative mb-8"
+          className="relative mb-6 sm:mb-8"
         >
-          {/* Banner dinâmico com mosaico de destinos */}
-          <div className="relative h-64 rounded-2xl overflow-hidden mb-6"
+          {/* Banner dinâmico com mosaico de destinos - responsivo */}
+          <div className="relative h-48 sm:h-56 md:h-64 rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6"
                style={{ 
                  backgroundImage: `linear-gradient(45deg, #1B2B49 0%, #41B6FF 50%, #FFA500 100%)`,
                  backgroundSize: 'cover'
                }}>
             <div className="absolute inset-0 bg-black/20"></div>
             
-            {/* Botão para alterar cover */}
+            {/* Botão para alterar cover - responsivo */}
             <button
               onClick={() => setShowCoverUpload(true)}
-              className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 sm:p-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors"
             >
-              <Camera className="h-5 w-5 text-white" />
+              <Camera className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </button>
             
-            {/* Elementos de viagem flutuantes */}
-            <div className="absolute top-4 left-4 flex gap-2">
-              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                <Plane className="h-5 w-5 text-white" />
+            {/* Elementos de viagem flutuantes - responsivo */}
+            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-1.5 sm:gap-2">
+              <div className="p-1.5 sm:p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                <Plane className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                <Luggage className="h-5 w-5 text-white" />
+              <div className="p-1.5 sm:p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                <Luggage className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                <Compass className="h-5 w-5 text-white" />
+              <div className="p-1.5 sm:p-2 bg-white/20 backdrop-blur-sm rounded-lg hidden sm:block">
+                <Compass className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
             </div>
             
-            {/* Avatar interativo com bordas gradientes pulsantes - posicionado dentro da capa */}
-            <div className="absolute bottom-6 left-8">
+            {/* Avatar interativo - posicionamento responsivo */}
+            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-8">
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full animate-pulse"></div>
                 <UserAvatar 
                   user={user}
                   size="xl"
-                  className="relative h-32 w-32 border-4 border-white shadow-xl"
+                  className="relative h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 border-4 border-white shadow-xl"
                 />
                 
-                {/* Botão para alterar avatar */}
+                {/* Botão para alterar avatar - tamanho responsivo */}
                 <button
                   onClick={() => setShowAvatarUpload(true)}
-                  className="absolute bottom-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors shadow-lg"
+                  className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-1 sm:p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors shadow-lg"
                 >
-                  <Camera className="h-4 w-4 text-gray-600" />
+                  <Camera className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
                 </button>
                 
-                {/* Badge centralizado na base inferior com design moderno - versão compacta */}
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                  <div className={`px-2 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-md border border-white/30 backdrop-blur-sm`}>
+                {/* Badge responsivo */}
+                <div className="absolute -bottom-1 sm:-bottom-2 left-1/2 transform -translate-x-1/2">
+                  <div className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r ${getTravelerLevel(userStats?.completedTrips || 0).color} shadow-md border border-white/30 backdrop-blur-sm`}>
                     {getTravelerLevel(userStats?.completedTrips || 0).level}
                   </div>
                 </div>
@@ -502,12 +502,12 @@ export default function ProfilePage() {
             </div>
           </div>
           
-          {/* Informações do perfil */}
-          <div className="ml-8 mt-4">
-            <h1 className="text-3xl font-bold mb-2" style={{ color: '#1B2B49' }}>
+          {/* Informações do perfil - layout responsivo */}
+          <div className="px-4 sm:px-6 md:ml-8 mt-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2" style={{ color: '#1B2B49' }}>
               {user.fullName}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 mb-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 text-sm sm:text-base">
               <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
                 <MapPin className="h-4 w-4" />
                 <span>{user.location}</span>
@@ -530,8 +530,8 @@ export default function ProfilePage() {
               )}
             </div>
             
-            {/* Bio editável */}
-            <p className="text-gray-600 max-w-2xl mb-4">
+            {/* Bio editável - responsivo */}
+            <p className="text-gray-600 max-w-2xl mb-3 sm:mb-4 text-sm sm:text-base leading-relaxed">
               {user.bio || "Aventureiro em busca de novas experiências e conexões incríveis!"}
             </p>
             
@@ -589,33 +589,38 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        <Tabs defaultValue="stats" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 h-14 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
-            <TabsTrigger value="stats" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl">
-              <Award className="h-4 w-4 mr-2" />
-              Estatísticas
+        <Tabs defaultValue="stats" className="space-y-6 sm:space-y-8">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-12 sm:h-14 bg-white/80 backdrop-blur-sm border-0 shadow-lg rounded-2xl gap-1 p-1">
+            <TabsTrigger value="stats" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
+              <Award className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Estatísticas</span>
+              <span className="sm:hidden">Stats</span>
             </TabsTrigger>
-            <TabsTrigger value="partiuamigos" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-xl">
-              <Gift className="h-4 w-4 mr-2" />
-              PartiuAmigos
+            <TabsTrigger value="partiuamigos" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
+              <Gift className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">PartiuAmigos</span>
+              <span className="sm:hidden">Amigos</span>
             </TabsTrigger>
-            <TabsTrigger value="connections" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-xl">
-              <Users className="h-4 w-4 mr-2" />
-              Conexões
+            <TabsTrigger value="connections" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden lg:inline">Conexões</span>
+              <span className="lg:hidden">Rede</span>
             </TabsTrigger>
-            <TabsTrigger value="achievements" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white rounded-xl">
-              <Trophy className="h-4 w-4 mr-2" />
-              Conquistas
+            <TabsTrigger value="achievements" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
+              <Trophy className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden lg:inline">Conquistas</span>
+              <span className="lg:hidden">Prêmios</span>
             </TabsTrigger>
-            <TabsTrigger value="profile" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-500 data-[state=active]:to-gray-600 data-[state=active]:text-white rounded-xl">
-              <Settings className="h-4 w-4 mr-2" />
-              Configurações
+            <TabsTrigger value="profile" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-500 data-[state=active]:to-gray-600 data-[state=active]:text-white rounded-xl text-xs sm:text-sm">
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden lg:inline">Configurações</span>
+              <span className="lg:hidden">Config</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Aba de Estatísticas */}
-          <TabsContent value="stats" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <TabsContent value="stats" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
               {/* Total de Viagens */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -737,8 +742,8 @@ export default function ProfilePage() {
           </TabsContent>
 
           {/* Aba do Programa PartiuAmigos */}
-          <TabsContent value="partiuamigos" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="partiuamigos" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Código de Indicação */}
               <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
                 <CardHeader>
@@ -758,7 +763,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Button
                         onClick={copyReferralCode}
                         variant="outline"
@@ -772,7 +777,8 @@ export default function ProfilePage() {
                         className="flex-1 bg-green-500 hover:bg-green-600"
                       >
                         <MessageCircle className="h-4 w-4 mr-2" />
-                        WhatsApp
+                        <span className="hidden sm:inline">WhatsApp</span>
+                        <span className="sm:hidden">WhatsApp</span>
                       </Button>
                       <Button
                         onClick={shareByEmail}
@@ -862,16 +868,18 @@ export default function ProfilePage() {
           </TabsContent>
 
           {/* Aba de Conexões */}
-          <TabsContent value="connections" className="space-y-6">
+          <TabsContent value="connections" className="space-y-4 sm:space-y-6">
             {/* Minha Rede de Companheiros */}
             <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2" style={{ color: '#1B2B49' }}>
-                  <Users className="h-5 w-5" />
-                  Minha Rede de Companheiros ({travelCompanions?.length || 0})
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl" style={{ color: '#1B2B49' }}>
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Minha Rede de Companheiros</span>
+                  <span className="sm:hidden">Minha Rede</span>
+                  <span className="text-sm font-normal">({travelCompanions?.length || 0})</span>
                 </CardTitle>
-                <CardDescription>
-                  Companheiros de viagem que você conheceu em suas jornadas
+                <CardDescription className="text-sm">
+                  Companheiros de viagem que você conheceu
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -880,7 +888,7 @@ export default function ProfilePage() {
                     <LoadingSpinner />
                   </div>
                 ) : travelCompanions && travelCompanions.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {travelCompanions.map((companion: any) => (
                       <motion.div
                         key={companion.id}
@@ -890,57 +898,57 @@ export default function ProfilePage() {
                         className="relative group"
                       >
                         <Card className="hover:shadow-lg transition-shadow duration-200 border-0 bg-gradient-to-br from-white to-gray-50">
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                              <div className="relative">
+                          <CardContent className="p-3 sm:p-4">
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <div className="relative flex-shrink-0">
                                 <UserAvatar 
                                   user={companion}
                                   size="md"
-                                  className="h-12 w-12 border-2 border-white shadow-md"
+                                  className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-white shadow-md"
                                 />
                                 {companion.isVerified && (
-                                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                                    <Check className="h-2 w-2 text-white" />
+                                  <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                                    <Check className="h-1.5 w-1.5 sm:h-2 sm:w-2 text-white" />
                                   </div>
                                 )}
                               </div>
                               
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between">
-                                  <h3 className="font-semibold text-sm truncate" style={{ color: '#1B2B49' }}>
+                                  <h3 className="font-semibold text-xs sm:text-sm truncate" style={{ color: '#1B2B49' }}>
                                     {companion.fullName}
                                   </h3>
                                   
-                                  {/* Menu de ações */}
+                                  {/* Menu de ações - responsivo */}
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <MoreVertical className="h-4 w-4" />
+                                      <Button variant="ghost" size="sm" className="h-6 w-6 sm:h-8 sm:w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4" />
                                       </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-48">
+                                    <DropdownMenuContent align="end" className="w-40 sm:w-48">
                                       <DropdownMenuItem onClick={() => handleRateCompanion(companion)}>
-                                        <Star className="mr-2 h-4 w-4" />
-                                        Avaliar Companheiro
+                                        <Star className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                                        <span className="text-xs sm:text-sm">Avaliar</span>
                                       </DropdownMenuItem>
                                       <DropdownMenuItem 
                                         onClick={() => handleRemoveCompanion(companion.id)}
                                         className="text-red-600 hover:text-red-700"
                                       >
-                                        <UserMinus className="mr-2 h-4 w-4" />
-                                        Remover da Rede
+                                        <UserMinus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                                        <span className="text-xs sm:text-sm">Remover</span>
                                       </DropdownMenuItem>
                                     </DropdownMenuContent>
                                   </DropdownMenu>
                                 </div>
                                 
-                                <p className="text-xs text-gray-600 mb-2">
+                                <p className="text-xs text-gray-600 mb-1 sm:mb-2 truncate">
                                   {companion.location}
                                 </p>
                                 
-                                <div className="flex items-center gap-2 mb-2">
-                                  <div className="flex items-center gap-1">
-                                    <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                                <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2 flex-wrap">
+                                  <div className="flex items-center gap-0.5 sm:gap-1">
+                                    <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-yellow-400 fill-current" />
                                     <span className="text-xs font-medium">
                                       {companion.averageRating || '5.0'}
                                     </span>
@@ -951,7 +959,7 @@ export default function ProfilePage() {
                                   </span>
                                 </div>
                                 
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-gray-500 hidden sm:block">
                                   Última viagem: {companion.lastTrip ? new Date(companion.lastTrip).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }) : 'Recente'}
                                 </div>
                               </div>
@@ -1027,8 +1035,8 @@ export default function ProfilePage() {
           </TabsContent>
 
           {/* Aba de Conquistas */}
-          <TabsContent value="achievements" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <TabsContent value="achievements" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {getAchievements().map((achievement, index) => (
                 <motion.div
                   key={achievement.name}
@@ -1037,16 +1045,16 @@ export default function ProfilePage() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-full ${achievement.color.replace('text-', 'bg-')}/20`}>
-                          <achievement.icon className={`h-8 w-8 ${achievement.color}`} />
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <div className={`p-2 sm:p-3 rounded-full ${achievement.color.replace('text-', 'bg-')}/20 flex-shrink-0`}>
+                          <achievement.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${achievement.color}`} />
                         </div>
-                        <div>
-                          <h3 className="font-bold text-lg" style={{ color: '#1B2B49' }}>
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-sm sm:text-lg truncate" style={{ color: '#1B2B49' }}>
                             {achievement.name}
                           </h3>
-                          <p className="text-sm" style={{ color: '#AAB0B7' }}>
+                          <p className="text-xs sm:text-sm" style={{ color: '#AAB0B7' }}>
                             {achievement.description}
                           </p>
                         </div>
@@ -1063,14 +1071,14 @@ export default function ProfilePage() {
                 transition={{ delay: 0.5 }}
               >
                 <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg opacity-50">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-full bg-gray-200">
-                        <DollarSign className="h-8 w-8 text-gray-400" />
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="p-2 sm:p-3 rounded-full bg-gray-200 flex-shrink-0">
+                        <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-lg text-gray-400">Economista</h3>
-                        <p className="text-sm text-gray-400">
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-sm sm:text-lg text-gray-400 truncate">Economista</h3>
+                        <p className="text-xs sm:text-sm text-gray-400">
                           Economize R$1000+ em viagens
                         </p>
                       </div>
@@ -1089,24 +1097,24 @@ export default function ProfilePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
+                <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="text-center p-3 sm:p-4 bg-blue-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-blue-600">
                       {(userStats?.completedTrips || 0) * 100}
                     </div>
-                    <div className="text-sm text-gray-600">Pontos XP</div>
+                    <div className="text-xs sm:text-sm text-gray-600">Pontos XP</div>
                   </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
+                  <div className="text-center p-3 sm:p-4 bg-green-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-green-600 truncate">
                       {getTravelerLevel(userStats?.completedTrips || 0).level}
                     </div>
-                    <div className="text-sm text-gray-600">Nível Atual</div>
+                    <div className="text-xs sm:text-sm text-gray-600">Nível</div>
                   </div>
-                  <div className="text-center p-4 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">
+                  <div className="text-center p-3 sm:p-4 bg-orange-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-orange-600">
                       {getAchievements().length}
                     </div>
-                    <div className="text-sm text-gray-600">Conquistas</div>
+                    <div className="text-xs sm:text-sm text-gray-600">Conquistas</div>
                   </div>
                 </div>
               </CardContent>
@@ -1114,18 +1122,19 @@ export default function ProfilePage() {
           </TabsContent>
 
           {/* Profile Tab */}
-          <TabsContent value="profile" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <TabsContent value="profile" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Profile Card */}
               <Card className="lg:col-span-2">
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      Informações Pessoais
+                    <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                      <User className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <span className="hidden sm:inline">Informações Pessoais</span>
+                      <span className="sm:hidden">Perfil</span>
                     </CardTitle>
-                    <CardDescription>
-                      Atualize suas informações para melhor experiência
+                    <CardDescription className="text-sm">
+                      Atualize suas informações
                     </CardDescription>
                   </div>
                   <Button
@@ -1133,6 +1142,7 @@ export default function ProfilePage() {
                     size="sm"
                     onClick={() => setIsEditing(!isEditing)}
                     disabled={updateProfileMutation.isPending}
+                    className="w-full sm:w-auto"
                   >
                     <Edit3 className="h-4 w-4 mr-2" />
                     {isEditing ? "Cancelar" : "Editar"}
@@ -1140,7 +1150,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={form.handleSubmit(handleUpdateProfile)} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="fullName">Nome Completo</Label>
                         <Input
