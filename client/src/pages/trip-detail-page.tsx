@@ -360,10 +360,15 @@ function ActivitiesTimeline({
     try {
       // Save to backend if trip is provided
       if (trip) {
-        await apiRequest(`/api/trips/${trip.id}`, {
+        const response = await fetch(`/api/trips/${trip.id}`, {
           method: 'PATCH',
-          body: { plannedActivities: updatedActivities }
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ plannedActivities: updatedActivities })
         });
+        if (!response.ok) throw new Error('Failed to save');
       }
       
       onActivitiesChange(updatedActivities);
@@ -390,10 +395,15 @@ function ActivitiesTimeline({
     try {
       // Save to backend if trip is provided
       if (trip) {
-        await apiRequest(`/api/trips/${trip.id}`, {
+        const response = await fetch(`/api/trips/${trip.id}`, {
           method: 'PATCH',
-          body: { plannedActivities: updatedActivities }
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ plannedActivities: updatedActivities })
         });
+        if (!response.ok) throw new Error('Failed to delete');
       }
       
       onActivitiesChange(updatedActivities);
@@ -418,7 +428,7 @@ function ActivitiesTimeline({
       id: Date.now().toString(),
       title: newActivity.title,
       description: newActivity.description,
-      category: newActivity.category || 'sightseeing',
+      category: (newActivity.category as any) || 'sightseeing',
       priority: newActivity.priority || 'medium',
       estimatedCost: newActivity.estimatedCost,
       duration: newActivity.duration,
@@ -426,7 +436,8 @@ function ActivitiesTimeline({
       scheduledDate: newActivity.scheduledDate || tripStartDate,
       notes: newActivity.notes,
       completed: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      status: 'planned'
     };
     
     const updatedActivities = [...activities, activity];
@@ -434,10 +445,15 @@ function ActivitiesTimeline({
     try {
       // Save to backend if trip is provided
       if (trip) {
-        await apiRequest(`/api/trips/${trip.id}`, {
+        const response = await fetch(`/api/trips/${trip.id}`, {
           method: 'PATCH',
-          body: { plannedActivities: updatedActivities }
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ plannedActivities: updatedActivities })
         });
+        if (!response.ok) throw new Error('Failed to add');
       }
       
       onActivitiesChange(updatedActivities);
@@ -1797,31 +1813,11 @@ export default function TripDetailPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActiveTab("overview")}
-                      className="bg-white/70 hover:bg-white"
-                    >
-                      <Star className="h-4 w-4 mr-2" />
-                      Visão Geral
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setActiveTab("expenses")}
-                      className="bg-white/70 hover:bg-white"
-                    >
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Despesas
-                    </Button>
-                  </div>
                 </div>
 
                 {(isCreator || isParticipant) ? (
                   <AdvancedActivityManager 
-                    activities={plannedActivities}
+                    activities={plannedActivities as any}
                     onActivitiesChange={handleActivitiesChange}
                     tripDestination={trip.destination}
                     trip={trip}
