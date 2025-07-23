@@ -59,13 +59,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Mutation para login
   const loginMutation = useMutation<User, Error, LoginData>({
-    mutationFn: async (userData: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", userData);
+    mutationFn: async (loginData: LoginData) => {
+      const res = await apiRequest("POST", "/api/auth/login", loginData);
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || "Erro no login");
       }
-      return await res.json();
+      
+      const userData = await res.json();
+      
+      // Parse JSON string fields if they exist
+      if (typeof userData.languages === 'string') {
+        try {
+          userData.languages = JSON.parse(userData.languages);
+        } catch (e) {
+          userData.languages = [];
+        }
+      }
+      
+      if (typeof userData.interests === 'string') {
+        try {
+          userData.interests = JSON.parse(userData.interests);
+        } catch (e) {
+          userData.interests = [];
+        }
+      }
+      
+      if (typeof userData.travelStyles === 'string') {
+        try {
+          userData.travelStyles = JSON.parse(userData.travelStyles);
+        } catch (e) {
+          userData.travelStyles = [];
+        }
+      }
+      
+      return userData;
     },
     onSuccess: (userData: User & { sessionId?: string }) => {
       // Store session ID in localStorage for authentication fallback
@@ -97,13 +125,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Mutation para registro
   const registerMutation = useMutation<User, Error, RegisterData>({
-    mutationFn: async (userData: RegisterData) => {
-      const res = await apiRequest("POST", "/api/register", userData);
+    mutationFn: async (registerData: RegisterData) => {
+      const res = await apiRequest("POST", "/api/auth/register", registerData);
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || "Erro no registro");
       }
-      return await res.json();
+      
+      const userData = await res.json();
+      
+      // Parse JSON string fields if they exist
+      if (typeof userData.languages === 'string') {
+        try {
+          userData.languages = JSON.parse(userData.languages);
+        } catch (e) {
+          userData.languages = [];
+        }
+      }
+      
+      if (typeof userData.interests === 'string') {
+        try {
+          userData.interests = JSON.parse(userData.interests);
+        } catch (e) {
+          userData.interests = [];
+        }
+      }
+      
+      if (typeof userData.travelStyles === 'string') {
+        try {
+          userData.travelStyles = JSON.parse(userData.travelStyles);
+        } catch (e) {
+          userData.travelStyles = [];
+        }
+      }
+      
+      return userData;
     },
     onSuccess: (userData: User & { sessionId?: string }) => {
       // Store session ID in localStorage for authentication fallback
