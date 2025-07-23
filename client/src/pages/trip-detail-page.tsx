@@ -1587,7 +1587,6 @@ export default function TripDetailPage() {
                       </div>
                     </div>
                   </motion.button>
-
                   <motion.button
                     onClick={() => setActiveTab("activities")}
                     className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 text-left group"
