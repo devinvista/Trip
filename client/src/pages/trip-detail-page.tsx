@@ -1131,7 +1131,7 @@ export default function TripDetailPage() {
   const handleActivitiesChange = React.useCallback(async (newActivities: PlannedActivity[]) => {
     setPlannedActivities(newActivities);
     
-    if (!trip) return;
+    if (!trip || !isCreator) return; // Only allow creator to edit
     
     // Save to database asynchronously
     setTimeout(async () => {
@@ -1157,7 +1157,7 @@ export default function TripDetailPage() {
         });
       }
     }, 100);
-  }, [id, trip, queryClient, toast]);
+  }, [id, trip, isCreator, queryClient, toast]);
 
   const { data: expenses = [] } = useQuery<any[]>({
     queryKey: ["/api/trips", id, "expenses"],

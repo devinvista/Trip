@@ -42,27 +42,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { activityCategories } from '@shared/schema';
 
-// Types
-interface PlannedActivity {
-  id: string;
-  title: string;
-  description?: string;
-  category: string;
-  location?: string;
-  estimatedCost?: number;
-  duration?: string;
-  priority: 'high' | 'medium' | 'low';
-  attachments?: Array<{
-    name: string;
-    url: string;
-    type: 'image' | 'document' | 'video' | 'other';
-  }>;
-  urls?: string[];
-  notes?: string;
-  dateTime?: string;
-  status: 'planned' | 'booked' | 'completed' | 'cancelled';
-  createdAt?: string;
-}
+// Import PlannedActivity from shared schema
+import { PlannedActivity } from '@shared/schema';
 
 // Priority colors
 const priorityColors = {
@@ -792,16 +773,16 @@ function ActivitySearchTab({
       id: Date.now().toString(),
       title: selectedActivity.title,
       description: selectedActivity.description,
-      category: selectedActivity.category,
+      category: selectedActivity.category as PlannedActivity['category'],
       location: selectedActivity.location,
       estimatedCost: estimatedCost,
       duration: selectedActivity.duration || "A definir",
-      priority: "medium",
+      priority: "medium" as PlannedActivity['priority'],
       attachments: [],
       urls: [],
       notes: `Atividade encontrada na busca\nPreço original: R$ ${selectedActivity.priceAmount || 0}\nParticipantes: ${participants}`,
       dateTime: selectedDate || undefined,
-      status: "planned"
+      status: "planned" as PlannedActivity['status']
     };
 
     onSave(newActivity);
@@ -1048,8 +1029,8 @@ function ActivityFormTab({
       id: activity?.id || Date.now().toString(),
       title: formData.title,
       description: formData.description,
-      category: formData.category as any,
-      priority: formData.priority as any,
+      category: formData.category as PlannedActivity['category'],
+      priority: formData.priority as PlannedActivity['priority'],
       estimatedCost: formData.estimatedCost,
       duration: formData.duration,
       location: formData.location,
@@ -1380,7 +1361,7 @@ function EditActivityForm({
       estimatedCost: formData.estimatedCost,
       dateTime: formData.dateTime,
       notes: formData.notes,
-      priority: formData.priority as 'high' | 'medium' | 'low',
+      priority: formData.priority as PlannedActivity['priority'],
       duration: formData.duration,
       location: formData.location
     };
