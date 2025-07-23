@@ -1457,50 +1457,161 @@ export default function TripDetailPage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-3 order-2 lg:order-1"
           >
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-              <TabsList className="grid w-full grid-cols-4 bg-gray-100 rounded-lg p-1">
-                <TabsTrigger 
-                  value="overview" 
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
-                >
-                  <Star className="h-4 w-4" />
-                  <span className="hidden sm:inline">Visão Geral</span>
-                  <span className="sm:hidden">Visão</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="activities" 
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
-                >
-                  <Target className="h-4 w-4" />
-                  <span>Atividades</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="expenses" 
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
-                >
-                  <DollarSign className="h-4 w-4" />
-                  <span>Despesas</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="participants" 
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-md font-medium transition-all duration-200 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600 text-sm"
-                >
-                  <Users className="h-4 w-4" />
-                  <span className="hidden sm:inline">Participantes</span>
-                  <span className="sm:hidden">Pessoas</span>
-                </TabsTrigger>
-              </TabsList>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              {/* Enhanced Tab Navigation */}
+              <div className="bg-white border border-gray-200 rounded-xl p-2 shadow-sm">
+                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-transparent gap-1 h-auto">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
+                  >
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <Star className="h-4 w-4 group-data-[state=active]:text-blue-600" />
+                      <span className="text-xs sm:text-sm font-medium">
+                        <span className="hidden sm:inline">Visão Geral</span>
+                        <span className="sm:hidden">Visão</span>
+                      </span>
+                    </div>
+                    {/* Progress indicator for active tab */}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="activities" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
+                  >
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <Target className="h-4 w-4 group-data-[state=active]:text-blue-600" />
+                      <span className="text-xs sm:text-sm font-medium">Atividades</span>
+                    </div>
+                    {plannedActivities.length > 0 && (
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                        {plannedActivities.length}
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="expenses" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
+                  >
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <DollarSign className="h-4 w-4 group-data-[state=active]:text-blue-600" />
+                      <span className="text-xs sm:text-sm font-medium">Despesas</span>
+                    </div>
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                  </TabsTrigger>
+                  
+                  <TabsTrigger 
+                    value="participants" 
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
+                  >
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <Users className="h-4 w-4 group-data-[state=active]:text-blue-600" />
+                      <span className="text-xs sm:text-sm font-medium">
+                        <span className="hidden sm:inline">Participantes</span>
+                        <span className="sm:hidden">Pessoas</span>
+                      </span>
+                    </div>
+                    {trip.participants && trip.participants.length > 0 && (
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                        {getRealParticipantsCount(trip)}
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Tab Content Indicators */}
+                <div className="mt-4 flex justify-center">
+                  <div className="flex items-center gap-1">
+                    {["overview", "activities", "expenses", "participants"].map((tab, index) => (
+                      <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          activeTab === tab ? 'bg-blue-600 w-6' : 'bg-gray-300 hover:bg-gray-400'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
 
               <TabsContent value="overview" className="space-y-6">
+                {/* Quick Navigation Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                  <motion.button
+                    onClick={() => setActiveTab("activities")}
+                    className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 text-left group"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-500 rounded-lg group-hover:bg-blue-600 transition-colors">
+                        <Target className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">Atividades</div>
+                        <div className="text-sm text-gray-600">
+                          {plannedActivities.length} {plannedActivities.length === 1 ? 'atividade' : 'atividades'}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => setActiveTab("expenses")}
+                    className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 hover:from-green-100 hover:to-emerald-100 transition-all duration-300 text-left group"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-500 rounded-lg group-hover:bg-green-600 transition-colors">
+                        <DollarSign className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">Despesas</div>
+                        <div className="text-sm text-gray-600">
+                          R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    onClick={() => setActiveTab("participants")}
+                    className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4 hover:from-purple-100 hover:to-pink-100 transition-all duration-300 text-left group"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-purple-500 rounded-lg group-hover:bg-purple-600 transition-colors">
+                        <Users className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900">Participantes</div>
+                        <div className="text-sm text-gray-600">
+                          {getRealParticipantsCount(trip)}/{trip.maxParticipants} pessoas
+                        </div>
+                      </div>
+                    </div>
+                  </motion.button>
+                </div>
+
                 {/* Description */}
-                <Card className="bg-white shadow-sm border border-gray-200">
+                <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-900">
+                    <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-900">
+                      <div className="p-2 bg-blue-500 rounded-lg">
+                        <Info className="h-5 w-5 text-white" />
+                      </div>
                       Sobre a Viagem
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-gray-700 leading-relaxed text-base">
                       {trip.description || "Descrição não disponível"}
                     </p>
                   </CardContent>
@@ -1673,6 +1784,41 @@ export default function TripDetailPage() {
               </TabsContent>
 
               <TabsContent value="activities" className="space-y-6">
+                {/* Tab Header with Navigation */}
+                <div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 rounded-lg">
+                      <Target className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">Atividades da Viagem</h2>
+                      <p className="text-sm text-gray-600">
+                        {plannedActivities.length} {plannedActivities.length === 1 ? 'atividade planejada' : 'atividades planejadas'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("overview")}
+                      className="bg-white/70 hover:bg-white"
+                    >
+                      <Star className="h-4 w-4 mr-2" />
+                      Visão Geral
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("expenses")}
+                      className="bg-white/70 hover:bg-white"
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Despesas
+                    </Button>
+                  </div>
+                </div>
+
                 {(isCreator || isParticipant) ? (
                   <AdvancedActivityManager 
                     activities={plannedActivities}
@@ -1704,6 +1850,41 @@ export default function TripDetailPage() {
               </TabsContent>
 
               <TabsContent value="expenses" className="space-y-6">
+                {/* Tab Header with Navigation */}
+                <div className="flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-500 rounded-lg">
+                      <DollarSign className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">Gestão Financeira</h2>
+                      <p className="text-sm text-gray-600">
+                        Total: R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("activities")}
+                      className="bg-white/70 hover:bg-white"
+                    >
+                      <Target className="h-4 w-4 mr-2" />
+                      Atividades
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("participants")}
+                      className="bg-white/70 hover:bg-white"
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      Participantes
+                    </Button>
+                  </div>
+                </div>
+
                 <Card className="bg-white shadow-sm border border-gray-200">
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold text-gray-900">
@@ -1733,6 +1914,41 @@ export default function TripDetailPage() {
               </TabsContent>
 
               <TabsContent value="participants" className="space-y-6">
+                {/* Tab Header with Navigation */}
+                <div className="flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-500 rounded-lg">
+                      <Users className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900">Companheiros de Viagem</h2>
+                      <p className="text-sm text-gray-600">
+                        {getRealParticipantsCount(trip)} de {trip.maxParticipants} vagas ocupadas
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("overview")}
+                      className="bg-white/70 hover:bg-white"
+                    >
+                      <Star className="h-4 w-4 mr-2" />
+                      Visão Geral
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveTab("expenses")}
+                      className="bg-white/70 hover:bg-white"
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Despesas
+                    </Button>
+                  </div>
+                </div>
+
                 <Card className="bg-white shadow-sm border border-gray-200">
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold text-gray-900">
