@@ -8,7 +8,7 @@ import { syncTripParticipants } from "./sync-participants.js";
 import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
 import { db } from "./db";
 import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, destinationRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { z } from "zod";
 
 // Middleware para verificar autenticação
@@ -784,10 +784,26 @@ export function registerRoutes(app: Express): Server {
       // Generate referral code based on username and user ID
       const referralCode = `PARTIU-${username}${userId.toString().padStart(2, '0')}`;
       
-      // For now, return empty referred users (would need referral system implementation)
+      // Find all users who were referred by this user's referral code (excluding self-referrals)
+      const referredUsers = await db.select({
+        id: users.id,
+        fullName: users.fullName,
+        email: users.email,
+        createdAt: users.createdAt,
+        isVerified: users.isVerified
+      })
+      .from(users)
+      .where(and(
+        eq(users.referredBy, referralCode),
+        ne(users.id, userId) // Exclude self-referrals
+      ));
+      
+      console.log(`🔍 Buscando usuários indicados por código: ${referralCode}`);
+      console.log(`📋 Encontrados ${referredUsers.length} usuários indicados`);
+      
       const referralData = {
         code: referralCode,
-        referredUsers: []
+        referredUsers: referredUsers
       };
       
       res.json(referralData);
