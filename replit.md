@@ -342,3 +342,5 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 23, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - todas as funcionalidades operacionais incluindo sistema de indicações, avaliações, viagens e chat em tempo real
 - July 23, 2025. **SISTEMA DE CÓDIGOS DE INDICAÇÃO CORRIGIDO**: Corrigido erro "schema is not defined" no sistema de validação de códigos de indicação - todos os imports corrigidos e funcionalidade restaurada
 - July 23, 2025. **CÓDIGOS DE INDICAÇÃO FUNCIONAIS**: Sistema de códigos de indicação totalmente operacional - códigos PARTIU-TOM01 e outros códigos padrão funcionando corretamente
+- July 23, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - aplicação 100% funcional no ambiente padrão
+- July 23, 2025. **INTERFACE DE ORÇAMENTO APRIMORADA**: Alterado "Custo Individual" para "Custo Individual com Atividades" e ajustado cálculo de progresso para usar orçamento total (base + atividades)

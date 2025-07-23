@@ -2089,7 +2089,7 @@ export default function TripDetailPage() {
                     <div className="text-center space-y-0.5">
                       <div className="flex items-center justify-center gap-1.5">
                         <Users className="h-3 w-3 text-blue-600" />
-                        <span className="text-xs font-medium text-blue-900">Custo Individual</span>
+                        <span className="text-xs font-medium text-blue-900">Custo Individual com Atividades</span>
                       </div>
                       <div className="text-base font-bold text-blue-900 tabular-nums">
                         R$ {getParticipantsForBudgetCalculation(trip) > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / getParticipantsForBudgetCalculation(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
@@ -2105,17 +2105,17 @@ export default function TripDetailPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-gray-700">Progresso</span>
                       <span className="text-xs font-semibold text-gray-900 tabular-nums">
-                        {Math.round((calculateTotalExpenses() / (trip.budget || 1)) * 100)}%
+                        {Math.round((calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(plannedActivities) || 1)) * 100)}%
                       </span>
                     </div>
                     <div className="space-y-1">
                       <Progress 
-                        value={Math.min(100, (calculateTotalExpenses() / (trip.budget || 1)) * 100)} 
+                        value={Math.min(100, (calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(plannedActivities) || 1)) * 100)} 
                         className="h-1.5 bg-gray-200"
                       />
                       <div className="flex justify-between text-xs text-gray-500">
                         <span>R$ {calculateTotalExpenses().toLocaleString('pt-BR')}</span>
-                        <span>R$ {(trip.budget || 0).toLocaleString('pt-BR')}</span>
+                        <span>R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}</span>
                       </div>
                     </div>
                   </div>
