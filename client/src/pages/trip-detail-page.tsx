@@ -1476,7 +1476,7 @@ export default function TripDetailPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               {/* Enhanced Tab Navigation */}
               <div className="bg-white border border-gray-200 rounded-xl p-2 shadow-sm">
-                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 bg-transparent gap-1 h-auto">
+                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-transparent gap-1 h-auto">
                   <TabsTrigger 
                     value="overview" 
                     className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
@@ -1520,20 +1520,6 @@ export default function TripDetailPage() {
                   </TabsTrigger>
                   
                   <TabsTrigger 
-                    value="budget" 
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
-                  >
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <Calculator className="h-4 w-4 group-data-[state=active]:text-blue-600" />
-                      <span className="text-xs sm:text-sm font-medium">
-                        <span className="hidden sm:inline">Orçamento</span>
-                        <span className="sm:hidden">$$$</span>
-                      </span>
-                    </div>
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
-                  </TabsTrigger>
-                  
-                  <TabsTrigger 
                     value="participants" 
                     className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-3 py-3 sm:py-2 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-sm data-[state=active]:border data-[state=active]:border-blue-200 text-gray-600 hover:bg-gray-50 group relative"
                   >
@@ -1556,7 +1542,7 @@ export default function TripDetailPage() {
                 {/* Tab Content Indicators */}
                 <div className="mt-4 flex justify-center">
                   <div className="flex items-center gap-1">
-                    {["overview", "activities", "expenses", "budget", "participants"].map((tab, index) => (
+                    {["overview", "activities", "expenses", "participants"].map((tab, index) => (
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -1571,7 +1557,7 @@ export default function TripDetailPage() {
 
               <TabsContent value="overview" className="space-y-6">
                 {/* Quick Navigation Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                   <motion.button
                     onClick={() => setActiveTab("activities")}
                     className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 text-left group"
@@ -1605,25 +1591,6 @@ export default function TripDetailPage() {
                         <div className="font-semibold text-gray-900">Despesas</div>
                         <div className="text-sm text-gray-600">
                           R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.button>
-
-                  <motion.button
-                    onClick={() => setActiveTab("budget")}
-                    className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-4 hover:from-indigo-100 hover:to-blue-100 transition-all duration-300 text-left group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-indigo-500 rounded-lg group-hover:bg-indigo-600 transition-colors">
-                        <Calculator className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">Orçamento</div>
-                        <div className="text-sm text-gray-600">
-                          R$ {getParticipantsForBudgetCalculation(trip) > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / getParticipantsForBudgetCalculation(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : '0'} cada
                         </div>
                       </div>
                     </div>
@@ -1916,76 +1883,6 @@ export default function TripDetailPage() {
                             Solicitar Participação
                           </Button>
                         )}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="budget" className="space-y-6">
-                {/* Tab Header */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500 rounded-lg">
-                      <Calculator className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-900">Orçamento Detalhado</h2>
-                      <p className="text-sm text-gray-600">
-                        Planejamento financeiro completo da viagem
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <Card className="bg-white shadow-sm border border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                      Detalhamento do Orçamento
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {(isCreator || isParticipant) ? (
-                      <BudgetVisualization 
-                        trip={trip}
-                        plannedActivities={plannedActivities}
-                        showCategories={trip.budgetBreakdown !== null}
-                        isEditable={isCreator}
-                      />
-                    ) : (
-                      <div className="text-center py-8">
-                        <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
-                          <Calculator className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                            Orçamento Planejado
-                          </h3>
-                          <p className="text-gray-600 mb-4">
-                            Entre na viagem para ver o detalhamento completo do orçamento e participar do planejamento financeiro!
-                          </p>
-                          <div className="bg-white rounded-lg p-4 border border-blue-200 mb-4">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium text-gray-700">Orçamento Total</span>
-                              <span className="text-lg font-bold text-blue-900">
-                                R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between mt-2">
-                              <span className="text-sm font-medium text-gray-700">Por Pessoa</span>
-                              <span className="text-lg font-bold text-blue-900">
-                                R$ {trip.maxParticipants > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / trip.maxParticipants).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
-                              </span>
-                            </div>
-                          </div>
-                          {canJoin && (
-                            <Button 
-                              onClick={() => setActiveTab("overview")}
-                              className="bg-blue-600 hover:bg-blue-700"
-                            >
-                              <Heart className="h-4 w-4 mr-2" />
-                              Solicitar Participação
-                            </Button>
-                          )}
-                        </div>
                       </div>
                     )}
                   </CardContent>
