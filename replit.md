@@ -4,6 +4,13 @@
 
 PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos e datas comuns para compartilhar experiências de viagem e custos. Desenvolvida como uma aplicação full-stack usando tecnologias web modernas, permite que usuários criem planos de viagem, encontrem companheiros de viagem compatíveis e coordenem despesas compartilhadas como acomodação, transporte e atividades.
 
+## Status Atual
+- **Sistema de Autenticação:** ✅ Totalmente funcional
+- **API Endpoints:** ✅ Corrigidos para `/api/auth/login` e `/api/auth/register`
+- **Parsing JSON:** ✅ Erro JSON.parse resolvido com tratamento adequado de campos string
+- **Credenciais de Teste:** tom/maria com senha "password123"
+- **Database:** ✅ MySQL com 52 atividades, 4 usuários, 18 viagens ativas
+
 ## Arquitetura do Sistema
 
 ### Arquitetura Frontend
