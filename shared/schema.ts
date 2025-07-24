@@ -25,7 +25,7 @@ export const users = mysqlTable("users", {
 
 export const trips = mysqlTable("trips", {
   id: int("id").primaryKey().autoincrement(),
-  creatorId: int("creatorId").notNull().references(() => users.id),
+  creatorId: int("creator_id").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),
   localidade: varchar("localidade", { length: 255 }).notNull(), // Changed from destination
   coverImage: text("cover_image"), // URL for trip cover image
@@ -45,27 +45,27 @@ export const trips = mysqlTable("trips", {
 
 export const tripParticipants = mysqlTable("trip_participants", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("tripId").notNull().references(() => trips.id),
-  userId: int("userId").notNull().references(() => users.id),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  userId: int("user_id").notNull().references(() => users.id),
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, accepted, rejected
-  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+  joinedAt: timestamp("joined_at").defaultNow().notNull(),
 });
 
 export const messages = mysqlTable("messages", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("tripId").notNull().references(() => trips.id),
-  senderId: int("senderId").notNull().references(() => users.id),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  senderId: int("sender_id").notNull().references(() => users.id),
   content: text("content").notNull(),
-  sentAt: timestamp("sentAt").defaultNow().notNull(),
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
 });
 
 export const tripRequests = mysqlTable("trip_requests", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("tripId").notNull().references(() => trips.id),
-  userId: int("userId").notNull().references(() => users.id),
+  tripId: int("trip_id").notNull().references(() => trips.id),
+  userId: int("user_id").notNull().references(() => users.id),
   message: text("message"),
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, accepted, rejected
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Expenses table for trip cost splitting
