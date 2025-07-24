@@ -19,7 +19,7 @@ import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { expenseCategories } from "@shared/schema";
-import { formatBrazilianCurrency, calculatePerPerson, sumValues, parseNumber } from "@shared/utils";
+import { formatBrazilianCurrency, formatBrazilianNumber, calculatePerPerson, sumValues, parseNumber } from "@shared/utils";
 
 interface ExpenseManagerProps {
   tripId: number;

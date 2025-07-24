@@ -69,7 +69,7 @@ import { ptBR } from "date-fns/locale";
 import { getRealParticipantsCount, getTripOccupancy, getParticipantsForBudgetCalculation, hasTripStarted } from "@/lib/trip-utils";
 import React, { useState, useEffect, useMemo } from "react";
 import { expenseCategories, budgetCategories, BudgetBreakdown } from "@shared/schema";
-import { formatBrazilianCurrency, calculatePerPerson, sumValues, parseNumber, calculateProgress } from "@shared/utils";
+import { formatBrazilianCurrency, formatBrazilianNumber, calculatePerPerson, sumValues, parseNumber, calculateProgress } from "@shared/utils";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { BudgetVisualization } from "@/components/budget-visualization";
 import { ExpenseManager } from "@/components/expense-manager";

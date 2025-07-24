@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { BudgetBreakdown, budgetCategories } from "@shared/schema";
 import { getParticipantsForBudgetCalculation } from "@/lib/trip-utils";
-import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
+import { formatBrazilianCurrency, formatBrazilianNumber, calculatePerPerson, sumValues } from "@shared/utils";
 
 interface BudgetVisualizationProps {
   budget: number;
