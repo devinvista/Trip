@@ -739,7 +739,7 @@ export class DatabaseStorage implements IStorage {
         location: insertUser.location || null,
         languages: insertUser.languages || null,
         interests: insertUser.interests || null,
-        travelStyle: insertUser.travelStyle || null,
+        travelStyles: insertUser.travelStyles || null,
         isVerified: false,
         verificationMethod: null,
         averageRating: "0.00",
@@ -792,7 +792,7 @@ export class DatabaseStorage implements IStorage {
       const participantTrips = await db.select({
         id: trips.id,
         title: trips.title,
-        destination: trips.destination,
+        localidade: trips.localidade,
         coverImage: trips.coverImage,
         startDate: trips.startDate,
         endDate: trips.endDate,
@@ -830,7 +830,7 @@ export class DatabaseStorage implements IStorage {
         const conditions = [eq(trips.status, 'open')];
         
         if (filters.destination) {
-          conditions.push(like(trips.destination, `%${filters.destination}%`));
+          conditions.push(like(trips.localidade, `%${filters.destination}%`));
         }
         if (filters.startDate) {
           conditions.push(gte(trips.startDate, filters.startDate));
@@ -859,7 +859,7 @@ export class DatabaseStorage implements IStorage {
   async createTrip(tripData: InsertTrip & { creatorId: number }): Promise<Trip> {
     try {
       // Automatically assign cover image if not provided
-      const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.destination, tripData.travelStyle);
+      const coverImage = tripData.coverImage || getCoverImageForDestination(tripData.localidade, tripData.travelStyle);
       
       const tripToInsert = {
         ...tripData,
@@ -952,8 +952,8 @@ export class DatabaseStorage implements IStorage {
       
       for (const trip of trips) {
         if (trip.coverImage === brokenImageUrl && 
-            (trip.destination.toLowerCase().includes('egito') || 
-             trip.destination.toLowerCase().includes('cairo'))) {
+            (trip.localidade.toLowerCase().includes('egito') || 
+             trip.localidade.toLowerCase().includes('cairo'))) {
           console.log(`🔧 Corrigindo imagem da viagem do Egito: ${trip.title}`);
           await db.update(trips).set({ coverImage: newImageUrl }).where(eq(trips.id, trip.id));
         }
@@ -2134,7 +2134,7 @@ export class DatabaseStorage implements IStorage {
         id: trips.id,
         creatorId: trips.creatorId,
         title: trips.title,
-        destination: trips.destination,
+        localidade: trips.localidade,
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
@@ -2163,7 +2163,7 @@ export class DatabaseStorage implements IStorage {
       
       const result = uniqueTrips.filter(trip => {
         // Check if trip location matches activity location (same city)
-        const tripLocation = trip.destination.toLowerCase();
+        const tripLocation = trip.localidade.toLowerCase();
         const activityLocation = location.toLowerCase();
         
         // Extract city names (before comma if present)
