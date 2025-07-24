@@ -19,7 +19,7 @@ import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { expenseCategories } from "@shared/schema";
-import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
+import { formatBrazilianCurrency, calculatePerPerson, sumValues, parseNumber } from "@shared/utils";
 
 interface ExpenseManagerProps {
   tripId: number;
@@ -136,7 +136,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
     }
 
     createExpenseMutation.mutate({
-      amount: parseFloat(newExpense.amount.replace(',', '.')),
+      amount: parseNumber(newExpense.amount),
       description: newExpense.description,
       category: newExpense.category,
       splitWith: newExpense.splitEqually ? 'all' : newExpense.splitWith,
@@ -161,8 +161,8 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
   const calculateSettlements = () => {
     const settlements: { from: any; to: any; amount: number }[] = [];
     // Create copies of balances to avoid modifying the original data
-    const creditors = balances.filter(b => b.balance > 0).map(b => ({ ...b })).sort((a, b) => b.balance - a.balance);
-    const debtors = balances.filter(b => b.balance < 0).map(b => ({ ...b })).sort((a, b) => a.balance - b.balance);
+    const creditors = balances.filter((b: any) => b.balance > 0).map((b: any) => ({ ...b })).sort((a: any, b: any) => b.balance - a.balance);
+    const debtors = balances.filter((b: any) => b.balance < 0).map((b: any) => ({ ...b })).sort((a: any, b: any) => a.balance - b.balance);
 
     let i = 0, j = 0;
     while (i < creditors.length && j < debtors.length) {
@@ -230,7 +230,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {balances.map((balance) => (
+                {balances.map((balance: any) => (
                   <div key={balance.userId} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={balance.user.profilePhoto || ""} />
@@ -427,7 +427,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {expenses.map((expense) => (
+              {expenses.map((expense: any) => (
                 <div key={expense.id} className="border rounded-lg p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div>
@@ -449,7 +449,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                   <div>
                     <p className="text-sm font-medium mb-2">Divisão:</p>
                     <div className="space-y-1">
-                      {expense.splits.map((split) => (
+                      {expense.splits.map((split: any) => (
                         <div key={split.id} className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6">

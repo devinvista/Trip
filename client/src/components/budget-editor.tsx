@@ -11,7 +11,7 @@ import { Edit3, DollarSign, Calculator, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { budgetCategories, BudgetBreakdown } from "@shared/schema";
-import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
+import { formatBrazilianCurrency, calculatePerPerson, sumValues, parseNumber } from "@shared/utils";
 
 interface BudgetEditorProps {
   tripId: number;
@@ -73,13 +73,13 @@ export function BudgetEditor({
   });
 
   const calculateTotalFromBreakdown = () => {
-    return Object.values(budgetBreakdown).reduce((sum, value) => sum + (value || 0), 0);
+    return sumValues(Object.values(budgetBreakdown));
   };
 
   const handleBudgetBreakdownChange = (category: string, value: number) => {
     setBudgetBreakdown(prev => ({
       ...prev,
-      [category]: value || undefined
+      [category]: parseNumber(value) || undefined
     }));
   };
 
@@ -107,7 +107,7 @@ export function BudgetEditor({
 
     updateBudgetMutation.mutate({
       budget: finalBudget,
-      budgetBreakdown: finalBreakdown
+      budgetBreakdown: finalBreakdown || undefined
     });
   };
 

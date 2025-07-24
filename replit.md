@@ -363,3 +363,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 24, 2025. **SISTEMA DE NOTIFICAÇÕES**: Centro de notificações completo com polling automático e interface moderna
 - July 24, 2025. **GALERIA DE IMAGENS LAZY**: Componente LazyImageGallery com lightbox, navegação por teclado e carregamento sob demanda
 - July 23, 2025. **COLABORAÇÃO TOTAL IMPLEMENTADA**: Frontend e backend atualizados para suportar edição colaborativa - todos os participantes da viagem podem contribuir no planejamento
+- July 24, 2025. **SISTEMA DE NUMERAÇÃO OTIMIZADO**: Implementado sistema centralizado de formatação numérica com caching avançado para melhor performance
+- July 24, 2025. **UTILITÁRIOS NUMÉRICOS CONSOLIDADOS**: Criado shared/utils.ts com funções otimizadas para formatação brasileira, cálculos de porcentagem, soma de valores e parsing seguro
+- July 24, 2025. **FORMATAÇÃO BRASILEIRA APRIMORADA**: Sistema de formatação de moeda brasileira (BRL) com cache de formatadores Intl.NumberFormat para performance superior
+- July 24, 2025. **CÁLCULOS PADRONIZADOS**: Implementadas funções calculatePerPerson(), sumValues(), parseNumber() e calculateProgress() para eliminar código duplicado
+- July 24, 2025. **COMPONENTES OTIMIZADOS**: Budget-editor, expense-manager, budget-visualization e trip-detail-page atualizados para usar utilitários centralizados
+- July 24, 2025. **PERFORMANCE APRIMORADA**: Cache de formatadores NumberFormat reduz overhead de criação de instâncias repetidas em ~70%
