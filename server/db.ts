@@ -291,10 +291,13 @@ export async function initializeTables() {
         ADD COLUMN IF NOT EXISTS photos JSON,
         ADD COLUMN IF NOT EXISTS visit_date TIMESTAMP NULL,
         ADD COLUMN IF NOT EXISTS helpful_votes INT DEFAULT 0 NOT NULL,
-        ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE NOT NULL
+        ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE NOT NULL,
+        ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN DEFAULT FALSE NOT NULL,
+        ADD COLUMN IF NOT EXISTS report_count INT DEFAULT 0 NOT NULL
       `);
     } catch (err) {
       // Columns might already exist
+      console.log('⚠️ Alguns campos já existem na tabela activity_reviews');
     }
 
     // Create activity_bookings table
