@@ -153,9 +153,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
     }));
   };
 
-  const formatCurrency = (amount: number) => {
-    return formatBrazilianCurrency(amount);
-  };
+  // Using shared formatBrazilianCurrency utility directly instead of local wrapper
 
   // Calculate who owes whom
   const calculateSettlements = () => {
@@ -244,7 +242,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                         balance.balance > 0 ? 'text-green-600' : balance.balance < 0 ? 'text-red-600' : 'text-gray-600'
                       }`}>
                         {balance.balance > 0 && '+ '}
-                        {formatCurrency(balance.balance)}
+                        {formatBrazilianCurrency(balance.balance)}
                       </p>
 
                       <p className="text-xs text-gray-500">
@@ -270,7 +268,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                         <div key={index} className="flex items-center gap-2 text-sm">
                           <span className="font-medium">{settlement.from.fullName}</span>
                           <span className="text-gray-600">deve</span>
-                          <span className="font-semibold text-primary">{formatCurrency(settlement.amount)}</span>
+                          <span className="font-semibold text-primary">{formatBrazilianCurrency(settlement.amount)}</span>
                           <span className="text-gray-600">para</span>
                           <span className="font-medium">{settlement.to.fullName}</span>
                         </div>
@@ -437,7 +435,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-lg">{formatCurrency(expense.amount)}</p>
+                      <p className="font-semibold text-lg">{formatBrazilianCurrency(expense.amount)}</p>
                       <Badge variant="secondary" className="text-xs">
                         {expenseCategories[expense.category as keyof typeof expenseCategories]}
                       </Badge>
@@ -462,7 +460,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={split.paid ? 'text-green-600' : 'text-gray-600'}>
-                              {formatCurrency(split.amount)}
+                              {formatBrazilianCurrency(split.amount)}
                             </span>
                             {split.paid ? (
                               <Badge variant="outline" className="text-xs text-green-600">

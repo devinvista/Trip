@@ -173,6 +173,13 @@ export function calculatePercentage(part: number | string | null | undefined, to
   return (partValue / totalValue) * 100;
 }
 
+// Função para calcular progresso em porcentagem (0-100)
+export function calculateProgress(current: number, total: number): number {
+  if (total <= 0) return 0;
+  const progress = (current / total) * 100;
+  return Math.min(Math.max(progress, 0), 100);
+}
+
 // Soma array de valores de forma segura
 export function sumValues(values: (number | string | null | undefined)[]): number {
   return values.reduce((sum: number, value) => sum + safeNumber(value), 0);

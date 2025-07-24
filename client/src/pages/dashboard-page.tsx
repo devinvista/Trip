@@ -36,6 +36,7 @@ import {
   X
 } from "lucide-react";
 import { getRealParticipantsCount } from "@/lib/trip-utils";
+import { formatBrazilianCurrency } from "@shared/utils";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -431,7 +432,7 @@ export default function DashboardPage() {
                     <DollarSign className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-lg sm:text-xl font-bold text-slate-900">R$ {totalBudget.toLocaleString()}</p>
+                    <p className="text-lg sm:text-xl font-bold text-slate-900">{formatBrazilianCurrency(totalBudget)}</p>
                     <p className="text-xs sm:text-sm text-slate-600 font-medium">Orçamento Total</p>
                   </div>
                 </div>
@@ -511,7 +512,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {tripsLoading ? (
               <div className="col-span-full flex items-center justify-center min-h-[300px]">
-                <LoadingSpinner variant="travel" size="lg" message="Carregando suas viagens..." />
+                <LoadingSpinner size="lg" message="Carregando suas viagens..." />
               </div>
             ) : !tripsError && getFilteredTrips().length > 0 ? (
               getFilteredTrips().map((trip: any) => (
@@ -601,10 +602,10 @@ export default function DashboardPage() {
                         <div className="flex items-center gap-2 text-sm text-slate-600">
                           <DollarSign className="h-4 w-4 text-blue-500" />
                           <span className="font-semibold text-slate-900">
-                            R$ {trip.budget.toLocaleString()}
+                            {formatBrazilianCurrency(trip.budget)}
                           </span>
                           <span className="text-slate-500">
-                            / R$ {Math.round(trip.budget / trip.maxParticipants).toLocaleString()} por pessoa
+                            / {formatBrazilianCurrency(Math.round(trip.budget / trip.maxParticipants))} por pessoa
                           </span>
                         </div>
                       )}
@@ -793,8 +794,8 @@ export default function DashboardPage() {
           onClose={closeTour}
           onComplete={completeTour}
           userPreferences={{
-            travelStyle: user?.travelStyle,
-            interests: user?.interests,
+            travelStyle: user?.travelStyles as string[] | undefined,
+            interests: user?.interests as string[] | undefined,
             experience: 'iniciante' // Could be determined from user profile
           }}
         />

@@ -21,6 +21,7 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatBrazilianCurrency } from '@shared/utils';
 
 interface SearchFilters {
   query: string;
@@ -246,8 +247,8 @@ export function SearchFiltersPanel({
                 className="w-full"
               />
               <div className="flex justify-between text-sm text-gray-600 mt-2">
-                <span>R$ {filters.budgetRange[0].toLocaleString()}</span>
-                <span>R$ {filters.budgetRange[1].toLocaleString()}</span>
+                <span>{formatBrazilianCurrency(filters.budgetRange[0])}</span>
+                <span>{formatBrazilianCurrency(filters.budgetRange[1])}</span>
               </div>
             </div>
           </CollapsibleContent>

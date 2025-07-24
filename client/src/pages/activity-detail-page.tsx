@@ -47,7 +47,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { activityCategories, insertActivityBookingSchema } from "@shared/schema";
 import type { Activity, ActivityReview, ActivityBooking, InsertActivityBooking, ActivityBudgetProposal } from "@shared/schema";
-import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode } from "@shared/utils";
+import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode, sumValues, formatPriceRange } from "@shared/utils";
 
 export default function ActivityDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -182,10 +182,7 @@ export default function ActivityDetailPage() {
         return sum + (Number(proposal.amount) || 0);
       }, 0);
       
-      return new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(total);
+      return formatBrazilianCurrency(total);
     }
 
     // Se houver propostas mas nenhuma selecionada, mostrar faixa de preço
@@ -194,19 +191,10 @@ export default function ActivityDetailPage() {
     const maxPrice = Math.max(...amounts);
     
     if (minPrice === maxPrice) {
-      return new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(minPrice);
+      return formatBrazilianCurrency(minPrice);
     }
     
-    return `${new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(minPrice)} - ${new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(maxPrice)}`;
+    return `${formatBrazilianCurrency(minPrice)} - ${formatBrazilianCurrency(maxPrice)}`;
   };
 
   const calculateTotalPrice = () => {
@@ -680,7 +668,7 @@ export default function ActivityDetailPage() {
                             <FormItem>
                               <FormLabel>Telefone</FormLabel>
                               <FormControl>
-                                <Input placeholder="(11) 99999-9999" {...field} />
+                                <Input placeholder="(11) 99999-9999" {...field} value={field.value || ""} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -698,6 +686,7 @@ export default function ActivityDetailPage() {
                               <Textarea 
                                 placeholder="Alguma observação ou solicitação especial..."
                                 {...field}
+                                value={field.value || ""}
                               />
                             </FormControl>
                             <FormMessage />
@@ -709,10 +698,7 @@ export default function ActivityDetailPage() {
                         <div className="flex justify-between items-center text-lg font-semibold">
                           <span>Total:</span>
                           <span className="text-blue-600">
-                            {calculateTotalPrice() === 0 ? "Grátis" : new Intl.NumberFormat("pt-BR", {
-                              style: "currency",
-                              currency: "BRL",
-                            }).format(calculateTotalPrice())}
+                            {calculateTotalPrice() === 0 ? "Grátis" : formatBrazilianCurrency(calculateTotalPrice())}
                           </span>
                         </div>
                         {selectedProposals.length > 0 && (
@@ -749,66 +735,72 @@ export default function ActivityDetailPage() {
               <Separator className="my-6" />
 
               {/* Contact Info */}
-              {activity.contactInfo && (
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-4">
-                    Informações de Contato
-                  </h3>
-                  <div className="space-y-3">
-                    {activity.contactInfo.email && (
-                      <div className="flex items-center gap-3">
-                        <Mail className="w-4 h-4 text-gray-600" />
-                        <a 
-                          href={`mailto:${activity.contactInfo.email}`}
-                          className="text-sm text-blue-600 hover:underline"
-                        >
-                          {activity.contactInfo.email}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {activity.contactInfo.phone && (
-                      <div className="flex items-center gap-3">
-                        <Phone className="w-4 h-4 text-gray-600" />
-                        <a 
-                          href={`tel:${activity.contactInfo.phone}`}
-                          className="text-sm text-blue-600 hover:underline"
-                        >
-                          {activity.contactInfo.phone}
-                        </a>
-                      </div>
-                    )}
-                    
-                    {activity.contactInfo.whatsapp && (
-                      <div className="flex items-center gap-3">
-                        <MessageCircle className="w-4 h-4 text-gray-600" />
-                        <a 
-                          href={`https://wa.me/${activity.contactInfo.whatsapp}`}
-                          className="text-sm text-blue-600 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          WhatsApp
-                        </a>
-                      </div>
-                    )}
-                    
-                    {activity.contactInfo.website && (
-                      <div className="flex items-center gap-3">
-                        <Globe className="w-4 h-4 text-gray-600" />
-                        <a 
-                          href={activity.contactInfo.website}
-                          className="text-sm text-blue-600 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Website
-                        </a>
-                      </div>
-                    )}
+              {activity.contactInfo && (() => {
+                const contactInfo = typeof activity.contactInfo === 'string' 
+                  ? JSON.parse(activity.contactInfo) 
+                  : activity.contactInfo;
+                
+                return (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-4">
+                      Informações de Contato
+                    </h3>
+                    <div className="space-y-3">
+                      {contactInfo?.email && (
+                        <div className="flex items-center gap-3">
+                          <Mail className="w-4 h-4 text-gray-600" />
+                          <a 
+                            href={`mailto:${contactInfo.email}`}
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            {contactInfo.email}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {contactInfo?.phone && (
+                        <div className="flex items-center gap-3">
+                          <Phone className="w-4 h-4 text-gray-600" />
+                          <a 
+                            href={`tel:${contactInfo.phone}`}
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            {contactInfo.phone}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {contactInfo?.whatsapp && (
+                        <div className="flex items-center gap-3">
+                          <MessageCircle className="w-4 h-4 text-gray-600" />
+                          <a 
+                            href={`https://wa.me/${contactInfo.whatsapp}`}
+                            className="text-sm text-blue-600 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            WhatsApp
+                          </a>
+                        </div>
+                      )}
+                      
+                      {contactInfo?.website && (
+                        <div className="flex items-center gap-3">
+                          <Globe className="w-4 h-4 text-gray-600" />
+                          <a 
+                            href={contactInfo.website}
+                            className="text-sm text-blue-600 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Website
+                          </a>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
         </div>

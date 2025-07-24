@@ -384,7 +384,8 @@ export function ActivityBudgetProposals({
                           <Textarea 
                             placeholder="Descreva o que está incluído nesta proposta..."
                             className="min-h-[100px]"
-                            {...field} 
+                            {...field}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />

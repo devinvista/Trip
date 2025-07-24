@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { AnimatedPreloader } from "@/components/ui/animated-preloader";
+import { formatBrazilianCurrency } from "@shared/utils";
 
 // Featured destinations with beautiful imagery
 const featuredDestinations = [
@@ -536,7 +537,7 @@ export default function HomePage() {
                       <div className="space-y-1">
                         <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">Orçamento médio</p>
                         <p className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                          R$ {destination.avgBudget.toLocaleString()}
+                          {formatBrazilianCurrency(destination.avgBudget)}
                         </p>
                       </div>
                       <div className="text-right space-y-1">

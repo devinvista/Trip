@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { formatBrazilianCurrency } from '@shared/utils';
 import { Navbar } from "@/components/navbar";
 import { TripCard } from "@/components/trip-card";
 import { SearchResultsSkeleton } from "@/components/ui/loading-states";
@@ -182,8 +183,10 @@ export default function SearchPage() {
         // Handle dynamic month filters (format: "month-year")
         const monthFilter = dateFilters.find(filter => filter.id === filterId);
         if (monthFilter && 'month' in monthFilter && 'year' in monthFilter) {
-          const startDate = new Date(monthFilter.year, monthFilter.month, 1);
-          const endDate = new Date(monthFilter.year, monthFilter.month + 1, 0); // Last day of the month
+          const month = Number(monthFilter.month);
+          const year = Number(monthFilter.year);
+          const startDate = new Date(year, month, 1);
+          const endDate = new Date(year, month + 1, 0); // Last day of the month
           return { start: startDate, end: endDate };
         }
         return null;
@@ -494,7 +497,7 @@ export default function SearchPage() {
                   {(budgetRange[0] > 0 || budgetRange[1] < 10000) && (
                     <Badge variant="secondary" className="text-xs">
                       <DollarSign className="h-3 w-3 mr-1" />
-                      R$ {budgetRange[0]} - R$ {budgetRange[1] === 10000 ? '10k+' : budgetRange[1]}
+                      {formatBrazilianCurrency(budgetRange[0])} - {budgetRange[1] === 10000 ? 'R$ 10k+' : formatBrazilianCurrency(budgetRange[1])}
                     </Badge>
                   )}
                   {selectedDateFilter && (

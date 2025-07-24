@@ -296,7 +296,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                               </span>
                               <span className="flex items-center gap-1">
                                 <DollarSign className="h-3 w-3" />
-                                R$ {trip.budget.toLocaleString()}
+                                {formatBrazilianCurrency(trip.budget)}
                               </span>
                             </div>
                           </div>
@@ -381,7 +381,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                     </div>
                     <div className="flex items-center gap-2">
                       <DollarSign className="h-4 w-4 text-gray-500" />
-                      <span>Orçamento: R$ {selectedTrip.budget.toLocaleString()}</span>
+                      <span>Orçamento: {formatBrazilianCurrency(selectedTrip.budget)}</span>
                     </div>
                   </div>
                 </CardContent>
