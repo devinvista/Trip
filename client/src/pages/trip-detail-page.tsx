@@ -1653,7 +1653,6 @@ export default function TripDetailPage() {
                               // Ensure amount is a number (it might be a string from JSON parsing)
                               const numericAmount = typeof amount === 'string' ? parseFloat(amount) || 0 : Number(amount) || 0;
                               const participantsCount = getParticipantsForBudgetCalculation(trip);
-                              const percentage = trip.budget > 0 ? ((numericAmount / trip.budget) * 100) : 0;
                               const perPerson = participantsCount > 0 ? numericAmount / participantsCount : 0;
                               
                               return (
@@ -1681,9 +1680,6 @@ export default function TripDetailPage() {
                                     <p className="text-sm font-bold text-gray-900 tabular-nums">
                                       R$ {numericAmount.toLocaleString('pt-BR')}
                                     </p>
-                                    <Badge variant="secondary" className="text-xs">
-                                      {formatBrazilianNumber(percentage / 100).replace(',00', '')}%
-                                    </Badge>
                                   </div>
                                 </div>
                               );

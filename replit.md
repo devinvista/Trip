@@ -369,3 +369,4 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 24, 2025. **CÁLCULOS PADRONIZADOS**: Implementadas funções calculatePerPerson(), sumValues(), parseNumber() e calculateProgress() para eliminar código duplicado
 - July 24, 2025. **COMPONENTES OTIMIZADOS**: Budget-editor, expense-manager, budget-visualization e trip-detail-page atualizados para usar utilitários centralizados
 - July 24, 2025. **PERFORMANCE APRIMORADA**: Cache de formatadores NumberFormat reduz overhead de criação de instâncias repetidas em ~70%
+- July 24, 2025. **INTERFACE DE ORÇAMENTO SIMPLIFICADA**: Removidos badges de porcentagem do detalhamento de orçamento - interface mais limpa focando apenas nos valores absolutos
