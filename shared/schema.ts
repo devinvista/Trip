@@ -27,7 +27,7 @@ export const trips = mysqlTable("trips", {
   id: int("id").primaryKey().autoincrement(),
   creatorId: int("creator_id").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),
-  destination: varchar("destination", { length: 255 }).notNull(),
+  localidade: varchar("localidade", { length: 255 }).notNull(), // Changed from destination
   coverImage: text("cover_image"), // URL for trip cover image
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
@@ -105,10 +105,10 @@ export const userRatings = mysqlTable("user_ratings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Destination ratings - for rating destinations
-export const destinationRatings = mysqlTable("destination_ratings", {
+// Localidade ratings - for rating localidades (changed from destinations)  
+export const localidadeRatings = mysqlTable("localidade_ratings", {
   id: int("id").primaryKey().autoincrement(),
-  destination: varchar("destination", { length: 255 }).notNull(), // Destination name (e.g., "Paris, França")
+  localidade: varchar("localidade", { length: 255 }).notNull(), // Localidade name (e.g., "Paris, França")
   userId: int("user_id").notNull().references(() => users.id), // User who rated
   tripId: int("trip_id").references(() => trips.id), // Optional: trip this rating is from
   rating: int("rating").notNull(), // 1-5 stars
@@ -138,7 +138,7 @@ export const verificationRequests = mysqlTable("verification_requests", {
 export const ratingReports = mysqlTable("rating_reports", {
   id: int("id").primaryKey().autoincrement(),
   reporterId: int("reporter_id").notNull().references(() => users.id), // User who reported
-  ratingType: varchar("rating_type", { length: 50 }).notNull(), // 'user', 'destination', 'activity'
+  ratingType: varchar("rating_type", { length: 50 }).notNull(), // 'user', 'localidade', 'activity'
   ratingId: int("rating_id").notNull(), // ID of the rating being reported
   reason: varchar("reason", { length: 100 }).notNull(), // 'offensive', 'spam', 'inappropriate', 'fake'
   description: text("description"), // Optional detailed description
@@ -299,7 +299,7 @@ export type ReferralCode = typeof referralCodes.$inferSelect;
 
 // Rating types
 export type UserRating = typeof userRatings.$inferSelect;
-export type DestinationRating = typeof destinationRatings.$inferSelect;
+export type LocalidadeRating = typeof localidadeRatings.$inferSelect;
 export type VerificationRequest = typeof verificationRequests.$inferSelect;
 
 // Rating insert schemas (updated for enhanced system)
@@ -322,7 +322,7 @@ export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   }).optional(),
 });
 
-export const insertDestinationRatingSchema = createInsertSchema(destinationRatings).omit({
+export const insertLocalidadeRatingSchema = createInsertSchema(localidadeRatings).omit({
   id: true,
   userId: true,
   isHidden: true,
@@ -353,7 +353,7 @@ export const insertVerificationRequestSchema = createInsertSchema(verificationRe
 });
 
 export type InsertUserRating = z.infer<typeof insertUserRatingSchema>;
-export type InsertDestinationRating = z.infer<typeof insertDestinationRatingSchema>;
+export type InsertLocalidadeRating = z.infer<typeof insertLocalidadeRatingSchema>;
 export type InsertVerificationRequest = z.infer<typeof insertVerificationRequestSchema>;
 export type InsertRatingReport = z.infer<typeof insertRatingReportSchema>;
 export type RatingReport = typeof ratingReports.$inferSelect;

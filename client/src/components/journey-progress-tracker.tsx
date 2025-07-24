@@ -292,7 +292,7 @@ export const createDefaultMilestones = (tripId: string): JourneyMilestone[] => [
   {
     id: '2',
     title: 'Destination Research',
-    description: 'Research and finalize your destination',
+    description: 'Pesquise e finalize sua localidade',
     icon: <MapPin className="h-4 w-4" />,
     completed: true,
     completedAt: new Date(),
@@ -329,7 +329,7 @@ export const createDefaultMilestones = (tripId: string): JourneyMilestone[] => [
   {
     id: '6',
     title: 'Accommodation Booked',
-    description: 'Secure your stay at the destination',
+    description: 'Garanta sua estadia na localidade',
     icon: <MapPin className="h-4 w-4" />,
     completed: false,
     points: 25,

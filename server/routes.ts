@@ -5,9 +5,9 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
+import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertLocalidadeRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, destinationRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
+import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, localidadeRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
 import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { z } from "zod";
 

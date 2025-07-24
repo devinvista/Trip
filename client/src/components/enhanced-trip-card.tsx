@@ -15,7 +15,7 @@ interface Trip {
   id: number;
   title: string;
   description: string;
-  destination: string;
+  localidade: string;
   startDate: string;
   endDate: string;
   budget: number;
@@ -182,7 +182,7 @@ export function EnhancedTripCard({
             </h3>
             <div className="flex items-center text-sm text-gray-500 mt-1">
               <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-              <span className="truncate">{trip.destination}</span>
+              <span className="truncate">{trip.localidade}</span>
             </div>
           </div>
 

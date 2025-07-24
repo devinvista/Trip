@@ -7,14 +7,14 @@ import { Camera } from "lucide-react";
 
 interface CoverImageSelectorProps {
   currentImage?: string;
-  destination?: string;
+  localidade?: string;
   onImageSelect: (imageUrl: string) => void;
   trigger?: React.ReactNode;
 }
 
 export function CoverImageSelector({ 
   currentImage, 
-  destination, 
+  localidade, 
   onImageSelect, 
   trigger 
 }: CoverImageSelectorProps) {

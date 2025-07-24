@@ -108,7 +108,7 @@ const getPersonalizedSteps = (preferences?: OnboardingTourProps['userPreferences
   if (preferences?.travelStyle) {
     const styleMessages = {
       'aventura': 'Perfeito para aventureiros! Você encontrará muitos companheiros para trilhas, escaladas e esportes radicais.',
-      'praia': 'Ótima escolha! Temos muitas viagens para destinos paradisíacos e resorts.',
+      'praia': 'Ótima escolha! Temos muitas viagens para localidades paradisíacas e resorts.',
       'cultura': 'Excelente! Conecte-se com viajantes que amam museus, arquitetura e experiências culturais.',
       'natureza': 'Maravilhoso! Encontre companheiros para parques nacionais e ecoturismo.',
       'urbanas': 'Perfeito! Explore grandes cidades com outros viajantes urbanos.'

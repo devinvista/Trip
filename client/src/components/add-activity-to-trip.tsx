@@ -24,7 +24,7 @@ type Activity = {
 type Trip = {
   id: number;
   title: string;
-  destination: string;
+  localidade: string;
   startDate: string;
   endDate: string;
   coverImage: string;
@@ -258,7 +258,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                     Você não tem viagens programadas para {activity.location}.
                   </p>
                   <p className="text-sm text-gray-400">
-                    Para adicionar esta atividade, crie uma viagem para este destino primeiro.
+                    Para adicionar esta atividade, crie uma viagem para esta localidade primeiro.
                   </p>
                 </CardContent>
               </Card>
@@ -283,7 +283,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                             <h4 className="font-semibold">{trip.title}</h4>
                             <p className="text-sm text-gray-600 flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
-                              {trip.destination}
+                              {trip.localidade}
                             </p>
                             <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                               <span className="flex items-center gap-1">
@@ -329,7 +329,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
               </Button>
               <div>
                 <h3 className="font-semibold">{selectedTrip.title}</h3>
-                <p className="text-sm text-gray-600">{selectedTrip.destination}</p>
+                <p className="text-sm text-gray-600">{selectedTrip.localidade}</p>
               </div>
             </div>
 
@@ -368,7 +368,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                     />
                     <div>
                       <h4 className="font-semibold">{selectedTrip.title}</h4>
-                      <p className="text-sm text-gray-600">{selectedTrip.destination}</p>
+                      <p className="text-sm text-gray-600">{selectedTrip.localidade}</p>
                     </div>
                   </div>
                   <div className="space-y-2 text-sm">
