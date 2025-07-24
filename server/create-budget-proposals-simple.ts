@@ -1,6 +1,6 @@
 import { db } from './db.js';
 
-async function createBudgetProposals() {
+async function createBudgetProposalsSimple() {
   try {
     console.log('💰 CRIANDO PROPOSTAS DE ORÇAMENTO PARA TODAS AS ATIVIDADES...\n');
     
@@ -17,8 +17,7 @@ async function createBudgetProposals() {
       
       // Verificar se já tem propostas
       const [existingResult] = await db.execute(
-        'SELECT COUNT(*) as count FROM activity_budget_proposals WHERE activity_id = ?',
-        [activity.id]
+        `SELECT COUNT(*) as count FROM activity_budget_proposals WHERE activity_id = ${activity.id}`
       );
       
       const existingCount = (existingResult as any)[0].count;
@@ -35,41 +34,50 @@ async function createBudgetProposals() {
           title: 'Econômico',
           description: 'Opção básica com o essencial para a atividade',
           amount: basePrice,
-          inclusions: JSON.stringify(['Guia local', 'Seguro básico']),
-          exclusions: JSON.stringify(['Transporte', 'Alimentação', 'Equipamentos extras'])
+          inclusions: '["Guia local", "Seguro básico"]',
+          exclusions: '["Transporte", "Alimentação", "Equipamentos extras"]'
         },
         {
           title: 'Completo',
           description: 'Experiência completa com conforto e praticidade',
           amount: Math.floor(basePrice * 1.6),
-          inclusions: JSON.stringify(['Guia especializado', 'Transporte', 'Seguro', 'Lanche', 'Equipamentos']),
-          exclusions: JSON.stringify(['Alimentação completa', 'Bebidas alcoólicas'])
+          inclusions: '["Guia especializado", "Transporte", "Seguro", "Lanche", "Equipamentos"]',
+          exclusions: '["Alimentação completa", "Bebidas alcoólicas"]'
         },
         {
           title: 'Premium',
           description: 'Experiência de luxo com todos os extras incluídos',
           amount: Math.floor(basePrice * 2.5),
-          inclusions: JSON.stringify(['Guia exclusivo', 'Transporte executivo', 'Seguro premium', 'Alimentação completa', 'Equipamentos profissionais', 'Fotos', 'Souvenirs']),
-          exclusions: JSON.stringify([])
+          inclusions: '["Guia exclusivo", "Transporte executivo", "Seguro premium", "Alimentação completa", "Equipamentos profissionais", "Fotos", "Souvenirs"]',
+          exclusions: '[]'
         }
       ];
       
       for (const proposal of proposals) {
         try {
-          await db.execute(`
+          const sql = `
             INSERT INTO activity_budget_proposals (
               activity_id, created_by, title, description, 
               price_type, amount, currency, inclusions, exclusions,
               is_active, votes, created_at, updated_at
-            ) VALUES (?, 1, ?, ?, 'per_person', ?, 'BRL', ?, ?, 1, 0, NOW(), NOW())
-          `, [
-            activity.id,
-            proposal.title,
-            proposal.description,
-            proposal.amount,
-            proposal.inclusions,
-            proposal.exclusions
-          ]);
+            ) VALUES (
+              ${activity.id}, 
+              1, 
+              '${proposal.title}', 
+              '${proposal.description}', 
+              'per_person', 
+              ${proposal.amount}, 
+              'BRL', 
+              '${proposal.inclusions}', 
+              '${proposal.exclusions}',
+              1, 
+              0, 
+              NOW(), 
+              NOW()
+            )
+          `;
+          
+          await db.execute(sql);
           
           console.log(`    ✅ ${proposal.title}: R$ ${proposal.amount}`);
           totalProposals++;
@@ -106,6 +114,11 @@ async function createBudgetProposals() {
       }
     });
     
+    // Verificar total geral
+    const [totalResult] = await db.execute('SELECT COUNT(*) as total FROM activity_budget_proposals');
+    const totalFinal = (totalResult as any)[0].total;
+    console.log(`\n🎯 TOTAL FINAL: ${totalFinal} propostas de orçamento criadas`);
+    
   } catch (error) {
     console.error('❌ Erro durante criação de propostas:', error);
   }
@@ -113,4 +126,4 @@ async function createBudgetProposals() {
   process.exit(0);
 }
 
-createBudgetProposals();
+createBudgetProposalsSimple();
