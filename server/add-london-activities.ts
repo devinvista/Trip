@@ -1,6 +1,6 @@
-import { db } from "./db";
-import { activities, activityBudgetProposals } from "@shared/schema";
-import { sql } from "drizzle-orm";
+import { db } from './db.js';
+import { activities, activityBudgetProposals } from '../shared/schema.js';
+import { sql } from 'drizzle-orm';
 
 // Script to add London activities with authentic details and budget proposals
 async function addLondonActivities() {
