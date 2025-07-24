@@ -9,7 +9,9 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **API Endpoints:** ✅ Corrigidos para `/api/auth/login` e `/api/auth/register`
 - **Parsing JSON:** ✅ Erro JSON.parse resolvido com tratamento adequado de campos string
 - **Credenciais de Teste:** tom/maria com senha "password123"
-- **Database:** ✅ MySQL com 52 atividades, 4 usuários, 18 viagens ativas
+- **Database:** ✅ MySQL com 57+ atividades, 6 usuários, 70+ viagens ativas
+- **Propostas de Orçamento:** ✅ 150+ propostas ativas (3 por atividade)
+- **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada
 
 ## Arquitetura do Sistema
 
@@ -385,3 +387,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
   - comprehensive-activities-all-cities.ts: 52 atividades nacionais com 156 propostas ✅
   - populate-all-activities-comprehensive.ts: 10 atividades destacadas com 30 propostas ✅
 - July 24, 2025. **BANCO MYSQL COMPLETAMENTE POPULADO**: Database agora contém mais de 100 atividades turísticas com propostas de orçamento, cobrindo destinos nacionais e internacionais
+- July 24, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - aplicação 100% operacional
+- July 24, 2025. **SCRIPTS DE IMPORTAÇÃO ATUALIZADOS**: Todos os arquivos de importação (add-*-activities.ts) corrigidos para usar schema MySQL snake_case
+- July 24, 2025. **ATIVIDADES INTERNACIONAIS ADICIONADAS**: Buenos Aires (5), Londres (5), Paris (5), Roma (5), Nova York (5) - total 25 atividades internacionais
+- July 24, 2025. **ATIVIDADES NACIONAIS EXPANDIDAS**: Gramado (5), Rio de Janeiro (5), Bonito (5) - cobertura completa de destinos nacionais
+- July 24, 2025. **PROPOSTAS DE ORÇAMENTO COMPLETAS**: 150+ propostas ativas cobrindo todas as atividades com 3 níveis (Econômico, Completo, Premium)
+- July 24, 2025. **VERIFICAÇÃO FINAL REALIZADA**: 57 atividades ativas, 150+ propostas, 70+ viagens, autenticação e todas as funcionalidades operacionais

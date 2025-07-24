@@ -10,7 +10,7 @@ const bonitoActivities = [
     duration: 2,
     difficulty: "easy",
     priceRange: "R$ 90 - R$ 180",
-    coverImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    cover_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     proposals: [
       {
         title: "Econômico",
@@ -40,7 +40,7 @@ const bonitoActivities = [
     duration: 4,
     difficulty: "easy",
     priceRange: "R$ 320 - R$ 550",
-    coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+    cover_image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
     proposals: [
       {
         title: "Econômico",
@@ -70,7 +70,7 @@ const bonitoActivities = [
     duration: 5,
     difficulty: "medium",
     priceRange: "R$ 252 - R$ 490",
-    coverImage: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
+    cover_image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
     proposals: [
       {
         title: "Econômico",
@@ -100,7 +100,7 @@ const bonitoActivities = [
     duration: 6,
     difficulty: "medium",
     priceRange: "R$ 350 - R$ 730",
-    coverImage: "https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=800&q=80",
+    cover_image: "https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=800&q=80",
     proposals: [
       {
         title: "Econômico",
@@ -130,7 +130,7 @@ const bonitoActivities = [
     duration: 5,
     difficulty: "easy",
     priceRange: "R$ 199 - R$ 335",
-    coverImage: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+    cover_image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
     proposals: [
       {
         title: "Econômico",
@@ -170,11 +170,11 @@ async function addBonitoActivities() {
         duration: activityData.duration,
         difficulty: activityData.difficulty,
         priceRange: activityData.priceRange,
-        coverImage: activityData.coverImage,
+        cover_image: activityData.coverImage,
         rating: "4.5",
         reviewCount: 0,
-        isActive: true,
-        createdById: 1 // User tom
+        is_active: true,
+        created_by_id: 1 // User tom
       });
       
       console.log(`✅ Atividade criada com ID: ${activity.insertId}`);
@@ -190,7 +190,7 @@ async function addBonitoActivities() {
           inclusions: JSON.stringify(proposal.inclusions),
           exclusions: JSON.stringify([]),
           votes: Math.floor(Math.random() * 60) + 20, // Random votes between 20-80
-          isActive: true
+          is_active: true
         });
         
         console.log(`💰 Proposta "${proposal.title}" criada: R$ ${proposal.price}`);

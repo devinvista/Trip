@@ -19,7 +19,7 @@ const rioActivities = [
     duration: 4,
     difficulty: 'easy',
     priceRange: 'medium',
-    coverImage: coverImages.cristoRedentor,
+    cover_image: coverImages.cristoRedentor,
     rating: 4.8,
     reviewCount: 1247,
     proposals: [
@@ -74,7 +74,7 @@ const rioActivities = [
     duration: 3,
     difficulty: 'easy',
     priceRange: 'medium',
-    coverImage: coverImages.paoAcucar,
+    cover_image: coverImages.paoAcucar,
     rating: 4.7,
     reviewCount: 892,
     proposals: [
@@ -129,7 +129,7 @@ const rioActivities = [
     duration: 6,
     difficulty: 'easy',
     priceRange: 'low',
-    coverImage: coverImages.copacabana,
+    cover_image: coverImages.copacabana,
     rating: 4.6,
     reviewCount: 1543,
     proposals: [
@@ -184,7 +184,7 @@ const rioActivities = [
     duration: 4,
     difficulty: 'medium',
     priceRange: 'low',
-    coverImage: coverImages.trilha,
+    cover_image: coverImages.trilha,
     rating: 4.5,
     reviewCount: 687,
     proposals: [
@@ -239,7 +239,7 @@ const rioActivities = [
     duration: 5,
     difficulty: 'easy',
     priceRange: 'low',
-    coverImage: coverImages.theatro,
+    cover_image: coverImages.theatro,
     rating: 4.4,
     reviewCount: 523,
     proposals: [
@@ -304,10 +304,10 @@ async function addRioActivities() {
         duration: activityData.duration,
         difficulty: activityData.difficulty,
         priceRange: activityData.priceRange,
-        coverImage: activityData.coverImage,
+        cover_image: activityData.coverImage,
         rating: activityData.rating,
         reviewCount: activityData.reviewCount,
-        isActive: true
+        is_active: true
       });
       
       console.log(`✅ Atividade criada com ID: ${activity.insertId}`);
@@ -323,7 +323,7 @@ async function addRioActivities() {
           inclusions: JSON.stringify(proposal.inclusions),
           exclusions: JSON.stringify(proposal.exclusions),
           votes: Math.floor(Math.random() * 50) + 10, // Random votes between 10-60
-          isActive: true
+          is_active: true
         });
         
         console.log(`💰 Proposta "${proposal.title}" criada com ID: ${budgetProposal.insertId}`);
