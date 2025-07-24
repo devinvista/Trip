@@ -344,7 +344,7 @@ export async function initializeTables() {
       `);
       await connection.execute(`SET FOREIGN_KEY_CHECKS = 1`);
     } catch (error) {
-      console.log('⚠️ Erro ao recriar tabela activity_budget_proposals:', error.message);
+      console.log('⚠️ Erro ao recriar tabela activity_budget_proposals:', (error as Error).message);
       // Try to create table if it doesn't exist
       await connection.execute(`
         CREATE TABLE IF NOT EXISTS activity_budget_proposals (
