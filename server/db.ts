@@ -314,9 +314,10 @@ export async function initializeTables() {
       )
     `);
 
-    // Create activity_budget_proposals table
+    // Drop and recreate activity_budget_proposals table to fix schema issues
+    await connection.execute(`DROP TABLE IF EXISTS activity_budget_proposals`);
     await connection.execute(`
-      CREATE TABLE IF NOT EXISTS activity_budget_proposals (
+      CREATE TABLE activity_budget_proposals (
         id INT AUTO_INCREMENT PRIMARY KEY,
         activity_id INT NOT NULL,
         created_by INT NOT NULL,
