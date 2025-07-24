@@ -373,3 +373,14 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 24, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - banco MySQL padronizado para snake_case, todas as funcionalidades operacionais, aplicação 100% funcional no ambiente standard
 - July 24, 2025. **DEPENDÊNCIAS POSTGRESQL REMOVIDAS**: Removidas todas as dependências residuais do PostgreSQL (connect-pg-simple, @types/connect-pg-simple) - projeto agora usa exclusivamente MySQL
 - July 24, 2025. **CONFIGURAÇÃO AMBIENTE CORRIGIDA**: Removido módulo postgresql-16 do sistema via packager_tool - aplicação configurada para usar apenas MySQL (postgres ainda presente no PATH por limitação do ambiente Replit)
+- July 24, 2025. **TODAS AS ATIVIDADES ADICIONADAS AO MYSQL**: Executados com sucesso todos os scripts de atividades
+  - add-gramado-activities-fixed.ts: 5 atividades de Gramado com 15 propostas ✅
+  - add-bonito-activities.ts: 5 atividades de Bonito (MS) com 15 propostas ✅
+  - add-buenos-aires-activities.ts: 5 atividades de Buenos Aires com 15 propostas ✅
+  - add-london-activities.ts: 5 atividades de Londres com 15 propostas ✅
+  - add-nyc-activities.ts: 5 atividades de Nova York com 15 propostas ✅
+  - add-paris-activities.ts: 5 atividades de Paris com 15 propostas ✅
+  - add-rome-activities.ts: 5 atividades de Roma com 15 propostas ✅
+  - comprehensive-activities-all-cities.ts: 52 atividades nacionais com 156 propostas ✅
+  - populate-all-activities-comprehensive.ts: 10 atividades destacadas com 30 propostas ✅
+- July 24, 2025. **BANCO MYSQL COMPLETAMENTE POPULADO**: Database agora contém mais de 100 atividades turísticas com propostas de orçamento, cobrindo destinos nacionais e internacionais
