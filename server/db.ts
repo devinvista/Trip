@@ -315,28 +315,56 @@ export async function initializeTables() {
     `);
 
     // Drop and recreate activity_budget_proposals table to fix schema issues
-    await connection.execute(`DROP TABLE IF EXISTS activity_budget_proposals`);
-    await connection.execute(`
-      CREATE TABLE activity_budget_proposals (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        activity_id INT NOT NULL,
-        created_by INT NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        price_type VARCHAR(50) DEFAULT 'per_person' NOT NULL,
-        amount DECIMAL(10,2) NOT NULL,
-        currency VARCHAR(3) DEFAULT 'BRL' NOT NULL,
-        inclusions JSON,
-        exclusions JSON,
-        valid_until TIMESTAMP NULL,
-        is_active BOOLEAN DEFAULT TRUE NOT NULL,
-        votes INT DEFAULT 0 NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
-        FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
-      )
-    `);
+    try {
+      await connection.execute(`SET FOREIGN_KEY_CHECKS = 0`);
+      await connection.execute(`DROP TABLE IF EXISTS activity_budget_proposals`);
+      await connection.execute(`
+        CREATE TABLE activity_budget_proposals (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          activity_id INT NOT NULL,
+          created_by INT NOT NULL,
+          title VARCHAR(255) NOT NULL,
+          description TEXT,
+          price_type VARCHAR(50) DEFAULT 'per_person' NOT NULL,
+          amount DECIMAL(10,2) NOT NULL,
+          currency VARCHAR(3) DEFAULT 'BRL' NOT NULL,
+          inclusions JSON,
+          exclusions JSON,
+          valid_until TIMESTAMP NULL,
+          is_active BOOLEAN DEFAULT TRUE NOT NULL,
+          votes INT DEFAULT 0 NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+          FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
+      await connection.execute(`SET FOREIGN_KEY_CHECKS = 1`);
+    } catch (error) {
+      console.log('⚠️ Erro ao recriar tabela activity_budget_proposals:', error.message);
+      // Try to create table if it doesn't exist
+      await connection.execute(`
+        CREATE TABLE IF NOT EXISTS activity_budget_proposals (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          activity_id INT NOT NULL,
+          created_by INT NOT NULL,
+          title VARCHAR(255) NOT NULL,
+          description TEXT,
+          price_type VARCHAR(50) DEFAULT 'per_person' NOT NULL,
+          amount DECIMAL(10,2) NOT NULL,
+          currency VARCHAR(3) DEFAULT 'BRL' NOT NULL,
+          inclusions JSON,
+          exclusions JSON,
+          valid_until TIMESTAMP NULL,
+          is_active BOOLEAN DEFAULT TRUE NOT NULL,
+          votes INT DEFAULT 0 NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+          FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `);
+    }
 
     // Create trip_activities table
     await connection.execute(`
