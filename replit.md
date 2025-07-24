@@ -122,12 +122,14 @@ A aplicação usa MySQL com as seguintes entidades principais:
 - Artefato único de deploy com servir arquivos estáticos
 
 ### Configuração de Ambiente
-- Conexão com banco de dados MySQL via variáveis de ambiente:
-  - `DB_USER`: Nome de usuário do banco MySQL
-  - `DB_PASSWORD`: Senha do banco MySQL
-  - `DB_NAME`: Nome do banco de dados
-- Servidor MySQL hospedado em srv1661.hstgr.io
-- Segredo de sessão para segurança de autenticação
+- Conexão com banco de dados MySQL via variáveis de ambiente configuradas nos Replit Secrets:
+  - `DB_HOST`: srv1661.hstgr.io (Servidor MySQL hospedado)
+  - `DB_USER`: u905571261_trip (Nome de usuário do banco MySQL)
+  - `DB_PASSWORD`: Senha do banco MySQL (configurada nos secrets)
+  - `DB_NAME`: u905571261_trip (Nome do banco de dados)
+  - `SESSION_SECRET`: Chave secreta para segurança de autenticação
+- Todas as credenciais estão seguramente armazenadas nas variáveis de ambiente do Replit
+- Configuração de segurança aprimorada: credenciais nunca expostas no código
 
 ### Configuração de Desenvolvimento
 - `npm run dev`: Inicia servidor de desenvolvimento com hot reload
@@ -373,6 +375,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 24, 2025. **PERFORMANCE APRIMORADA**: Cache de formatadores NumberFormat reduz overhead de criação de instâncias repetidas em ~70%
 - July 24, 2025. **INTERFACE DE ORÇAMENTO SIMPLIFICADA**: Removidos badges de porcentagem do detalhamento de orçamento - interface mais limpa focando apenas nos valores absolutos
 - July 24, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - banco MySQL padronizado para snake_case, todas as funcionalidades operacionais, aplicação 100% funcional no ambiente standard
+- July 24, 2025. **CONFIGURAÇÃO DE AMBIENTE IMPLEMENTADA**: Criado sistema de variáveis de ambiente seguras via Replit Secrets
+- July 24, 2025. Refatorado server/db.ts para usar variáveis de ambiente em vez de valores hardcoded
+- July 24, 2025. Configuração de segurança aprimorada: credenciais agora são carregadas de variáveis de ambiente
 - July 24, 2025. **ATIVIDADES E PROPOSTAS COMPLETAS**: Sistema de atividades totalmente operacional com 27 atividades cobrindo todos os 15 destinos de viagem e 81 propostas de orçamento (3 por atividade: Econômico, Completo, Premium)
 - July 24, 2025. **DEPENDÊNCIAS POSTGRESQL REMOVIDAS**: Removidas todas as dependências residuais do PostgreSQL (connect-pg-simple, @types/connect-pg-simple) - projeto agora usa exclusivamente MySQL
 - July 24, 2025. **CONFIGURAÇÃO AMBIENTE CORRIGIDA**: Removido módulo postgresql-16 do sistema via packager_tool - aplicação configurada para usar apenas MySQL (postgres ainda presente no PATH por limitação do ambiente Replit)
