@@ -157,7 +157,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - **30 de junho de 2025** - Configuração inicial do projeto PartiuTrip
 
 ### Detalhes Técnicos
-- **Banco de Dados**: Migração completa de PostgreSQL para MySQL com todas as tabelas e dados
+- **Banco de Dados**: Migração completa para MySQL com todas as tabelas e dados (removidas dependências PostgreSQL residuais)
 - **Autenticação**: Sistema híbrido com suporte a cookies e headers de sessão
 - **Interface**: Design responsivo com Tailwind CSS e componentes Shadcn/UI
 - **Funcionalidades**: Sistema completo de viagens, divisão de custos, chat e gamificação
@@ -371,3 +371,4 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 24, 2025. **PERFORMANCE APRIMORADA**: Cache de formatadores NumberFormat reduz overhead de criação de instâncias repetidas em ~70%
 - July 24, 2025. **INTERFACE DE ORÇAMENTO SIMPLIFICADA**: Removidos badges de porcentagem do detalhamento de orçamento - interface mais limpa focando apenas nos valores absolutos
 - July 24, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - banco MySQL padronizado para snake_case, todas as funcionalidades operacionais, aplicação 100% funcional no ambiente standard
+- July 24, 2025. **DEPENDÊNCIAS POSTGRESQL REMOVIDAS**: Removidas todas as dependências residuais do PostgreSQL (connect-pg-simple, @types/connect-pg-simple) - projeto agora usa exclusivamente MySQL

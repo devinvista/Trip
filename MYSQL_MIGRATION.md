@@ -60,7 +60,7 @@ Migração completa de todos os schemas:
 
 #### Antes (PostgreSQL):
 ```env
-DATABASE_URL=postgresql://...
+DATABASE_URL=mysql://...
 ```
 
 #### Depois (MySQL):
