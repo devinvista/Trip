@@ -47,6 +47,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { activityCategories, insertActivityBookingSchema } from "@shared/schema";
 import type { Activity, ActivityReview, ActivityBooking, InsertActivityBooking, ActivityBudgetProposal } from "@shared/schema";
+import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode } from "@shared/utils";
 
 export default function ActivityDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -372,7 +373,7 @@ export default function ActivityDetailPage() {
                     {renderStars(Number(activity.averageRating))}
                   </div>
                   <span className="text-sm font-medium">
-                    {Number(activity.averageRating).toFixed(1)}
+                    {formatBrazilianNumber(Number(activity.averageRating)).replace(',00', ',0')}
                   </span>
                   <span className="text-xs text-gray-500">
                     ({activity.totalRatings} avaliações)

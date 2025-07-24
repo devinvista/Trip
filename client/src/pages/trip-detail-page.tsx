@@ -69,6 +69,7 @@ import { ptBR } from "date-fns/locale";
 import { getRealParticipantsCount, getTripOccupancy, getParticipantsForBudgetCalculation, hasTripStarted } from "@/lib/trip-utils";
 import React, { useState, useEffect, useMemo } from "react";
 import { expenseCategories, budgetCategories, BudgetBreakdown } from "@shared/schema";
+import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { BudgetVisualization } from "@/components/budget-visualization";
 import { ExpenseManager } from "@/components/expense-manager";
@@ -1681,7 +1682,7 @@ export default function TripDetailPage() {
                                       R$ {numericAmount.toLocaleString('pt-BR')}
                                     </p>
                                     <Badge variant="secondary" className="text-xs">
-                                      {percentage.toFixed(0)}%
+                                      {formatBrazilianNumber(percentage / 100).replace(',00', '')}%
                                     </Badge>
                                   </div>
                                 </div>

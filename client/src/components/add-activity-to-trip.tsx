@@ -10,6 +10,7 @@ import { Plane, MapPin, Calendar, Users, DollarSign, Plus } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { getParticipantsForBudgetCalculation } from "@/lib/trip-utils";
+import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode } from "@shared/utils";
 
 type Activity = {
   id: number;
@@ -413,7 +414,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                                 <p className="text-xs text-gray-600">{proposal.description}</p>
                               </div>
                               <span className="text-sm font-semibold text-blue-600">
-                                R$ {totalCost.toFixed(2)}
+                                {formatBrazilianCurrency(totalCost)}
                               </span>
                             </div>
                             <div className="text-xs text-gray-500">
@@ -426,13 +427,13 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                       <div className="flex justify-between items-center pt-2 border-t">
                         <span className="font-semibold">Custo Total:</span>
                         <span className="font-semibold text-green-600">
-                          R$ {selectedProposals.reduce((total, proposal) => {
+                          {formatBrazilianCurrency(selectedProposals.reduce((total, proposal) => {
                             const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
                             const cost = proposal.priceType === "per_person" 
                               ? amount * getParticipantsForBudgetCalculation(selectedTrip)
                               : amount;
                             return total + cost;
-                          }, 0).toFixed(2)}
+                          }, 0))}
                         </span>
                       </div>
                     </div>
@@ -446,7 +447,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                         <div className="flex justify-between">
                           <span>Valor Base:</span>
                           <span className="font-semibold text-blue-600">
-                            R$ {(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)}
+                            {formatCurrencyByCode(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'), selectedProposal.currency)}
                           </span>
                         </div>
                         <div className="flex justify-between">
@@ -460,9 +461,9 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                         <div className="flex justify-between border-t pt-2">
                           <span className="font-semibold">Custo Total:</span>
                           <span className="font-semibold text-green-600">
-                            R$ {(selectedProposal.priceType === "per_person" 
+                            {formatCurrencyByCode((selectedProposal.priceType === "per_person" 
                               ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * getParticipantsForBudgetCalculation(selectedTrip)
-                              : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))).toFixed(2)}
+                              : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))), selectedProposal.currency)}
                           </span>
                         </div>
                       </div>
@@ -480,20 +481,20 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                 {selectedProposals && selectedProposals.length > 0 
                   ? `${selectedProposals.length} propostas de orçamento`
                   : selectedProposal ? `a proposta ${selectedProposal.title}` : 'a proposta selecionada'
-                } no valor total de <strong>R$ {
+                } no valor total de <strong>{
                   selectedProposals && selectedProposals.length > 0 
-                    ? selectedProposals.reduce((total, proposal) => {
+                    ? formatBrazilianCurrency(selectedProposals.reduce((total, proposal) => {
                         const amount = typeof proposal.amount === 'number' ? proposal.amount : parseFloat(proposal.amount || '0');
                         const cost = proposal.priceType === "per_person" 
                           ? amount * getParticipantsForBudgetCalculation(selectedTrip)
                           : amount;
                         return total + cost;
-                      }, 0).toFixed(2)
+                      }, 0))
                     : selectedProposal 
-                      ? (selectedProposal.priceType === "per_person" 
+                      ? formatCurrencyByCode((selectedProposal.priceType === "per_person" 
                           ? (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')) * getParticipantsForBudgetCalculation(selectedTrip)
-                          : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))).toFixed(2)
-                      : '0.00'
+                          : (typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'))), selectedProposal.currency)
+                      : formatBrazilianCurrency(0)
                 }</strong>.
               </p>
               <div className="mt-2 text-xs text-blue-700">
@@ -502,8 +503,8 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                     ? `${selectedProposals.length} propostas serão adicionadas para ${getParticipantsForBudgetCalculation(selectedTrip)} participantes`
                     : selectedProposal 
                       ? (selectedProposal.priceType === "per_person" 
-                          ? `R$ ${(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)} por pessoa × ${getParticipantsForBudgetCalculation(selectedTrip)} participantes`
-                          : `R$ ${(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0')).toFixed(2)} valor fixo por grupo`)
+                          ? `${formatCurrencyByCode(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'), selectedProposal.currency)} por pessoa × ${getParticipantsForBudgetCalculation(selectedTrip)} participantes`
+                          : `${formatCurrencyByCode(typeof selectedProposal.amount === 'number' ? selectedProposal.amount : parseFloat(selectedProposal.amount || '0'), selectedProposal.currency)} valor fixo por grupo`)
                       : 'Nenhuma proposta selecionada'
                 }
               </div>

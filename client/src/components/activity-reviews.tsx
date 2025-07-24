@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
 
 type ActivityReview = {
   id: number;
@@ -299,7 +300,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 {renderStars(Math.round(averageRating))}
-                <span className="text-2xl font-bold">{Number(averageRating).toFixed(1)}</span>
+                <span className="text-2xl font-bold">{formatBrazilianNumber(Number(averageRating)).replace(',00', ',0')}</span>
               </div>
               <div className="text-sm text-gray-600">
                 Baseado em {totalRatings} avaliação{totalRatings !== 1 ? 'ões' : ''}
@@ -398,7 +399,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                           
                           {review.user.averageRating && Number(review.user.averageRating) > 0 && (
                             <div className="text-xs text-gray-500">
-                              Viajante {Number(review.user.averageRating).toFixed(1)} ⭐
+                              Viajante {formatBrazilianNumber(Number(review.user.averageRating)).replace(',00', ',0')} ⭐
                             </div>
                           )}
                         </div>

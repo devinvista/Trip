@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getRealParticipantsCount } from '@/lib/trip-utils';
+import { formatBrazilianCurrency, formatBrazilianNumber } from '@shared/utils';
 import { 
   Button, 
   Card, 
@@ -1129,10 +1130,13 @@ function ActivityFormTab({
           <Label htmlFor="estimatedCost">Custo Estimado (R$)</Label>
           <Input
             id="estimatedCost"
-            type="number"
-            value={formData.estimatedCost || 0}
-            onChange={(e) => setFormData(prev => ({ ...prev, estimatedCost: parseFloat(e.target.value) || 0 }))}
-            placeholder="0"
+            type="text"
+            value={formatBrazilianNumber(formData.estimatedCost || 0)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^\d,]/g, '').replace(',', '.');
+              setFormData(prev => ({ ...prev, estimatedCost: parseFloat(value) || 0 }));
+            }}
+            placeholder="0,00"
             className="border-2 focus:border-primary"
           />
         </div>
@@ -1390,12 +1394,13 @@ function EditActivityForm({
           <Label htmlFor="cost">Custo Estimado (R$)</Label>
           <Input
             id="cost"
-            type="number"
-            min="0"
-            step="0.01"
-            value={formData.estimatedCost}
-            onChange={(e) => setFormData(prev => ({ ...prev, estimatedCost: parseFloat(e.target.value) || 0 }))}
-            placeholder="0.00"
+            type="text"
+            value={formatBrazilianNumber(formData.estimatedCost)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^\d,]/g, '').replace(',', '.');
+              setFormData(prev => ({ ...prev, estimatedCost: parseFloat(value) || 0 }));
+            }}
+            placeholder="0,00"
             className="border-2 focus:border-primary"
           />
         </div>

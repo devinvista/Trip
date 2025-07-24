@@ -52,6 +52,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { activityCategories } from "@shared/schema";
 import type { Activity } from "@shared/schema";
+import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
 
 interface ActivityFilters {
   search: string;
@@ -796,7 +797,7 @@ function ActivitiesPage() {
                     <span className={`text-lg font-black ${
                       isPremium ? 'text-amber-900 bg-gradient-to-r from-yellow-700 to-orange-700 bg-clip-text text-transparent' : 'text-gray-900'
                     }`}>
-                      {(!activity.price || activity.price === 0) ? "Grátis" : `R$ ${Number(activity.price).toLocaleString('pt-BR')}`}
+                      {(!activity.price || activity.price === 0) ? "Grátis" : formatBrazilianCurrency(Number(activity.price))}
                     </span>
                   </motion.div>
                 </div>
@@ -817,7 +818,7 @@ function ActivitiesPage() {
                       <Star className="w-4 h-4 fill-white text-white drop-shadow-sm" />
                     </motion.div>
                     <span className="text-sm font-black text-white drop-shadow-sm">
-                      {Number(activity.averageRating || activity.rating || 0).toFixed(1)}
+                      {formatBrazilianNumber(Number(activity.averageRating || activity.rating || 0)).replace(',00', ',0')}
                     </span>
                   </motion.div>
                 </div>

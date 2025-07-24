@@ -16,6 +16,7 @@ import { Plus, DollarSign, ThumbsUp, ThumbsDown, Check, User, Package, Star, Tre
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode } from "@shared/utils";
 
 type ActivityBudgetProposal = {
   id: number;
@@ -363,7 +364,7 @@ export function ActivityBudgetProposals({
                               {...field}
                               onChange={e => {
                                 const value = e.target.value;
-                                field.onChange(value === '' ? 0 : parseFloat(value) || 0);
+                                field.onChange(value === '' ? 0 : parseFloat(value.replace(',', '.')) || 0);
                               }}
                             />
                           </FormControl>
@@ -516,13 +517,13 @@ export function ActivityBudgetProposals({
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                R$ {Math.min(...proposals.map(p => Number(p.amount) || 0)).toFixed(0)}
+                {formatBrazilianCurrency(Math.min(...proposals.map(p => Number(p.amount) || 0)))}
               </div>
               <div className="text-sm text-gray-600">Menor Preço</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
-                R$ {Math.max(...proposals.map(p => Number(p.amount) || 0)).toFixed(0)}
+                {formatBrazilianCurrency(Math.max(...proposals.map(p => Number(p.amount) || 0)))}
               </div>
               <div className="text-sm text-gray-600">Maior Preço</div>
             </div>
@@ -621,7 +622,7 @@ export function ActivityBudgetProposals({
                     <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
                       <div className="text-center">
                         <div className="text-3xl font-bold text-gray-900 mb-1">
-                          R$ {Number(proposal.amount || 0).toFixed(2)}
+                          {formatCurrencyByCode(Number(proposal.amount || 0), proposal.currency)}
                         </div>
                         <Badge variant="outline" className={`capitalize text-xs ${isBestValue ? 'border-green-300 text-green-700' : ''}`}>
                           {proposal.priceType === "per_person" ? "Por pessoa" : "Por grupo"}
@@ -794,7 +795,7 @@ export function ActivityBudgetProposals({
                 </div>
                 <div className="text-right">
                   <div className="font-semibold text-green-700">
-                    R$ {Number(proposal.amount || 0).toFixed(2)}
+                    {formatCurrencyByCode(Number(proposal.amount || 0), proposal.currency)}
                   </div>
                   <Button
                     size="sm"
@@ -815,7 +816,7 @@ export function ActivityBudgetProposals({
                 Total: {selectedProposals.length} proposta{selectedProposals.length !== 1 ? 's' : ''}
               </span>
               <span className="text-2xl font-bold text-green-700">
-                R$ {calculateSelectedTotal().toFixed(2)}
+                {formatBrazilianCurrency(calculateSelectedTotal())}
               </span>
             </div>
           </div>

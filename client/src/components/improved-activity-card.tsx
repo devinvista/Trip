@@ -5,6 +5,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { LoadingSpinner } from './ui/loading-spinner';
 import { cn } from '@/lib/utils';
+import { formatBrazilianCurrency, formatBrazilianNumber } from '@shared/utils';
 
 interface Activity {
   id: number;
@@ -162,7 +163,7 @@ export function ImprovedActivityCard({
               <div className="flex items-center">
                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
                 <span className="ml-1 text-sm font-medium text-gray-900">
-                  {activity.averageRating.toFixed(1)}
+                  {formatBrazilianNumber(activity.averageRating).replace(',00', ',0')}
                 </span>
                 <span className="ml-1 text-sm text-gray-500">
                   ({activity.totalRatings})

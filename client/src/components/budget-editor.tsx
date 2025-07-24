@@ -11,6 +11,7 @@ import { Edit3, DollarSign, Calculator, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { budgetCategories, BudgetBreakdown } from "@shared/schema";
+import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
 
 interface BudgetEditorProps {
   tripId: number;
@@ -194,7 +195,7 @@ export function BudgetEditor({
                         Custo por pessoa:
                       </span>
                       <span className="text-lg font-bold text-blue-900">
-                        R$ {(budget / maxParticipants).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {formatBrazilianCurrency(budget / maxParticipants)}
                       </span>
                     </div>
                   </div>
@@ -235,7 +236,7 @@ export function BudgetEditor({
                   <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
                     <span className="font-bold text-blue-900">💎 Orçamento Base Total:</span>
                     <span className="text-xl font-bold text-blue-900">
-                      R$ {calculateTotalFromBreakdown().toLocaleString('pt-BR')}
+                      {formatBrazilianCurrency(calculateTotalFromBreakdown())}
                     </span>
                   </div>
                   
@@ -245,7 +246,7 @@ export function BudgetEditor({
                         Custo por pessoa:
                       </span>
                       <span className="text-lg font-bold text-green-900">
-                        R$ {(calculateTotalFromBreakdown() / maxParticipants).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {formatBrazilianCurrency(calculateTotalFromBreakdown() / maxParticipants)}
                       </span>
                     </div>
                   </div>
@@ -256,7 +257,7 @@ export function BudgetEditor({
                   <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                     <AlertCircle className="h-4 w-4 text-yellow-600" />
                     <span className="text-sm text-yellow-800">
-                      O orçamento será atualizado para R$ {calculateTotalFromBreakdown().toLocaleString('pt-BR')}
+                      O orçamento será atualizado para {formatBrazilianCurrency(calculateTotalFromBreakdown())}
                     </span>
                   </div>
                 )}

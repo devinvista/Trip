@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { BudgetBreakdown, budgetCategories } from "@shared/schema";
 import { getParticipantsForBudgetCalculation } from "@/lib/trip-utils";
+import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
 
 interface BudgetVisualizationProps {
   budget: number;
@@ -78,7 +79,7 @@ export function BudgetVisualization({
       percentage,
       color: categoryColors[key],
       icon: Icon,
-      perPerson: amount / maxParticipants,
+      perPerson: amount / participants,
     };
   }).filter(item => item.amount > 0);
 
@@ -122,19 +123,19 @@ export function BudgetVisualization({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalBudget)}
+                {formatBrazilianCurrency(totalBudget)}
               </div>
               <div className="text-sm text-gray-600">Orçamento Total</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(perPersonBudget)}
+                {formatBrazilianCurrency(perPersonBudget)}
               </div>
               <div className="text-sm text-gray-600">Por Pessoa</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
-                {allocationPercentage.toFixed(1)}%
+                {formatBrazilianNumber(allocationPercentage / 100).replace(',00', '')}%
               </div>
               <div className="text-sm text-gray-600">Alocado</div>
             </div>
@@ -144,7 +145,7 @@ export function BudgetVisualization({
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Progresso de Alocação</span>
-              <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalAllocated)} / {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalBudget)}</span>
+              <span>{formatBrazilianCurrency(totalAllocated)} / {formatBrazilianCurrency(totalBudget)}</span>
             </div>
             <Progress value={allocationPercentage} className="h-3" />
           </div>
@@ -168,15 +169,15 @@ export function BudgetVisualization({
                         <Icon className="h-4 w-4" style={{ color: item.color }} />
                         <span className="font-medium">{item.label}</span>
                         <Badge variant="secondary" className="text-xs">
-                          {item.percentage.toFixed(1)}%
+                          {formatBrazilianNumber(item.percentage / 100).replace(',00', '')}%
                         </Badge>
                       </div>
                       <div className="text-right">
                         <div className="font-semibold">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.amount)}
+                          {formatBrazilianCurrency(item.amount)}
                         </div>
                         <div className="text-xs text-gray-600">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.perPerson)} por pessoa
+                          {formatBrazilianCurrency(item.perPerson)} por pessoa
                         </div>
                       </div>
                     </div>
@@ -198,7 +199,7 @@ export function BudgetVisualization({
                 <div className="flex items-center justify-between text-gray-600">
                   <span>Orçamento Não Alocado</span>
                   <span className="font-semibold">
-                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(unallocated)}
+                    {formatBrazilianCurrency(unallocated)}
                   </span>
                 </div>
               </>
@@ -224,7 +225,7 @@ export function BudgetVisualization({
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percentage }) => `${name} (${percentage.toFixed(1)}%)`}
+                      label={({ name, percentage }) => `${name} (${formatBrazilianNumber(percentage / 100).replace(',00', '')}%)`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"

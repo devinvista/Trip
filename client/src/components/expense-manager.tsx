@@ -19,6 +19,7 @@ import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { expenseCategories } from "@shared/schema";
+import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
 
 interface ExpenseManagerProps {
   tripId: number;
@@ -135,7 +136,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
     }
 
     createExpenseMutation.mutate({
-      amount: parseFloat(newExpense.amount),
+      amount: parseFloat(newExpense.amount.replace(',', '.')),
       description: newExpense.description,
       category: newExpense.category,
       splitWith: newExpense.splitEqually ? 'all' : newExpense.splitWith,
@@ -153,17 +154,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
   };
 
   const formatCurrency = (amount: number) => {
-    // Ensure amount is a number
-    const numAmount = Number(amount);
-    
-    if (isNaN(numAmount)) {
-      return 'R$ 0,00';
-    }
-    
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(numAmount);
+    return formatBrazilianCurrency(amount);
   };
 
   // Calculate who owes whom

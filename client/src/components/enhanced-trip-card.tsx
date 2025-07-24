@@ -9,6 +9,7 @@ import { OptimizedImage } from './optimized-image';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatBrazilianCurrency, formatBrazilianNumber } from '@shared/utils';
 
 interface Trip {
   id: number;
@@ -221,7 +222,7 @@ export function EnhancedTripCard({
             <div className="flex items-center">
               <Star className="w-3 h-3 text-yellow-400 fill-current" />
               <span className="ml-1 text-sm font-medium text-gray-900">
-                {trip.creator.averageRating.toFixed(1)}
+                {formatBrazilianNumber(trip.creator.averageRating).replace(',00', ',0')}
               </span>
             </div>
           </div>
@@ -231,7 +232,7 @@ export function EnhancedTripCard({
             {/* Budget */}
             <div className="flex items-center text-green-600 font-medium">
               <DollarSign className="w-4 h-4 mr-1" />
-              <span>R$ {trip.budget.toLocaleString()}</span>
+              <span>{formatBrazilianCurrency(trip.budget)}</span>
             </div>
 
             {/* Participants */}
