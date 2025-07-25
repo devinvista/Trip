@@ -14,7 +14,7 @@ export async function syncParticipantsCount() {
     const allTrips = await db.select({
       id: trips.id,
       title: trips.title,
-      currentParticipants: trips.currentParticipants
+      current_participants: trips.current_participants
     }).from(trips);
 
     console.log(`📊 Verificando ${allTrips.length} viagens...`);
@@ -27,20 +27,20 @@ export async function syncParticipantsCount() {
         .select({ count: count() })
         .from(tripParticipants)
         .where(and(
-          eq(tripParticipants.tripId, trip.id),
+          eq(tripParticipants.trip_id, trip.id),
           eq(tripParticipants.status, 'accepted')
         ));
 
       const realParticipantsCount = result.count;
 
       // Only update if counts don't match
-      if (trip.currentParticipants !== realParticipantsCount) {
+      if (trip.current_participants !== realParticipantsCount) {
         await db
           .update(trips)
-          .set({ currentParticipants: realParticipantsCount })
+          .set({ current_participants: realParticipantsCount })
           .where(eq(trips.id, trip.id));
 
-        console.log(`✅ Viagem "${trip.title}" atualizada: ${trip.currentParticipants} → ${realParticipantsCount} participantes`);
+        console.log(`✅ Viagem "${trip.title}" atualizada: ${trip.current_participants} → ${realParticipantsCount} participantes`);
         updatedCount++;
       }
     }
@@ -66,7 +66,7 @@ export async function syncTripParticipants(tripId: number) {
       .select({ count: count() })
       .from(tripParticipants)
       .where(and(
-        eq(tripParticipants.tripId, tripId),
+        eq(tripParticipants.trip_id, tripId),
         eq(tripParticipants.status, 'accepted')
       ));
 
@@ -74,7 +74,7 @@ export async function syncTripParticipants(tripId: number) {
 
     await db
       .update(trips)
-      .set({ currentParticipants: realParticipantsCount })
+      .set({ current_participants: realParticipantsCount })
       .where(eq(trips.id, tripId));
 
     console.log(`✅ Viagem ${tripId} sincronizada: ${realParticipantsCount} participantes aceitos`);

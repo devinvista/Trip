@@ -212,10 +212,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export const insertTripSchema = createInsertSchema(trips).omit({
   id: true,
-  creatorId: true,
-  currentParticipants: true,
+  creator_id: true,
+  current_participants: true,
   status: true,
-  createdAt: true,
+  created_at: true,
 }).extend({
   title: z.string().min(3, "O título deve ter pelo menos 3 caracteres"),
   budget: z.number().optional(),
@@ -240,24 +240,24 @@ export const insertTripSchema = createInsertSchema(trips).omit({
 
 export const insertMessageSchema = createInsertSchema(messages).omit({
   id: true,
-  senderId: true,
-  sentAt: true,
+  sender_id: true,
+  sent_at: true,
 });
 
 export const insertTripRequestSchema = createInsertSchema(tripRequests).omit({
   id: true,
-  userId: true,
+  user_id: true,
   status: true,
-  createdAt: true,
+  created_at: true,
 });
 
 export const insertRatingReportSchema = createInsertSchema(ratingReports).omit({
   id: true,
-  reporterId: true,
+  reporter_id: true,
   status: true,
-  reviewedAt: true,
-  reviewedBy: true,
-  createdAt: true,
+  reviewed_at: true,
+  reviewed_by: true,
+  created_at: true,
 }).extend({
   reason: z.enum(["offensive", "spam", "inappropriate", "fake"], {
     errorMap: () => ({ message: "Motivo inválido" })
@@ -295,7 +295,7 @@ export const insertExpenseSchema = z.object({
 
 export const insertExpenseSplitSchema = createInsertSchema(expenseSplits).omit({
   id: true,
-  settledAt: true,
+  settled_at: true,
 }).extend({
   amount: z.number().positive("O valor deve ser positivo"),
 });
@@ -304,14 +304,14 @@ export type InsertExpense = z.infer<typeof insertExpenseSchema>;
 export type InsertExpenseSplit = z.infer<typeof insertExpenseSplitSchema>;
 
 // Interest list schema and types
-export const insertInterestListSchema = createInsertSchema(interestList, {
-  fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+export const insertInterestListSchema = createInsertSchema(interestList).omit({ 
+  id: true, 
+  created_at: true,
+  status: true
+}).extend({
+  full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
-}).omit({ 
-  id: true, 
-  createdAt: true,
-  status: true
 });
 
 export type InterestList = typeof interestList.$inferSelect;
@@ -325,11 +325,11 @@ export type VerificationRequest = typeof verificationRequests.$inferSelect;
 // Rating insert schemas (updated for enhanced system)
 export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   id: true,
-  raterUserId: true,
-  isHidden: true,
-  reportCount: true,
-  createdAt: true,
-  updatedAt: true,
+  rater_user_id: true,
+  is_hidden: true,
+  report_count: true,
+  created_at: true,
+  updated_at: true,
 }).extend({
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   comment: z.string().optional(),
@@ -344,11 +344,11 @@ export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
 
 export const insertCityRatingSchema = createInsertSchema(cityRatings).omit({
   id: true,
-  userId: true,
-  isHidden: true,
-  reportCount: true,
-  createdAt: true,
-  updatedAt: true,
+  user_id: true,
+  is_hidden: true,
+  report_count: true,
+  created_at: true,
+  updated_at: true,
 }).extend({
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   comment: z.string().optional(),

@@ -18,8 +18,8 @@ export async function fixCreatorsAsParticipants() {
       const existingParticipant = await db.select()
         .from(tripParticipants)
         .where(and(
-          eq(tripParticipants.tripId, trip.id),
-          eq(tripParticipants.userId, trip.creatorId)
+          eq(tripParticipants.trip_id, trip.id),
+          eq(tripParticipants.user_id, trip.creator_id)
         ))
         .limit(1);
       
@@ -27,19 +27,19 @@ export async function fixCreatorsAsParticipants() {
         // Creator is not a participant, add them
         try {
           await db.insert(tripParticipants).values({
-            tripId: trip.id,
-            userId: trip.creatorId,
+            trip_id: trip.id,
+            user_id: trip.creator_id,
             status: 'accepted',
-            joinedAt: new Date()
+            joined_at: new Date()
           });
           
-          console.log(`✅ Criador ${trip.creatorId} adicionado como participante na viagem ${trip.id}: "${trip.title}"`);
+          console.log(`✅ Criador ${trip.creator_id} adicionado como participante na viagem ${trip.id}: "${trip.title}"`);
           fixedCount++;
         } catch (error) {
-          console.error(`❌ Erro ao adicionar criador ${trip.creatorId} na viagem ${trip.id}:`, error);
+          console.error(`❌ Erro ao adicionar criador ${trip.creator_id} na viagem ${trip.id}:`, error);
         }
       } else {
-        console.log(`ℹ️ Criador ${trip.creatorId} já é participante da viagem ${trip.id}: "${trip.title}"`);
+        console.log(`ℹ️ Criador ${trip.creator_id} já é participante da viagem ${trip.id}: "${trip.title}"`);
       }
     }
     

@@ -5,7 +5,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { testConnection, initializeTables, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
-import { syncParticipantsCount } from "./sync-participants.js";
+import { syncParticipantsCount } from "./sync-participants.ts";
 import { setupReferralSystem } from "./setup-referral-system";
 
 const app = express();
