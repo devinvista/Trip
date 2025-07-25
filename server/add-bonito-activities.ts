@@ -7,10 +7,13 @@ const bonitoActivities = [
     description: "Uma das mais belas grutas do Brasil, com lago de águas cristalinas em tons de azul turquesa. A gruta possui 72 metros de profundidade e oferece uma experiência única de contemplação da natureza. Ideal para todas as idades, a visita inclui caminhada em trilha suspensa e contemplação do lago subterrâneo.",
     location: "Bonito, MS",
     category: "nature",
-    duration: 2,
-    difficulty: "easy",
-    priceRange: "R$ 90 - R$ 180",
-    cover_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+    countryType: "nacional",
+    region: "Centro-Oeste",
+    city: "Bonito",
+    duration: "2 horas",
+    difficultyLevel: "easy",
+    priceType: "per_person",
+    coverImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
     proposals: [
       {
         title: "Econômico",
@@ -37,10 +40,13 @@ const bonitoActivities = [
     description: "Experiência única de flutuação em rio com águas cristalinas e visibilidade de até 50 metros. Observe peixes, plantas aquáticas e a rica fauna subaquática em um dos aquários naturais mais preservados do Brasil. Atividade relaxante adequada para iniciantes e experientes.",
     location: "Bonito, MS",
     category: "water_sports",
-    duration: 4,
-    difficulty: "easy",
-    priceRange: "R$ 320 - R$ 550",
-    cover_image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+    countryType: "nacional",
+    region: "Centro-Oeste",
+    city: "Bonito",
+    duration: "4 horas",
+    difficultyLevel: "easy",
+    priceType: "per_person",
+    coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
     proposals: [
       {
         title: "Econômico",
@@ -167,14 +173,17 @@ async function addBonitoActivities() {
         description: activityData.description,
         location: activityData.location,
         category: activityData.category,
+        countryType: activityData.countryType,
+        region: activityData.region,
+        city: activityData.city,
         duration: activityData.duration,
-        difficulty: activityData.difficulty,
-        priceRange: activityData.priceRange,
-        cover_image: activityData.coverImage,
-        rating: "4.5",
-        reviewCount: 0,
-        is_active: true,
-        created_by_id: 1 // User tom
+        difficultyLevel: activityData.difficultyLevel,
+        priceType: activityData.priceType,
+        coverImage: activityData.coverImage,
+        averageRating: "4.50",
+        totalRatings: 0,
+        isActive: true,
+        createdById: 1 // User tom
       });
       
       console.log(`✅ Atividade criada com ID: ${activity.insertId}`);
@@ -190,7 +199,7 @@ async function addBonitoActivities() {
           inclusions: JSON.stringify(proposal.inclusions),
           exclusions: JSON.stringify([]),
           votes: Math.floor(Math.random() * 60) + 20, // Random votes between 20-80
-          is_active: true
+          isActive: true
         });
         
         console.log(`💰 Proposta "${proposal.title}" criada: R$ ${proposal.price}`);
