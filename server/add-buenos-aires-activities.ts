@@ -13,32 +13,32 @@ async function addBuenosAiresActivities() {
       location: "Buenos Aires, Argentina",
       category: "entertainment",
       city: "Buenos Aires",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Sul",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "3-4 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 50,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 50,
       languages: JSON.stringify(["Espanhol", "Inglês", "Português"]),
       inclusions: JSON.stringify(["Show de tango profissional", "Jantar tradicional argentino", "Vinho local", "Transporte"]),
       exclusions: JSON.stringify(["Bebidas extras", "Gorjetas", "Souvenirs", "Aulas de tango"]),
       requirements: JSON.stringify(["Vestuário elegante", "Reserva antecipada", "Chegada pontual"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes do evento",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes do evento",
+      contactInfo: JSON.stringify({
         phone: "+54 11 5555-1234",
         email: "info@tangoshow.com.ar",
         website: "https://www.tangoshow.com.ar",
         address: "San Telmo, Buenos Aires, Argentina"
       }),
-      cover_image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
         "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Tour pelo Bairro La Boca - Caminito",
@@ -46,14 +46,14 @@ async function addBuenosAiresActivities() {
       location: "Buenos Aires, Argentina",
       category: "sightseeing",
       city: "Buenos Aires",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Sul",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 30,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 30,
       languages: JSON.stringify(["Espanhol", "Inglês", "Português"]),
       inclusions: JSON.stringify(["Rua Caminito", "Casas coloridas", "Arte de rua", "Museu Boca Juniors", "Feira de antiguidades"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Guia turístico", "Entradas em museus"]),
@@ -65,13 +65,13 @@ async function addBuenosAiresActivities() {
         website: "https://www.laboca.com.ar",
         address: "Caminito, La Boca, Buenos Aires, Argentina"
       }),
-      cover_image: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=800&q=80",
         "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
         "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Cemitério da Recoleta - Visita Histórica",
@@ -79,14 +79,14 @@ async function addBuenosAiresActivities() {
       location: "Buenos Aires, Argentina",
       category: "culture",
       city: "Buenos Aires",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Sul",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "1-2 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 40,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 40,
       languages: JSON.stringify(["Espanhol", "Inglês", "Português"]),
       inclusions: JSON.stringify(["Entrada gratuita", "Túmulo de Eva Perón", "Arquitetura funerária", "História argentina"]),
       exclusions: JSON.stringify(["Transporte", "Guia turístico", "Alimentação", "Audioguia"]),
@@ -98,13 +98,13 @@ async function addBuenosAiresActivities() {
         website: "https://www.cementeriodelarecoleta.com.ar",
         address: "Junín 1760, C1113 CABA, Argentina"
       }),
-      cover_image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
         "https://images.unsplash.com/photo-1544827753-4acf7de08544?w=800&q=80",
         "https://images.unsplash.com/photo-1575062789842-43438b4e9eb4?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "MALBA - Museu de Arte Latino-Americana",
@@ -112,14 +112,14 @@ async function addBuenosAiresActivities() {
       location: "Buenos Aires, Argentina",
       category: "culture",
       city: "Buenos Aires",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Sul",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 50,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 50,
       languages: JSON.stringify(["Espanhol", "Inglês", "Português"]),
       inclusions: JSON.stringify(["Entrada no museu", "Exposições permanentes", "Arte latino-americana", "Café no museu"]),
       exclusions: JSON.stringify(["Transporte", "Guia turístico", "Exposições especiais", "Audioguia"]),
@@ -131,13 +131,13 @@ async function addBuenosAiresActivities() {
         website: "https://www.malba.org.ar",
         address: "Av. Figueroa Alcorta 3415, C1425CLA CABA, Argentina"
       }),
-      cover_image: "https://images.unsplash.com/photo-1575062789842-43438b4e9eb4?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1575062789842-43438b4e9eb4?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1575062789842-43438b4e9eb4?w=800&q=80",
         "https://images.unsplash.com/photo-1544827753-4acf7de08544?w=800&q=80",
         "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Degustação de Vinhos e Carnes Premium",
@@ -145,14 +145,14 @@ async function addBuenosAiresActivities() {
       location: "Buenos Aires, Argentina",
       category: "food_tours",
       city: "Buenos Aires",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Sul",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "3-4 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 20,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 20,
       languages: JSON.stringify(["Espanhol", "Inglês", "Português"]),
       inclusions: JSON.stringify(["Degustação de vinhos", "Cortes de carne premium", "Parrilla tradicional", "Sommelier especializado"]),
       exclusions: JSON.stringify(["Transporte", "Bebidas extras", "Gorjetas", "Souvenirs"]),
@@ -164,13 +164,13 @@ async function addBuenosAiresActivities() {
         website: "https://www.wineandmeat.com.ar",
         address: "Palermo, Buenos Aires, Argentina"
       }),
-      cover_image: "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
         "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     }
   ];
 
@@ -319,9 +319,7 @@ async function addBuenosAiresActivities() {
       try {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
-          is_active: true,
-          created_at: new Date(),
-          updated_at: new Date()
+          isActive: true
         });
         console.log(`✅ Atividade criada: ${activity.title}`);
       } catch (insertError: any) {
@@ -349,13 +347,11 @@ async function addBuenosAiresActivities() {
               createdBy: 1,
               title: proposal.title,
               description: proposal.description,
-              amount: parseFloat(proposal.amount),
+              amount: proposal.amount,
               currency: "USD",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
-              is_active: true,
-              created_at: new Date(),
-              updated_at: new Date()
+              isActive: true
             });
             console.log(`  💰 Proposta criada: ${proposal.title}`);
           } catch (proposalError: any) {

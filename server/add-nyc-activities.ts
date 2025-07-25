@@ -13,14 +13,14 @@ async function addNYCActivities() {
       location: "Nova York, EUA",
       category: "culture",
       city: "Nova York",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Norte",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "4-5 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 100,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 100,
       languages: JSON.stringify(["Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Português"]),
       inclusions: JSON.stringify(["Ferry para Liberty Island", "Ferry para Ellis Island", "Entrada nos museus", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte até Battery Park", "Alimentação", "Acesso à coroa", "Souvenirs"]),
@@ -32,13 +32,13 @@ async function addNYCActivities() {
         website: "https://www.nps.gov/stli",
         address: "Liberty Island, New York, NY 10004"
       }),
-      cover_image: "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=800&q=80",
         "https://images.unsplash.com/photo-1520637836862-4d197d17c27a?w=800&q=80",
         "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Empire State Building - Ícone de NY",
@@ -46,14 +46,14 @@ async function addNYCActivities() {
       location: "Nova York, EUA",
       category: "sightseeing",
       city: "Nova York",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Norte",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 200,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 200,
       languages: JSON.stringify(["Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Português", "Japonês", "Chinês"]),
       inclusions: JSON.stringify(["Acesso ao observatório", "Elevadores de alta velocidade", "Vistas 360°", "Exposição histórica"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografias profissionais", "Souvenirs"]),
@@ -65,13 +65,13 @@ async function addNYCActivities() {
         website: "https://www.esbnyc.com",
         address: "20 W 34th St, New York, NY 10001"
       }),
-      cover_image: "https://images.unsplash.com/photo-1549417229-aa67d3263c9d?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1549417229-aa67d3263c9d?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1549417229-aa67d3263c9d?w=800&q=80",
         "https://images.unsplash.com/photo-1576485290814-1c72aa4bbb8e?w=800&q=80",
         "https://images.unsplash.com/photo-1592356308926-7e5e3a005de0?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Broadway Show - Teatro de Classe Mundial",
@@ -79,14 +79,14 @@ async function addNYCActivities() {
       location: "Nova York, EUA",
       category: "entertainment",
       city: "Nova York",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Norte",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2,5-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 50,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 50,
       languages: JSON.stringify(["Inglês"]),
       inclusions: JSON.stringify(["Ingresso para show", "Assento numerado", "Programa oficial"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Bebidas", "Estacionamento", "Encontro com elenco"]),
@@ -98,13 +98,13 @@ async function addNYCActivities() {
         website: "https://www.broadway.com",
         address: "Times Square Theater District, New York, NY"
       }),
-      cover_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
         "https://images.unsplash.com/photo-1518709268805-4e9042af2ea0?w=800&q=80",
         "https://images.unsplash.com/photo-1560448204-61dc36dc98c8?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Central Park - Oásis Verde de Manhattan",
@@ -112,14 +112,14 @@ async function addNYCActivities() {
       location: "Nova York, EUA",
       category: "nature",
       city: "Nova York",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Norte",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-4 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 30,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 30,
       languages: JSON.stringify(["Inglês", "Espanhol", "Francês", "Alemão", "Italiano"]),
       inclusions: JSON.stringify(["Entrada gratuita no parque", "Acesso a trilhas", "Vistas panorâmicas", "Locais históricos"]),
       exclusions: JSON.stringify(["Aluguel de bicicleta", "Alimentação", "Guia turístico", "Transporte"]),
@@ -131,13 +131,13 @@ async function addNYCActivities() {
         website: "https://www.centralparknyc.org",
         address: "Central Park, New York, NY 10024"
       }),
-      cover_image: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80",
         "https://images.unsplash.com/photo-1514395462725-fb4566210144?w=800&q=80",
         "https://images.unsplash.com/photo-1566404394863-f5ca891c96c8?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Museu Metropolitano de Arte (Met)",
@@ -145,14 +145,14 @@ async function addNYCActivities() {
       location: "Nova York, EUA",
       category: "culture",
       city: "Nova York",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "América do Norte",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "3-5 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 40,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 40,
       languages: JSON.stringify(["Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Português", "Japonês", "Chinês", "Russo"]),
       inclusions: JSON.stringify(["Entrada no museu", "Acesso às coleções permanentes", "Mapa do museu", "Audioguia básico"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Exposições especiais", "Guia particular", "Estacionamento"]),
@@ -164,13 +164,13 @@ async function addNYCActivities() {
         website: "https://www.metmuseum.org",
         address: "1000 5th Ave, New York, NY 10028"
       }),
-      cover_image: "https://images.unsplash.com/photo-1544827753-4acf7de08544?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544827753-4acf7de08544?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1544827753-4acf7de08544?w=800&q=80",
         "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
         "https://images.unsplash.com/photo-1577720643271-6760b94e67d1?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     }
   ];
 
@@ -319,7 +319,7 @@ async function addNYCActivities() {
       try {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
-          is_active: true,
+          isActive: true,
           created_at: new Date(),
           updated_at: new Date()
         });
@@ -353,7 +353,7 @@ async function addNYCActivities() {
               currency: "USD",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
-              is_active: true,
+              isActive: true,
               created_at: new Date(),
               updated_at: new Date()
             });

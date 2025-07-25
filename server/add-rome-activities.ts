@@ -13,14 +13,14 @@ async function addRomeActivities() {
       location: "Roma, Itália",
       category: "culture",
       city: "Roma",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Meridional",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 50,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 50,
       languages: JSON.stringify(["Italiano", "Inglês", "Espanhol", "Francês", "Alemão", "Português"]),
       inclusions: JSON.stringify(["Entrada no Coliseu", "Acesso ao Fórum Romano", "Palatino Hill", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Acesso à arena", "Subterrâneos"]),
@@ -32,13 +32,13 @@ async function addRomeActivities() {
         website: "https://colosseo.it",
         address: "Piazza del Colosseo, 1, 00184 Roma RM"
       }),
-      cover_image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
         "https://images.unsplash.com/photo-1539650116574-75c0c6d47324?w=800&q=80",
         "https://images.unsplash.com/photo-1544431369-dccdb9dc8c16?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Vaticano e Basílica de São Pedro",
@@ -46,14 +46,14 @@ async function addRomeActivities() {
       location: "Roma, Itália",
       category: "culture",
       city: "Roma",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Meridional",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "3-4 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 40,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 40,
       languages: JSON.stringify(["Italiano", "Inglês", "Espanhol", "Francês", "Alemão", "Português"]),
       inclusions: JSON.stringify(["Entrada nos Museus Vaticanos", "Capela Sistina", "Basílica de São Pedro", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Acesso à cúpula", "Jardins Vaticanos"]),
@@ -65,13 +65,13 @@ async function addRomeActivities() {
         website: "https://www.museivaticani.va",
         address: "Viale Vaticano, 00165 Roma RM"
       }),
-      cover_image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",
         "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
         "https://images.unsplash.com/photo-1591194658578-1b4c1e4c4b7c?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Fontana di Trevi e Centro Histórico",
@@ -79,14 +79,14 @@ async function addRomeActivities() {
       location: "Roma, Itália",
       category: "sightseeing",
       city: "Roma",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Meridional",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 30,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 30,
       languages: JSON.stringify(["Italiano", "Inglês", "Espanhol", "Francês", "Alemão", "Português"]),
       inclusions: JSON.stringify(["Fontana di Trevi", "Pantheon", "Piazza Navona", "Campo de' Fiori", "Centro histórico"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Guia turístico", "Entradas em monumentos"]),
@@ -98,13 +98,13 @@ async function addRomeActivities() {
         website: "https://www.turismoroma.it",
         address: "Centro Storico, Roma RM"
       }),
-      cover_image: "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800&q=80",
         "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80",
         "https://images.unsplash.com/photo-1546549032-9571cd6b27df?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Panteão de Roma - Templo dos Deuses",
@@ -112,14 +112,14 @@ async function addRomeActivities() {
       location: "Roma, Itália",
       category: "culture",
       city: "Roma",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Meridional",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "1-2 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 50,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 50,
       languages: JSON.stringify(["Italiano", "Inglês", "Espanhol", "Francês", "Alemão", "Português"]),
       inclusions: JSON.stringify(["Entrada no Panteão", "Arquitetura romana", "Túmulo de Rafael", "Cúpula histórica"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Guia turístico", "Audioguia"]),
@@ -131,13 +131,13 @@ async function addRomeActivities() {
         website: "https://www.pantheonroma.com",
         address: "Piazza della Rotonda, 00186 Roma RM"
       }),
-      cover_image: "https://images.unsplash.com/photo-1546549032-9571cd6b27df?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1546549032-9571cd6b27df?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1546549032-9571cd6b27df?w=800&q=80",
         "https://images.unsplash.com/photo-1539650116574-75c0c6d47324?w=800&q=80",
         "https://images.unsplash.com/photo-1544431369-dccdb9dc8c16?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Trastevere - Bairro Boêmio Autêntico",
@@ -145,14 +145,14 @@ async function addRomeActivities() {
       location: "Roma, Itália",
       category: "food_tours",
       city: "Roma",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Meridional",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-4 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 20,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 20,
       languages: JSON.stringify(["Italiano", "Inglês", "Espanhol", "Francês", "Alemão", "Português"]),
       inclusions: JSON.stringify(["Passeio pelo bairro", "Ruas históricas", "Basilica di Santa Maria", "Atmosfera autêntica"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Bebidas", "Guia turístico"]),
@@ -164,13 +164,13 @@ async function addRomeActivities() {
         website: "https://www.trastevereroma.it",
         address: "Trastevere, Roma RM"
       }),
-      cover_image: "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80",
         "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800&q=80",
         "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     }
   ];
 
@@ -319,7 +319,7 @@ async function addRomeActivities() {
       try {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
-          is_active: true,
+          isActive: true,
           created_at: new Date(),
           updated_at: new Date()
         });
@@ -353,7 +353,7 @@ async function addRomeActivities() {
               currency: "EUR",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
-              is_active: true,
+              isActive: true,
               created_at: new Date(),
               updated_at: new Date()
             });

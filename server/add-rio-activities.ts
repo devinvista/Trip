@@ -16,10 +16,10 @@ const rioActivities = [
     description: 'Visita ao icônico Cristo Redentor, uma das Novas Sete Maravilhas do Mundo. Localizado no topo do Corcovado, oferece vistas panorâmicas espetaculares da cidade do Rio de Janeiro.',
     location: 'Rio de Janeiro, RJ',
     category: 'pontos_turisticos',
-    duration: 4,
+    duration: "4 horas",
     difficulty: 'easy',
     priceRange: 'medium',
-    cover_image: coverImages.cristoRedentor,
+    coverImage: coverImages.cristoRedentor,
     rating: 4.8,
     reviewCount: 1247,
     proposals: [
@@ -71,10 +71,10 @@ const rioActivities = [
     description: 'Passeio no famoso bondinho do Pão de Açúcar com vistas panorâmicas da Baía de Guanabara, praias de Copacabana e Ipanema. Um dos cartões postais mais famosos do Rio.',
     location: 'Rio de Janeiro, RJ',
     category: 'pontos_turisticos',
-    duration: 3,
+    duration: "3 horas",
     difficulty: 'easy',
     priceRange: 'medium',
-    cover_image: coverImages.paoAcucar,
+    coverImage: coverImages.paoAcucar,
     rating: 4.7,
     reviewCount: 892,
     proposals: [
@@ -126,10 +126,10 @@ const rioActivities = [
     description: 'Desfrute das praias mais famosas do mundo com atividades esportivas como surf, vôlei de praia, e passeios de bike. Inclui as icônicas praias de Copacabana e Ipanema.',
     location: 'Rio de Janeiro, RJ',
     category: 'water_sports',
-    duration: 6,
+    duration: "6 horas",
     difficulty: 'easy',
     priceRange: 'low',
-    cover_image: coverImages.copacabana,
+    coverImage: coverImages.copacabana,
     rating: 4.6,
     reviewCount: 1543,
     proposals: [
@@ -181,10 +181,10 @@ const rioActivities = [
     description: 'Trilha moderada com vistas espetaculares da cidade, praias e montanhas. Perfeita para amantes da natureza e fotografia. Opção entre Pedra Bonita e Dois Irmãos.',
     location: 'Rio de Janeiro, RJ',
     category: 'hiking',
-    duration: 4,
+    duration: "4 horas",
     difficulty: 'medium',
     priceRange: 'low',
-    cover_image: coverImages.trilha,
+    coverImage: coverImages.trilha,
     rating: 4.5,
     reviewCount: 687,
     proposals: [
@@ -236,10 +236,10 @@ const rioActivities = [
     description: 'Explore o centro histórico do Rio visitando o majestoso Theatro Municipal, Museu do Amanhã, e outros pontos culturais. Mergulhe na rica história e arquitetura carioca.',
     location: 'Rio de Janeiro, RJ',
     category: 'cultural',
-    duration: 5,
+    duration: "5 horas",
     difficulty: 'easy',
     priceRange: 'low',
-    cover_image: coverImages.theatro,
+    coverImage: coverImages.theatro,
     rating: 4.4,
     reviewCount: 523,
     proposals: [
@@ -304,10 +304,10 @@ async function addRioActivities() {
         duration: activityData.duration,
         difficulty: activityData.difficulty,
         priceRange: activityData.priceRange,
-        cover_image: activityData.coverImage,
+        coverImage: activityData.coverImage,
         rating: activityData.rating,
         reviewCount: activityData.reviewCount,
-        is_active: true
+        isActive: true
       });
       
       console.log(`✅ Atividade criada com ID: ${activity.insertId}`);
@@ -323,7 +323,7 @@ async function addRioActivities() {
           inclusions: JSON.stringify(proposal.inclusions),
           exclusions: JSON.stringify(proposal.exclusions),
           votes: Math.floor(Math.random() * 50) + 10, // Random votes between 10-60
-          is_active: true
+          isActive: true
         });
         
         console.log(`💰 Proposta "${proposal.title}" criada com ID: ${budgetProposal.insertId}`);

@@ -13,14 +13,14 @@ async function addLondonActivities() {
       location: "Londres, Reino Unido",
       category: "sightseeing",
       city: "Londres",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "30-45 minutos",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 25,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 25,
       languages: JSON.stringify(["Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Português", "Japonês", "Chinês"]),
       inclusions: JSON.stringify(["Entrada no London Eye", "Volta completa de 30 min", "Vistas panorâmicas", "Audioguia digital"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografias", "Souvenirs", "Champagne"]),
@@ -32,13 +32,13 @@ async function addLondonActivities() {
         website: "https://www.londoneye.com",
         address: "Riverside Building, County Hall, London SE1 7PB"
       }),
-      cover_image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
         "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=800&q=80",
         "https://images.unsplash.com/photo-1544133503-59b8e7e58e32?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Torre de Londres - Fortaleza Histórica",
@@ -46,14 +46,14 @@ async function addLondonActivities() {
       location: "Londres, Reino Unido",
       category: "culture",
       city: "Londres",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 50,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 50,
       languages: JSON.stringify(["Inglês", "Francês", "Alemão", "Espanhol", "Italiano"]),
       inclusions: JSON.stringify(["Entrada na Torre", "Acesso às Joias da Coroa", "White Tower", "Yeoman Warder tours", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografias nas Joias", "Souvenirs"]),
@@ -65,13 +65,13 @@ async function addLondonActivities() {
         website: "https://www.hrp.org.uk/tower-of-london",
         address: "St Katharine's & Wapping, London EC3N 4AB"
       }),
-      cover_image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&q=80",
         "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80",
         "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Museu Britânico - Tesouros Mundiais",
@@ -79,14 +79,14 @@ async function addLondonActivities() {
       location: "Londres, Reino Unido",
       category: "culture",
       city: "Londres",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "3-4 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 30,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 30,
       languages: JSON.stringify(["Inglês", "Francês", "Alemão", "Espanhol", "Italiano", "Japonês", "Chinês", "Português"]),
       inclusions: JSON.stringify(["Entrada gratuita", "Acesso às galerias permanentes", "Mapa do museu", "WiFi gratuito"]),
       exclusions: JSON.stringify(["Exposições especiais", "Audioguia", "Transporte", "Alimentação"]),
@@ -98,13 +98,13 @@ async function addLondonActivities() {
         website: "https://www.britishmuseum.org",
         address: "Great Russell St, Bloomsbury, London WC1B 3DG"
       }),
-      cover_image: "https://images.unsplash.com/photo-1575062789842-43438b4e9eb4?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1575062789842-43438b4e9eb4?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1575062789842-43438b4e9eb4?w=800&q=80",
         "https://images.unsplash.com/photo-1544827753-4acf7de08544?w=800&q=80",
         "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "West End - Teatro de Classe Mundial",
@@ -112,14 +112,14 @@ async function addLondonActivities() {
       location: "Londres, Reino Unido",
       category: "entertainment",
       city: "Londres",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "2,5-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 40,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 40,
       languages: JSON.stringify(["Inglês"]),
       inclusions: JSON.stringify(["Ingresso para show", "Assento numerado", "Programa oficial", "Intervalo"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Bebidas", "Estacionamento", "Encontro com elenco"]),
@@ -131,13 +131,13 @@ async function addLondonActivities() {
         website: "https://www.westendtheatre.com",
         address: "West End Theatre District, London"
       }),
-      cover_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
         "https://images.unsplash.com/photo-1518709268805-4e9042af2ea0?w=800&q=80",
         "https://images.unsplash.com/photo-1560448204-61dc36dc98c8?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Palácio de Buckingham - Residência Real",
@@ -145,14 +145,14 @@ async function addLondonActivities() {
       location: "Londres, Reino Unido",
       category: "culture",
       city: "Londres",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "1-2 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 100,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 100,
       languages: JSON.stringify(["Inglês", "Francês", "Alemão", "Espanhol", "Italiano", "Japonês", "Chinês"]),
       inclusions: JSON.stringify(["Acesso conforme tipo", "Vistas do palácio", "Cerimônia da Troca da Guarda", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografia interior", "Souvenirs"]),
@@ -164,13 +164,13 @@ async function addLondonActivities() {
         website: "https://www.rct.uk/visit/buckingham-palace",
         address: "Buckingham Palace, London SW1A 1AA"
       }),
-      cover_image: "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=800&q=80",
         "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80",
         "https://images.unsplash.com/photo-1519135467309-4491ed7eaa40?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     }
   ];
 
@@ -319,7 +319,7 @@ async function addLondonActivities() {
       try {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
-          is_active: true,
+          isActive: true,
           created_at: new Date(),
           updated_at: new Date()
         });
@@ -353,7 +353,7 @@ async function addLondonActivities() {
               currency: "GBP",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
-              is_active: true,
+              isActive: true,
               created_at: new Date(),
               updated_at: new Date()
             });

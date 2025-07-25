@@ -13,14 +13,14 @@ async function addParisActivities() {
       location: "Paris, França",
       category: "sightseeing",
       city: "Paris",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null, // Will be set via budget proposals
+      priceType: "per_person",
+      priceAmount: null, // Will be set via budget proposals
       duration: "2-3 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 50,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 50,
       languages: JSON.stringify(["Francês", "Inglês", "Espanhol", "Alemão"]),
       inclusions: JSON.stringify(["Acesso à Torre Eiffel", "Vistas panorâmicas", "Elevadores ou escadas"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Souvenirs"]),
@@ -32,13 +32,13 @@ async function addParisActivities() {
         website: "https://www.toureiffel.paris",
         address: "Champ de Mars, 5 Avenue Anatole France, 75007 Paris"
       }),
-      cover_image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=800&q=80",
         "https://images.unsplash.com/photo-1549144511-f099e773c147?w=800&q=80",
         "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Museu do Louvre - Tesouro da Arte Mundial",
@@ -46,14 +46,14 @@ async function addParisActivities() {
       location: "Paris, França",
       category: "culture",
       city: "Paris",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "3-5 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 30,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 30,
       languages: JSON.stringify(["Francês", "Inglês", "Espanhol", "Alemão", "Italiano", "Chinês"]),
       inclusions: JSON.stringify(["Entrada no museu", "Acesso às coleções permanentes", "Mapa do museu"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Audioguia", "Exposições temporárias"]),
@@ -65,13 +65,13 @@ async function addParisActivities() {
         website: "https://www.louvre.fr",
         address: "Rue de Rivoli, 75001 Paris"
       }),
-      cover_image: "https://images.unsplash.com/photo-1566139992888-745d3856e2f8?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1566139992888-745d3856e2f8?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1566139992888-745d3856e2f8?w=800&q=80",
         "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",
         "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Cruzeiro pelo Rio Sena - Paris das Águas",
@@ -79,14 +79,14 @@ async function addParisActivities() {
       location: "Paris, França",
       category: "sightseeing",
       city: "Paris",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "1-2 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 200,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 200,
       languages: JSON.stringify(["Francês", "Inglês", "Espanhol", "Alemão", "Italiano"]),
       inclusions: JSON.stringify(["Cruzeiro pelo Rio Sena", "Comentários em múltiplos idiomas", "Assentos cobertos"]),
       exclusions: JSON.stringify(["Transporte até o embarque", "Alimentação", "Bebidas", "Gorjetas"]),
@@ -98,13 +98,13 @@ async function addParisActivities() {
         website: "https://www.bateaux-parisiens.com",
         address: "Port de la Bourdonnais, 75007 Paris"
       }),
-      cover_image: "https://images.unsplash.com/photo-1549144511-f099e773c147?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1549144511-f099e773c147?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1549144511-f099e773c147?w=800&q=80",
         "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=800&q=80",
         "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Catedral de Notre-Dame - Joia Gótica",
@@ -112,14 +112,14 @@ async function addParisActivities() {
       location: "Paris, França",
       category: "culture",
       city: "Paris",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "1-2 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 100,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 100,
       languages: JSON.stringify(["Francês", "Inglês", "Espanhol", "Alemão"]),
       inclusions: JSON.stringify(["Entrada na catedral", "Acesso ao interior", "Vistas da arquitetura gótica"]),
       exclusions: JSON.stringify(["Acesso às torres", "Transporte", "Alimentação", "Guia turístico"]),
@@ -131,13 +131,13 @@ async function addParisActivities() {
         website: "https://www.notredamedeparis.fr",
         address: "6 Parvis Notre-Dame, 75004 Paris"
       }),
-      cover_image: "https://images.unsplash.com/photo-1539650116574-75c0c6d47324?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1539650116574-75c0c6d47324?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1539650116574-75c0c6d47324?w=800&q=80",
         "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80",
         "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     },
     {
       title: "Palácio de Versalhes - Grandeza Real",
@@ -145,14 +145,14 @@ async function addParisActivities() {
       location: "Paris, França",
       category: "culture",
       city: "Paris",
-      country_type: "internacional",
+      countryType: "internacional",
       region: "Europa Ocidental",
-      price_type: "per_person",
-      price_amount: null,
+      priceType: "per_person",
+      priceAmount: null,
       duration: "4-6 horas",
-      difficulty_level: "easy",
-      min_participants: 1,
-      max_participants: 40,
+      difficultyLevel: "easy",
+      minParticipants: 1,
+      maxParticipants: 40,
       languages: JSON.stringify(["Francês", "Inglês", "Espanhol", "Alemão", "Italiano"]),
       inclusions: JSON.stringify(["Entrada no palácio", "Acesso aos jardins", "Salão dos Espelhos", "Aposentos reais"]),
       exclusions: JSON.stringify(["Transporte de/para Paris", "Alimentação", "Guia turístico", "Espetáculos especiais"]),
@@ -164,13 +164,13 @@ async function addParisActivities() {
         website: "https://www.chateauversailles.fr",
         address: "Place d'Armes, 78000 Versailles"
       }),
-      cover_image: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&q=80",
+      coverImage: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&q=80",
       images: JSON.stringify([
         "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800&q=80",
         "https://images.unsplash.com/photo-1571771019784-3ff35f4f4277?w=800&q=80",
         "https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=800&q=80"
       ]),
-      created_by_id: 1
+      createdById: 1
     }
   ];
 
@@ -319,7 +319,7 @@ async function addParisActivities() {
       try {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
-          is_active: true,
+          isActive: true,
           created_at: new Date(),
           updated_at: new Date()
         });
@@ -353,7 +353,7 @@ async function addParisActivities() {
               currency: "EUR",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
-              is_active: true,
+              isActive: true,
               created_at: new Date(),
               updated_at: new Date()
             });
