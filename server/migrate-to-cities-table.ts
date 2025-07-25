@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { cities, trips, activities } from "@shared/schema";
+import { destinations, trips, activities } from "@shared/schema";
 import { sql, eq } from "drizzle-orm";
 
 interface LocationData {
@@ -234,11 +234,11 @@ const cityMappings: Record<string, LocationData> = {
 
 export async function migrateToCitiesTable() {
   try {
-    console.log("🏗️ Criando tabela cities...");
+    console.log("🏗️ Criando tabela destinations...");
     
-    // Create cities table
+    // Create destinations table
     await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS cities (
+      CREATE TABLE IF NOT EXISTS destinations (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         state VARCHAR(255),
@@ -254,9 +254,9 @@ export async function migrateToCitiesTable() {
       )
     `);
 
-    console.log("✅ Tabela cities criada!");
+    console.log("✅ Tabela destinations criada!");
 
-    // Insert all unique cities
+    // Insert all unique destinations
     console.log("📍 Inserindo cidades...");
     
     const cityInserts = Object.values(cityMappings).reduce((acc: LocationData[], city) => {
@@ -269,7 +269,7 @@ export async function migrateToCitiesTable() {
 
     for (const cityData of cityInserts) {
       try {
-        await db.insert(cities).values(cityData).ignore();
+        await db.insert(destinations).values(cityData).ignore();
         console.log(`   ✅ Cidade inserida: ${cityData.name}, ${cityData.country}`);
       } catch (error) {
         console.log(`   ⚠️ Cidade já existe: ${cityData.name}, ${cityData.country}`);
@@ -282,12 +282,12 @@ export async function migrateToCitiesTable() {
     try {
       await db.execute(sql`
         ALTER TABLE trips 
-        ADD COLUMN city_id INT,
-        ADD FOREIGN KEY (city_id) REFERENCES cities(id)
+        ADD COLUMN destination_id INT,
+        ADD FOREIGN KEY (destination_id) REFERENCES destinations(id)
       `);
-      console.log("   ✅ Coluna city_id adicionada à tabela trips");
+      console.log("   ✅ Coluna destination_id adicionada à tabela trips");
     } catch (error) {
-      console.log("   ⚠️ Coluna city_id já existe em trips");
+      console.log("   ⚠️ Coluna destination_id já existe em trips");
     }
 
     // Get all trips with their current localidade (use raw SQL to avoid schema conflicts)
@@ -301,13 +301,13 @@ export async function migrateToCitiesTable() {
       const cityMapping = cityMappings[trip.localidade as string];
       if (cityMapping) {
         // Find the city ID
-        const [city] = await db.select().from(cities).where(
+        const [city] = await db.select().from(destinations).where(
           sql`name = ${cityMapping.name} AND country = ${cityMapping.country}`
         );
         
         if (city) {
           await db.execute(sql`
-            UPDATE trips SET city_id = ${city.id} WHERE id = ${trip.id}
+            UPDATE trips SET destination_id = ${city.id} WHERE id = ${trip.id}
           `);
           console.log(`   ✅ Viagem "${trip.title}" vinculada à cidade ${cityMapping.name}`);
         }
@@ -322,12 +322,12 @@ export async function migrateToCitiesTable() {
     try {
       await db.execute(sql`
         ALTER TABLE activities 
-        ADD COLUMN city_id INT,
-        ADD FOREIGN KEY (city_id) REFERENCES cities(id)
+        ADD COLUMN destination_id INT,
+        ADD FOREIGN KEY (destination_id) REFERENCES destinations(id)
       `);
-      console.log("   ✅ Coluna city_id adicionada à tabela activities");
+      console.log("   ✅ Coluna destination_id adicionada à tabela activities");
     } catch (error) {
-      console.log("   ⚠️ Coluna city_id já existe em activities");
+      console.log("   ⚠️ Coluna destination_id já existe em activities");
     }
     
     // Get all activities using raw SQL to avoid schema conflicts
@@ -364,13 +364,13 @@ export async function migrateToCitiesTable() {
 
       if (cityMapping) {
         // Find the city ID
-        const [city] = await db.select().from(cities).where(
+        const [city] = await db.select().from(destinations).where(
           sql`name = ${cityMapping.name} AND country = ${cityMapping.country}`
         );
         
         if (city) {
           await db.execute(sql`
-            UPDATE activities SET city_id = ${city.id} WHERE id = ${activity.id}
+            UPDATE activities SET destination_id = ${city.id} WHERE id = ${activity.id}
           `);
           console.log(`   ✅ Atividade "${activity.title}" vinculada à cidade ${cityMapping.name}`);
         }
@@ -379,10 +379,10 @@ export async function migrateToCitiesTable() {
       }
     }
 
-    console.log("✅ Migração para tabela cities concluída com sucesso!");
+    console.log("✅ Migração para tabela destinations concluída com sucesso!");
     
     // Show summary
-    const cityCount = await db.select({ count: sql`count(*)` }).from(cities);
+    const cityCount = await db.select({ count: sql`count(*)` }).from(destinations);
     console.log(`📊 Total de cidades cadastradas: ${cityCount[0].count}`);
 
   } catch (error) {

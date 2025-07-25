@@ -1,4 +1,4 @@
-import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, localidadeRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, activityBudgetProposalVotes, tripActivities, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type LocalidadeRating, type InsertLocalidadeRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type ActivityBudgetProposalVote, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, popularDestinations } from "@shared/schema";
+import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, activityBudgetProposalVotes, tripActivities, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type ActivityBudgetProposalVote, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, popularDestinations } from "@shared/schema";
 import { fixCreatorsAsParticipants } from "./fix-creators-as-participants";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -790,7 +790,7 @@ export class DatabaseStorage implements IStorage {
       const participantTrips = await db.select({
         id: trips.id,
         title: trips.title,
-        city_id: trips.city_id,
+        destination_id: trips.destination_id,
         coverImage: trips.coverImage,
         startDate: trips.startDate,
         endDate: trips.endDate,
@@ -828,11 +828,11 @@ export class DatabaseStorage implements IStorage {
         const conditions = [eq(trips.status, 'open')];
         
         if (filters.destination) {
-          // Join with cities table to search by city name
+          // Join with destinations table to search by city name
           const cityCondition = sql`EXISTS (
-            SELECT 1 FROM cities 
-            WHERE cities.id = ${trips.city_id} 
-            AND cities.name LIKE ${`%${filters.destination}%`}
+            SELECT 1 FROM destinations 
+            WHERE destinations.id = ${trips.destination_id} 
+            AND destinations.name LIKE ${`%${filters.destination}%`}
           )`;
           conditions.push(cityCondition);
         }
@@ -2123,7 +2123,7 @@ export class DatabaseStorage implements IStorage {
         id: trips.id,
         creator_id: trips.creator_id,
         title: trips.title,
-        city_id: trips.city_id,
+        destination_id: trips.destination_id,
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
@@ -2152,7 +2152,7 @@ export class DatabaseStorage implements IStorage {
       
       const result = uniqueTrips.filter(trip => {
         // Now we need to check cityId instead of localidade
-        // For now, return all trips - this method needs refactoring with cities table
+        // For now, return all trips - this method needs refactoring with destinations table
         return true;
         
         // Extract city names (before comma if present)

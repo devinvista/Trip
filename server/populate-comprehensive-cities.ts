@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { db } from "./db";
-import { cities } from "@shared/schema";
+import { destinations } from "@shared/schema";
 import { sql } from "drizzle-orm";
 
 config();
@@ -404,9 +404,9 @@ async function populateComprehensiveCities() {
     // Add continent column if not exists
     try {
       await db.execute(sql`
-        ALTER TABLE cities ADD COLUMN continent VARCHAR(100) NOT NULL DEFAULT 'América do Sul'
+        ALTER TABLE destinations ADD COLUMN continent VARCHAR(100) NOT NULL DEFAULT 'América do Sul'
       `);
-      console.log("   ✅ Coluna continent adicionada à tabela cities");
+      console.log("   ✅ Coluna continent adicionada à tabela destinations");
     } catch (error) {
       console.log("   ⚠️ Coluna continent já existe ou erro:", (error as Error).message);
     }
@@ -417,13 +417,13 @@ async function populateComprehensiveCities() {
       try {
         // Check if city already exists
         const [existingCity] = await db.execute(sql`
-          SELECT id FROM cities WHERE name = ${cityData.name} AND country = ${cityData.country}
+          SELECT id FROM destinations WHERE name = ${cityData.name} AND country = ${cityData.country}
         `);
         
         if (existingCity && Array.isArray(existingCity) && existingCity.length > 0) {
           // Update existing city with new data including continent
           await db.execute(sql`
-            UPDATE cities SET
+            UPDATE destinations SET
               state = ${cityData.state || null},
               country_type = ${cityData.countryType},
               region = ${cityData.region},
@@ -437,7 +437,7 @@ async function populateComprehensiveCities() {
         } else {
           // Insert new city
           await db.execute(sql`
-            INSERT INTO cities (name, state, country, country_type, region, continent, latitude, longitude, timezone, is_active)
+            INSERT INTO destinations (name, state, country, country_type, region, continent, latitude, longitude, timezone, is_active)
             VALUES (${cityData.name}, ${cityData.state || null}, ${cityData.country}, ${cityData.countryType}, 
                     ${cityData.region}, ${cityData.continent}, ${cityData.latitude || null}, 
                     ${cityData.longitude || null}, ${cityData.timezone || null}, true)
@@ -450,7 +450,7 @@ async function populateComprehensiveCities() {
     }
 
     // Get final count
-    const [countResult] = await db.execute(sql`SELECT COUNT(*) as total FROM cities WHERE is_active = true`);
+    const [countResult] = await db.execute(sql`SELECT COUNT(*) as total FROM destinations WHERE is_active = true`);
     const totalCities = Array.isArray(countResult) ? (countResult[0] as any)?.total || 0 : 0;
     
     console.log(`📊 Total de cidades ativas: ${totalCities}`);

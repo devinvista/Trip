@@ -35,7 +35,7 @@ async function createActivitiesTable() {
   }
 }
 
-// Comprehensive activity data for major Brazilian cities
+// Comprehensive activity data for major Brazilian destinations
 export const activityData = [
   // Rio de Janeiro Activities
   {

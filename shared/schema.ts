@@ -2,8 +2,8 @@ import { mysqlTable, text, int, boolean, timestamp, json, decimal, varchar } fro
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Cities table - central repository for all locations/destinations
-export const cities = mysqlTable("cities", {
+// Destinations table - central repository for all locations/destinations
+export const destinations = mysqlTable("destinations", {
   id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 255 }).notNull(), // e.g., "Rio de Janeiro"
   state: varchar("state", { length: 255 }), // e.g., "RJ" 
@@ -43,7 +43,7 @@ export const trips = mysqlTable("trips", {
   id: int("id").primaryKey().autoincrement(),
   creator_id: int("creator_id").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),
-  city_id: int("city_id").notNull().references(() => cities.id), // Reference to cities table
+  destination_id: int("destination_id").notNull().references(() => destinations.id), // Reference to destinations table
   coverImage: text("cover_image"), // URL for trip cover image
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
@@ -121,10 +121,10 @@ export const userRatings = mysqlTable("user_ratings", {
   updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// City ratings - for rating cities/destinations  
-export const cityRatings = mysqlTable("city_ratings", {
+// Destination ratings - for rating destinations  
+export const destinationRatings = mysqlTable("destination_ratings", {
   id: int("id").primaryKey().autoincrement(),
-  cityId: int("city_id").notNull().references(() => cities.id), // Reference to cities table
+  destination_id: int("destination_id").notNull().references(() => destinations.id), // Reference to destinations table
   userId: int("user_id").notNull().references(() => users.id), // User who rated
   tripId: int("trip_id").references(() => trips.id), // Optional: trip this rating is from
   rating: int("rating").notNull(), // 1-5 stars
@@ -275,10 +275,10 @@ export type TripRequest = typeof tripRequests.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type InsertTripRequest = z.infer<typeof insertTripRequestSchema>;
 
-// City types
-export type City = typeof cities.$inferSelect;
-export type InsertCity = typeof cities.$inferInsert;
-export type CityRating = typeof cityRatings.$inferSelect;
+// Destination types
+export type Destination = typeof destinations.$inferSelect;
+export type InsertDestination = typeof destinations.$inferInsert;
+export type DestinationRating = typeof destinationRatings.$inferSelect;
 
 // Expense types
 export type Expense = typeof expenses.$inferSelect;
@@ -342,7 +342,7 @@ export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   }).optional(),
 });
 
-export const insertCityRatingSchema = createInsertSchema(cityRatings).omit({
+export const insertDestinationRatingSchema = createInsertSchema(destinationRatings).omit({
   id: true,
   user_id: true,
   is_hidden: true,
@@ -373,7 +373,7 @@ export const insertVerificationRequestSchema = createInsertSchema(verificationRe
 });
 
 export type InsertUserRating = z.infer<typeof insertUserRatingSchema>;
-export type InsertCityRating = z.infer<typeof insertCityRatingSchema>;
+export type InsertDestinationRating = z.infer<typeof insertDestinationRatingSchema>;
 export type InsertVerificationRequest = z.infer<typeof insertVerificationRequestSchema>;
 export type InsertRatingReport = z.infer<typeof insertRatingReportSchema>;
 export type RatingReport = typeof ratingReports.$inferSelect;
@@ -384,7 +384,7 @@ export const activities = mysqlTable("activities", {
   id: int("id").primaryKey().autoincrement(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  cityId: int("city_id").notNull().references(() => cities.id), // Reference to cities table
+  destination_id: int("destination_id").notNull().references(() => destinations.id), // Reference to destinations table
   category: varchar("category", { length: 100 }).notNull(), // sightseeing, food, adventure, culture, etc.
   priceType: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group, free
   priceAmount: decimal("price_amount", { precision: 10, scale: 2 }), // null for free activities

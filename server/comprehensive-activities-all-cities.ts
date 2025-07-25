@@ -1,10 +1,10 @@
 import { db } from './db.js';
 import { activities, activityBudgetProposals, popularDestinations } from '../shared/schema.js';
 
-// Get all destination cities from the schema
+// Get all destination destinations from the schema
 const allCities = Object.keys(popularDestinations);
 
-// Comprehensive activities data for ALL cities in the registry
+// Comprehensive activities data for ALL destinations in the registry
 const allCitiesActivities = [
   // RIO DE JANEIRO, RJ - Already created, keeping for reference
   {
@@ -1200,7 +1200,7 @@ async function createActivitiesForCity(cityName: string, cityActivities: any[]) 
 // Main function to create all activities
 export async function createAllCitiesActivities() {
   try {
-    console.log("🎯 Creating comprehensive activities for all cities...");
+    console.log("🎯 Creating comprehensive activities for all destinations...");
     
     // Create activities for each city
     for (const cityData of allCitiesActivities) {

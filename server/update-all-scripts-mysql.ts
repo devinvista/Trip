@@ -71,7 +71,7 @@ async function main() {
     console.log('  - add-nyc-activities.ts');
     console.log('  - add-paris-activities.ts');
     console.log('  - add-rome-activities.ts');
-    console.log('  - comprehensive-activities-all-cities.ts');
+    console.log('  - comprehensive-activities-all-destinations.ts');
     console.log('  - populate-all-activities-comprehensive.ts');
   } else {
     console.log('❌ Schema compatibility issues detected. Please check field names.');

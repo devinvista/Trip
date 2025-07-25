@@ -1156,8 +1156,8 @@ function ActivitiesPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {Object.entries(hierarchy).map(([countryType, regions]) => {
-                    const totalCount = Object.values(regions).reduce((acc: number, cities: any) => 
-                      acc + Object.values(cities).reduce((cityAcc: number, count: any) => cityAcc + count, 0), 0
+                    const totalCount = Object.values(regions).reduce((acc: number, destinations: any) => 
+                      acc + Object.values(destinations).reduce((cityAcc: number, count: any) => cityAcc + count, 0), 0
                     );
                     
                     return (
@@ -1199,8 +1199,8 @@ function ActivitiesPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {Object.entries(hierarchy[selectedCountryType] || {}).map(([region, cities]) => {
-                    const totalCount = Object.values(cities).reduce((acc: number, count: any) => acc + count, 0);
+                  {Object.entries(hierarchy[selectedCountryType] || {}).map(([region, destinations]) => {
+                    const totalCount = Object.values(destinations).reduce((acc: number, count: any) => acc + count, 0);
                     
                     return (
                       <motion.div
