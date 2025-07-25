@@ -222,7 +222,7 @@ async function addComprehensiveBudgetProposals() {
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
               votes: Math.floor(Math.random() * 50) + 1, // Votos aleatórios entre 1-50
-              createdAt: new Date()
+              isActive: true
             });
             
             totalProposalsAdded++;
