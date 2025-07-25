@@ -10,6 +10,7 @@ export const cities = mysqlTable("cities", {
   country: varchar("country", { length: 255 }).notNull(), // e.g., "Brasil"
   countryType: varchar("country_type", { length: 50 }).notNull(), // "nacional" or "internacional"
   region: varchar("region", { length: 255 }), // e.g., "Sudeste", "Europa"
+  continent: varchar("continent", { length: 100 }).notNull(), // e.g., "América do Sul", "Europa", "Ásia"
   latitude: decimal("latitude", { precision: 10, scale: 8 }),
   longitude: decimal("longitude", { precision: 11, scale: 8 }),
   timezone: varchar("timezone", { length: 50 }),
