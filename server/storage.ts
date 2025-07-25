@@ -1856,12 +1856,16 @@ export class DatabaseStorage implements IStorage {
   // Activity Budget Proposals
   async getActivityBudgetProposals(activityId: number): Promise<(ActivityBudgetProposal & { creator: User })[]> {
     try {
+      console.log(`🔍 Buscando propostas para atividade ${activityId}`);
+      
       const proposals = await db.select().from(activityBudgetProposals)
         .where(and(
           eq(activityBudgetProposals.activityId, activityId),
           eq(activityBudgetProposals.isActive, true)
         ))
         .orderBy(desc(activityBudgetProposals.votes));
+      
+      console.log(`📊 Encontradas ${proposals.length} propostas ativas para atividade ${activityId}`);
       
       const result = [];
       for (const proposal of proposals) {
@@ -1874,6 +1878,7 @@ export class DatabaseStorage implements IStorage {
         }
       }
       
+      console.log(`✅ Retornando ${result.length} propostas com dados do criador`);
       return result;
     } catch (error) {
       console.error('❌ Erro ao buscar propostas de orçamento da atividade:', error);
