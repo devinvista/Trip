@@ -201,7 +201,10 @@ export async function createSimpleSeedData() {
         description: "Trilha guiada até o topo do Pão de Açúcar com vista panorâmica da cidade.",
         location: "Rio de Janeiro, RJ",
         category: "aventura",
-        priceAmount: 120.00,
+        
+    countryType: "nacional",
+    region: "Brasil",
+    priceType: "per_person",priceAmount: 120.00,
         duration: "4 horas",
         difficultyLevel: "intermediário",
         minParticipants: 2,
@@ -216,7 +219,10 @@ export async function createSimpleSeedData() {
         description: "Degustação nos melhores bares e restaurantes da Vila Madalena.",
         location: "São Paulo, SP", 
         category: "gastronomia",
-        priceAmount: 180.00,
+        
+    countryType: "nacional",
+    region: "Brasil",
+    priceType: "per_person",priceAmount: 180.00,
         duration: "5 horas",
         difficultyLevel: "fácil",
         minParticipants: 4,

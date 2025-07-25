@@ -31,7 +31,7 @@ async function fixBudgetData() {
       id: row.id,
       title: row.title,
       budget: row.budget,
-      budget_breakdown: row.budget_breakdown
+      budgetBreakdown: row.budget_breakdown
     }));
     
     console.log(`📊 Encontradas ${trips.length} viagens com dados de orçamento`);
@@ -151,7 +151,7 @@ async function fixBudgetData() {
       id: row.id,
       title: row.title,
       budget: row.budget,
-      budget_breakdown: row.budget_breakdown
+      budgetBreakdown: row.budget_breakdown
     }));
     
     console.log('\n📋 Verificação dos dados corrigidos:');

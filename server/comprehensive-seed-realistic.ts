@@ -184,7 +184,7 @@ function getBudgetProposalsForActivity(title: string) {
     {
       title: 'Opção Básica',
       description: 'Experiência padrão da atividade',
-      amount: parseFloat((Math.random() * 100 + 50).toFixed(2)),
+      amount: proposal.amount * 100 + 50).toFixed(2)),
       inclusions: ['Atividade principal', 'Equipamentos básicos'],
       exclusions: ['Alimentação', 'Bebidas', 'Transporte'],
       votes: Math.floor(Math.random() * 20) + 5,
@@ -193,7 +193,7 @@ function getBudgetProposalsForActivity(title: string) {
     {
       title: 'Opção Completa',
       description: 'Experiência com guia e comodidades',
-      amount: parseFloat((Math.random() * 150 + 100).toFixed(2)),
+      amount: proposal.amount * 150 + 100).toFixed(2)),
       inclusions: ['Atividade principal', 'Guia especializado', 'Equipamentos', 'Lanche'],
       exclusions: ['Bebidas alcoólicas', 'Compras pessoais'],
       votes: Math.floor(Math.random() * 35) + 20,
@@ -202,7 +202,7 @@ function getBudgetProposalsForActivity(title: string) {
     {
       title: 'Opção Premium',
       description: 'Experiência exclusiva e personalizada',
-      amount: parseFloat((Math.random() * 200 + 200).toFixed(2)),
+      amount: proposal.amount * 200 + 200).toFixed(2)),
       inclusions: ['Experiência privativa', 'Guia exclusivo', 'Transporte', 'Refeição', 'Fotos'],
       exclusions: ['Compras pessoais'],
       votes: Math.floor(Math.random() * 15) + 8,

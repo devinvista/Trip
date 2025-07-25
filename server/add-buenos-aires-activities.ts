@@ -58,8 +58,8 @@ async function addBuenosAiresActivities() {
       inclusions: JSON.stringify(["Rua Caminito", "Casas coloridas", "Arte de rua", "Museu Boca Juniors", "Feira de antiguidades"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Guia turístico", "Entradas em museus"]),
       requirements: JSON.stringify(["Calçado confortável", "Câmera fotográfica", "Cuidado com pertences"]),
-      cancellation_policy: "Passeio ao ar livre - sem necessidade de cancelamento",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Passeio ao ar livre - sem necessidade de cancelamento",
+      contactInfo: JSON.stringify({
         phone: "+54 11 4301-1080",
         email: "info@laboca.com.ar",
         website: "https://www.laboca.com.ar",
@@ -91,8 +91,8 @@ async function addBuenosAiresActivities() {
       inclusions: JSON.stringify(["Entrada gratuita", "Túmulo de Eva Perón", "Arquitetura funerária", "História argentina"]),
       exclusions: JSON.stringify(["Transporte", "Guia turístico", "Alimentação", "Audioguia"]),
       requirements: JSON.stringify(["Vestuário respeitoso", "Silêncio", "Respeito ao local sagrado"]),
-      cancellation_policy: "Entrada gratuita - sem necessidade de cancelamento",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Entrada gratuita - sem necessidade de cancelamento",
+      contactInfo: JSON.stringify({
         phone: "+54 11 4803-1594",
         email: "info@cementeriodelarecoleta.com.ar",
         website: "https://www.cementeriodelarecoleta.com.ar",
@@ -124,8 +124,8 @@ async function addBuenosAiresActivities() {
       inclusions: JSON.stringify(["Entrada no museu", "Exposições permanentes", "Arte latino-americana", "Café no museu"]),
       exclusions: JSON.stringify(["Transporte", "Guia turístico", "Exposições especiais", "Audioguia"]),
       requirements: JSON.stringify(["Não permitido flash", "Silêncio nas galerias", "Bagagem limitada"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+54 11 4808-6500",
         email: "info@malba.org.ar",
         website: "https://www.malba.org.ar",
@@ -157,8 +157,8 @@ async function addBuenosAiresActivities() {
       inclusions: JSON.stringify(["Degustação de vinhos", "Cortes de carne premium", "Parrilla tradicional", "Sommelier especializado"]),
       exclusions: JSON.stringify(["Transporte", "Bebidas extras", "Gorjetas", "Souvenirs"]),
       requirements: JSON.stringify(["Idade mínima 18 anos", "Restrições alimentares informadas", "Vestuário adequado"]),
-      cancellation_policy: "Cancelamento gratuito até 48h antes da experiência",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 48h antes da experiência",
+      contactInfo: JSON.stringify({
         phone: "+54 11 4831-9564",
         email: "info@wineandmeat.com.ar",
         website: "https://www.wineandmeat.com.ar",

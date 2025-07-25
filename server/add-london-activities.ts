@@ -25,8 +25,8 @@ async function addLondonActivities() {
       inclusions: JSON.stringify(["Entrada no London Eye", "Volta completa de 30 min", "Vistas panorâmicas", "Audioguia digital"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografias", "Souvenirs", "Champagne"]),
       requirements: JSON.stringify(["Chegada 15 min antes", "Crianças menores 16 anos com adulto", "Não recomendado para claustrofobia"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+44 871 781 3000",
         email: "info@londoneye.com",
         website: "https://www.londoneye.com",
@@ -58,8 +58,8 @@ async function addLondonActivities() {
       inclusions: JSON.stringify(["Entrada na Torre", "Acesso às Joias da Coroa", "White Tower", "Yeoman Warder tours", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografias nas Joias", "Souvenirs"]),
       requirements: JSON.stringify(["Documento de identidade", "Inspeção de segurança", "Não permitido bagagem grande"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+44 20 3166 6000",
         email: "toweroflondon@hrp.org.uk",
         website: "https://www.hrp.org.uk/tower-of-london",
@@ -91,8 +91,8 @@ async function addLondonActivities() {
       inclusions: JSON.stringify(["Entrada gratuita", "Acesso às galerias permanentes", "Mapa do museu", "WiFi gratuito"]),
       exclusions: JSON.stringify(["Exposições especiais", "Audioguia", "Transporte", "Alimentação"]),
       requirements: JSON.stringify(["Bagagem limitada", "Não permitido flash", "Silêncio nas galerias"]),
-      cancellation_policy: "Entrada gratuita - sem necessidade de reserva",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Entrada gratuita - sem necessidade de reserva",
+      contactInfo: JSON.stringify({
         phone: "+44 20 7323 8299",
         email: "information@britishmuseum.org",
         website: "https://www.britishmuseum.org",
@@ -124,8 +124,8 @@ async function addLondonActivities() {
       inclusions: JSON.stringify(["Ingresso para show", "Assento numerado", "Programa oficial", "Intervalo"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Bebidas", "Estacionamento", "Encontro com elenco"]),
       requirements: JSON.stringify(["Chegada 30 min antes", "Vestuário adequado", "Celular silencioso", "Idade mínima varia"]),
-      cancellation_policy: "Política varia por teatro. Geralmente não reembolsável",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Política varia por teatro. Geralmente não reembolsável",
+      contactInfo: JSON.stringify({
         phone: "+44 20 7492 1548",
         email: "info@westendtheatre.com",
         website: "https://www.westendtheatre.com",
@@ -157,8 +157,8 @@ async function addLondonActivities() {
       inclusions: JSON.stringify(["Acesso conforme tipo", "Vistas do palácio", "Cerimônia da Troca da Guarda", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografia interior", "Souvenirs"]),
       requirements: JSON.stringify(["Documento de identidade", "Inspeção de segurança", "Vestuário adequado"]),
-      cancellation_policy: "Evento externo gratuito. Tours internos canceláveis até 24h antes",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Evento externo gratuito. Tours internos canceláveis até 24h antes",
+      contactInfo: JSON.stringify({
         phone: "+44 20 7766 7300",
         email: "info@royalcollection.org.uk",
         website: "https://www.rct.uk/visit/buckingham-palace",
@@ -320,8 +320,8 @@ async function addLondonActivities() {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
           isActive: true,
-          created_at: new Date(),
-          updated_at: new Date()
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
         console.log(`✅ Atividade criada: ${activity.title}`);
       } catch (insertError: any) {
@@ -349,13 +349,13 @@ async function addLondonActivities() {
               createdBy: 1,
               title: proposal.title,
               description: proposal.description,
-              amount: parseFloat(proposal.amount),
+              amount: proposal.amount,
               currency: "GBP",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
               isActive: true,
-              created_at: new Date(),
-              updated_at: new Date()
+              createdAt: new Date(),
+              updatedAt: new Date()
             });
             console.log(`  💰 Proposta criada: ${proposal.title}`);
           } catch (proposalError: any) {

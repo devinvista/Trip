@@ -25,8 +25,8 @@ async function addNYCActivities() {
       inclusions: JSON.stringify(["Ferry para Liberty Island", "Ferry para Ellis Island", "Entrada nos museus", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte até Battery Park", "Alimentação", "Acesso à coroa", "Souvenirs"]),
       requirements: JSON.stringify(["Documento de identidade válido", "Chegada 30 min antes", "Inspeção de segurança obrigatória"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+1 201-604-2800",
         email: "info@statueofliberty.org",
         website: "https://www.nps.gov/stli",
@@ -58,8 +58,8 @@ async function addNYCActivities() {
       inclusions: JSON.stringify(["Acesso ao observatório", "Elevadores de alta velocidade", "Vistas 360°", "Exposição histórica"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Fotografias profissionais", "Souvenirs"]),
       requirements: JSON.stringify(["Inspeção de segurança", "Não permitido bagagem grande", "Chegada no horário agendado"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes. Reembolso parcial no mesmo dia",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes. Reembolso parcial no mesmo dia",
+      contactInfo: JSON.stringify({
         phone: "+1 212-736-3100",
         email: "info@esbnyc.com",
         website: "https://www.esbnyc.com",
@@ -91,8 +91,8 @@ async function addNYCActivities() {
       inclusions: JSON.stringify(["Ingresso para show", "Assento numerado", "Programa oficial"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Bebidas", "Estacionamento", "Encontro com elenco"]),
       requirements: JSON.stringify(["Chegada 30 min antes", "Vestuário adequado", "Celular no silencioso", "Idade mínima varia por show"]),
-      cancellation_policy: "Política varia por teatro. Geralmente não reembolsável",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Política varia por teatro. Geralmente não reembolsável",
+      contactInfo: JSON.stringify({
         phone: "+1 212-239-6200",
         email: "info@broadway.com",
         website: "https://www.broadway.com",
@@ -124,8 +124,8 @@ async function addNYCActivities() {
       inclusions: JSON.stringify(["Entrada gratuita no parque", "Acesso a trilhas", "Vistas panorâmicas", "Locais históricos"]),
       exclusions: JSON.stringify(["Aluguel de bicicleta", "Alimentação", "Guia turístico", "Transporte"]),
       requirements: JSON.stringify(["Calçado confortável", "Protetor solar", "Água", "Roupas adequadas ao clima"]),
-      cancellation_policy: "Parque público - sem necessidade de cancelamento",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Parque público - sem necessidade de cancelamento",
+      contactInfo: JSON.stringify({
         phone: "+1 212-310-6600",
         email: "info@centralparknyc.org",
         website: "https://www.centralparknyc.org",
@@ -157,8 +157,8 @@ async function addNYCActivities() {
       inclusions: JSON.stringify(["Entrada no museu", "Acesso às coleções permanentes", "Mapa do museu", "Audioguia básico"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Exposições especiais", "Guia particular", "Estacionamento"]),
       requirements: JSON.stringify(["Documento de identidade", "Bagagem limitada", "Não permitido flash", "Silêncio nas galerias"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+1 212-535-7710",
         email: "info@metmuseum.org",
         website: "https://www.metmuseum.org",
@@ -320,8 +320,8 @@ async function addNYCActivities() {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
           isActive: true,
-          created_at: new Date(),
-          updated_at: new Date()
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
         console.log(`✅ Atividade criada: ${activity.title}`);
       } catch (insertError: any) {
@@ -349,13 +349,13 @@ async function addNYCActivities() {
               createdBy: 1,
               title: proposal.title,
               description: proposal.description,
-              amount: parseFloat(proposal.amount),
+              amount: proposal.amount,
               currency: "USD",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
               isActive: true,
-              created_at: new Date(),
-              updated_at: new Date()
+              createdAt: new Date(),
+              updatedAt: new Date()
             });
             console.log(`  💰 Proposta criada: ${proposal.title}`);
           } catch (proposalError: any) {

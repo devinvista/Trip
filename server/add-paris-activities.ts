@@ -25,8 +25,8 @@ async function addParisActivities() {
       inclusions: JSON.stringify(["Acesso à Torre Eiffel", "Vistas panorâmicas", "Elevadores ou escadas"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Souvenirs"]),
       requirements: JSON.stringify(["Documento de identidade", "Chegada com 30 min de antecedência"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+33 892 70 12 39",
         email: "contact@toureiffel.paris",
         website: "https://www.toureiffel.paris",
@@ -58,8 +58,8 @@ async function addParisActivities() {
       inclusions: JSON.stringify(["Entrada no museu", "Acesso às coleções permanentes", "Mapa do museu"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Audioguia", "Exposições temporárias"]),
       requirements: JSON.stringify(["Documento de identidade", "Bagagem limitada", "Proibido flash fotográfico"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes. Bilhetes com data específica não reembolsáveis",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes. Bilhetes com data específica não reembolsáveis",
+      contactInfo: JSON.stringify({
         phone: "+33 1 40 20 50 50",
         email: "info@louvre.fr",
         website: "https://www.louvre.fr",
@@ -91,8 +91,8 @@ async function addParisActivities() {
       inclusions: JSON.stringify(["Cruzeiro pelo Rio Sena", "Comentários em múltiplos idiomas", "Assentos cobertos"]),
       exclusions: JSON.stringify(["Transporte até o embarque", "Alimentação", "Bebidas", "Gorjetas"]),
       requirements: JSON.stringify(["Chegada 15 min antes", "Roupas adequadas ao clima", "Protetor solar"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes do passeio",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes do passeio",
+      contactInfo: JSON.stringify({
         phone: "+33 1 42 25 96 10",
         email: "info@bateaux-parisiens.com",
         website: "https://www.bateaux-parisiens.com",
@@ -124,8 +124,8 @@ async function addParisActivities() {
       inclusions: JSON.stringify(["Entrada na catedral", "Acesso ao interior", "Vistas da arquitetura gótica"]),
       exclusions: JSON.stringify(["Acesso às torres", "Transporte", "Alimentação", "Guia turístico"]),
       requirements: JSON.stringify(["Vestuário adequado", "Silêncio durante missas", "Respeito ao local sagrado"]),
-      cancellation_policy: "Entrada gratuita. Horários sujeitos a celebrações religiosas",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Entrada gratuita. Horários sujeitos a celebrações religiosas",
+      contactInfo: JSON.stringify({
         phone: "+33 1 42 34 56 10",
         email: "accueil@notredamedeparis.fr",
         website: "https://www.notredamedeparis.fr",
@@ -157,8 +157,8 @@ async function addParisActivities() {
       inclusions: JSON.stringify(["Entrada no palácio", "Acesso aos jardins", "Salão dos Espelhos", "Aposentos reais"]),
       exclusions: JSON.stringify(["Transporte de/para Paris", "Alimentação", "Guia turístico", "Espetáculos especiais"]),
       requirements: JSON.stringify(["Documento de identidade", "Calçado confortável", "Chegada pontual"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes. Bilhetes com data específica",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes. Bilhetes com data específica",
+      contactInfo: JSON.stringify({
         phone: "+33 1 30 83 78 00",
         email: "contact@chateauversailles.fr",
         website: "https://www.chateauversailles.fr",
@@ -320,8 +320,8 @@ async function addParisActivities() {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
           isActive: true,
-          created_at: new Date(),
-          updated_at: new Date()
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
         console.log(`✅ Atividade criada: ${activity.title}`);
       } catch (insertError: any) {
@@ -349,13 +349,13 @@ async function addParisActivities() {
               createdBy: 1,
               title: proposal.title,
               description: proposal.description,
-              amount: parseFloat(proposal.amount),
+              amount: proposal.amount,
               currency: "EUR",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
               isActive: true,
-              created_at: new Date(),
-              updated_at: new Date()
+              createdAt: new Date(),
+              updatedAt: new Date()
             });
             console.log(`  💰 Proposta criada: ${proposal.title}`);
           } catch (proposalError: any) {

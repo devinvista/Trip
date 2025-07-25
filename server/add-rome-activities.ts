@@ -25,8 +25,8 @@ async function addRomeActivities() {
       inclusions: JSON.stringify(["Entrada no Coliseu", "Acesso ao Fórum Romano", "Palatino Hill", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Acesso à arena", "Subterrâneos"]),
       requirements: JSON.stringify(["Documento de identidade", "Chegada pontual", "Calçado confortável", "Protetor solar"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+39 06 3996 7700",
         email: "pa-colosseo@cultura.gov.it",
         website: "https://colosseo.it",
@@ -58,8 +58,8 @@ async function addRomeActivities() {
       inclusions: JSON.stringify(["Entrada nos Museus Vaticanos", "Capela Sistina", "Basílica de São Pedro", "Audioguia"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Acesso à cúpula", "Jardins Vaticanos"]),
       requirements: JSON.stringify(["Vestuário adequado", "Ombros e joelhos cobertos", "Silêncio na Capela Sistina", "Documento de identidade"]),
-      cancellation_policy: "Cancelamento gratuito até 24h antes da visita",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Cancelamento gratuito até 24h antes da visita",
+      contactInfo: JSON.stringify({
         phone: "+39 06 6988 4676",
         email: "info@museivaticani.va",
         website: "https://www.museivaticani.va",
@@ -91,8 +91,8 @@ async function addRomeActivities() {
       inclusions: JSON.stringify(["Fontana di Trevi", "Pantheon", "Piazza Navona", "Campo de' Fiori", "Centro histórico"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Guia turístico", "Entradas em monumentos"]),
       requirements: JSON.stringify(["Calçado confortável", "Água", "Protetor solar", "Moedas para a fonte"]),
-      cancellation_policy: "Passeio ao ar livre - sem necessidade de cancelamento",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Passeio ao ar livre - sem necessidade de cancelamento",
+      contactInfo: JSON.stringify({
         phone: "+39 06 0608",
         email: "info@turismoroma.it",
         website: "https://www.turismoroma.it",
@@ -124,8 +124,8 @@ async function addRomeActivities() {
       inclusions: JSON.stringify(["Entrada no Panteão", "Arquitetura romana", "Túmulo de Rafael", "Cúpula histórica"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Guia turístico", "Audioguia"]),
       requirements: JSON.stringify(["Vestuário adequado", "Silêncio no interior", "Respeito ao local sagrado"]),
-      cancellation_policy: "Entrada gratuita - sem necessidade de cancelamento",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Entrada gratuita - sem necessidade de cancelamento",
+      contactInfo: JSON.stringify({
         phone: "+39 06 6830 0230",
         email: "info@pantheonroma.com",
         website: "https://www.pantheonroma.com",
@@ -157,8 +157,8 @@ async function addRomeActivities() {
       inclusions: JSON.stringify(["Passeio pelo bairro", "Ruas históricas", "Basilica di Santa Maria", "Atmosfera autêntica"]),
       exclusions: JSON.stringify(["Transporte", "Alimentação", "Bebidas", "Guia turístico"]),
       requirements: JSON.stringify(["Calçado confortável", "Vestuário casual", "Disposição para caminhar"]),
-      cancellation_policy: "Passeio ao ar livre - sem necessidade de cancelamento",
-      contact_info: JSON.stringify({
+      cancellationPolicy: "Passeio ao ar livre - sem necessidade de cancelamento",
+      contactInfo: JSON.stringify({
         phone: "+39 06 0608",
         email: "info@trastevereroma.it",
         website: "https://www.trastevereroma.it",
@@ -320,8 +320,8 @@ async function addRomeActivities() {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
           isActive: true,
-          created_at: new Date(),
-          updated_at: new Date()
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
         console.log(`✅ Atividade criada: ${activity.title}`);
       } catch (insertError: any) {
@@ -349,13 +349,13 @@ async function addRomeActivities() {
               createdBy: 1,
               title: proposal.title,
               description: proposal.description,
-              amount: parseFloat(proposal.amount),
+              amount: proposal.amount,
               currency: "EUR",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
               isActive: true,
-              created_at: new Date(),
-              updated_at: new Date()
+              createdAt: new Date(),
+              updatedAt: new Date()
             });
             console.log(`  💰 Proposta criada: ${proposal.title}`);
           } catch (proposalError: any) {

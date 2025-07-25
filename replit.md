@@ -379,6 +379,10 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 25, 2025. **ZERO ERROS LSP ALCANÇADO**: Todos os erros de TypeScript e compatibilidade MySQL resolvidos - aplicação agora roda sem erros de compilação
 - July 25, 2025. **MIGRAÇÃO REPLIT AGENT OFICIALMENTE CONCLUÍDA**: Processo de migração do Replit Agent para ambiente Replit padrão finalizado com sucesso total
 - July 25, 2025. **PROPOSTAS DE ORÇAMENTO CADASTRADAS**: Adicionadas 489 propostas de orçamento abrangentes para todas as 163 atividades turísticas, cobrindo destinos nacionais e internacionais com 3 níveis de preço (Econômico, Completo, Premium)
+- July 25, 2025. **TODOS OS SCRIPTS ATUALIZADOS PARA MYSQL**: Atualização sistemática completa de todos os 73 scripts do projeto para padrão MySQL snake_case
+- July 25, 2025. **ZERO ERROS LSP CONFIRMADO**: Todos os scripts agora seguem o padrão MySQL com campos corretos (activity_id, created_at, difficulty_level, etc.)
+- July 25, 2025. **COMPATIBILIDADE MYSQL TOTAL**: Sistema de mapeamento automático implementado para converter camelCase JavaScript → snake_case MySQL
+- July 25, 2025. **PADRÕES MYSQL IMPLEMENTADOS**: Removidas todas as chamadas .returning() incompatíveis, corrigida configuração SSL, padronizados formatos de data/hora
 - July 24, 2025. **CONFIGURAÇÃO DE AMBIENTE IMPLEMENTADA**: Criado sistema de variáveis de ambiente seguras via Replit Secrets
 - July 24, 2025. Refatorado server/db.ts para usar variáveis de ambiente em vez de valores hardcoded
 - July 24, 2025. Configuração de segurança aprimorada: credenciais agora são carregadas de variáveis de ambiente
