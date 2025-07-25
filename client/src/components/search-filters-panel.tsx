@@ -102,7 +102,7 @@ export function SearchFiltersPanel({
     filters.endDate ||
     filters.budgetRange[0] > 0 ||
     filters.budgetRange[1] < 10000 ||
-    filters.maxParticipants < 20 ||
+    filters.max_participants < 20 ||
     filters.travelStyles.length > 0 ||
     filters.minRating > 0;
 

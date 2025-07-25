@@ -211,7 +211,7 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 }
 
 // Trip Statistics Component
-function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedActivities?: PlannedActivity[] }) {
+function TripStatistics({ trip, planned_activities = [] }: { trip: any; planned_activities?: PlannedActivity[] }) {
   const stats = useMemo(() => {
     const totalBudget = Number(trip.budget) || 0;
     const realParticipants = getRealParticipantsCount(trip);
@@ -262,7 +262,7 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
             <div className="text-xs sm:text-sm font-medium text-gray-600">Participantes</div>
           </div>
           <div className="text-base sm:text-lg font-bold text-gray-900">
-            {stats.realParticipants}/{trip.maxParticipants}
+            {stats.realParticipants}/{trip.max_participants}
           </div>
           <div className="text-xs text-purple-600">
             {Math.round(stats.occupancy)}% ocupação
@@ -282,9 +282,9 @@ function TripStatistics({ trip, plannedActivities = [] }: { trip: any; plannedAc
           <div className="text-base sm:text-lg font-bold text-gray-900">
             {stats.duration} {stats.duration === 1 ? 'dia' : 'dias'}
           </div>
-          {plannedActivities.length > 0 && (
+          {planned_activities.length > 0 && (
             <div className="text-xs text-blue-600">
-              {plannedActivities.length} atividades
+              {planned_activities.length} atividades
             </div>
           )}
         </CardContent>
@@ -367,7 +367,7 @@ function ActivitiesTimeline({
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify({ plannedActivities: updatedActivities })
+          body: JSON.stringify({ planned_activities: updatedActivities })
         });
         if (!response.ok) throw new Error('Failed to save');
       }
@@ -402,7 +402,7 @@ function ActivitiesTimeline({
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify({ plannedActivities: updatedActivities })
+          body: JSON.stringify({ planned_activities: updatedActivities })
         });
         if (!response.ok) throw new Error('Failed to delete');
       }
@@ -452,7 +452,7 @@ function ActivitiesTimeline({
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify({ plannedActivities: updatedActivities })
+          body: JSON.stringify({ planned_activities: updatedActivities })
         });
         if (!response.ok) throw new Error('Failed to add');
       }
@@ -1020,7 +1020,7 @@ export default function TripDetailPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [requestMessage, setRequestMessage] = useState("");
-  const [plannedActivities, setPlannedActivities] = useState<PlannedActivity[]>([]);
+  const [planned_activities, setPlannedActivities] = useState<PlannedActivity[]>([]);
   const [activeTab, setActiveTab] = useState("overview");
 
   const { data: rawTrip, isLoading, refetch } = useQuery<any>({
@@ -1035,9 +1035,9 @@ export default function TripDetailPage() {
 
   // Initialize planned activities when trip data is loaded
   useEffect(() => {
-    if (rawTrip?.plannedActivities) {
+    if (rawTrip?.planned_activities) {
       try {
-        let parsedActivities = rawTrip.plannedActivities;
+        let parsedActivities = rawTrip.planned_activities;
         
         // Handle double-escaped JSON strings
         if (typeof parsedActivities === 'string') {
@@ -1065,15 +1065,15 @@ export default function TripDetailPage() {
     } else {
       setPlannedActivities([]);
     }
-  }, [rawTrip?.plannedActivities]);
+  }, [rawTrip?.planned_activities]);
 
-  // Parse budgetBreakdown if it's a string (similar to plannedActivities)
+  // Parse budget_breakdown if it's a string (similar to planned_activities)
   const trip = useMemo(() => {
     if (!rawTrip) return null;
 
-    let parsedBudgetBreakdown = rawTrip.budgetBreakdown;
+    let parsedBudgetBreakdown = rawTrip.budget_breakdown;
     
-    // Handle budgetBreakdown parsing - it might be stored as string JSON in database
+    // Handle budget_breakdown parsing - it might be stored as string JSON in database
     if (typeof parsedBudgetBreakdown === 'string') {
       try {
         parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
@@ -1083,7 +1083,7 @@ export default function TripDetailPage() {
           parsedBudgetBreakdown = JSON.parse(parsedBudgetBreakdown);
         }
       } catch (e) {
-        console.error('Error parsing budgetBreakdown:', e);
+        console.error('Error parsing budget_breakdown:', e);
         parsedBudgetBreakdown = null;
       }
     }
@@ -1098,8 +1098,8 @@ export default function TripDetailPage() {
       parsedBudgetBreakdown = cleanedBreakdown;
     }
     
-    // If budgetBreakdown is explicitly null, keep it null (user disabled categories)
-    // Only create default breakdown if budgetBreakdown is undefined (legacy trips)
+    // If budget_breakdown is explicitly null, keep it null (user disabled categories)
+    // Only create default breakdown if budget_breakdown is undefined (legacy trips)
     if (parsedBudgetBreakdown === undefined && rawTrip.budget && rawTrip.budget > 0) {
       parsedBudgetBreakdown = {
         transport: Math.round(rawTrip.budget * 0.4),
@@ -1110,7 +1110,7 @@ export default function TripDetailPage() {
 
     return {
       ...rawTrip,
-      budgetBreakdown: parsedBudgetBreakdown
+      budget_breakdown: parsedBudgetBreakdown
     };
   }, [rawTrip]);
 
@@ -1121,12 +1121,12 @@ export default function TripDetailPage() {
       if (!res.ok) throw new Error('Falha ao buscar solicitações');
       return res.json();
     },
-    enabled: !!trip && !!user && trip.creatorId === user?.id,
+    enabled: !!trip && !!user && trip.creator_id === user?.id,
   });
 
   // Calculate user permissions
-  const isCreator = trip && user && trip.creatorId === user.id;
-  const isParticipant = trip && user && trip.participants?.some((p: any) => p.userId === user.id && p.status === 'accepted');
+  const isCreator = trip && user && trip.creator_id === user.id;
+  const isParticipant = trip && user && trip.participants?.some((p: any) => p.user_id === user.id && p.status === 'accepted');
 
   // Handle activities change and save to database
   const handleActivitiesChange = React.useCallback(async (newActivities: PlannedActivity[]) => {
@@ -1141,7 +1141,7 @@ export default function TripDetailPage() {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ plannedActivities: newActivities })
+          body: JSON.stringify({ planned_activities: newActivities })
         });
         
         if (!response.ok) {
@@ -1172,7 +1172,7 @@ export default function TripDetailPage() {
 
   const requestJoinMutation = useMutation({
     mutationFn: async (data: { tripId: string; message: string }) => {
-      const response = await apiRequest("POST", `/api/trips/${data.tripId}/request`, {
+      const response = await apiRequest("POST", `/api/trips/${data.trip_id}/request`, {
         message: data.message,
       });
       return response.json();
@@ -1220,9 +1220,9 @@ export default function TripDetailPage() {
   });
 
   const updateCoverImageMutation = useMutation({
-    mutationFn: async (coverImage: string) => {
+    mutationFn: async (cover_image: string) => {
       const response = await apiRequest("PATCH", `/api/trips/${id}/cover-image`, {
-        coverImage
+        cover_image
       });
       if (!response.ok) {
         const error = await response.json();
@@ -1289,11 +1289,11 @@ export default function TripDetailPage() {
   // Handle saving activity to database
   const handleSaveActivity = async (activity: PlannedActivity) => {
     try {
-      const updatedActivities = [...plannedActivities, activity];
+      const updatedActivities = [...planned_activities, activity];
       setPlannedActivities(updatedActivities);
       
       const response = await apiRequest("PATCH", `/api/trips/${id}/activities`, {
-        plannedActivities: JSON.stringify(updatedActivities)
+        planned_activities: JSON.stringify(updatedActivities)
       });
       
       if (!response.ok) {
@@ -1344,7 +1344,7 @@ export default function TripDetailPage() {
   }
 
   const realParticipants = getRealParticipantsCount(trip);
-  const canJoin = !isCreator && !isParticipant && realParticipants < trip.maxParticipants;
+  const canJoin = !isCreator && !isParticipant && realParticipants < trip.max_participants;
 
   const travelStyleLabels: { [key: string]: string } = {
     praia: "Praia",
@@ -1371,9 +1371,9 @@ export default function TripDetailPage() {
         >
           {/* Cover Image */}
           <div className="relative h-48">
-            {trip.coverImage && (
+            {trip.cover_image && (
               <img 
-                src={trip.coverImage}
+                src={trip.cover_image}
                 alt={`Imagem da viagem: ${trip.title}`}
                 className="w-full h-full object-cover"
               />
@@ -1384,7 +1384,7 @@ export default function TripDetailPage() {
             {isCreator && (
               <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
                 <CoverImageSelector
-                  currentImage={trip.coverImage}
+                  currentImage={trip.cover_image}
                   destination={trip.destination}
                   onImageSelect={(imageUrl) => updateCoverImageMutation.mutate(imageUrl)}
                   trigger={
@@ -1430,7 +1430,7 @@ export default function TripDetailPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      <span>{getRealParticipantsCount(trip)}/{trip.maxParticipants} participantes</span>
+                      <span>{getRealParticipantsCount(trip)}/{trip.max_participants} participantes</span>
                     </div>
                   </div>
                   
@@ -1444,7 +1444,7 @@ export default function TripDetailPage() {
                   </div>
                 </div>
                 
-                <TripStatistics trip={trip} plannedActivities={plannedActivities} />
+                <TripStatistics trip={trip} planned_activities={planned_activities} />
               </div>
               
               <div className="flex gap-2 lg:flex-col lg:w-32">
@@ -1519,9 +1519,9 @@ export default function TripDetailPage() {
                       <Target className="h-4 w-4 group-data-[state=active]:text-blue-600" />
                       <span className="text-xs sm:text-sm font-medium">Atividades</span>
                     </div>
-                    {plannedActivities.length > 0 && (
+                    {planned_activities.length > 0 && (
                       <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                        {plannedActivities.length}
+                        {planned_activities.length}
                       </div>
                     )}
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-full opacity-0 group-data-[state=active]:opacity-100 transition-opacity duration-300"></div>
@@ -1634,8 +1634,8 @@ export default function TripDetailPage() {
                         <BudgetEditor
                           tripId={parseInt(id!)}
                           currentBudget={trip.budget}
-                          currentBudgetBreakdown={trip.budgetBreakdown}
-                          maxParticipants={trip.maxParticipants}
+                          currentBudgetBreakdown={trip.budget_breakdown}
+                          maxParticipants={trip.max_participants}
                           onBudgetUpdate={(newBudget, newBreakdown) => {
                             // Force refresh the trip data
                               refetch();
@@ -1645,11 +1645,11 @@ export default function TripDetailPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
-                      {trip.budgetBreakdown ? (
+                      {trip.budget_breakdown ? (
                         <div className="space-y-4">
                           {/* Compact Category Grid */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {Object.entries(trip.budgetBreakdown).map(([category, amount]) => {
+                            {Object.entries(trip.budget_breakdown).map(([category, amount]) => {
                               // Ensure amount is a number (it might be a string from JSON parsing)
                               const numericAmount = typeof amount === 'string' ? parseFloat(amount) || 0 : Number(amount) || 0;
                               const participantsCount = getParticipantsForBudgetCalculation(trip);
@@ -1729,7 +1729,7 @@ export default function TripDetailPage() {
                                 <p className="text-sm text-gray-600 mb-1">Participantes confirmados</p>
                                 <div className="flex items-center justify-center gap-2">
                                   <Users className="h-4 w-4 text-gray-500" />
-                                  <span className="font-medium text-gray-900">{getRealParticipantsCount(trip)} de {trip.maxParticipants}</span>
+                                  <span className="font-medium text-gray-900">{getRealParticipantsCount(trip)} de {trip.max_participants}</span>
                                 </div>
                               </div>
                             </div>
@@ -1780,7 +1780,7 @@ export default function TripDetailPage() {
                     <div>
                       <h2 className="text-xl font-bold text-gray-900">Atividades da Viagem</h2>
                       <p className="text-sm text-gray-600">
-                        {plannedActivities.length} {plannedActivities.length === 1 ? 'atividade planejada' : 'atividades planejadas'}
+                        {planned_activities.length} {planned_activities.length === 1 ? 'atividade planejada' : 'atividades planejadas'}
                       </p>
                     </div>
                   </div>
@@ -1788,7 +1788,7 @@ export default function TripDetailPage() {
 
                 {(isCreator || isParticipant) ? (
                   <AdvancedActivityManager 
-                    activities={plannedActivities}
+                    activities={planned_activities}
                     onActivitiesChange={handleActivitiesChange}
                     tripDestination={trip.destination}
                     trip={trip}
@@ -1802,7 +1802,7 @@ export default function TripDetailPage() {
                     </CardHeader>
                     <CardContent>
                       <ActivitiesTimeline 
-                        activities={plannedActivities}
+                        activities={planned_activities}
                         tripStartDate={trip.startDate}
                         tripEndDate={trip.endDate}
                         canJoin={canJoin}
@@ -1826,7 +1826,7 @@ export default function TripDetailPage() {
                     <div>
                       <h2 className="text-xl font-bold text-gray-900">Gestão Financeira</h2>
                       <p className="text-sm text-gray-600">
-                        Total: R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                        Total: R$ {((trip.budget || 0) + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}
                       </p>
                     </div>
                   </div>
@@ -1870,7 +1870,7 @@ export default function TripDetailPage() {
                     <div>
                       <h2 className="text-xl font-bold text-gray-900">Companheiros de Viagem</h2>
                       <p className="text-sm text-gray-600">
-                        {getRealParticipantsCount(trip)} de {trip.maxParticipants} vagas ocupadas
+                        {getRealParticipantsCount(trip)} de {trip.max_participants} vagas ocupadas
                       </p>
                     </div>
                   </div>
@@ -1899,7 +1899,7 @@ export default function TripDetailPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            {participant.userId === trip.creatorId && (
+                            {participant.user_id === trip.creator_id && (
                               <Badge className="bg-yellow-100 text-yellow-800 text-xs">Organizador</Badge>
                             )}
                             <Badge variant="outline" className="text-green-800 border-green-200 text-xs">
@@ -2073,7 +2073,7 @@ export default function TripDetailPage() {
                         <span className="text-xs font-medium text-gray-700">Atividades</span>
                       </div>
                       <span className="text-xs font-semibold text-gray-900 tabular-nums">
-                        R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                        R$ {calculateActivitiesCost(planned_activities).toLocaleString('pt-BR')}
                       </span>
                     </div>
                     
@@ -2083,7 +2083,7 @@ export default function TripDetailPage() {
                         <span className="text-xs font-semibold text-gray-900">Total</span>
                       </div>
                       <span className="text-sm font-bold text-gray-900 tabular-nums">
-                        R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                        R$ {((trip.budget || 0) + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}
                       </span>
                     </div>
                   </div>
@@ -2096,10 +2096,10 @@ export default function TripDetailPage() {
                         <span className="text-xs font-medium text-blue-900">Custo Individual com Atividades</span>
                       </div>
                       <div className="text-base font-bold text-blue-900 tabular-nums">
-                        R$ {getParticipantsForBudgetCalculation(trip) > 0 ? (((trip.budget || 0) + calculateActivitiesCost(plannedActivities)) / getParticipantsForBudgetCalculation(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
+                        R$ {getParticipantsForBudgetCalculation(trip) > 0 ? (((trip.budget || 0) + calculateActivitiesCost(planned_activities)) / getParticipantsForBudgetCalculation(trip)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00'}
                       </div>
                       <div className="text-xs text-blue-700">
-                        {hasTripStarted(trip) ? `${getRealParticipantsCount(trip)} participantes confirmados` : `${trip.maxParticipants} participantes planejados`}
+                        {hasTripStarted(trip) ? `${getRealParticipantsCount(trip)} participantes confirmados` : `${trip.max_participants} participantes planejados`}
                       </div>
                     </div>
                   </div>
@@ -2109,17 +2109,17 @@ export default function TripDetailPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-gray-700">Progresso</span>
                       <span className="text-xs font-semibold text-gray-900 tabular-nums">
-                        {Math.round((calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(plannedActivities) || 1)) * 100)}%
+                        {Math.round((calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(planned_activities) || 1)) * 100)}%
                       </span>
                     </div>
                     <div className="space-y-1">
                       <Progress 
-                        value={Math.min(100, (calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(plannedActivities) || 1)) * 100)} 
+                        value={Math.min(100, (calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(planned_activities) || 1)) * 100)} 
                         className="h-1.5 bg-gray-200"
                       />
                       <div className="flex justify-between text-xs text-gray-500">
                         <span>R$ {calculateTotalExpenses().toLocaleString('pt-BR')}</span>
-                        <span>R$ {((trip.budget || 0) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}</span>
+                        <span>R$ {((trip.budget || 0) + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}</span>
                       </div>
                     </div>
                   </div>

@@ -62,7 +62,7 @@ import { apiRequest } from "@/lib/queryClient";
 const createTripSchema = insertTripSchema.extend({
   startDate: z.string().min(1, "Data de início é obrigatória"),
   endDate: z.string().min(1, "Data de fim é obrigatória"),
-  plannedActivities: z.array(z.any()).optional(),
+  planned_activities: z.array(z.any()).optional(),
 }).refine((data) => {
   const startDate = new Date(data.startDate);
   const endDate = new Date(data.endDate);
@@ -145,7 +145,7 @@ function CreateTripPageContent() {
   const [totalPoints, setTotalPoints] = useState(0);
   const [achievements, setAchievements] = useState(ACHIEVEMENTS);
   const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
-  const [plannedActivities, setPlannedActivities] = useState<PlannedActivity[]>([
+  const [planned_activities, setPlannedActivities] = useState<PlannedActivity[]>([
     {
       id: '1',
       title: 'Visitar pontos turísticos principais',
@@ -192,7 +192,7 @@ function CreateTripPageContent() {
       endDate: "",
       maxParticipants: 4,
       budget: undefined,
-      budgetBreakdown: undefined,
+      budget_breakdown: undefined,
       travelStyle: "",
       sharedCosts: [],
     },
@@ -216,7 +216,7 @@ function CreateTripPageContent() {
     }
     
     // Budget Planning
-    if (watchedValues.budget || watchedValues.budgetBreakdown) {
+    if (watchedValues.budget || watchedValues.budget_breakdown) {
       updatedSteps[1].status = 'completed';
       totalProgress += updatedSteps[1].points;
       completedCount++;
@@ -232,16 +232,16 @@ function CreateTripPageContent() {
     }
     
     // Activities Planning
-    if (plannedActivities.length >= 3) {
+    if (planned_activities.length >= 3) {
       updatedSteps[3].status = 'completed';
       totalProgress += updatedSteps[3].points;
       completedCount++;
-    } else if (plannedActivities.length > 0) {
+    } else if (planned_activities.length > 0) {
       updatedSteps[3].status = 'in-progress';
     }
     
     // Group Formation
-    if (watchedValues.maxParticipants && watchedValues.maxParticipants > 2) {
+    if (watchedValues.max_participants && watchedValues.max_participants > 2) {
       updatedSteps[4].status = 'completed';
       totalProgress += updatedSteps[4].points;
       completedCount++;
@@ -271,7 +271,7 @@ function CreateTripPageContent() {
     let newPoints = 0;
     
     // Budget Master achievement
-    if (watchedValues.budgetBreakdown && !achievements.find(a => a.id === 'budget_master')?.unlocked) {
+    if (watchedValues.budget_breakdown && !achievements.find(a => a.id === 'budget_master')?.unlocked) {
       const budgetMaster = newAchievements.find(a => a.id === 'budget_master');
       if (budgetMaster) {
         budgetMaster.unlocked = true;
@@ -284,7 +284,7 @@ function CreateTripPageContent() {
     }
 
     // Social Butterfly achievement
-    if (watchedValues.maxParticipants >= 6 && !achievements.find(a => a.id === 'social_butterfly')?.unlocked) {
+    if (watchedValues.max_participants >= 6 && !achievements.find(a => a.id === 'social_butterfly')?.unlocked) {
       const socialButterfly = newAchievements.find(a => a.id === 'social_butterfly');
       if (socialButterfly) {
         socialButterfly.unlocked = true;
@@ -331,9 +331,9 @@ function CreateTripPageContent() {
 
   const createTripMutation = useMutation({
     mutationFn: async (data: CreateTripForm) => {
-      const activitiesCost = calculateActivitiesCost(plannedActivities);
-      const totalBudget = data.budgetBreakdown 
-        ? calculateTotalBudget(data.budgetBreakdown) + activitiesCost
+      const activitiesCost = calculateActivitiesCost(planned_activities);
+      const totalBudget = data.budget_breakdown 
+        ? calculateTotalBudget(data.budget_breakdown) + activitiesCost
         : (data.budget || 0) + activitiesCost;
         
       const tripData = {
@@ -341,7 +341,7 @@ function CreateTripPageContent() {
         startDate: new Date(data.startDate),
         endDate: new Date(data.endDate),
         budget: totalBudget,
-        plannedActivities: plannedActivities,
+        planned_activities: planned_activities,
       };
       
       const response = await apiRequest("POST", "/api/trips", tripData);
@@ -621,7 +621,7 @@ function CreateTripPageContent() {
 
                         <FormField
                           control={form.control}
-                          name="coverImage"
+                          name="cover_image"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Imagem da Viagem</FormLabel>
@@ -769,21 +769,21 @@ function CreateTripPageContent() {
                                   </FormControl>
                                   {field.value && form.watch('maxParticipants') && (
                                     <div className="space-y-2">
-                                      {calculateActivitiesCost(plannedActivities) > 0 && (
+                                      {calculateActivitiesCost(planned_activities) > 0 && (
                                         <div className="bg-purple-50 p-3 rounded-lg">
                                           <p className="text-sm font-medium text-purple-900">
-                                            🎯 Custo das Atividades: R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                                            🎯 Custo das Atividades: R$ {calculateActivitiesCost(planned_activities).toLocaleString('pt-BR')}
                                           </p>
                                         </div>
                                       )}
                                       <div className="bg-emerald-50 p-3 rounded-lg">
                                         <p className="text-sm font-medium text-emerald-900">
-                                          💰 Total da Viagem: R$ {(field.value + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                                          💰 Total da Viagem: R$ {(field.value + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}
                                         </p>
                                       </div>
                                       <div className="bg-blue-50 p-3 rounded-lg">
                                         <p className="text-sm font-medium text-blue-900">
-                                          👥 Custo por pessoa: R$ {calculateCostPerPerson(field.value + calculateActivitiesCost(plannedActivities), form.watch('maxParticipants')).toLocaleString('pt-BR')}
+                                          👥 Custo por pessoa: R$ {calculateCostPerPerson(field.value + calculateActivitiesCost(planned_activities), form.watch('maxParticipants')).toLocaleString('pt-BR')}
                                         </p>
                                       </div>
                                     </div>
@@ -799,7 +799,7 @@ function CreateTripPageContent() {
                                   <FormField
                                     key={key}
                                     control={form.control}
-                                    name={`budgetBreakdown.${key as keyof BudgetBreakdown}`}
+                                    name={`budget_breakdown.${key as keyof BudgetBreakdown}`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel className="text-sm">{label}</FormLabel>
@@ -823,34 +823,34 @@ function CreateTripPageContent() {
                                 ))}
                               </div>
                               
-                              {form.watch('budgetBreakdown') && (
+                              {form.watch('budget_breakdown') && (
                                 <div className="space-y-3">
                                   <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
                                     <span className="font-bold text-blue-900">💎 Orçamento Base:</span>
                                     <span className="text-xl font-bold text-blue-900">
-                                      R$ {calculateTotalBudget(form.watch('budgetBreakdown') || {}).toLocaleString('pt-BR')}
+                                      R$ {calculateTotalBudget(form.watch('budget_breakdown') || {}).toLocaleString('pt-BR')}
                                     </span>
                                   </div>
-                                  {calculateActivitiesCost(plannedActivities) > 0 && (
+                                  {calculateActivitiesCost(planned_activities) > 0 && (
                                     <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
                                       <span className="font-bold text-purple-900">🎯 Custo das Atividades:</span>
                                       <span className="text-xl font-bold text-purple-900">
-                                        R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                                        R$ {calculateActivitiesCost(planned_activities).toLocaleString('pt-BR')}
                                       </span>
                                     </div>
                                   )}
                                   <div className="flex justify-between items-center p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border-2 border-emerald-300">
                                     <span className="font-bold text-emerald-900">💰 Total da Viagem:</span>
                                     <span className="text-2xl font-bold text-emerald-900">
-                                      R$ {(calculateTotalBudget(form.watch('budgetBreakdown') || {}) + calculateActivitiesCost(plannedActivities)).toLocaleString('pt-BR')}
+                                      R$ {(calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}
                                     </span>
                                   </div>
-                                  {form.watch('maxParticipants') && (calculateTotalBudget(form.watch('budgetBreakdown') || {}) + calculateActivitiesCost(plannedActivities)) > 0 && (
+                                  {form.watch('maxParticipants') && (calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities)) > 0 && (
                                     <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border-2 border-green-200">
                                       <span className="font-bold text-green-900">👥 Custo por Pessoa:</span>
                                       <span className="text-xl font-bold text-green-900">
                                         R$ {calculateCostPerPerson(
-                                          calculateTotalBudget(form.watch('budgetBreakdown') || {}) + calculateActivitiesCost(plannedActivities), 
+                                          calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities), 
                                           form.watch('maxParticipants')
                                         ).toLocaleString('pt-BR')}
                                       </span>
@@ -880,7 +880,7 @@ function CreateTripPageContent() {
                         </div>
                         
                         <AdvancedActivityManager
-                          activities={plannedActivities}
+                          activities={planned_activities}
                           onActivitiesChange={setPlannedActivities}
                           tripDestination={form.watch('destination')}
                           tripParticipants={1}
@@ -1048,20 +1048,20 @@ function CreateTripPageContent() {
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-purple-700">Total de Atividades:</span>
                         <Badge variant="outline" className="bg-purple-100 text-purple-800">
-                          {plannedActivities.length}
+                          {planned_activities.length}
                         </Badge>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-purple-700">Custo Estimado:</span>
                         <span className="text-sm font-bold text-purple-900">
-                          R$ {calculateActivitiesCost(plannedActivities).toLocaleString('pt-BR')}
+                          R$ {calculateActivitiesCost(planned_activities).toLocaleString('pt-BR')}
                         </span>
                       </div>
-                      {plannedActivities.length > 0 && (
+                      {planned_activities.length > 0 && (
                         <div className="pt-2 border-t border-purple-200">
                           <p className="text-xs text-purple-600 mb-2">Top 3 Atividades:</p>
                           <div className="space-y-1">
-                            {plannedActivities.slice(0, 3).map((activity, index) => (
+                            {planned_activities.slice(0, 3).map((activity, index) => (
                               <div key={activity.id} className="flex items-center gap-2 text-xs">
                                 <span className="w-4 h-4 bg-purple-200 rounded-full flex items-center justify-center text-purple-800 font-bold">
                                   {index + 1}

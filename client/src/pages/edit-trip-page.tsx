@@ -58,7 +58,7 @@ export default function EditTripPage() {
   useEffect(() => {
     if (trip) {
       // Check if user is the creator
-      if (trip.creatorId !== user?.id) {
+      if (trip.creator_id !== user?.id) {
         toast({
           variant: "destructive",
           title: "Acesso negado",
@@ -75,7 +75,7 @@ export default function EditTripPage() {
         startDate: trip.startDate ? new Date(trip.startDate).toISOString().split('T')[0] : '',
         endDate: trip.endDate ? new Date(trip.endDate).toISOString().split('T')[0] : '',
         budget: trip.budget?.toString() || '',
-        maxParticipants: trip.maxParticipants?.toString() || '',
+        maxParticipants: trip.max_participants?.toString() || '',
         travelStyle: trip.travelStyle || ''
       });
     }
@@ -154,7 +154,7 @@ export default function EditTripPage() {
     const data = {
       ...formData,
       budget: formData.budget ? parseInt(formData.budget) : 0,
-      maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : 2
+      maxParticipants: formData.max_participants ? parseInt(formData.max_participants) : 2
     };
 
     updateTripMutation.mutate(data);
@@ -353,7 +353,7 @@ export default function EditTripPage() {
                           </label>
                           <Input
                             type="number"
-                            value={formData.maxParticipants}
+                            value={formData.max_participants}
                             onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
                             placeholder="6"
                             min={getRealParticipantsCount(trip) || 1}
@@ -407,7 +407,7 @@ export default function EditTripPage() {
                           )}
                         </Button>
                         
-                        {trip?.currentParticipants === 1 && (
+                        {trip?.current_participants === 1 && (
                           <Button 
                             type="button"
                             variant="outline"
@@ -448,7 +448,7 @@ export default function EditTripPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Participantes:</span>
-                        <Badge variant="secondary">{getRealParticipantsCount(trip)}/{trip.maxParticipants}</Badge>
+                        <Badge variant="secondary">{getRealParticipantsCount(trip)}/{trip.max_participants}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Status:</span>

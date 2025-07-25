@@ -208,8 +208,7 @@ async function fixTripBudgets() {
             .update(trips)
             .set({
               budget: budgetData.budget,
-              budgetBreakdown: budgetData.budgetBreakdown,
-              updatedAt: new Date()
+              budgetBreakdown: budgetData.budgetBreakdown
             })
             .where(eq(trips.id, trip.id));
           
@@ -233,8 +232,7 @@ async function fixTripBudgets() {
             .update(trips)
             .set({
               budget: defaultBudget,
-              budgetBreakdown: defaultBreakdown,
-              updatedAt: new Date()
+              budgetBreakdown: defaultBreakdown
             })
             .where(eq(trips.id, trip.id));
           

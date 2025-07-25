@@ -289,7 +289,7 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
                         </div>
                         <div className="flex items-center gap-1 text-gray-600">
                           <Users className="h-3 w-3" />
-                          <span>{trip.currentParticipants}/{trip.maxParticipants}</span>
+                          <span>{trip.current_participants}/{trip.max_participants}</span>
                         </div>
                       </div>
                     </div>

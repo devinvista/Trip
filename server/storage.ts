@@ -600,7 +600,7 @@ export interface IStorage {
 
   // User Ratings
   getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]>;
-  createUserRating(rating: InsertUserRating & { raterUserId: number }): Promise<UserRating>;
+  createUserRating(rating: InsertUserRating & { rater_user_id: number }): Promise<UserRating>;
   updateUserAverageRating(userId: number): Promise<void>;
 
   // Destination Ratings
@@ -742,8 +742,7 @@ export class DatabaseStorage implements IStorage {
         isVerified: false,
         verificationMethod: null,
         averageRating: "0.00",
-        totalRatings: 0,
-        createdAt: new Date() 
+        totalRatings: 0 
       });
       
       // Get the created user
@@ -796,15 +795,15 @@ export class DatabaseStorage implements IStorage {
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
-        max_participants: trips.max_participants,
+        maxParticipants: trips.max_participants,
         description: trips.description,
-        travel_style: trips.travel_style,
+        travelStyle: trips.travel_style,
         creator_id: trips.creator_id,
         status: trips.status,
-        budget_breakdown: trips.budget_breakdown,
+        budgetBreakdown: trips.budget_breakdown,
         current_participants: trips.current_participants,
-        shared_costs: trips.shared_costs,
-        created_at: trips.created_at
+        sharedCosts: trips.shared_costs,
+        createdAt: trips.created_at
       })
       .from(trips)
       .innerJoin(tripParticipants, eq(tripParticipants.trip_id, trips.id))
@@ -870,11 +869,10 @@ export class DatabaseStorage implements IStorage {
         ...tripData,
         coverImage,
         budget: tripData.budget ?? null,
-        budget_breakdown: tripData.budget_breakdown || null,
+        budgetBreakdown: tripData.budget_breakdown || null,
         current_participants: 1,
         status: 'open' as const,
-        shared_costs: tripData.shared_costs || null,
-        created_at: new Date()
+        sharedCosts: tripData.shared_costs || null
       };
 
       const result = await db.insert(trips).values(tripToInsert);
@@ -886,7 +884,7 @@ export class DatabaseStorage implements IStorage {
       console.log(`✅ Viagem criada no MySQL com ID ${tripId}: ${trip.title}`);
 
       // Add creator as participant
-      await this.addTripParticipant(tripId, tripData.creatorId);
+      await this.addTripParticipant(tripId, tripData.creator_id);
 
       return trip;
     } catch (error) {
@@ -929,16 +927,16 @@ export class DatabaseStorage implements IStorage {
       
       // The foreign key constraints should handle cascading deletes
       // But let's manually clean up to be safe
-      await db.delete(tripParticipants).where(eq(tripParticipants.tripId, id));
-      await db.delete(messages).where(eq(messages.tripId, id));
-      await db.delete(tripRequests).where(eq(tripRequests.tripId, id));
+      await db.delete(tripParticipants).where(eq(tripParticipants.trip_id, id));
+      await db.delete(messages).where(eq(messages.trip_id, id));
+      await db.delete(tripRequests).where(eq(tripRequests.trip_id, id));
       
       // Remove expenses and their splits
-      const tripExpenses = await db.select().from(expenses).where(eq(expenses.tripId, id));
+      const tripExpenses = await db.select().from(expenses).where(eq(expenses.trip_id, id));
       for (const expense of tripExpenses) {
         await db.delete(expenseSplits).where(eq(expenseSplits.expenseId, expense.id));
       }
-      await db.delete(expenses).where(eq(expenses.tripId, id));
+      await db.delete(expenses).where(eq(expenses.trip_id, id));
       
       return true;
     } catch (error) {
@@ -970,14 +968,14 @@ export class DatabaseStorage implements IStorage {
     try {
       const participants = await db.select()
         .from(tripParticipants)
-        .where(eq(tripParticipants.tripId, tripId));
+        .where(eq(tripParticipants.trip_id, tripId));
 
       console.log(`📋 Encontrados ${participants.length} participantes no MySQL para viagem ${tripId}`);
       
       const result = [];
       for (const p of participants) {
         // Get user from MySQL
-        const userArray = await db.select().from(users).where(eq(users.id, p.userId)).limit(1);
+        const userArray = await db.select().from(users).where(eq(users.id, p.user_id)).limit(1);
         if (userArray.length > 0) {
           const sanitizedUser = this.sanitizeUser(userArray[0]);
           if (sanitizedUser) {
@@ -997,7 +995,7 @@ export class DatabaseStorage implements IStorage {
       // Check if participant already exists in MySQL
       const existingParticipant = await db.select()
         .from(tripParticipants)
-        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)))
+        .where(and(eq(tripParticipants.trip_id, tripId), eq(tripParticipants.user_id, userId)))
         .limit(1);
 
       if (existingParticipant.length > 0) {
@@ -1026,11 +1024,11 @@ export class DatabaseStorage implements IStorage {
     try {
       await db.update(tripParticipants)
         .set({ status })
-        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
+        .where(and(eq(tripParticipants.trip_id, tripId), eq(tripParticipants.user_id, userId)));
 
       const [updatedParticipant] = await db.select()
         .from(tripParticipants)
-        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
+        .where(and(eq(tripParticipants.trip_id, tripId), eq(tripParticipants.user_id, userId)));
 
       return updatedParticipant;
     } catch (error) {
@@ -1046,7 +1044,7 @@ export class DatabaseStorage implements IStorage {
 
       // Remove participant from MySQL
       await db.delete(tripParticipants)
-        .where(and(eq(tripParticipants.tripId, tripId), eq(tripParticipants.userId, userId)));
+        .where(and(eq(tripParticipants.trip_id, tripId), eq(tripParticipants.user_id, userId)));
 
       // Get remaining participants after removal
       const participants = await this.getTripParticipants(tripId);
@@ -1058,11 +1056,11 @@ export class DatabaseStorage implements IStorage {
         console.log(`❌ Viagem ${tripId} cancelada - sem participantes restantes`);
       } else {
         // Check if removed user was the creator
-        if (trip.creatorId === userId) {
+        if (trip.creator_id === userId) {
           // Transfer organizer role to oldest active participant (first one in the list)
           const newOrganizer = activeParticipants[0];
           await this.updateTrip(tripId, { 
-            creatorId: newOrganizer.userId,
+            creatorId: newOrganizer.user_id,
             currentParticipants: activeParticipants.length
           });
           console.log(`✅ Organização da viagem ${tripId} transferida para usuário ${newOrganizer.user.username}`);
@@ -1102,9 +1100,9 @@ export class DatabaseStorage implements IStorage {
           for (const participant of activeParticipants) {
             await db.insert(expenseSplits).values({
               expenseId: expense.id,
-              userId: participant.userId,
+              userId: participant.user_id,
               amount: newSplitAmount,
-              paid: participant.userId === expense.paidBy,
+              paid: participant.user_id === expense.paidBy,
               settledAt: null,
             });
           }
@@ -1118,12 +1116,12 @@ export class DatabaseStorage implements IStorage {
   async getTripMessages(tripId: number): Promise<(Message & { sender: User })[]> {
     try {
       const tripMessages = await db.select().from(messages)
-        .where(eq(messages.tripId, tripId))
+        .where(eq(messages.trip_id, tripId))
         .orderBy(messages.sentAt);
 
       const result = [];
       for (const message of tripMessages) {
-        const sender = await this.getUser(message.senderId);
+        const sender = await this.getUser(message.sender_id);
         if (sender) {
           result.push({ ...message, sender: this.sanitizeUser(sender) as User });
         }
@@ -1138,8 +1136,8 @@ export class DatabaseStorage implements IStorage {
   async createMessage(messageData: InsertMessage & { senderId: number }): Promise<Message> {
     try {
       const [insertedMessage] = await db.insert(messages).values({
-        tripId: messageData.tripId,
-        senderId: messageData.senderId,
+        tripId: messageData.trip_id,
+        senderId: messageData.sender_id,
         content: messageData.content,
         sentAt: new Date()
       });
@@ -1158,11 +1156,11 @@ export class DatabaseStorage implements IStorage {
   async getTripRequests(tripId: number): Promise<(TripRequest & { user: User })[]> {
     try {
       const requests = await db.select().from(tripRequests)
-        .where(eq(tripRequests.tripId, tripId));
+        .where(eq(tripRequests.trip_id, tripId));
 
       const result = [];
       for (const request of requests) {
-        const user = await this.getUser(request.userId);
+        const user = await this.getUser(request.user_id);
         if (user) {
           result.push({ ...request, user: this.sanitizeUser(user) as User });
         }
@@ -1177,11 +1175,11 @@ export class DatabaseStorage implements IStorage {
   async getUserTripRequests(userId: number): Promise<(TripRequest & { trip: Trip })[]> {
     try {
       const requests = await db.select().from(tripRequests)
-        .where(eq(tripRequests.userId, userId));
+        .where(eq(tripRequests.user_id, userId));
 
       const result = [];
       for (const request of requests) {
-        const trip = await this.getTrip(request.tripId);
+        const trip = await this.getTrip(request.trip_id);
         if (trip) {
           result.push({ ...request, trip });
         }
@@ -1196,11 +1194,10 @@ export class DatabaseStorage implements IStorage {
   async createTripRequest(requestData: InsertTripRequest & { userId: number }): Promise<TripRequest> {
     try {
       const result = await db.insert(tripRequests).values({
-        tripId: requestData.tripId,
-        userId: requestData.userId,
+        tripId: requestData.trip_id,
+        userId: requestData.user_id,
         message: requestData.message || null,
-        status: 'pending',
-        createdAt: new Date()
+        status: 'pending'
       });
 
       const [request] = await db.select().from(tripRequests).where(eq(tripRequests.id, result[0].insertId));
@@ -1226,7 +1223,7 @@ export class DatabaseStorage implements IStorage {
   async getTripExpenses(tripId: number): Promise<(Expense & { payer: User; splits: (ExpenseSplit & { user: User })[] })[]> {
     try {
       const tripExpenses = await db.select().from(expenses)
-        .where(eq(expenses.tripId, tripId));
+        .where(eq(expenses.trip_id, tripId));
       
       const result = [];
       for (const expense of tripExpenses) {
@@ -1238,7 +1235,7 @@ export class DatabaseStorage implements IStorage {
         
         const splitsWithUsers = [];
         for (const split of splits) {
-          const user = await this.getUser(split.userId);
+          const user = await this.getUser(split.user_id);
           if (user) {
             splitsWithUsers.push({ ...split, user: this.sanitizeUser(user) as User });
           }
@@ -1257,13 +1254,12 @@ export class DatabaseStorage implements IStorage {
   async createExpense(expenseData: InsertExpense & { paidBy: number }): Promise<Expense> {
     try {
       const result = await db.insert(expenses).values({
-        tripId: expenseData.tripId,
+        tripId: expenseData.trip_id,
         paidBy: expenseData.paidBy,
         amount: expenseData.amount,
         description: expenseData.description,
         category: expenseData.category,
         receipt: expenseData.receipt || null,
-        createdAt: new Date(),
         settledAt: null,
       });
       
@@ -1282,7 +1278,7 @@ export class DatabaseStorage implements IStorage {
       for (const split of splits) {
         const result = await db.insert(expenseSplits).values({
           expenseId: split.expenseId,
-          userId: split.userId,
+          userId: split.user_id,
           amount: split.amount,
           paid: split.paid || false,
           settledAt: null,
@@ -1320,7 +1316,7 @@ export class DatabaseStorage implements IStorage {
 
     // Initialize balances for all participants
     for (const participant of participants) {
-      balances.set(participant.userId, 0);
+      balances.set(participant.user_id, 0);
     }
 
     // Calculate balances based on expenses and splits
@@ -1332,8 +1328,8 @@ export class DatabaseStorage implements IStorage {
 
       // Each person in the split owes their portion
       for (const split of expense.splits) {
-        const splitBalance = balances.get(split.userId) || 0;
-        balances.set(split.userId, splitBalance - parseFloat(split.amount));
+        const splitBalance = balances.get(split.user_id) || 0;
+        balances.set(split.user_id, splitBalance - parseFloat(split.amount));
       }
     }
 
@@ -1353,12 +1349,12 @@ export class DatabaseStorage implements IStorage {
   async getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]> {
     try {
       const ratings = await db.select().from(userRatings)
-        .where(eq(userRatings.ratedUserId, userId));
+        .where(eq(userRatings.rated_user_id, userId));
 
       const result = [];
       for (const rating of ratings) {
-        const rater = await this.getUser(rating.raterUserId);
-        const trip = await this.getTrip(rating.tripId);
+        const rater = await this.getUser(rating.rater_user_id);
+        const trip = await this.getTrip(rating.trip_id);
         if (rater && trip) {
           result.push({
             ...rating,
@@ -1374,17 +1370,16 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createUserRating(ratingData: InsertUserRating & { raterUserId: number }): Promise<UserRating> {
+  async createUserRating(ratingData: InsertUserRating & { rater_user_id: number }): Promise<UserRating> {
     try {
       const result = await db.insert(userRatings).values({
         ...ratingData,
-        createdAt: new Date(),
       });
       
       const [rating] = await db.select().from(userRatings).where(eq(userRatings.id, result[0].insertId));
       
       // Update user's average rating
-      await this.updateUserAverageRating(ratingData.ratedUserId);
+      await this.updateUserAverageRating(ratingData.rated_user_id);
       
       return rating;
     } catch (error) {
@@ -1396,7 +1391,7 @@ export class DatabaseStorage implements IStorage {
   async updateUserAverageRating(userId: number): Promise<void> {
     try {
       const ratings = await db.select().from(userRatings)
-        .where(eq(userRatings.ratedUserId, userId));
+        .where(eq(userRatings.rated_user_id, userId));
       
       if (ratings.length === 0) {
         return;
@@ -1421,7 +1416,7 @@ export class DatabaseStorage implements IStorage {
 
       const result = [];
       for (const rating of ratings) {
-        const user = await this.getUser(rating.userId);
+        const user = await this.getUser(rating.user_id);
         if (user) {
           result.push({
             ...rating,
@@ -1440,7 +1435,6 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await db.insert(destinationRatings).values({
         ...ratingData,
-        createdAt: new Date(),
       });
       
       const [rating] = await db.select().from(destinationRatings).where(eq(destinationRatings.id, result[0].insertId));
@@ -1474,14 +1468,14 @@ export class DatabaseStorage implements IStorage {
       let query = db.select().from(verificationRequests);
       
       if (userId) {
-        query = query.where(eq(verificationRequests.userId, userId));
+        query = query.where(eq(verificationRequests.user_id, userId));
       }
       
       const requests = await query;
       const result = [];
       
       for (const request of requests) {
-        const user = await this.getUser(request.userId);
+        const user = await this.getUser(request.user_id);
         if (user) {
           result.push({
             ...request,
@@ -1540,7 +1534,7 @@ export class DatabaseStorage implements IStorage {
       
       // If approved, update user verification status
       if (status === "approved") {
-        await this.updateUserVerificationStatus(request.userId, true, request.verificationType);
+        await this.updateUserVerificationStatus(request.user_id, true, request.verificationType);
       }
       
       return updatedRequest;
@@ -1677,8 +1671,6 @@ export class DatabaseStorage implements IStorage {
         averageRating: "0.00",
         totalRatings: 0,
         isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       
       const [activity] = await db.select().from(activities).where(eq(activities.id, result[0].insertId));
@@ -1693,7 +1685,6 @@ export class DatabaseStorage implements IStorage {
     try {
       await db.update(activities).set({
         ...updates,
-        updatedAt: new Date(),
       }).where(eq(activities.id, id));
       
       const [updatedActivity] = await db.select().from(activities).where(eq(activities.id, id));
@@ -1723,7 +1714,7 @@ export class DatabaseStorage implements IStorage {
       
       const result = [];
       for (const review of reviews) {
-        const user = await this.getUser(review.userId);
+        const user = await this.getUser(review.user_id);
         if (user) {
           result.push({
             ...review,
@@ -1745,7 +1736,6 @@ export class DatabaseStorage implements IStorage {
         ...reviewData,
         helpfulVotes: 0,
         isVerified: false,
-        createdAt: new Date(),
       });
       
       const [review] = await db.select().from(activityReviews).where(eq(activityReviews.id, result[0].insertId));
@@ -1773,7 +1763,6 @@ export class DatabaseStorage implements IStorage {
       await db.update(activities).set({
         averageRating,
         totalRatings: reviews.length,
-        updatedAt: new Date(),
       }).where(eq(activities.id, activityId));
     } catch (error) {
       console.error('❌ Erro ao atualizar avaliação média da atividade:', error);
@@ -1789,7 +1778,7 @@ export class DatabaseStorage implements IStorage {
       
       const result = [];
       for (const booking of bookings) {
-        const user = await this.getUser(booking.userId);
+        const user = await this.getUser(booking.user_id);
         if (user) {
           result.push({
             ...booking,
@@ -1808,7 +1797,7 @@ export class DatabaseStorage implements IStorage {
   async getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]> {
     try {
       const bookings = await db.select().from(activityBookings)
-        .where(eq(activityBookings.userId, userId))
+        .where(eq(activityBookings.user_id, userId))
         .orderBy(desc(activityBookings.createdAt));
       
       const result = [];
@@ -1834,7 +1823,6 @@ export class DatabaseStorage implements IStorage {
       const result = await db.insert(activityBookings).values({
         ...bookingData,
         status: "pending",
-        createdAt: new Date(),
       });
       
       const [booking] = await db.select().from(activityBookings).where(eq(activityBookings.id, result[0].insertId));
@@ -1896,8 +1884,6 @@ export class DatabaseStorage implements IStorage {
         currency: proposalData.currency || "BRL",
         isActive: true,
         votes: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       
       const [proposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, result[0].insertId));
@@ -1912,7 +1898,6 @@ export class DatabaseStorage implements IStorage {
     try {
       await db.update(activityBudgetProposals).set({
         ...updates,
-        updatedAt: new Date(),
       }).where(eq(activityBudgetProposals.id, id));
       
       const [updatedProposal] = await db.select().from(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
@@ -1941,7 +1926,7 @@ export class DatabaseStorage implements IStorage {
       // Check if user has already voted on this specific proposal
       const [existingVote] = await db.select().from(activityBudgetProposalVotes)
         .where(and(
-          eq(activityBudgetProposalVotes.userId, userId),
+          eq(activityBudgetProposalVotes.user_id, userId),
           eq(activityBudgetProposalVotes.proposalId, id)
         ));
       
@@ -1949,7 +1934,7 @@ export class DatabaseStorage implements IStorage {
         // User has already voted on this proposal - remove the vote (toggle)
         await db.delete(activityBudgetProposalVotes)
           .where(and(
-            eq(activityBudgetProposalVotes.userId, userId),
+            eq(activityBudgetProposalVotes.user_id, userId),
             eq(activityBudgetProposalVotes.proposalId, id)
           ));
         
@@ -1957,7 +1942,6 @@ export class DatabaseStorage implements IStorage {
         const newVotes = Math.max(0, proposal.votes - 1);
         await db.update(activityBudgetProposals).set({
           votes: newVotes,
-          updatedAt: new Date(),
         }).where(eq(activityBudgetProposals.id, id));
         
         console.log(`👍 Usuário ${userId} removeu voto da proposta ${id}`);
@@ -1969,14 +1953,12 @@ export class DatabaseStorage implements IStorage {
           userId: userId,
           activityId: proposal.activityId,
           voteType: voteType,
-          createdAt: new Date(),
         });
         
         // Update proposal vote count
         const newVotes = increment ? proposal.votes + 1 : Math.max(0, proposal.votes - 1);
         await db.update(activityBudgetProposals).set({
           votes: newVotes,
-          updatedAt: new Date(),
         }).where(eq(activityBudgetProposals.id, id));
         
         console.log(`👍 Usuário ${userId} votou na proposta ${id}`);
@@ -1994,7 +1976,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const [vote] = await db.select().from(activityBudgetProposalVotes)
         .where(and(
-          eq(activityBudgetProposalVotes.userId, userId),
+          eq(activityBudgetProposalVotes.user_id, userId),
           eq(activityBudgetProposalVotes.activityId, activityId)
         ));
       
@@ -2009,7 +1991,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const [vote] = await db.select().from(activityBudgetProposalVotes)
         .where(and(
-          eq(activityBudgetProposalVotes.userId, userId),
+          eq(activityBudgetProposalVotes.user_id, userId),
           eq(activityBudgetProposalVotes.proposalId, proposalId)
         ));
       
@@ -2024,7 +2006,7 @@ export class DatabaseStorage implements IStorage {
   async getTripActivities(tripId: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]> {
     try {
       const tripActivities = await db.select().from(tripActivities)
-        .where(eq(tripActivities.tripId, tripId))
+        .where(eq(tripActivities.trip_id, tripId))
         .orderBy(desc(tripActivities.createdAt));
       
       const result = [];
@@ -2055,13 +2037,12 @@ export class DatabaseStorage implements IStorage {
       const result = await db.insert(tripActivities).values({
         ...tripActivityData,
         status: "proposed",
-        createdAt: new Date(),
       });
       
       const [tripActivity] = await db.select().from(tripActivities).where(eq(tripActivities.id, result[0].insertId));
       
       // Update the trip's budget by adding the activity cost
-      await this.updateTripBudgetWithActivity(tripActivityData.tripId, tripActivityData.totalCost);
+      await this.updateTripBudgetWithActivity(tripActivityData.trip_id, tripActivityData.totalCost);
       
       return tripActivity;
     } catch (error) {
@@ -2146,16 +2127,16 @@ export class DatabaseStorage implements IStorage {
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
-        budget_breakdown: trips.budget_breakdown,
-        max_participants: trips.max_participants,
+        budgetBreakdown: trips.budget_breakdown,
+        maxParticipants: trips.max_participants,
         current_participants: trips.current_participants,
         description: trips.description,
-        travel_style: trips.travel_style,
-        shared_costs: trips.shared_costs,
-        planned_activities: trips.planned_activities,
+        travelStyle: trips.travel_style,
+        sharedCosts: trips.shared_costs,
+        plannedActivities: trips.planned_activities,
         status: trips.status,
         coverImage: trips.coverImage,
-        created_at: trips.created_at,
+        createdAt: trips.created_at,
       }).from(trips)
         .innerJoin(tripParticipants, eq(tripParticipants.trip_id, trips.id))
         .where(and(

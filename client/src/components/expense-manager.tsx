@@ -35,7 +35,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
     amount: "",
     description: "",
     category: "other",
-    splitWith: participants.map(p => p.userId),
+    splitWith: participants.map(p => p.user_id),
     receipt: null as string | null,
     splitEqually: true,
   });
@@ -92,7 +92,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
         amount: "",
         description: "",
         category: "other",
-        splitWith: participants.map(p => p.userId),
+        splitWith: participants.map(p => p.user_id),
         receipt: null,
         splitEqually: true,
       });
@@ -229,7 +229,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {balances.map((balance: any) => (
-                  <div key={balance.userId} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                  <div key={balance.user_id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={balance.user.profilePhoto || ""} />
                       <AvatarFallback>
@@ -361,14 +361,14 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                     <ScrollArea className="h-32 border rounded-lg p-3">
                       <div className="space-y-2">
                         {participants.map((participant) => (
-                          <div key={participant.userId} className="flex items-center gap-2">
+                          <div key={participant.user_id} className="flex items-center gap-2">
                             <Checkbox
-                              id={`split-${participant.userId}`}
-                              checked={newExpense.splitWith.includes(participant.userId)}
-                              onCheckedChange={() => handleSplitParticipantToggle(participant.userId)}
+                              id={`split-${participant.user_id}`}
+                              checked={newExpense.splitWith.includes(participant.user_id)}
+                              onCheckedChange={() => handleSplitParticipantToggle(participant.user_id)}
                             />
                             <Label
-                              htmlFor={`split-${participant.userId}`}
+                              htmlFor={`split-${participant.user_id}`}
                               className="flex items-center gap-2 cursor-pointer"
                             >
                               <Avatar className="h-6 w-6">
@@ -468,7 +468,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                                 Pago
                               </Badge>
                             ) : (
-                              split.userId === user?.id && (
+                              split.user_id === user?.id && (
                                 <Button
                                   size="sm"
                                   variant="outline"

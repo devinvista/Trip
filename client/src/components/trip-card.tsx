@@ -45,8 +45,8 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
 
   const getDestinationImage = (trip: any) => {
     // Use the trip's cover image if available
-    if (trip.coverImage) {
-      return trip.coverImage;
+    if (trip.cover_image) {
+      return trip.cover_image;
     }
     
     // For cruise trips, use cruise ship images instead of destination images
@@ -211,7 +211,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
             </div>
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              <span>{currentParticipants}/{trip.maxParticipants} pessoas</span>
+              <span>{currentParticipants}/{trip.max_participants} pessoas</span>
             </div>
           </div>
         </div>
@@ -244,7 +244,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
               <>
                 <div className="flex items-center gap-1 text-primary font-semibold mb-1">
                   <DollarSign className="h-4 w-4" />
-                  <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Math.round(trip.budget / trip.maxParticipants))}</span>
+                  <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Math.round(trip.budget / trip.max_participants))}</span>
                 </div>
                 <div className="text-xs text-gray-500">por pessoa</div>
                 <div className="text-xs text-gray-400 mt-1">
@@ -278,7 +278,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
             </Link>
             
             {/* Edit button for trip creators */}
-            {user && trip.creatorId === user.id && (
+            {user && trip.creator_id === user.id && (
               <Link href={`/edit-trip/${trip.id}`}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}

@@ -560,8 +560,7 @@ export async function seedDatabase() {
           paidBy,
           amount,
           description,
-          category,
-          createdAt: new Date()
+          category
         });
         
         // Get the created expense
@@ -574,8 +573,7 @@ export async function seedDatabase() {
           await db.insert(expenseSplits).values({
             expenseId: expense.id,
             userId: participant.userId,
-            amount: amountPerPerson,
-            createdAt: new Date()
+            amount: amountPerPerson
           });
         }
       }
@@ -607,8 +605,7 @@ export async function seedDatabase() {
           activityId: activity.id,
           userId: randomUser.id,
           rating: 3 + Math.floor(Math.random() * 3), // 3-5 stars
-          review: reviews_samples[i % reviews_samples.length],
-          createdAt: new Date()
+          review: reviews_samples[i % reviews_samples.length]
         });
       } catch (error) {
         // Ignore duplicate reviews

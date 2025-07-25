@@ -83,9 +83,7 @@ async function fixAllMissingProposals() {
           inclusions: JSON.stringify(proposal.inclusions),
           exclusions: JSON.stringify(proposal.exclusions),
           isActive: true,
-          votes: Math.floor(Math.random() * 50) + 1,
-          createdAt: new Date(),
-          updatedAt: new Date()
+          votes: Math.floor(Math.random() * 50) + 1
         });
         addedCount++;
       }

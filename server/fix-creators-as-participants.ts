@@ -27,8 +27,8 @@ export async function fixCreatorsAsParticipants() {
         // Creator is not a participant, add them
         try {
           await db.insert(tripParticipants).values({
-            trip_id: trip.id,
-            user_id: trip.creator_id,
+            tripId: trip.id,
+            userId: trip.creator_id,
             status: 'accepted',
             joined_at: new Date()
           });

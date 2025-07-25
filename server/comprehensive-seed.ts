@@ -749,8 +749,7 @@ export async function createComprehensiveSeedData() {
           paidBy,
           amount: expense.amount,
           description: expense.description,
-          category: expense.category,
-          createdAt: new Date()
+          category: expense.category
         });
         
         const expenseId = expenseResult.insertId;

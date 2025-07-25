@@ -12,7 +12,7 @@ interface Activity {
   title: string;
   description: string;
   location: string;
-  coverImage: string;
+  cover_image: string;
   category: string;
   averageRating: number;
   totalRatings: number;
@@ -73,7 +73,7 @@ export function ImprovedActivityCard({
           
           {!imageError ? (
             <img
-              src={activity.coverImage}
+              src={activity.cover_image}
               alt={activity.title}
               className={cn(
                 "w-full h-full object-cover transition-transform duration-300 group-hover:scale-105",
@@ -180,10 +180,10 @@ export function ImprovedActivityCard({
             </div>
 
             {/* Max participants */}
-            {activity.maxParticipants && (
+            {activity.max_participants && (
               <div className="flex items-center text-sm text-gray-500">
                 <Users className="w-4 h-4 mr-1" />
-                <span>até {activity.maxParticipants}</span>
+                <span>até {activity.max_participants}</span>
               </div>
             )}
           </div>

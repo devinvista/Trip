@@ -217,8 +217,7 @@ async function updateAllActivityImages() {
           .update(activities)
           .set({
             coverImage: imageData.coverImage,
-            images: imageData.images,
-            updatedAt: new Date()
+            images: imageData.images
           })
           .where(eq(activities.title, activityTitle));
         

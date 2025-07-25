@@ -719,7 +719,7 @@ function ActivitiesPage() {
             <div className="relative z-10">
               <div className="relative overflow-hidden">
                 <motion.img
-                  src={activity.imageUrl || activity.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
+                  src={activity.imageUrl || activity.cover_image || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
                   alt={activity.title}
                   className="w-full h-44 object-cover transition-all duration-700 group-hover:scale-115"
                   whileHover={{ scale: 1.1 }}
@@ -960,7 +960,7 @@ function ActivitiesPage() {
         <Card className="h-full overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 group-hover:border-blue-200 bg-white">
           <div className="relative">
             <img
-              src={activity.imageUrl || activity.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
+              src={activity.imageUrl || activity.cover_image || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
               alt={activity.title}
               className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
               onError={(e) => {
@@ -1041,7 +1041,7 @@ function ActivitiesPage() {
                 <div className="flex items-center gap-2 text-gray-600">
                   <Users className="w-4 h-4" />
                   <span className="text-sm font-medium">
-                    {activity.minParticipants || 1}-{activity.maxParticipants || 20} pessoas
+                    {activity.minParticipants || 1}-{activity.max_participants || 20} pessoas
                   </span>
                 </div>
                 <Badge 

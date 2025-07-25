@@ -81,7 +81,7 @@ export default function ChatPage() {
     );
   }
 
-  const isParticipant = trip.participants?.some((p: any) => p.userId === user?.id) || trip.creatorId === user?.id;
+  const isParticipant = trip.participants?.some((p: any) => p.user_id === user?.id) || trip.creator_id === user?.id;
 
   if (!isParticipant) {
     return (
@@ -177,7 +177,7 @@ export default function ChatPage() {
                     </div>
                     <div className="flex items-center gap-1.5 bg-purple-50 px-3 py-1 rounded-full">
                       <Users className="h-3.5 w-3.5 text-purple-600" />
-                      <span className="text-purple-700 font-medium">{trip.currentParticipants} participantes</span>
+                      <span className="text-purple-700 font-medium">{trip.current_participants} participantes</span>
                     </div>
                     {daysUntilTrip > 0 && (
                       <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1 rounded-full">
@@ -237,7 +237,7 @@ export default function ChatPage() {
                     Participantes
                   </div>
                   <Badge variant="secondary" className="text-xs">
-                    {trip.currentParticipants}
+                    {trip.current_participants}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -262,7 +262,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* Other Participants */}
-                {trip.participants?.filter((p: any) => p.userId !== trip.creatorId).map((participant: any) => (
+                {trip.participants?.filter((p: any) => p.user_id !== trip.creator_id).map((participant: any) => (
                   <div key={participant.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
                     <Avatar className="w-10 h-10">
                       <AvatarImage src={participant.user?.profilePhoto || ""} />

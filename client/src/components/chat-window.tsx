@@ -261,17 +261,17 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`flex gap-3 ${message.senderId === user?.id ? 'flex-row-reverse' : ''}`}
+                    className={`flex gap-3 ${message.sender_id === user?.id ? 'flex-row-reverse' : ''}`}
                   >
                     <UserAvatar 
                       user={message.sender}
                       size="md"
                       className="w-10 h-10 flex-shrink-0 ring-2 ring-white shadow-sm"
                     />
-                    <div className={`flex-1 max-w-[75%] ${message.senderId === user?.id ? 'text-right' : ''}`}>
-                      <div className={`flex items-center gap-2 mb-1 ${message.senderId === user?.id ? 'justify-end' : ''}`}>
+                    <div className={`flex-1 max-w-[75%] ${message.sender_id === user?.id ? 'text-right' : ''}`}>
+                      <div className={`flex items-center gap-2 mb-1 ${message.sender_id === user?.id ? 'justify-end' : ''}`}>
                         <span className="text-sm font-semibold text-gray-700">
-                          {message.senderId === user?.id ? 'Você' : message.sender?.fullName}
+                          {message.sender_id === user?.id ? 'Você' : message.sender?.fullName}
                         </span>
                         <span className="text-xs text-gray-500 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -280,13 +280,13 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                       </div>
                       <div
                         className={`relative p-3 rounded-2xl text-sm inline-block max-w-full shadow-sm ${
-                          message.senderId === user?.id
+                          message.sender_id === user?.id
                             ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-br-md'
                             : 'bg-white border border-gray-200 text-gray-900 rounded-bl-md'
                         }`}
                       >
                         <p className="whitespace-pre-wrap">{message.content}</p>
-                        {message.senderId === user?.id && (
+                        {message.sender_id === user?.id && (
                           <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1">
                             {getMessageStatusIcon(message.status)}
                           </div>

@@ -1517,7 +1517,7 @@ export function AdvancedActivityManager({
   tripEndDate
 }: AdvancedActivityManagerProps) {
   const realParticipantsCount = trip ? getRealParticipantsCount(trip) : tripParticipants;
-  const maxParticipantsCount = trip ? trip.maxParticipants : (tripMaxParticipants || tripParticipants);
+  const maxParticipantsCount = trip ? trip.max_participants : (tripMaxParticipants || tripParticipants);
   const startDate = trip ? trip.startDate : tripStartDate;
   const endDate = trip ? trip.endDate : tripEndDate;
   const [isDialogOpen, setIsDialogOpen] = useState(false);

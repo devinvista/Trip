@@ -33,7 +33,7 @@ import { formatBrazilianCurrency, formatBrazilianNumber, calculatePerPerson, sum
 
 interface BudgetVisualizationProps {
   budget: number;
-  budgetBreakdown?: BudgetBreakdown;
+  budget_breakdown?: BudgetBreakdown;
   trip: any; // Full trip object to determine if started
   className?: string;
 }
@@ -58,7 +58,7 @@ const categoryColors: { [key: string]: string } = {
 
 export function BudgetVisualization({ 
   budget, 
-  budgetBreakdown = {}, 
+  budget_breakdown = {}, 
   trip,
   className = "" 
 }: BudgetVisualizationProps) {
@@ -68,7 +68,7 @@ export function BudgetVisualization({
   
   // Calculate breakdown data
   const breakdownData = Object.entries(budgetCategories).map(([key, label]) => {
-    const amount = budgetBreakdown[key as keyof BudgetBreakdown] || 0;
+    const amount = budget_breakdown[key as keyof BudgetBreakdown] || 0;
     const percentage = totalBudget > 0 ? (amount / totalBudget) * 100 : 0;
     const Icon = categoryIcons[key];
     

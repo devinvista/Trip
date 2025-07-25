@@ -319,9 +319,7 @@ async function addNYCActivities() {
       try {
         const [insertedActivity] = await db.insert(activities).values({
           ...activity,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
+          isActive: true
         });
         console.log(`✅ Atividade criada: ${activity.title}`);
       } catch (insertError: any) {
@@ -353,9 +351,7 @@ async function addNYCActivities() {
               currency: "USD",
               inclusions: JSON.stringify(proposal.inclusions),
               exclusions: JSON.stringify(proposal.exclusions),
-              isActive: true,
-              createdAt: new Date(),
-              updatedAt: new Date()
+              isActive: true
             });
             console.log(`  💰 Proposta criada: ${proposal.title}`);
           } catch (proposalError: any) {

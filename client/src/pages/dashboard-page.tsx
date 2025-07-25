@@ -519,9 +519,9 @@ export default function DashboardPage() {
                 <Card key={trip.id} className="group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-slate-200/60 bg-white shadow-sm">
                   {/* Cover Image */}
                   <div className="relative h-44 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
-                    {trip.coverImage && (
+                    {trip.cover_image && (
                       <img 
-                        src={trip.coverImage} 
+                        src={trip.cover_image} 
                         alt={trip.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -551,11 +551,11 @@ export default function DashboardPage() {
                     {/* Role Badge */}
                     <div className="absolute top-3 left-3">
                       <Badge 
-                        className={trip.creatorId === user?.id 
+                        className={trip.creator_id === user?.id 
                           ? "bg-blue-600/90 backdrop-blur-sm hover:bg-blue-700 text-white border-0 shadow-sm" 
                           : "bg-white/90 backdrop-blur-sm text-slate-700 hover:bg-white border-0 shadow-sm"}
                       >
-                        {trip.creatorId === user?.id ? 'Criada por você' : 'Participando'}
+                        {trip.creator_id === user?.id ? 'Criada por você' : 'Participando'}
                       </Badge>
                     </div>
 
@@ -584,7 +584,7 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-sm text-slate-600">
                           <Users className="h-4 w-4 text-blue-500" />
-                          <span>{getRealParticipantsCount(trip)}/{trip.maxParticipants} participantes</span>
+                          <span>{getRealParticipantsCount(trip)}/{trip.max_participants} participantes</span>
                         </div>
                         
                         {/* Participants Progress */}
@@ -592,7 +592,7 @@ export default function DashboardPage() {
                           <div className="w-full bg-slate-200 rounded-full h-1.5">
                             <div 
                               className="bg-gradient-to-r from-blue-500 to-blue-600 h-1.5 rounded-full transition-all duration-300"
-                              style={{ width: `${(getRealParticipantsCount(trip) / trip.maxParticipants) * 100}%` }}
+                              style={{ width: `${(getRealParticipantsCount(trip) / trip.max_participants) * 100}%` }}
                             />
                           </div>
                         </div>
@@ -605,7 +605,7 @@ export default function DashboardPage() {
                             {formatBrazilianCurrency(trip.budget)}
                           </span>
                           <span className="text-slate-500">
-                            / {formatBrazilianCurrency(Math.round(trip.budget / trip.maxParticipants))} por pessoa
+                            / {formatBrazilianCurrency(Math.round(trip.budget / trip.max_participants))} por pessoa
                           </span>
                         </div>
                       )}
@@ -639,7 +639,7 @@ export default function DashboardPage() {
                         </Link>
                         
                         {/* Conditional buttons based on user role */}
-                        {trip.creatorId === user?.id ? (
+                        {trip.creator_id === user?.id ? (
                           <Link href={`/edit-trip/${trip.id}`} className="w-full">
                             <Button 
                               size="sm" 
@@ -678,7 +678,7 @@ export default function DashboardPage() {
                       </div>
                       
                       {/* Cancel button for creators - separate row */}
-                      {trip.creatorId === user?.id && (
+                      {trip.creator_id === user?.id && (
                         <Button 
                           size="sm" 
                           variant="outline"

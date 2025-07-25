@@ -275,9 +275,7 @@ async function addActivitiesForDestinations() {
         await db.insert(activities).values({
           ...activity,
           priceAmount: activity.priceAmount ? parseFloat(activity.priceAmount) : null,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
+          isActive: true
         });
         console.log(`✅ Atividade criada: ${activity.title} - ${activity.location}`);
       } catch (insertError: any) {

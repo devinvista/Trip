@@ -302,7 +302,7 @@ export default function SearchPage() {
         case "price-high":
           return (b.budget || 0) - (a.budget || 0);
         case "popularity":
-          return (b.currentParticipants || 0) - (a.currentParticipants || 0);
+          return (b.current_participants || 0) - (a.current_participants || 0);
         default:
           return 0;
       }

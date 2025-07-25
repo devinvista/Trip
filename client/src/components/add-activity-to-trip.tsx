@@ -27,7 +27,7 @@ type Trip = {
   localidade: string;
   startDate: string;
   endDate: string;
-  coverImage: string;
+  cover_image: string;
   maxParticipants: number;
   budget: number;
 };
@@ -275,7 +275,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                       <CardContent className="p-4">
                         <div className="flex items-center gap-4">
                           <img 
-                            src={trip.coverImage} 
+                            src={trip.cover_image} 
                             alt={trip.title}
                             className="w-16 h-16 rounded-lg object-cover"
                           />
@@ -292,7 +292,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                               </span>
                               <span className="flex items-center gap-1">
                                 <Users className="h-3 w-3" />
-                                até {trip.maxParticipants} pessoas
+                                até {trip.max_participants} pessoas
                               </span>
                               <span className="flex items-center gap-1">
                                 <DollarSign className="h-3 w-3" />
@@ -362,7 +362,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                 <CardContent>
                   <div className="flex items-center gap-3 mb-4">
                     <img 
-                      src={selectedTrip.coverImage} 
+                      src={selectedTrip.cover_image} 
                       alt={selectedTrip.title}
                       className="w-12 h-12 rounded-lg object-cover"
                     />

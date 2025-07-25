@@ -31,14 +31,14 @@ export function BudgetEditor({
   const [isOpen, setIsOpen] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(!!currentBudgetBreakdown);
   const [budget, setBudget] = useState(currentBudget);
-  const [budgetBreakdown, setBudgetBreakdown] = useState<BudgetBreakdown>(
+  const [budget_breakdown, setBudgetBreakdown] = useState<BudgetBreakdown>(
     currentBudgetBreakdown || {}
   );
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const updateBudgetMutation = useMutation({
-    mutationFn: async (data: { budget: number; budgetBreakdown?: BudgetBreakdown }) => {
+    mutationFn: async (data: { budget: number; budget_breakdown?: BudgetBreakdown }) => {
       console.log('Enviando dados de orçamento:', data);
       const response = await apiRequest('PATCH', `/api/trips/${tripId}/budget`, data);
       
@@ -55,7 +55,7 @@ export function BudgetEditor({
     onSuccess: (updatedTrip) => {
       console.log('Invalidando cache e atualizando UI');
       queryClient.invalidateQueries({ queryKey: ['/api/trips', tripId] });
-      onBudgetUpdate?.(updatedTrip.budget, updatedTrip.budgetBreakdown);
+      onBudgetUpdate?.(updatedTrip.budget, updatedTrip.budget_breakdown);
       setIsOpen(false);
       toast({
         title: "Orçamento atualizado",
@@ -73,7 +73,7 @@ export function BudgetEditor({
   });
 
   const calculateTotalFromBreakdown = () => {
-    return sumValues(Object.values(budgetBreakdown));
+    return sumValues(Object.values(budget_breakdown));
   };
 
   const handleBudgetBreakdownChange = (category: string, value: number) => {
@@ -89,9 +89,9 @@ export function BudgetEditor({
     
     if (showBreakdown) {
       finalBudget = calculateTotalFromBreakdown();
-      finalBreakdown = budgetBreakdown;
+      finalBreakdown = budget_breakdown;
     } else {
-      // Se a opção de breakdown estiver desabilitada, enviar budgetBreakdown como null
+      // Se a opção de breakdown estiver desabilitada, enviar budget_breakdown como null
       // para indicar que as categorias devem ser zeradas
       finalBreakdown = null;
     }
@@ -107,7 +107,7 @@ export function BudgetEditor({
 
     updateBudgetMutation.mutate({
       budget: finalBudget,
-      budgetBreakdown: finalBreakdown || undefined
+      budget_breakdown: finalBreakdown || undefined
     });
   };
 
@@ -222,7 +222,7 @@ export function BudgetEditor({
                           type="number"
                           placeholder="0"
                           className="pl-10"
-                          value={budgetBreakdown[key as keyof BudgetBreakdown] || ""}
+                          value={budget_breakdown[key as keyof BudgetBreakdown] || ""}
                           onChange={(e) => handleBudgetBreakdownChange(key, parseInt(e.target.value) || 0)}
                         />
                       </div>

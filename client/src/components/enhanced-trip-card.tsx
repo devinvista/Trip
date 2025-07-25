@@ -29,7 +29,7 @@ interface Trip {
     averageRating: number;
     isVerified: boolean;
   };
-  coverImage?: string;
+  cover_image?: string;
 }
 
 interface EnhancedTripCardProps {
@@ -84,7 +84,7 @@ export function EnhancedTripCard({
 
   const daysUntil = getDaysUntilTrip();
   const isUpcoming = daysUntil > 0;
-  const spotsLeft = trip.maxParticipants - trip.currentParticipants;
+  const spotsLeft = trip.max_participants - trip.current_participants;
 
   const cardHeight = variant === 'compact' ? 'h-64' : variant === 'featured' ? 'h-80' : 'h-72';
 
@@ -103,7 +103,7 @@ export function EnhancedTripCard({
       <div className="relative h-2/3">
         {/* Cover Image */}
         <OptimizedImage
-          src={trip.coverImage || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop&crop=center`}
+          src={trip.cover_image || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop&crop=center`}
           alt={trip.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           fallbackSrc="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop&crop=center"
@@ -239,7 +239,7 @@ export function EnhancedTripCard({
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-gray-600">
                 <Users className="w-4 h-4 mr-1" />
-                <span>{trip.currentParticipants}/{trip.maxParticipants}</span>
+                <span>{trip.current_participants}/{trip.max_participants}</span>
               </div>
               
               {spotsLeft > 0 && (

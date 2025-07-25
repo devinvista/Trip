@@ -114,8 +114,8 @@ export default function ActivityDetailPage() {
   // Extrair IDs das propostas já incluídas nas viagens do usuário
   const includedProposalIds = userTrips ? 
     [...(userTrips.created || []), ...(userTrips.participating || [])].flatMap((trip: any) => {
-      const plannedActivities = parseJsonArray(trip.plannedActivities);
-      return plannedActivities
+      const planned_activities = parseJsonArray(trip.planned_activities);
+      return planned_activities
         .filter((activity: any) => activity.activityId === Number(id))
         .flatMap((activity: any) => {
           const proposals = parseJsonArray(activity.budgetProposals);
@@ -296,7 +296,7 @@ export default function ActivityDetailPage() {
                   const images = parseJsonArray(activity.images);
                   return (
                     <img
-                      src={images[selectedImageIndex] || activity.coverImage}
+                      src={images[selectedImageIndex] || activity.cover_image}
                       alt={activity.title}
                       className="w-full h-96 object-cover"
                     />
@@ -394,7 +394,7 @@ export default function ActivityDetailPage() {
                     <div>
                       <div className="text-sm font-medium">Participantes</div>
                       <div className="text-xs text-gray-600">
-                        {activity.minParticipants} - {activity.maxParticipants || "∞"}
+                        {activity.minParticipants} - {activity.max_participants || "∞"}
                       </div>
                     </div>
                   </div>
@@ -602,7 +602,7 @@ export default function ActivityDetailPage() {
                                 <Input 
                                   type="number" 
                                   min="1" 
-                                  max={activity.maxParticipants || 50}
+                                  max={activity.max_participants || 50}
                                   {...field}
                                   onChange={(e) => field.onChange(Number(e.target.value))}
                                 />
