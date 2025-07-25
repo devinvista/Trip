@@ -2,6 +2,21 @@ import { mysqlTable, text, int, boolean, timestamp, json, decimal, varchar } fro
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Cities table - central repository for all locations/destinations
+export const cities = mysqlTable("cities", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(), // e.g., "Rio de Janeiro"
+  state: varchar("state", { length: 255 }), // e.g., "RJ" 
+  country: varchar("country", { length: 255 }).notNull(), // e.g., "Brasil"
+  countryType: varchar("country_type", { length: 50 }).notNull(), // "nacional" or "internacional"
+  region: varchar("region", { length: 255 }), // e.g., "Sudeste", "Europa"
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
+  timezone: varchar("timezone", { length: 50 }),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const users = mysqlTable("users", {
   id: int("id").primaryKey().autoincrement(),
   username: varchar("username", { length: 255 }).notNull().unique(),
@@ -27,7 +42,7 @@ export const trips = mysqlTable("trips", {
   id: int("id").primaryKey().autoincrement(),
   creatorId: int("creator_id").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),
-  localidade: varchar("localidade", { length: 255 }).notNull(), // Changed from destination
+  cityId: int("city_id").notNull().references(() => cities.id), // Reference to cities table
   coverImage: text("cover_image"), // URL for trip cover image
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
@@ -105,10 +120,10 @@ export const userRatings = mysqlTable("user_ratings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Localidade ratings - for rating localidades (changed from destinations)  
-export const localidadeRatings = mysqlTable("localidade_ratings", {
+// City ratings - for rating cities/destinations  
+export const cityRatings = mysqlTable("city_ratings", {
   id: int("id").primaryKey().autoincrement(),
-  localidade: varchar("localidade", { length: 255 }).notNull(), // Localidade name (e.g., "Paris, França")
+  cityId: int("city_id").notNull().references(() => cities.id), // Reference to cities table
   userId: int("user_id").notNull().references(() => users.id), // User who rated
   tripId: int("trip_id").references(() => trips.id), // Optional: trip this rating is from
   rating: int("rating").notNull(), // 1-5 stars
@@ -259,6 +274,11 @@ export type TripRequest = typeof tripRequests.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type InsertTripRequest = z.infer<typeof insertTripRequestSchema>;
 
+// City types
+export type City = typeof cities.$inferSelect;
+export type InsertCity = typeof cities.$inferInsert;
+export type CityRating = typeof cityRatings.$inferSelect;
+
 // Expense types
 export type Expense = typeof expenses.$inferSelect;
 export type ExpenseSplit = typeof expenseSplits.$inferSelect;
@@ -299,7 +319,6 @@ export type ReferralCode = typeof referralCodes.$inferSelect;
 
 // Rating types
 export type UserRating = typeof userRatings.$inferSelect;
-export type LocalidadeRating = typeof localidadeRatings.$inferSelect;
 export type VerificationRequest = typeof verificationRequests.$inferSelect;
 
 // Rating insert schemas (updated for enhanced system)
@@ -322,7 +341,7 @@ export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   }).optional(),
 });
 
-export const insertLocalidadeRatingSchema = createInsertSchema(localidadeRatings).omit({
+export const insertCityRatingSchema = createInsertSchema(cityRatings).omit({
   id: true,
   userId: true,
   isHidden: true,
@@ -353,7 +372,7 @@ export const insertVerificationRequestSchema = createInsertSchema(verificationRe
 });
 
 export type InsertUserRating = z.infer<typeof insertUserRatingSchema>;
-export type InsertLocalidadeRating = z.infer<typeof insertLocalidadeRatingSchema>;
+export type InsertCityRating = z.infer<typeof insertCityRatingSchema>;
 export type InsertVerificationRequest = z.infer<typeof insertVerificationRequestSchema>;
 export type InsertRatingReport = z.infer<typeof insertRatingReportSchema>;
 export type RatingReport = typeof ratingReports.$inferSelect;
@@ -364,12 +383,8 @@ export const activities = mysqlTable("activities", {
   id: int("id").primaryKey().autoincrement(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  location: varchar("location", { length: 255 }).notNull(), // cidade, país
+  cityId: int("city_id").notNull().references(() => cities.id), // Reference to cities table
   category: varchar("category", { length: 100 }).notNull(), // sightseeing, food, adventure, culture, etc.
-  // Hierarchical grouping fields
-  countryType: varchar("country_type", { length: 50 }).default("nacional").notNull(), // nacional, internacional, cruzeiro
-  region: varchar("region", { length: 100 }), // Nordeste, Sudeste, Europa, Caribe, etc.
-  city: varchar("city", { length: 100 }).notNull(), // Rio de Janeiro, Paris, Cairo
   priceType: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group, free
   priceAmount: decimal("price_amount", { precision: 10, scale: 2 }), // null for free activities
   duration: varchar("duration", { length: 100 }), // "2 hours", "full day", etc.
