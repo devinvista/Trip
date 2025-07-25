@@ -410,11 +410,11 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
   - populate-all-activities-comprehensive.ts: 10 atividades destacadas com 30 propostas ✅
 - July 24, 2025. **BANCO MYSQL COMPLETAMENTE POPULADO**: Database agora contém mais de 100 atividades turísticas com propostas de orçamento, cobrindo destinos nacionais e internacionais
 - July 24, 2025. **VERIFICAÇÃO FINAL REALIZADA**: 163 atividades ativas, 400+ propostas de orçamento, 70+ viagens, autenticação e todas as funcionalidades operacionais
-- July 24, 2025. **SISTEMA HIERÁRQUICO DE LOCALIDADES IMPLEMENTADO**: Criado sistema completo de classificação de destinos com 3 níveis (countryType/region/city)
-- July 24, 2025. **CLASSIFICAÇÃO GEOGRÁFICA AVANÇADA**: 64 atividades classificadas hierarquicamente - 25 internacionais (4 regiões), 37 nacionais (5 regiões), 2 cruzeiros
-- July 24, 2025. **MAPEAMENTO COMPLETO DE DESTINOS**: Sistema abrange todos os estados brasileiros, principais destinos internacionais e rotas de cruzeiros
-- July 24, 2025. **COMPATIBILIDADE MYSQL TOTAL**: Script add-hierarchical-fields.ts completamente atualizado para MySQL com parsing inteligente de localidades
-- July 24, 2025. **HIERARQUIA OPERACIONAL**: Sistema permite filtros avançados por país, região e cidade com estatísticas dinâmicas geradas automaticamente
+- July 25, 2025. **PROPOSTAS DE ORÇAMENTO CORRIGIDAS DEFINITIVAMENTE**: Corrigido bug crítico no método getActivityBudgetProposals() que retornava todas as 489 propostas em vez de apenas as da atividade específica
+- July 25, 2025. **TODAS AS 489 PROPOSTAS FUNCIONANDO**: Sistema de storage MySQL corrigido - agora cada atividade exibe corretamente suas 3 propostas (Econômico, Completo, Premium)
+- July 25, 2025. **LOCALIDADES PADRONIZADAS**: Corrigida classificação de todas as 163 atividades com localidades consistentes (ex: "Serra Gaúcha, RS" → "Gramado, RS")
+- July 25, 2025. **DISTRIBUIÇÃO GEOGRÁFICA COMPLETA**: 163 atividades distribuídas em 25 destinos únicos com cobertura nacional e internacional balanceada
+- July 25, 2025. **SISTEMA DE STORAGE OTIMIZADO**: Método getActivityBudgetProposals() agora usa query correta com AND conditions e logs de debug para monitoramento
 - July 24, 2025. **SCRIPTS DE IMPORTAÇÃO CORRIGIDOS E EXECUTADOS**: Corrigidos todos os scripts add-*-activities.ts para compatibilidade total com MySQL e executados com sucesso
 - July 24, 2025. **BASE DE DADOS COMPLETA**: 163 atividades turísticas importadas cobrindo 23 destinos (nacionais e internacionais) com mais de 400 propostas de orçamento
 - July 24, 2025. **COBERTURA GLOBAL IMPLEMENTADA**: Atividades distribuídas em destinos como Rio de Janeiro, São Paulo, Londres, Paris, Nova York, Roma, Buenos Aires, Gramado, Bonito e muitos outros
