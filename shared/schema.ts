@@ -41,84 +41,84 @@ export const users = mysqlTable("users", {
 
 export const trips = mysqlTable("trips", {
   id: int("id").primaryKey().autoincrement(),
-  creatorId: int("creator_id").notNull().references(() => users.id),
+  creator_id: int("creator_id").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),
-  cityId: int("city_id").notNull().references(() => cities.id), // Reference to cities table
+  city_id: int("city_id").notNull().references(() => cities.id), // Reference to cities table
   coverImage: text("cover_image"), // URL for trip cover image
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   budget: int("budget"), // Now optional - total estimated budget
-  budgetBreakdown: json("budget_breakdown"), // JSON object with expense categories
-  maxParticipants: int("max_participants").notNull(),
-  currentParticipants: int("current_participants").default(1).notNull(),
+  budget_breakdown: json("budget_breakdown"), // JSON object with expense categories
+  max_participants: int("max_participants").notNull(),
+  current_participants: int("current_participants").default(1).notNull(),
   description: text("description").notNull(),
-  travelStyle: varchar("travel_style", { length: 100 }).notNull(),
-  sharedCosts: json("shared_costs"),
-  plannedActivities: json("planned_activities"), // Advanced activities with attachments, links, costs
+  travel_style: varchar("travel_style", { length: 100 }).notNull(),
+  shared_costs: json("shared_costs"),
+  planned_activities: json("planned_activities"), // Advanced activities with attachments, links, costs
   status: varchar("status", { length: 50 }).default("open").notNull(), // open, full, cancelled
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const tripParticipants = mysqlTable("trip_participants", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("trip_id").notNull().references(() => trips.id),
-  userId: int("user_id").notNull().references(() => users.id),
+  trip_id: int("trip_id").notNull().references(() => trips.id),
+  user_id: int("user_id").notNull().references(() => users.id),
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, accepted, rejected
-  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  joined_at: timestamp("joined_at").defaultNow().notNull(),
 });
 
 export const messages = mysqlTable("messages", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("trip_id").notNull().references(() => trips.id),
-  senderId: int("sender_id").notNull().references(() => users.id),
+  trip_id: int("trip_id").notNull().references(() => trips.id),
+  sender_id: int("sender_id").notNull().references(() => users.id),
   content: text("content").notNull(),
-  sentAt: timestamp("sent_at").defaultNow().notNull(),
+  sent_at: timestamp("sent_at").defaultNow().notNull(),
 });
 
 export const tripRequests = mysqlTable("trip_requests", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("trip_id").notNull().references(() => trips.id),
-  userId: int("user_id").notNull().references(() => users.id),
+  trip_id: int("trip_id").notNull().references(() => trips.id),
+  user_id: int("user_id").notNull().references(() => users.id),
   message: text("message"),
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, accepted, rejected
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Expenses table for trip cost splitting
 export const expenses = mysqlTable("expenses", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("trip_id").notNull().references(() => trips.id),
-  paidBy: int("paid_by").notNull().references(() => users.id),
+  trip_id: int("trip_id").notNull().references(() => trips.id),
+  paid_by: int("paid_by").notNull().references(() => users.id),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   description: text("description").notNull(),
   category: varchar("category", { length: 100 }).notNull().default("other"),
   receipt: text("receipt"), // URL or base64 encoded image
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  settledAt: timestamp("settled_at"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  settled_at: timestamp("settled_at"),
 });
 
 // Expense splits - who owes what for each expense
 export const expenseSplits = mysqlTable("expense_splits", {
   id: int("id").primaryKey().autoincrement(),
-  expenseId: int("expense_id").notNull().references(() => expenses.id),
-  userId: int("user_id").notNull().references(() => users.id),
+  expense_id: int("expense_id").notNull().references(() => expenses.id),
+  user_id: int("user_id").notNull().references(() => users.id),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // How much this user owes for this expense
   paid: boolean("paid").default(false).notNull(),
-  settledAt: timestamp("settled_at"),
+  settled_at: timestamp("settled_at"),
 });
 
 // User ratings - for rating travel companions
 export const userRatings = mysqlTable("user_ratings", {
   id: int("id").primaryKey().autoincrement(),
-  tripId: int("trip_id").notNull().references(() => trips.id),
-  ratedUserId: int("rated_user_id").notNull().references(() => users.id), // User being rated
-  raterUserId: int("rater_user_id").notNull().references(() => users.id), // User giving the rating
+  trip_id: int("trip_id").notNull().references(() => trips.id),
+  rated_user_id: int("rated_user_id").notNull().references(() => users.id), // User being rated
+  rater_user_id: int("rater_user_id").notNull().references(() => users.id), // User giving the rating
   rating: int("rating").notNull(), // 1-5 stars
   comment: text("comment"), // Optional comment
-  isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
-  reportCount: int("report_count").default(0).notNull(), // Number of reports
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  is_hidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
+  report_count: int("report_count").default(0).notNull(), // Number of reports
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // City ratings - for rating cities/destinations  

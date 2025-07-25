@@ -778,7 +778,7 @@ export class DatabaseStorage implements IStorage {
 
   async getTripsByCreator(creatorId: number): Promise<Trip[]> {
     try {
-      const creatorTrips = await db.select().from(trips).where(eq(trips.creatorId, creatorId));
+      const creatorTrips = await db.select().from(trips).where(eq(trips.creator_id, creatorId));
       return creatorTrips;
     } catch (error) {
       console.error('❌ Erro ao buscar viagens do criador no MySQL:', error);
@@ -791,27 +791,27 @@ export class DatabaseStorage implements IStorage {
       const participantTrips = await db.select({
         id: trips.id,
         title: trips.title,
-        cityId: trips.cityId,
+        city_id: trips.city_id,
         coverImage: trips.coverImage,
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
-        maxParticipants: trips.maxParticipants,
+        max_participants: trips.max_participants,
         description: trips.description,
-        travelStyle: trips.travelStyle,
-        creatorId: trips.creatorId,
+        travel_style: trips.travel_style,
+        creator_id: trips.creator_id,
         status: trips.status,
-        budgetBreakdown: trips.budgetBreakdown,
-        currentParticipants: trips.currentParticipants,
-        sharedCosts: trips.sharedCosts,
-        createdAt: trips.createdAt
+        budget_breakdown: trips.budget_breakdown,
+        current_participants: trips.current_participants,
+        shared_costs: trips.shared_costs,
+        created_at: trips.created_at
       })
       .from(trips)
-      .innerJoin(tripParticipants, eq(tripParticipants.tripId, trips.id))
+      .innerJoin(tripParticipants, eq(tripParticipants.trip_id, trips.id))
       .where(and(
-        eq(tripParticipants.userId, userId),
+        eq(tripParticipants.user_id, userId),
         eq(tripParticipants.status, 'accepted'),
-        ne(trips.creatorId, userId) // Excluir viagens onde o usuário é o criador
+        ne(trips.creator_id, userId) // Excluir viagens onde o usuário é o criador
       ));
 
       return participantTrips;
@@ -832,7 +832,7 @@ export class DatabaseStorage implements IStorage {
           // Join with cities table to search by city name
           const cityCondition = sql`EXISTS (
             SELECT 1 FROM cities 
-            WHERE cities.id = ${trips.cityId} 
+            WHERE cities.id = ${trips.city_id} 
             AND cities.name LIKE ${`%${filters.destination}%`}
           )`;
           conditions.push(cityCondition);
@@ -847,13 +847,13 @@ export class DatabaseStorage implements IStorage {
           conditions.push(lte(trips.budget, filters.budget));
         }
         if (filters.travelStyle) {
-          conditions.push(eq(trips.travelStyle, filters.travelStyle));
+          conditions.push(eq(trips.travel_style, filters.travelStyle));
         }
 
         query = db.select().from(trips).where(and(...conditions));
       }
 
-      const allTrips = await query.orderBy(desc(trips.createdAt));
+      const allTrips = await query.orderBy(desc(trips.created_at));
       return allTrips;
     } catch (error) {
       console.error('❌ Erro ao buscar viagens no MySQL:', error);
@@ -870,11 +870,11 @@ export class DatabaseStorage implements IStorage {
         ...tripData,
         coverImage,
         budget: tripData.budget ?? null,
-        budgetBreakdown: tripData.budgetBreakdown || null,
-        currentParticipants: 1,
+        budget_breakdown: tripData.budget_breakdown || null,
+        current_participants: 1,
         status: 'open' as const,
-        sharedCosts: tripData.sharedCosts || null,
-        createdAt: new Date()
+        shared_costs: tripData.shared_costs || null,
+        created_at: new Date()
       };
 
       const result = await db.insert(trips).values(tripToInsert);
@@ -2136,30 +2136,30 @@ export class DatabaseStorage implements IStorage {
   async getUserTripsInLocation(userId: number, location: string): Promise<Trip[]> {
     try {
       // Get all trips where user is creator or participant
-      const userTrips = await db.select().from(trips).where(eq(trips.creatorId, userId));
+      const userTrips = await db.select().from(trips).where(eq(trips.creator_id, userId));
       
       const participantTrips = await db.select({
         id: trips.id,
-        creatorId: trips.creatorId,
+        creator_id: trips.creator_id,
         title: trips.title,
-        cityId: trips.cityId,
+        city_id: trips.city_id,
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
-        budgetBreakdown: trips.budgetBreakdown,
-        maxParticipants: trips.maxParticipants,
-        currentParticipants: trips.currentParticipants,
+        budget_breakdown: trips.budget_breakdown,
+        max_participants: trips.max_participants,
+        current_participants: trips.current_participants,
         description: trips.description,
-        travelStyle: trips.travelStyle,
-        sharedCosts: trips.sharedCosts,
-        plannedActivities: trips.plannedActivities,
+        travel_style: trips.travel_style,
+        shared_costs: trips.shared_costs,
+        planned_activities: trips.planned_activities,
         status: trips.status,
         coverImage: trips.coverImage,
-        createdAt: trips.createdAt,
+        created_at: trips.created_at,
       }).from(trips)
-        .innerJoin(tripParticipants, eq(tripParticipants.tripId, trips.id))
+        .innerJoin(tripParticipants, eq(tripParticipants.trip_id, trips.id))
         .where(and(
-          eq(tripParticipants.userId, userId),
+          eq(tripParticipants.user_id, userId),
           eq(tripParticipants.status, 'accepted')
         ));
       
