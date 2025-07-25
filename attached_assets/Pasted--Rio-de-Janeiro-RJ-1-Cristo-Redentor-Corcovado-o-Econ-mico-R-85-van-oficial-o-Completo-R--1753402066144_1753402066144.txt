@@ -1,0 +1,1066 @@
+ Rio de Janeiro (RJ)
+1.	Cristo Redentor / Corcovado
+o	Econômico: R$ 85 (van oficial)
+o	Completo: R$ 160 (trem + entrada + guia)
+o	Premium: R$ 320 (tour privativo com transporte)
+2.	Pão de Açúcar (Bondinho)
+o	Econômico: R$ 120 (ingresso padrão)
+o	Completo: R$ 190 (bondinho + guia)
+o	Premium: R$ 350 (bondinho + tour + helicóptero)
+3.	Praia de Copacabana / Ipanema + esportes
+o	Econômico: R$ 0 (livre)
+o	Completo: R$ 100 (aula de surf ou aluguel de bike)
+o	Premium: R$ 300 (passeio de lancha com drinks)
+4.	Trilha Pedra Bonita ou Dois Irmãos
+o	Econômico: R$ 0 (autoguiada)
+o	Completo: R$ 100 (com guia local)
+o	Premium: R$ 280 (tour privado com transporte)
+5.	Tour Cultural Centro (Theatro Municipal, Museu do Amanhã)
+o	Econômico: R$ 30
+o	Completo: R$ 90 (com guia + transporte)
+o	Premium: R$ 220 (com jantar e transporte executivo)
+________________________________________
+🏙️ 2. São Paulo (SP)
+1.	MASP + Avenida Paulista
+o	Econômico: R$ 40 (entrada simples)
+o	Completo: R$ 90 (visita guiada + café)
+o	Premium: R$ 250 (passeio + almoço em rooftop)
+2.	Parque Ibirapuera + museus (MAM, Afro Brasil)
+o	Econômico: R$ 0 (livre)
+o	Completo: R$ 70 (aluguel de bike + ingressos)
+o	Premium: R$ 180 (tour guiado + transporte)
+3.	Mercado Municipal + Centro Histórico
+o	Econômico: R$ 0 (por conta própria)
+o	Completo: R$ 90 (visita guiada com degustação)
+o	Premium: R$ 240 (gastronomia com guia + transporte)
+4.	Beco do Batman + Vila Madalena
+o	Econômico: R$ 0
+o	Completo: R$ 70 (tour com artista de rua)
+o	Premium: R$ 220 (roteiro artístico + bar temático)
+5.	Noite em rooftop / jantar gourmet
+o	Econômico: R$ 50 (entrada em bar)
+o	Completo: R$ 150 (drink + petiscos)
+o	Premium: R$ 400 (jantar completo com vista)
+________________________________________
+🏙️ 3. Foz do Iguaçu (PR)
+1.	Cataratas do Iguaçu (lado brasileiro)
+o	Econômico: R$ 85 (entrada parque)
+o	Completo: R$ 160 (ingresso + transporte)
+o	Premium: R$ 350 (inclui Macuco Safari)
+2.	Parque das Aves
+o	Econômico: R$ 90
+o	Completo: R$ 140 (ingresso + traslado)
+o	Premium: R$ 250 (visita guiada com bastidores)
+3.	Usina de Itaipu + luzes
+o	Econômico: R$ 50
+o	Completo: R$ 120 (visita técnica)
+o	Premium: R$ 220 (visita + show de luzes)
+4.	Marco das Três Fronteiras
+o	Econômico: R$ 40 (entrada)
+o	Completo: R$ 80 (com guia)
+o	Premium: R$ 180 (inclui jantar)
+5.	Compras no Paraguai (Ciudad del Este)
+o	Econômico: R$ 20 (transporte público)
+o	Completo: R$ 70 (translado turístico)
+o	Premium: R$ 180 (tour guiado + compras)
+________________________________________
+🏙️ 4. Salvador (BA)
+1.	Pelourinho + Elevador Lacerda
+o	Econômico: R$ 0 (por conta)
+o	Completo: R$ 80 (tour guiado)
+o	Premium: R$ 220 (tour + show cultural + jantar)
+2.	Farol da Barra + Praia Porto da Barra
+o	Econômico: R$ 0
+o	Completo: R$ 60 (visita + aluguel de guarda-sol)
+o	Premium: R$ 180 (passeio de escuna + praia)
+3.	Igreja do Bonfim + Cidade Baixa
+o	Econômico: R$ 0
+o	Completo: R$ 50 (transporte + guia)
+o	Premium: R$ 160 (roteiro com fotógrafo)
+4.	Show de Capoeira + comida típica
+o	Econômico: R$ 20
+o	Completo: R$ 90 (combo)
+o	Premium: R$ 200 (espetáculo + jantar temático)
+5.	Praia de Itapuã ou Flamengo
+o	Econômico: R$ 0
+o	Completo: R$ 70 (com day use)
+o	Premium: R$ 250 (translado + day use + refeição)
+________________________________________
+🏙️ 5. Florianópolis (SC)
+1.	Praia Mole + surf ou trilha
+o	Econômico: R$ 0
+o	Completo: R$ 80 (aluguel de prancha ou guia trilha)
+o	Premium: R$ 200 (aula privativa + transporte)
+2.	Lagoa da Conceição (caiaque, SUP)
+o	Econômico: R$ 50 (aluguel por 1h)
+o	Completo: R$ 120 (passeio guiado)
+o	Premium: R$ 250 (sunset tour + drinks)
+3.	Ilha do Campeche (barco)
+o	Econômico: R$ 150 (barco simples)
+o	Completo: R$ 200 (barco + trilha guiada)
+o	Premium: R$ 350 (catamarã privativo)
+4.	Trilha Lagoinha do Leste
+o	Econômico: R$ 0 (autoguiada)
+o	Completo: R$ 100 (com guia)
+o	Premium: R$ 250 (tour com fotos + piquenique)
+5.	Centro histórico + Mercado Público
+o	Econômico: R$ 0
+o	Completo: R$ 60 (tour guiado + pastel/camarão)
+o	Premium: R$ 180 (experiência gastronômica)
+6. Porto Seguro (BA)
+1.	Tour cultural no centro histórico
+o	Econômico: R$ 73 (tour guiado simples)
+o	Completo: R$ 140 (tour + transporte)
+o	Premium: R$ 220 (tour + almoço típico) Tripadvisor+5Guia Melhores Destinos+5Guia Melhores Destinos+5coconutexperience.com.br+4Viajar é um Prazer!+4Guia Melhores Destinos+4
+2.	Passeio ao Parque Marinho Recife de Fora
+o	Econômico: R$ 140 (escuna simples)
+o	Completo: R$ 267 (tour com snorkel)
+o	Premium: R$ 400 (tour completo com bebida/almoço) Tripadvisor+7Guia Melhores Destinos+7Guia Melhores Destinos+7Viajar é um Prazer!
+3.	Excursão a Arraial d’Ajuda / Mucugê / Caraíva
+o	Econômico: R$ 140 (tour em grupo)
+o	Completo: R$ 253–267 (excursão ao vilarejo)
+o	Premium: R$ 350 (tour privativo + traslado) Guia Melhores Destinos+2Guia Melhores Destinos+2Viajar é um Prazer!+2Viajar é um Prazer!+1Guia Melhores Destinos+1
+4.	Experiência indígena na Reserva da Jaqueira
+o	Econômico: R$ 100 (visita simples)
+o	Completo: R$ 200 (tour cultural)
+o	Premium: R$ 350 (com arte indígena e almoço) O Diário de uma Viajante+15coconutexperience.com.br+15Viajar é um Prazer!+15Tripadvisor
+5.	Voo panorâmico de helicóptero
+o	Econômico: R$ 300 (breve sobrevoo)
+o	Completo: R$ 450 (passeio estendido)
+o	Premium: R$ 600+ (charter privativo com serviço) Wikipédia+5coconutexperience.com.br+5Tripadvisor+5
+________________________________________
+7. Maceió (AL)
+1.	Passeio à Praia do Gunga
+o	Econômico: R$ 92 (tour simples)
+o	Completo: R$ 141 (city tour panorâmico)
+o	Premium: R$ 200+ (passeio com almoço) Decolar+1Viajar é um Prazer!+1
+2.	São Miguel dos Milagres / Rota Ecológica
+o	Econômico: R$ 115 (tour comum)
+o	Completo: R$ 141 (roteiro ecológico)
+o	Premium: R$ 250+ (tour privativo com guia) Reddit+11Decolar+11Tripadvisor+11Tripadvisor+1Reddit+1O Diário de uma Viajante+7Viajar é um Prazer!+7Tripadvisor+7
+3.	Passeio até Paripueira / Mar & Cia
+o	Econômico: R$ 60
+o	Completo: R$ 126 (com atividades aquáticas)
+o	Premium: R$ 200+ (com almoço e guia) Decolar
+4.	Rio São Francisco – passeio de barco
+o	Econômico: R$ 167
+o	Completo: R$ 200+ (com guia e almoço)
+o	Premium: R$ 300+ (tour privativo completo) Decolar
+5.	Praia de Francês ou Barra de São Miguel
+o	Econômico: R$ 0–20 (transporte simples)
+o	Completo: R$ 80 (day use com estrutura)
+o	Premium: R$ 200+ (buggy e almoço)
+________________________________________
+8. Curitiba (PR)
+1.	Jardim Botânico + Ópera de Arame
+o	Econômico: R$ 0 (entradas gratuitas ou simbólicas)
+o	Completo: R$ 60 (transporte + guia)
+o	Premium: R$ 150 (tour cidade + trilha morretes) Reddit+3Viagens e Caminhos+3Reddit+3
+2.	Passeio de trem diversão forestal
+o	Econômico: –
+o	Completo: R$ 395 (trem Curitiba–Morretes visita)
+o	Premium: R$ 650 (pacote completo com almoço) Tripadvisor+3Tripadvisor+3Reddit+3
+3.	Museu Oscar Niemeyer (MON)
+o	Econômico: R$ 10–20
+o	Completo: R$ 60 (tour guiado e guia local)
+o	Premium: R$ 150 (entrada + almoço + transporte) El País+2O Diário de uma Viajante+2Turismo Penha+2
+4.	Parque Tanguá e Barigui
+o	Econômico: R$ 0 (autoexploração)
+o	Completo: R$ 50 (aluguel de bike ou piquenique)
+o	Premium: R$ 120 (tour guiado + picnic/professional) Wikipédia+15Viagens e Caminhos+15Turismo Curitiba+15TripadvisorTripadvisor+4Guia Melhores Destinos+4Viajar é um Prazer!+4
+5.	Feira do Largo da Ordem + centro histórico
+o	Econômico: R$ 0
+o	Completo: R$ 60 (tour + degustação)
+o	Premium: R$ 120 (tour com almoço e artesanato) Turismo Curitiba+14Turismo Penha+14ibis+14
+________________________________________
+9. Fortaleza (CE)
+1.	Praia do Futuro com estrutura
+o	Econômico: R$ 0–20
+o	Completo: R$ 50 (barraca com cadeiras)
+o	Premium: R$ 120+ (day use premium com drinques) RedditReddit+5Reddit+5Turismo Penha+5
+2.	Parque Estadual Marinho da Risca do Meio (mergulho)
+o	Econômico: R$ 50 (tour básico)
+o	Completo: R$ 120 (inclui equipamento e guia)
+o	Premium: R$ 220+ (mergulho completo com treinamento) Wikipédia+1Reddit+1
+3.	Dragão do Mar e cena cultural
+o	Econômico: R$ 0 (visita livre)
+o	Completo: R$ 40 (ingresso em museus)
+o	Premium: R$ 100+ (show + guia turístico) Reddit
+4.	Stand-up paddle ou caiaque na Beira-Mar
+o	Econômico: R$ 10 (aluguel simples)
+o	Completo: R$ 60 (aula guiada)
+o	Premium: R$ 150 (passeio de sunset) Reddit
+5.	Museus da Indústria ou Fotografia
+o	Econômico: R$ 0 (entrada gratuita)
+o	Completo: R$ 30 (exposições temporárias)
+o	Premium: R$ 80 (visita guiada + catálogo/app) Reddit
+________________________________________
+10. Brasília (DF)
+(Ainda sem valores exatos da web, base estimada entre R$ 0–250 por atividade)
+1.	Eixo Monumental e Congresso Nacional
+o	Econômico: passeio livre (R$ 0)
+o	Completo: R$ 60 (visita guiada institucional)
+o	Premium: R$ 150 (tour privativo + vista panorâmica)
+2.	Catedral de Brasília e Palácio da Alvorada
+o	Econômico: entrada livre (R$ 0)
+o	Completo: R$ 70 (tour guiado)
+o	Premium: R$ 150 (roteiro completo com fotógrafos e almoço)
+3.	Museus (Itamaraty / Nacional / CCBB)
+o	Econômico: R$ 0–20
+o	Completo: R$ 50 (tour com guia)
+o	Premium: R$ 120 (visita + almoço + transporte)
+4.	Parque da Cidade
+o	Econômico: passeio livre (R$ 0–10)
+o	Completo: R$ 60 (aluguel bike + lanche)
+o	Premium: R$ 150 (programa fitness + piquenique)
+5.	Tour noturno pelo Plano Piloto
+o	Econômico: observação independente (R$ 0)
+o	Completo: R$ 60 (tour em grupo)
+o	Premium: R$ 200 (tour VIP com carro e guia)
+11. Bonito (MS) 🌿
+Famoso por ecoturismo e flutuações em rios cristalinos, com preços tabelados que podem variar conforme temporada Bonito MS Turismo+1passeiosembonitoms.com.br+1:
+1.	Gruta do Lago Azul (contemplação)
+o	Econômico: R$ 90 (baixa temporada)
+o	Completo: R$ 110 (alta temporada)
+o	Premium: R$ 180 (entrada + guia privado) passeiosembonitoms.com.br+7Correio do Estado+7Vamos Fugir+7Vamos Fugir+2Viaja que Passa+2Bonito Way+2
+2.	Aquário Natural (flutuação)
+o	Econômico: R$ 320
+o	Completo: R$ 395 (alta temporada)
+o	Premium: R$ 550 (com transporte e almoço) Viajei Bonito+4passeiosembonitoms.com.br+4Bonito Brasil Turismo+4Wikipédia+10Reddit+10Reddit+10Viaja que Passa
+3.	Lagoa Misteriosa (flutuação ou mergulho técnico)
+o	Econômico: R$ 252
+o	Completo: R$ 270 (alta temporada)
+o	Premium: R$ 490 (mergulho técnico) Wikipédia+15Viajei Bonito+15Vamos Fugir+15Vamos Fugir+1Viaja que Passa+1
+4.	Boca da Onça (trilha + cachoeiras + rapel opcional)
+o	Econômico: R$ 350 (sem rapel)
+o	Completo: R$ 420 (com almoço típico)
+o	Premium: R$ 730 (com rapel/adventure completo) Bonito MS Turismo+11Viaja que Passa+11Bonito Brasil Turismo+11
+5.	Estância Mimosa ou Parque das Cachoeiras (trilha e banho)
+o	Econômico: R$ 199 (sem almoço)
+o	Completo: R$ 260 (com almoço incluso)
+o	Premium: R$ 335 (alta temporada) agenciabonitodemais.com.br+7Viaje na Viagem+7Viajei Bonito+7
+________________________________________
+12. Gramado (RS)
+Destino tradicional de inverno, eventos e natureza atlântica:
+1.	Mini Mundo
+o	Econômico: R$ 80 (ingresso avulso)
+o	Completo: R$ 120 (transporte + entrada)
+o	Premium: R$ 200 (com guia e almoço) agenciabonitodemais.com.br+9Viajei Bonito+9Wikipédia+9
+2.	Dreamland Museu de Cera
+o	Econômico: R$ 65 (entrada)
+o	Completo: R$ 120 (combo com mini golf ou simuladores)
+o	Premium: R$ 200 (com fotos e guia exclusivo) Wikipédia
+3.	GramadoZoo
+o	Econômico: R$ 70 (entrada simples)
+o	Completo: R$ 110 (visita monitorada)
+o	Premium: R$ 150 (tour especial + alimentação de animais) Wikipédia
+4.	Tour de vinícolas no Vale dos Vinhedos (bate-volta)
+o	Econômico: R$ 0 (visita autoguiada sem degustação)
+o	Completo: R$ 150 (visitas a 2–3 vinícolas com degustação)
+o	Premium: R$ 300 (tour privativo + almoço harmonizado)
+5.	Snowland (parque de neve indoor)
+o	Econômico: R$ 180 (entrada simples)
+o	Completo: R$ 300 (inclusão de roupas alugadas)
+o	Premium: R$ 450 (aula de esqui + fotos profi)
+________________________________________
+13. Porto Seguro (BA)
+Cultura, praias e festas vibrantes:
+1.	Centro Histórico + Marco do Descobrimento
+o	Econômico: R$ 0 (autoguiado)
+o	Completo: R$ 70 (tour guiado simples)
+o	Premium: R$ 150 (tour com almoço regional)
+2.	Recife de Fora (snorkel)
+o	Econômico: R$ 140 (escuna simples)
+o	Completo: R$ 267 (com snorkel)
+o	Premium: R$ 400 (tour completo com almoço) Viaje na ViagemRedditReddit+1Wikipédia+1
+3.	Arraial d’Ajuda / Mucugê (bate-volta)
+o	Econômico: R$ 140 (tour em grupo)
+o	Completo: R$ 260
+o	Premium: R$ 350 (privativo com transfer)
+4.	Reserva Pataxó (cultura indígena)
+o	Econômico: R$ 100
+o	Completo: R$ 200 (inclui atividades tradicionais)
+o	Premium: R$ 350 (com arte indígena e culinária) Wikipédia
+5.	Voo panorâmico de helicóptero
+o	Econômico: R$ 300 (sobrevoo rápido)
+o	Completo: R$ 450
+o	Premium: R$ 600+ (charter privativo)
+________________________________________
+14. Maceió (AL)
+Praias cristalinas e piscinas naturais:
+1.	Praia do Gunga
+o	Econômico: R$ 90
+o	Completo: R$ 140
+o	Premium: R$ 200+ (com almoço) Reddit
+2.	São Miguel dos Milagres (Rota Ecológica)
+o	Econômico: R$ 115
+o	Completo: R$ 140
+o	Premium: R$ 250+ (privativo) Reddit+11Viaja que Passa+11Wikipédia+11Wikipédia+13agenciabonitodemais.com.br+13Bonito Brasil Turismo+13
+3.	Piscinas naturais de Paripueira / Taocas
+o	Econômico: R$ 60
+o	Completo: R$ 126
+o	Premium: R$ 200+ (com guia e almoço)
+4.	Passeio de barco pelo Rio São Francisco
+o	Econômico: R$ 167
+o	Completo: R$ 200+
+o	Premium: R$ 300+ (tour privativo) RedditWikipédia
+5.	Praias Praia do Francês ou Barra de São Miguel
+o	Econômico: R$ 20 (transporte)
+o	Completo: R$ 80 (day use)
+o	Premium: R$ 200+ (buggy e almoço)
+________________________________________
+15. João Pessoa (PB)
+História, orlas tranquilas e cultura local — baseado em guias e relatos de viajantes :
+1.	Centro histórico + Praça Antenor Navarro
+o	Econômico: R$ 0 (autoguiado)
+o	Completo: R$ 40 (tour guiado cultural)
+o	Premium: R$ 120 (tour privativo + almoço local)
+2.	Praias + Piscinas naturais (Tambaú, Bessa, Areia Vermelha)
+o	Econômico: R$ 0 (por conta própria)
+o	Completo: R$ 50 (aluguel de cadeira/caiaque)
+o	Premium: R$ 150 (catamarã ou excursão com snorkel)
+3.	Projeto cultura indígena / Apuama Turismo
+o	Econômico: R$ 50
+o	Completo: R$ 100 (tour guiado)
+o	Premium: R$ 200 (imersiões culturais + alimentação) WikipédiaReddit+2Reddit+2Wikipédia+2RedditReddit
+4.	Jardim Zoobotânico Arruda Câmara (Bica)
+o	Econômico: R$ 10 (entrada simbólica)
+o	Completo: R$ 40 (com guia local)
+o	Premium: R$ 120 (tour com ambientação e piquenique) Reddit
+5.	Por do sol do Jacaré (passeio fluvial com sax)
+o	Econômico: R$ 40
+o	Completo: R$ 80 (passeio com música)
+o	Premium: R$ 150 (mesa reservada + jantar) 
+16. Natal (RN)
+Capital do RN, famosa pelas dunas, buggy e praias paradisíacas. Preços atualizados conforme guias e relatos de viajantes ([turn0search9], [turn0search10], [turn0reddit15], [turn0reddit26]):
+1.	Passeio de buggy nas dunas (Genipabu ou litoral norte)
+o	Econômico: R$ 90 (compartilhado)
+o	Completo: R$ 150 (com lanchas ou 4×4)
+o	Premium: R$ 230 (transfer + dromedário + aventura) YouTube+5Viagens Cinematográficas+5YouTube+5
+2.	Maracajaú / Parrachos (snorkel)
+o	Econômico: R$ 130
+o	Completo: R$ 190 (com transfer)
+o	Premium: R$ 300+ (tour privativo mergulho) Búzios BR+4Viagens Cinematográficas+4YouTube+4
+3.	Passeio à Praia de Pipa
+o	Econômico: R$ 70 (city tour em grupo)
+o	Completo: R$ 120 (inclui guia + paradas)
+o	Premium: R$ 200+ (privativo com almoço) Viciada em Viajar+5Viagens Cinematográficas+5Natal Praias+5
+4.	Expedição Fotográfica no bairro da Ribeira (circuito cultural)
+o	Econômico: R$ 30
+o	Completo: R$ 60 (com guia e transporte)
+o	Premium: R$ 120 (com fotógrafo e pequenos workshops) Búzios Dicas+15Reddit+15YouTube+15Wikipédia+10Fareja Viagens+10Viagens Cinematográficas+10
+5.	Parque das Dunas e Mirante da Redinha
+o	Econômico: R$ 0 (acesso gratuito às trilhas)
+o	Completo: R$ 20 (visita guiada ao Parque Estadual das Dunas)
+o	Premium: R$ 80 (tour ecológico + mirante panorâmico) Wikipédia+1Wikipédia+1
+________________________________________
+17. Armação dos Búzios (RJ)
+Península charmosa com belas praias e passeios marítimos ([turn0search0], [turn0search3], [turn0search7]):
+1.	Passeio de escuna pelas praias da península
+o	Econômico: R$ 80
+o	Completo: R$ 100
+o	Premium: R$ 200 (lancha ou barco privativo) Reddit+13Búzios Dicas+13Viciada em Viajar+13
+2.	Tour de buggy pelos mirantes e praias
+o	Econômico: R$ 80
+o	Completo: R$ 110 (com fotógrafo ou guia)
+o	Premium: R$ 200 (personalizado + fotos) Wikipédia+15Búzios Dicas+15Viciada em Viajar+15Reddit+3Fareja Viagens+3YouTube+3Búzios BR+2YouTube+2Reddit+2
+3.	City tour terrestre (trolley ou jardineira)
+o	Econômico: R$ 80
+o	Completo: R$ 120 (com guia turístico)
+o	Premium: R$ 250 (tour completo com almoço e fotos) Reddit+3Fareja Viagens+3Passaporte Digital+3Búzios Dicas
+4.	Snorkel / batismo de mergulho em João Fernandes
+o	Econômico: R$ 220
+o	Completo: R$ 300 (com vídeo/fotos inclusos)
+o	Premium: R$ 400+ (com guia privativo e material extra) Viagens Cinematográficas+5Búzios Dicas+5Tangol+5
+5.	Passeio até Arraial do Cabo (bate-volta)
+o	Econômico: R$ 200
+o	Completo: R$ 230 (com almoço buffet no barco)
+o	Premium: R$ 350+ (tour com barco privativo e transfer) Tangol+7Búzios Dicas+7Búzios BR+7
+________________________________________
+18. Balneário Camboriú (SC)
+Conhecida pelo Parque Unipraias, praias e vida noturna ([turn0search1], [turn0search8]):
+1.	Bondinho Unipraias (ida e volta)
+o	Econômico: R$ 47
+o	Completo: R$ 80 (inclui trem da floresta)
+o	Premium: R$ 120+ (com tirolesa Youhooo ou arvorismo) Búzios Dicas+3Passaporte Digital+3CentroTur Transladose+3Wikipédia+1Natal Praias+1
+2.	Trenó Youhooo (descida no trenó da montanha)
+o	Econômico: R$ 34
+o	Completo: R$ 50 (combo bondinho + trenó)
+o	Premium: R$ 90 (incluso Bondinho + trem + tirolesa/circuito) Passaporte Digital
+3.	Trem na Floresta Encantada (Parque Unipraias)
+o	Econômico: R$ 30
+o	Completo: R$ 60 (combo floresta + bondinho)
+o	Premium: R$ 100 (inclui outros brinquedos e traslado) Búzios Dicas+4Passaporte Digital+4CentroTur Transladose+4
+4.	Passeio de lancha até Bombinhas ou Ilhas próximas
+o	Econômico: R$ 70 (city tour)
+o	Completo: R$ 140–152 (tour ao Bombinhas)
+o	Premium: R$ 250+ (lancha privativa com almoço) Centro TurbcViagens CinematográficasBúzios Dicas
+5.	Noite e festas na Cidade
+o	Econômico: R$ 0 (entrada gratuita em eventos de rua)
+o	Completo: R$ 50–80 (bar ou festa típica)
+o	Premium: R$ 150+ (clube VIP como Warung ou festas privadas) Reddit+4Wikipédia+4CentroTur Transladose+4
+________________________________________
+19. Bombinhas (SC) (cidade próxima, muito visitada a partir de Camboriú)
+Fantástico para mergulho, praias e ecoturismo:
+1.	Mergulho (Arvoredo ou Sepultura)
+o	Econômico: R$ 150
+o	Completo: R$ 220 (com transfer)
+o	Premium: R$ 350 (com fotos e certificado)
+2.	Passeio de barco/snorkel nas Ilhas
+o	Econômico: R$ 100
+o	Completo: R$ 160 (com lanches)
+o	Premium: R$ 300 (tour privativo)
+3.	Trilhas (Ilha de Porto Belo ou cursos de natureza)
+o	Econômico: R$ 0 (por conta própria)
+o	Completo: R$ 60 (guia local)
+o	Premium: R$ 150 (roteiro ecológico completo)
+4.	Stand up paddle ou caiaque
+o	Econômico: R$ 50/h
+o	Completo: R$ 100 (com guia)
+o	Premium: R$ 200 (com sunset e fotos)
+5.	Visita ao Projeto Tamar local (praia Centro)
+o	Econômico: R$ 30 (ingresso básico)
+o	Completo: R$ 60 (com visita guiada)
+o	Premium: R$ 120 (tour + experiência educativa)
+________________________________________
+20. Lençóis Maranhenses / Barreirinhas (MA)
+Paisagens únicas, lagoas e dunas mundialmente conhecidas:
+1.	Circuito Lagoa Azul / Lagoa Bonita (4×4)
+o	Econômico: R$ 150
+o	Completo: R$ 300 (tour de grupo com guia)
+o	Premium: R$ 500+ (passeio privativo com fotos)
+2.	Pernoite em camping ou oásis
+o	Econômico: R$ 100 (camping simples)
+o	Completo: R$ 300 (chalé ou dome)
+o	Premium: R$ 600 (glamping de luxo)
+3.	Passeio de barco pelo Rio Preguiças (caburé, Mandacaru)
+o	Econômico: R$ 100
+o	Completo: R$ 200 (adição de trilhas ou lanches)
+o	Premium: R$ 400+ (lancha privativa com almoço)
+4.	Sandboard ou kite nas dunas
+o	Econômico: R$ 80 (aluguel prancha)
+o	Completo: R$ 150 (aula básica)
+o	Premium: R$ 300 (aula privativa + fotos)
+5.	Passeio noturno para observação de estrelas + amanhecer nas dunas
+o	Econômico: R$ 50
+o	Completo: R$ 200 (tour com transporte)
+o	Premium: R$ 500 (pacote completo com guia, fotos e refeições)
+21. Campos do Jordão (SP)
+Famosa por clima de montanha, gastronomia e eventos de inverno.
+1.	Teleférico até Morro do Elefante
+o	Econômico: R$ 30 (ida)
+o	Completo: R$ 50 (ida e volta)
+o	Premium: R$ 80 (combo com almoço e visita guiada)
+2.	Passeio pelo centrinho Capivari
+o	Econômico: R$ 0 (passeio livre)
+o	Completo: R$ 60 (tour gastronômico guiado)
+o	Premium: R$ 150 (tour privativo + degustação de vinhos)
+3.	Fábrica de Chocolate Araucária (visita e degustação)
+o	Econômico: R$ 10 (entrada)
+o	Completo: R$ 50 (degustação guiada)
+o	Premium: R$ 120 (workshop + degustação exclusiva)
+4.	Parque Estadual de Campos do Jordão (Horto Florestal)
+o	Econômico: R$ 20 (entrada)
+o	Completo: R$ 60 (aluguel de bike + piquenique)
+o	Premium: R$ 150 (trilha guiada + café colonial)
+5.	Museu Felícia Leirner e Auditório Cláudio Santoro
+o	Econômico: R$ 0 (entrada gratuita)
+o	Completo: R$ 40 (tour guiado)
+o	Premium: R$ 100 (show e visita guiada)
+________________________________________
+22. Foz do Iguaçu (PR)
+Conhecida pelas Cataratas do Iguaçu e turismo natural.
+1.	Cataratas do Iguaçu (Parque Nacional)
+o	Econômico: R$ 45 (entrada simples)
+o	Completo: R$ 90 (passeio de barco “Macuco Safari”)
+o	Premium: R$ 250 (passeio helicóptero + visita guiada)
+2.	Parque das Aves
+o	Econômico: R$ 40 (entrada)
+o	Completo: R$ 70 (tour guiado)
+o	Premium: R$ 120 (passeio exclusivo + interação com aves)
+3.	Usina de Itaipu (visita panorâmica)
+o	Econômico: R$ 35
+o	Completo: R$ 70 (tour completo)
+o	Premium: R$ 150 (tour VIP + barco)
+4.	Passeio pelo Marco das Três Fronteiras
+o	Econômico: R$ 10
+o	Completo: R$ 50 (show cultural)
+o	Premium: R$ 120 (jantar + espetáculo)
+5.	City tour e compras em Ciudad del Este (Paraguai)
+o	Econômico: R$ 0 (visita autônoma)
+o	Completo: R$ 50 (tour guiado)
+o	Premium: R$ 150 (tour privativo + compras)
+________________________________________
+23. Ilhabela (SP)
+Paraíso com praias, cachoeiras e trilhas.
+1.	Praias do Curral, Jabaquara e Castelhanos
+o	Econômico: R$ 0 (acesso livre)
+o	Completo: R$ 40 (transfer em jardineira)
+o	Premium: R$ 150 (buggy + almoço)
+2.	Trilha para a Cachoeira da Toca
+o	Econômico: R$ 0 (acesso livre)
+o	Completo: R$ 50 (guia local)
+o	Premium: R$ 120 (tour completo com almoço)
+3.	Passeio de escuna pelo arquipélago
+o	Econômico: R$ 80
+o	Completo: R$ 120 (com snorkel)
+o	Premium: R$ 250 (tour privativo)
+4.	Visita à Vila (centro histórico)
+o	Econômico: R$ 0
+o	Completo: R$ 40 (tour guiado)
+o	Premium: R$ 100 (tour cultural + degustação)
+5.	Mergulho autônomo e batismo
+o	Econômico: R$ 200
+o	Completo: R$ 350 (com certificação)
+o	Premium: R$ 600 (curso completo)
+________________________________________
+24. Ouro Preto (MG)
+Cidade histórica, arquitetura colonial e museus.
+1.	Centro histórico e igrejas (São Francisco de Assis)
+o	Econômico: R$ 0 (passeio livre)
+o	Completo: R$ 50 (visita guiada)
+o	Premium: R$ 120 (tour completo + almoço típico)
+2.	Mina de Ouro da Passagem
+o	Econômico: R$ 20
+o	Completo: R$ 60 (tour guiado)
+o	Premium: R$ 150 (visita VIP + almoço)
+3.	Museu da Inconfidência
+o	Econômico: R$ 15
+o	Completo: R$ 50 (entrada + guia)
+o	Premium: R$ 120 (tour + jantar)
+4.	Passeio de Maria Fumaça (Tiradentes – São João del Rei)
+o	Econômico: R$ 60
+o	Completo: R$ 110 (ida e volta)
+o	Premium: R$ 180 (inclui almoço)
+5.	Festival de Inverno e eventos culturais
+o	Econômico: R$ 0 (acesso gratuito)
+o	Completo: R$ 80 (shows pagos)
+o	Premium: R$ 250 (pacote VIP)
+________________________________________
+25. Canela (RS)
+Destino serrano com natureza e atrações para famílias.
+1.	Parque do Caracol (cascata e trilhas)
+o	Econômico: R$ 20
+o	Completo: R$ 50 (transporte + ingresso)
+o	Premium: R$ 120 (tour completo com almoço)
+2.	Mundo a Vapor (parque temático industrial)
+o	Econômico: R$ 40
+o	Completo: R$ 70 (visita guiada)
+o	Premium: R$ 150 (tour VIP)
+3.	Catedral de Pedra (visita e concerto)
+o	Econômico: R$ 0
+o	Completo: R$ 40 (concertos pagos)
+o	Premium: R$ 120 (tour com guia + jantar)
+4.	Parque Terra Mágica Florybal
+o	Econômico: R$ 50
+o	Completo: R$ 80 (ingresso + transporte)
+o	Premium: R$ 150 (pacote família)
+5.	Passeio de trenzinho turístico pela cidade
+o	Econômico: R$ 25
+o	Completo: R$ 50 (tour com guia)
+o	Premium: R$ 100 (tour com almoço)
+26. Belo Horizonte (MG)
+Capital mineira com gastronomia, arte e parques.
+1.	Praça da Liberdade + Circuito Cultural
+o	Econômico: R$ 0 (visita livre)
+o	Completo: R$ 20 (visita guiada)
+o	Premium: R$ 60 (tour com museus e café)
+2.	Mercado Central (degustação e compras)
+o	Econômico: R$ 0 (entrada)
+o	Completo: R$ 40 (tour gastronômico)
+o	Premium: R$ 100 (tour privativo com degustação)
+3.	Parque das Mangabeiras
+o	Econômico: R$ 0 (entrada)
+o	Completo: R$ 30 (aluguel de bike)
+o	Premium: R$ 80 (passeio guiado + piquenique)
+4.	Museu de Arte da Pampulha
+o	Econômico: R$ 10
+o	Completo: R$ 40 (visita guiada)
+o	Premium: R$ 120 (tour com guia + workshop)
+5.	Circuito Cultural Praça da Estação
+o	Econômico: R$ 0
+o	Completo: R$ 20 (visita guiada)
+o	Premium: R$ 70 (tour com eventos culturais)
+________________________________________
+27. Recife (PE)
+Cidade histórica com praias urbanas e cultura.
+1.	Recife Antigo (centro histórico)
+o	Econômico: R$ 0 (passeio livre)
+o	Completo: R$ 30 (tour guiado)
+o	Premium: R$ 100 (tour privativo + almoço)
+2.	Instituto Ricardo Brennand (museu e castelo)
+o	Econômico: R$ 15
+o	Completo: R$ 40 (visita guiada)
+o	Premium: R$ 120 (tour exclusivo)
+3.	Praia de Boa Viagem
+o	Econômico: R$ 0 (acesso livre)
+o	Completo: R$ 40 (aluguel de cadeira e guarda-sol)
+o	Premium: R$ 150 (passeio de barco)
+4.	Oficina de Cerâmica Francisco Brennand
+o	Econômico: R$ 10
+o	Completo: R$ 30 (visita guiada)
+o	Premium: R$ 90 (tour + workshop)
+5.	Passeio de Catamarã no Rio Capibaribe
+o	Econômico: R$ 30
+o	Completo: R$ 70 (com almoço)
+o	Premium: R$ 150 (passeio privativo)
+________________________________________
+28. Florianópolis (SC)
+Ilha com praias, trilhas e gastronomia.
+1.	Praia Joaquina
+o	Econômico: R$ 0
+o	Completo: R$ 30 (aluguel de prancha para surf)
+o	Premium: R$ 100 (aula particular de surf)
+2.	Lagoa da Conceição (esportes e bares)
+o	Econômico: R$ 0 (passeio)
+o	Completo: R$ 50 (stand up paddle)
+o	Premium: R$ 150 (passeio de barco + almoço)
+3.	Trilha até a Lagoinha do Leste
+o	Econômico: R$ 0 (autoguiada)
+o	Completo: R$ 60 (guia local)
+o	Premium: R$ 120 (tour completo com almoço)
+4.	Projeto Tamar Florianópolis
+o	Econômico: R$ 20
+o	Completo: R$ 50 (visita guiada)
+o	Premium: R$ 100 (tour educativo completo)
+5.	Mercado Público de Florianópolis
+o	Econômico: R$ 0 (entrada)
+o	Completo: R$ 40 (tour gastronômico)
+o	Premium: R$ 120 (degustação com guia)
+________________________________________
+29. Petrópolis (RJ)
+Cidade imperial com museus e arquitetura histórica.
+1.	Museu Imperial
+o	Econômico: R$ 15
+o	Completo: R$ 40 (visita guiada)
+o	Premium: R$ 120 (tour completo + almoço)
+2.	Palácio de Cristal
+o	Econômico: R$ 0
+o	Completo: R$ 20 (visita guiada)
+o	Premium: R$ 80 (tour com jantar)
+3.	Casa de Santos Dumont
+o	Econômico: R$ 10
+o	Completo: R$ 30 (visita guiada)
+o	Premium: R$ 90 (tour especial)
+4.	Cervejarias locais (excursão e degustação)
+o	Econômico: R$ 30
+o	Completo: R$ 80 (tour guiado)
+o	Premium: R$ 150 (tour com almoço harmonizado)
+5.	Parque Nacional da Serra dos Órgãos (trilhas)
+o	Econômico: R$ 0 (autoguiado)
+o	Completo: R$ 50 (guia local)
+o	Premium: R$ 120 (tour completo com transporte)
+________________________________________
+30. São Luís (MA)
+Centro histórico e cultura afro-brasileira.
+1.	Centro Histórico (Patrimônio da Humanidade)
+o	Econômico: R$ 0 (passeio livre)
+o	Completo: R$ 40 (tour guiado)
+o	Premium: R$ 100 (tour completo + almoço)
+2.	Teatro Arthur Azevedo
+o	Econômico: R$ 10
+o	Completo: R$ 30 (visita guiada)
+o	Premium: R$ 80 (concerto + visita guiada)
+3.	Praia do Calhau
+o	Econômico: R$ 0
+o	Completo: R$ 40 (aluguel de cadeira e barraca)
+o	Premium: R$ 100 (passeio de lancha)
+4.	Museu Histórico e Artístico do Maranhão
+o	Econômico: R$ 10
+o	Completo: R$ 30 (visita guiada)
+o	Premium: R$ 90 (tour com palestra cultural)
+5.	Passeio de barco pela Baía de São Marcos
+o	Econômico: R$ 40
+o	Completo: R$ 90 (com almoço)
+o	Premium: R$ 150 (passeio privativo)
+
+
+1. Paris, França
+Cidade luz: cultura, gastronomia, história.
+1.	Visita à Torre Eiffel
+o	Econômico: € 10 (acesso até 2º andar, escada)
+o	Completo: € 25 (elevador até o topo)
+o	Premium: € 70 (tour guiado + jantar no restaurante)
+2.	Museu do Louvre
+o	Econômico: € 17 (entrada padrão online)
+o	Completo: € 40 (tour guiado em grupo)
+o	Premium: € 120 (tour privativo + acesso especial)
+3.	Passeio de barco pelo Rio Sena
+o	Econômico: € 15 (cruzeiro simples, 1h)
+o	Completo: € 60 (cruzeiro com jantar)
+o	Premium: € 150 (cruzeiro privativo com champagne)
+4.	Visita à Catedral de Notre-Dame
+o	Econômico: € 0 (entrada catedral)
+o	Completo: € 15 (tour guiado)
+o	Premium: € 50 (tour privado + torre)
+5.	Palácio de Versalhes
+o	Econômico: € 18 (entrada)
+o	Completo: € 50 (tour com áudio-guia)
+o	Premium: € 100 (tour privativo + jardins)
+________________________________________
+2. Nova York, EUA
+A cidade que nunca dorme, cultura e entretenimento.
+1.	Estátua da Liberdade e Ellis Island
+o	Econômico: US$ 24 (ferry e entrada)
+o	Completo: US$ 50 (tour guiado)
+o	Premium: US$ 150 (tour VIP + acesso restrito)
+2.	Empire State Building
+o	Econômico: US$ 45 (entrada básica)
+o	Completo: US$ 90 (skip line + observatório)
+o	Premium: US$ 200 (tour guiado + jantar)
+3.	Broadway (musical ou peça)
+o	Econômico: US$ 50 (poltronas de fundo)
+o	Completo: US$ 150 (assentos centrais)
+o	Premium: US$ 300+ (VIP + backstage)
+4.	Central Park (bike tour ou passeio guiado)
+o	Econômico: US$ 0 (passeio livre)
+o	Completo: US$ 40 (aluguel bike)
+o	Premium: US$ 120 (tour guiado + piquenique)
+5.	Museu Metropolitano de Arte (Met)
+o	Econômico: US$ 25 (entrada)
+o	Completo: US$ 60 (tour guiado)
+o	Premium: US$ 150 (tour privado + acesso VIP)
+________________________________________
+3. Londres, Reino Unido
+História, teatros e museus.
+1.	London Eye
+o	Econômico: £ 30 (entrada padrão)
+o	Completo: £ 50 (skip line)
+o	Premium: £ 150 (cabine privada + champanhe)
+2.	Torre de Londres
+o	Econômico: £ 25 (entrada simples)
+o	Completo: £ 50 (tour guiado)
+o	Premium: £ 120 (tour privado + joias da coroa)
+3.	Museu Britânico
+o	Econômico: £ 0 (entrada gratuita)
+o	Completo: £ 20 (tour guiado)
+o	Premium: £ 80 (tour privado)
+4.	West End (teatro)
+o	Econômico: £ 25 (assentos de fundo)
+o	Completo: £ 80 (assentos centrais)
+o	Premium: £ 200+ (VIP + backstage)
+5.	Palácio de Buckingham (troca da guarda)
+o	Econômico: £ 0 (evento externo)
+o	Completo: £ 25 (tour externo)
+o	Premium: £ 100 (tour interno nos aposentos)
+________________________________________
+4. Roma, Itália
+Antiguidade, arte e gastronomia.
+1.	Coliseu
+o	Econômico: € 16 (entrada padrão)
+o	Completo: € 40 (tour guiado em grupo)
+o	Premium: € 150 (tour privativo + acesso exclusivo)
+2.	Vaticano e Basílica de São Pedro
+o	Econômico: € 17 (entrada simples)
+o	Completo: € 50 (tour com museus)
+o	Premium: € 120 (tour VIP + cúpula)
+3.	Fontana di Trevi e Centro Histórico
+o	Econômico: € 0 (passeio livre)
+o	Completo: € 30 (tour guiado)
+o	Premium: € 100 (tour privativo + jantar)
+4.	Panteão de Roma
+o	Econômico: € 0 (entrada gratuita)
+o	Completo: € 20 (tour guiado)
+o	Premium: € 80 (tour exclusivo)
+5.	Trastevere (bairro boêmio)
+o	Econômico: € 0 (passeio livre)
+o	Completo: € 50 (tour gastronômico)
+o	Premium: € 120 (tour privado + jantar gourmet)
+________________________________________
+5. Barcelona, Espanha
+Gaudí, praias e cultura mediterrânea.
+1.	Sagrada Família
+o	Econômico: € 26 (entrada básica)
+o	Completo: € 50 (tour guiado)
+o	Premium: € 100 (tour com acesso às torres)
+2.	Parque Güell
+o	Econômico: € 10 (entrada simples)
+o	Completo: € 30 (tour guiado)
+o	Premium: € 80 (tour privativo)
+3.	La Rambla + Mercado da Boqueria
+o	Econômico: € 0 (passeio livre)
+o	Completo: € 20 (tour gastronômico)
+o	Premium: € 100 (tour privativo + degustação)
+4.	Museu Picasso
+o	Econômico: € 12
+o	Completo: € 30 (tour guiado)
+o	Premium: € 80 (tour privado)
+5.	Praias de Barceloneta
+o	Econômico: € 0
+o	Completo: € 20 (aluguel de cadeira e guarda-sol)
+o	Premium: € 80 (passeio de barco + almoço)
+________________________________________
+6. Tóquio, Japão
+Tecnologia, cultura pop e tradições.
+1.	Templo Senso-ji (Asakusa)
+o	Econômico: ¥ 0 (entrada gratuita)
+o	Completo: ¥ 500 (tour guiado)
+o	Premium: ¥ 2000 (tour cultural privado)
+2.	Torre de Tóquio
+o	Econômico: ¥ 1200 (entrada)
+o	Completo: ¥ 2000 (tour guiado)
+o	Premium: ¥ 5000 (visita VIP)
+3.	Passeio em Shibuya (cruzamento + lojas)
+o	Econômico: ¥ 0
+o	Completo: ¥ 1000 (tour de compras)
+o	Premium: ¥ 5000 (personal shopper + guia)
+4.	Museu Ghibli
+o	Econômico: ¥ 1000 (entrada)
+o	Completo: ¥ 3000 (tour guiado)
+o	Premium: ¥ 8000 (tour privado + experiência)
+5.	Jardim Nacional Shinjuku Gyoen
+o	Econômico: ¥ 200
+o	Completo: ¥ 600 (tour guiado)
+o	Premium: ¥ 1500 (visita privada)
+________________________________________
+7. Dubai, Emirados Árabes Unidos
+Luxo, arranha-céus e desertos.
+1.	Burj Khalifa (observatório)
+o	Econômico: AED 125 (~R$ 175)
+o	Completo: AED 300 (~R$ 420)
+o	Premium: AED 1000 (~R$ 1400) (tour VIP)
+2.	Safari no deserto (4x4 + jantar)
+o	Econômico: AED 150
+o	Completo: AED 350
+o	Premium: AED 800 (privativo com show)
+3.	Dubai Mall + Aquário
+o	Econômico: AED 0 (visita mall)
+o	Completo: AED 100 (entrada aquário)
+o	Premium: AED 400 (tour com mergulho)
+4.	Praias públicas e privadas
+o	Econômico: AED 0 (praias públicas)
+o	Completo: AED 100 (praias privadas)
+o	Premium: AED 350 (day use resorts)
+5.	Passeio de barco tradicional (abra) no Dubai Creek
+o	Econômico: AED 10
+o	Completo: AED 50 (tour guiado)
+o	Premium: AED 150 (jantar + tour)
+________________________________________
+8. Sydney, Austrália
+Belezas naturais e urbana.
+1.	Opera House (visita guiada)
+o	Econômico: AUD 30
+o	Completo: AUD 70 (show básico)
+o	Premium: AUD 150 (show premium + tour)
+2.	Bondi Beach (surf e passeio)
+o	Econômico: AUD 0
+o	Completo: AUD 50 (aula de surf)
+o	Premium: AUD 150 (tour guiado + almoço)
+3.	Harbour Bridge Climb
+o	Econômico: AUD 150
+o	Completo: AUD 300 (tour guiado)
+o	Premium: AUD 600 (tour VIP)
+4.	Passeio de barco na Baía de Sydney
+o	Econômico: AUD 40
+o	Completo: AUD 120 (com almoço)
+o	Premium: AUD 350 (tour privativo)
+5.	Royal Botanic Gardens
+o	Econômico: AUD 0
+o	Completo: AUD 30 (tour guiado)
+o	Premium: AUD 100 (tour privado)
+________________________________________
+9. Cidade do México, México
+Cultura, arqueologia e gastronomia.
+1.	Pirâmides de Teotihuacán
+o	Econômico: MXN 80 (~R$ 20)
+o	Completo: MXN 200 (tour guiado)
+o	Premium: MXN 600 (tour privativo + almoço)
+2.	Museu Frida Kahlo
+o	Econômico: MXN 70
+o	Completo: MXN 150 (tour guiado)
+o	Premium: MXN 300 (tour VIP)
+3.	Zócalo + Catedral Metropolitana
+o	Econômico: MXN 0
+o	Completo: MXN 50 (tour guiado)
+o	Premium: MXN 120 (tour completo)
+4.	Xochimilco (passeio de barco colorido)
+o	Econômico: MXN 150
+o	Completo: MXN 300 (com comida e bebida)
+o	Premium: MXN 600 (tour privado)
+5.	Palácio de Bellas Artes
+o	Econômico: MXN 70
+o	Completo: MXN 120 (tour guiado)
+o	Premium: MXN 300 (show e visita VIP)
+11. Amsterdã, Holanda
+Canal, museus e cultura liberal.
+1.	Passeio de barco pelos canais
+o	Econômico: € 18 (cruzeiro simples)
+o	Completo: € 35 (cruzeiro com jantar)
+o	Premium: € 120 (tour privativo com champagne)
+2.	Museu Van Gogh
+o	Econômico: € 19
+o	Completo: € 35 (tour guiado)
+o	Premium: € 90 (tour privado)
+3.	Casa de Anne Frank
+o	Econômico: € 14
+o	Completo: € 30 (tour guiado)
+o	Premium: € 100 (tour VIP)
+4.	Passeio de bicicleta pela cidade
+o	Econômico: € 10 (aluguel simples)
+o	Completo: € 30 (tour guiado)
+o	Premium: € 90 (tour personalizado)
+5.	Jordaan (bairro charmoso para passeio e cafés)
+o	Econômico: € 0 (passeio livre)
+o	Completo: € 25 (tour gastronômico)
+o	Premium: € 80 (tour privativo + degustação)
+________________________________________
+12. Bangkok, Tailândia
+Templos, comida de rua e vida noturna.
+1.	Grande Palácio e Templo do Buda Esmeralda
+o	Econômico: THB 500 (~R$ 75)
+o	Completo: THB 800 (tour guiado)
+o	Premium: THB 2000 (tour privado)
+2.	Passeio de barco no rio Chao Phraya
+o	Econômico: THB 30 (barco local)
+o	Completo: THB 400 (cruzeiro com jantar)
+o	Premium: THB 2500 (tour privativo)
+3.	Mercado Flutuante Damnoen Saduak
+o	Econômico: THB 50 (entrada)
+o	Completo: THB 400 (tour guiado)
+o	Premium: THB 1500 (tour privativo)
+4.	Templo Wat Arun
+o	Econômico: THB 100
+o	Completo: THB 300 (tour guiado)
+o	Premium: THB 900 (tour exclusivo)
+5.	Khao San Road (vida noturna)
+o	Econômico: THB 0 (entrada livre)
+o	Completo: THB 200 (bares e shows)
+o	Premium: THB 1000 (clube VIP)
+________________________________________
+13. Viena, Áustria
+Clássica, música e palácios.
+1.	Palácio de Schönbrunn
+o	Econômico: € 20
+o	Completo: € 50 (tour guiado)
+o	Premium: € 100 (tour VIP + jardins)
+2.	Ópera de Viena
+o	Econômico: € 10 (entrada básica)
+o	Completo: € 70 (assentos melhores)
+o	Premium: € 200 (assento premium + tour)
+3.	Museu Belvedere
+o	Econômico: € 15
+o	Completo: € 35 (tour guiado)
+o	Premium: € 80 (tour privado)
+4.	Café Central (experiência gastronômica)
+o	Econômico: € 10 (café simples)
+o	Completo: € 40 (chá da tarde)
+o	Premium: € 100 (menu completo)
+5.	Passeio de carruagem no centro histórico
+o	Econômico: € 30
+o	Completo: € 60 (tour guiado)
+o	Premium: € 150 (tour privativo)
+________________________________________
+14. Cidade do Cabo, África do Sul
+Natureza, história e aventura.
+1.	Table Mountain (bondinho)
+o	Econômico: ZAR 300 (~R$ 50)
+o	Completo: ZAR 600 (tour guiado)
+o	Premium: ZAR 1200 (tour VIP + trilha)
+2.	Robben Island (museu e tour histórico)
+o	Econômico: ZAR 300
+o	Completo: ZAR 500 (tour guiado)
+o	Premium: ZAR 1000 (tour privativo)
+3.	Jardim Botânico Kirstenbosch
+o	Econômico: ZAR 80
+o	Completo: ZAR 150 (tour guiado)
+o	Premium: ZAR 350 (tour VIP)
+4.	Passeio de barco na Baía da Cidade
+o	Econômico: ZAR 100
+o	Completo: ZAR 300 (com almoço)
+o	Premium: ZAR 700 (tour privativo)
+5.	Visita à Vinícola Stellenbosch
+o	Econômico: ZAR 200
+o	Completo: ZAR 500 (tour guiado + degustação)
+o	Premium: ZAR 1200 (tour privativo + almoço)
+________________________________________
+15. Buenos Aires, Argentina
+Tango, carne e arquitetura.
+1.	Show de Tango com jantar
+o	Econômico: ARS 3500 (~R$ 80)
+o	Completo: ARS 7000 (~R$ 160)
+o	Premium: ARS 15000 (~R$ 350)
+2.	Tour pelo bairro La Boca
+o	Econômico: ARS 0 (passeio livre)
+o	Completo: ARS 1200 (tour guiado)
+o	Premium: ARS 3500 (tour privativo)
+3.	Cemitério da Recoleta (visita histórica)
+o	Econômico: ARS 0
+o	Completo: ARS 500 (tour guiado)
+o	Premium: ARS 1200 (tour VIP)
+4.	Museu de Arte Latino-Americana (MALBA)
+o	Econômico: ARS 150
+o	Completo: ARS 400 (tour guiado)
+o	Premium: ARS 1000 (tour privado)
+5.	Degustação de vinhos e carnes
+o	Econômico: ARS 1000
+o	Completo: ARS 3000 (jantar)
+o	Premium: ARS 7000 (experiência gourmet)
+________________________________________
+16. Praga, República Tcheca
+Cidade medieval e castelos.
+1.	Castelo de Praga
+o	Econômico: CZK 250 (~R$ 60)
+o	Completo: CZK 600 (tour guiado)
+o	Premium: CZK 1500 (tour VIP)
+2.	Ponte Carlos
+o	Econômico: CZK 0 (passeio livre)
+o	Completo: CZK 200 (tour guiado)
+o	Premium: CZK 600 (tour privado)
+3.	Praça da Cidade Velha + Relógio Astronômico
+o	Econômico: CZK 0
+o	Completo: CZK 150 (tour guiado)
+o	Premium: CZK 500 (tour VIP)
+4.	Museu Nacional de Praga
+o	Econômico: CZK 150
+o	Completo: CZK 400 (tour guiado)
+o	Premium: CZK 1000 (tour privado)
+5.	Cruzeiro no rio Moldava
+o	Econômico: CZK 300
+o	Completo: CZK 600 (cruzeiro com jantar)
+o	Premium: CZK 1500 (tour privativo)
+________________________________________
+17. Cairo, Egito
+Pirâmides, museus e história antiga.
+1.	Pirâmides de Gizé
+o	Econômico: EGP 200 (~R$ 60)
+o	Completo: EGP 400 (tour guiado)
+o	Premium: EGP 1500 (tour VIP + acesso interno)
+2.	Museu Egípcio do Cairo
+o	Econômico: EGP 100
+o	Completo: EGP 300 (tour guiado)
+o	Premium: EGP 800 (tour privado)
+3.	Mercado Khan el Khalili
+o	Econômico: EGP 0 (passeio livre)
+o	Completo: EGP 50 (tour guiado)
+o	Premium: EGP 200 (tour privado + almoço)
+4.	Passeio de barco no Nilo (cruzeiro noturno)
+o	Econômico: EGP 100
+o	Completo: EGP 400 (com jantar)
+o	Premium: EGP 1500 (luxo privativo)
+5.	Museu de Arte Islâmica
+o	Econômico: EGP 80
+o	Completo: EGP 200 (tour guiado)
+o	Premium: EGP 600 (tour privado)
+________________________________________
+18. Hong Kong, China
+Arranha-céus, gastronomia e cultura.
+1.	Victoria Peak (Peak Tram + mirante)
+o	Econômico: HKD 45 (~R$ 30)
+o	Completo: HKD 100 (tour guiado)
+o	Premium: HKD 300 (tour VIP)
+2.	Templo Wong Tai Sin
+o	Econômico: HKD 0
+o	Completo: HKD 30 (tour guiado)
+o	Premium: HKD 100 (tour privado)
+3.	Mercado Noturno de Temple Street
+o	Econômico: HKD 0 (passeio livre)
+o	Completo: HKD 50 (tour gastronômico)
+o	Premium: HKD 200 (tour privado)
+4.	Museu de História de Hong Kong
+o	Econômico: HKD 10
+o	Completo: HKD 50 (tour guiado)
+o	Premium: HKD 150 (tour privado)
+5.	Passeio de barco tradicional (Star Ferry)
+o	Econômico: HKD 2
+o	Completo: HKD 30 (tour guiado)
+o	Premium: HKD 100 (tour privativo)
