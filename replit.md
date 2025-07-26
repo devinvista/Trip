@@ -448,3 +448,6 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 26, 2025. **DISTRIBUIÇÃO GLOBAL DE ATIVIDADES**: Brasil (96), Estados Unidos (13), Itália (13), França (10), Argentina (8), Espanha (8) e outros países
 - July 26, 2025. **ARQUITETURA OTIMIZADA**: Atividades agora usam exclusivamente destination_id como foreign key para destinos - schema limpo e padronizado
 - July 26, 2025. **COBERTURA GEOGRÁFICA COMPLETA**: 163 atividades distribuídas em 32 destinos únicos com ênfase em destinos brasileiros e principais cidades internacionais
+- July 26, 2025. **LIMPEZA DE VIAGENS DUPLICADAS**: Removidas 193 viagens duplicadas do banco de dados, mantendo apenas 16 viagens únicas
+- July 26, 2025. **DATABASE OTIMIZADO**: Banco de dados limpo com viagens, atividades e destinos organizados de forma eficiente
+- July 26, 2025. **ESTRUTURA FINAL**: 16 viagens únicas, 163 atividades em 32 destinos, 260 destinos totais disponíveis para expansão
