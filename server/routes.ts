@@ -1361,7 +1361,7 @@ export function registerRoutes(app: Express): Server {
         count: sql<number>`count(*)`.as('count')
       })
       .from(activities)
-      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
+      .innerJoin(destinations, eq(activities.destinationName, destinations.name))
       .where(eq(activities.isActive, true))
       .groupBy(destinations.countryType, destinations.region, destinations.name)
       .orderBy(destinations.countryType, destinations.region, destinations.name);
@@ -1391,8 +1391,6 @@ export function registerRoutes(app: Express): Server {
         title: activities.title,
         description: activities.description,
         category: activities.category,
-        priceType: activities.priceType,
-        priceAmount: activities.priceAmount,
         duration: activities.duration,
         difficultyLevel: activities.difficultyLevel,
         coverImage: activities.coverImage,
@@ -1407,7 +1405,7 @@ export function registerRoutes(app: Express): Server {
         }
       })
       .from(activities)
-      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
+      .innerJoin(destinations, eq(activities.destinationName, destinations.name))
       .where(eq(activities.isActive, true));
       
       if (countryType) {
@@ -1422,7 +1420,9 @@ export function registerRoutes(app: Express): Server {
       
       // Apply other filters
       if (filters.category) {
-        query = query.where(eq(activities.category, filters.category as string));
+        const categories = Array.isArray(filters.category) ? filters.category : [filters.category];
+        // For now, just handle single category filtering
+        query = query.where(eq(activities.category, categories[0] as string));
       }
       
       const result = await query.orderBy(desc(activities.averageRating), desc(activities.totalRatings));
@@ -1507,8 +1507,7 @@ export function registerRoutes(app: Express): Server {
         title: activities.title,
         description: activities.description,
         category: activities.category,
-        priceType: activities.priceType,
-        priceAmount: activities.priceAmount,
+
         duration: activities.duration,
         difficultyLevel: activities.difficultyLevel,
         coverImage: activities.coverImage,
@@ -1523,7 +1522,7 @@ export function registerRoutes(app: Express): Server {
         }
       })
       .from(activities)
-      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
+      .innerJoin(destinations, eq(activities.destinationName, destinations.name))
       .where(eq(activities.isActive, true));
       
       // Filter activities that match upcoming destinations
