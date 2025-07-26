@@ -438,3 +438,6 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 26, 2025. **DESTINOS INTERNACIONAIS PREMIUM**: Abu Dhabi, Atenas, Bali, Santorini, Bora Bora, Montreal, Vancouver, Kyoto, Osaka, Phuket, Tulum, etc.
 - July 26, 2025. **DESTINOS NACIONAIS EXPANDIDOS**: Região Sudeste/Sul completa com Poços de Caldas, Monte Verde, Bombinhas, Garopaba, Igrejinha, Nova Petrópolis, etc.
 - July 26, 2025. **DISTRIBUIÇÃO GEOGRÁFICA FINAL**: Sudeste (56), Sul (28), Nordeste (13), Centro-Oeste (5), Norte (2) + 89 destinos internacionais
+- July 26, 2025. **EXPANSÃO ADICIONAL DE DESTINOS**: Adicionados mais 34 destinos nacionais Sul/Sudeste (Bagé, Bento Gonçalves, Caxias do Sul, Pelotas, etc.)
+- July 26, 2025. **TOTAL FINAL DE DESTINOS**: 226 destinos totais (137 nacionais + 89 internacionais) - cobertura completa do Brasil e principais destinos mundiais
+- July 26, 2025. **DISTRIBUIÇÃO ATUALIZADA**: Sudeste (60), Sul (57), Nordeste (13), Centro-Oeste (5), Norte (2) + 89 internacionais
