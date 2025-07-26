@@ -247,14 +247,12 @@ export const insertMessageSchema = createInsertSchema(messages).omit({
 export const insertTripRequestSchema = createInsertSchema(tripRequests).omit({
   id: true,
   user_id: true,
-  status: true,
   created_at: true,
 });
 
 export const insertRatingReportSchema = createInsertSchema(ratingReports).omit({
   id: true,
   reporter_id: true,
-  status: true,
   reviewed_at: true,
   reviewed_by: true,
   created_at: true,
@@ -306,8 +304,7 @@ export type InsertExpenseSplit = z.infer<typeof insertExpenseSplitSchema>;
 // Interest list schema and types
 export const insertInterestListSchema = createInsertSchema(interestList).omit({ 
   id: true, 
-  created_at: true,
-  status: true
+  created_at: true
 }).extend({
   full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
@@ -326,8 +323,6 @@ export type VerificationRequest = typeof verificationRequests.$inferSelect;
 export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   id: true,
   rater_user_id: true,
-  is_hidden: true,
-  report_count: true,
   created_at: true,
   updated_at: true,
 }).extend({
@@ -345,8 +340,6 @@ export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
 export const insertDestinationRatingSchema = createInsertSchema(destinationRatings).omit({
   id: true,
   user_id: true,
-  is_hidden: true,
-  report_count: true,
   created_at: true,
   updated_at: true,
 }).extend({
