@@ -1,4 +1,4 @@
-import { mysqlTable, text, int, boolean, timestamp, json, decimal, varchar } from "drizzle-orm/mysql-core";
+import { mysqlTable, text, int, boolean, timestamp, json, decimal, varchar, mysqlEnum, index } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -377,29 +377,41 @@ export const activities = mysqlTable("activities", {
   id: int("id").primaryKey().autoincrement(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  destination_id: int("destination_id").notNull().references(() => destinations.id), // Reference to destinations table
-  category: varchar("category", { length: 100 }).notNull(), // sightseeing, food, adventure, culture, etc.
-  priceType: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group, free
-  priceAmount: decimal("price_amount", { precision: 10, scale: 2 }), // null for free activities
-  duration: varchar("duration", { length: 100 }), // "2 hours", "full day", etc.
-  difficultyLevel: varchar("difficulty_level", { length: 50 }).default("easy"), // easy, moderate, challenging
+  destinationName: varchar("destination_name", { length: 255 }).notNull(),
+  category: mysqlEnum("category", ["adventure", "cultural", "food_tours", "hiking", "nature", "pontos_turisticos", "water_sports", "wildlife"]).notNull(),
+  difficultyLevel: mysqlEnum("difficulty_level", ["easy", "medium", "hard"]).default("easy").notNull(),
+  duration: varchar("duration", { length: 100 }).notNull(),
   minParticipants: int("min_participants").default(1).notNull(),
-  maxParticipants: int("max_participants"),
+  maxParticipants: int("max_participants").default(50).notNull(),
   languages: json("languages"), // Available languages
   inclusions: json("inclusions"), // What's included
   exclusions: json("exclusions"), // What's not included
   requirements: json("requirements"), // Age restrictions, fitness level, etc.
   cancellationPolicy: text("cancellation_policy"),
   contactInfo: json("contact_info"), // { email, phone, website, whatsapp }
-  images: json("images"), // Array of image URLs
   coverImage: text("cover_image").notNull(), // Main image
-  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("0.00"),
+  images: json("images"), // Array of image URLs
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("5.00").notNull(),
   totalRatings: int("total_ratings").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
-  createdById: int("created_by_id").references(() => users.id), // Who added this activity
+  createdById: int("created_by_id").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+  // Campos herdados automaticamente do destino
+  city: varchar("city", { length: 255 }),
+  state: varchar("state", { length: 100 }),
+  country: varchar("country", { length: 100 }),
+  countryType: mysqlEnum("country_type", ["nacional", "internacional"]),
+  region: varchar("region", { length: 100 }),
+  continent: varchar("continent", { length: 100 }),
+}, (table) => ({
+  destinationIndex: index("idx_destination").on(table.destinationName),
+  categoryIndex: index("idx_category").on(table.category),
+  difficultyIndex: index("idx_difficulty").on(table.difficultyLevel),
+  countryTypeIndex: index("idx_country_type").on(table.countryType),
+  regionIndex: index("idx_region").on(table.region),
+  activeIndex: index("idx_active").on(table.isActive),
+}));
 
 // Activity Reviews/Ratings
 export const activityReviews = mysqlTable("activity_reviews", {
@@ -493,6 +505,13 @@ export const insertActivitySchema = createInsertSchema(activities).omit({
   totalRatings: true,
   createdAt: true,
   updatedAt: true,
+  // Campos herdados são preenchidos automaticamente
+  city: true,
+  state: true,
+  country: true,
+  countryType: true,
+  region: true,
+  continent: true,
 });
 
 export const insertActivityReviewSchema = createInsertSchema(activityReviews).omit({
