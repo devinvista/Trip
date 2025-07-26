@@ -1,5 +1,4 @@
 import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, activityBudgetProposalVotes, tripActivities, destinations, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type ActivityBudgetProposalVote, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, popularDestinations } from "@shared/schema";
-import { fixCreatorsAsParticipants } from "./fix-creators-as-participants";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import { db, testConnection } from "./db";
@@ -2208,10 +2207,37 @@ export class DatabaseStorage implements IStorage {
 
   // Fix creators as participants
   async fixCreatorsAsParticipants(): Promise<number> {
+    console.log('🔄 Corrigindo criadores como participantes...');
+    
     try {
-      return await fixCreatorsAsParticipants();
+      const trips = await db.select().from(this.trips);
+      let fixedCount = 0;
+      
+      for (const trip of trips) {
+        // Verificar se criador já é participante
+        const existingParticipant = await db
+          .select()
+          .from(this.tripParticipants)
+          .where(and(
+            eq(this.tripParticipants.tripId, trip.id),
+            eq(this.tripParticipants.userId, trip.creatorId)
+          ));
+        
+        if (existingParticipant.length === 0) {
+          // Adicionar criador como participante aceito
+          await db.insert(this.tripParticipants).values({
+            tripId: trip.id,
+            userId: trip.creatorId,
+            status: 'accepted'
+          });
+          fixedCount++;
+        }
+      }
+      
+      console.log(`✅ ${fixedCount} criadores adicionados como participantes`);
+      return fixedCount;
     } catch (error) {
-      console.error('❌ Erro ao executar correção de criadores como participantes:', error);
+      console.error('❌ Erro ao corrigir criadores:', error);
       return 0;
     }
   }

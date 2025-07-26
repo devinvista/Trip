@@ -1,0 +1,388 @@
+#!/usr/bin/env tsx
+import { db } from './db.js';
+import { destinations } from '../shared/schema.js';
+
+/**
+ * Script para criar destinos no banco MySQL
+ * Compatível com o esquema atual
+ */
+async function createDestinations() {
+  console.log('🌍 Criando destinos no banco MySQL...');
+
+  try {
+    const destinationsData = [
+      // DESTINOS NACIONAIS - Sudeste
+      {
+        name: 'Rio de Janeiro',
+        state: 'RJ',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sudeste',
+        continent: 'América do Sul',
+        latitude: -22.9068,
+        longitude: -43.1729,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Cidade Maravilhosa com Cristo Redentor, Pão de Açúcar e praias famosas'
+      },
+      {
+        name: 'São Paulo',
+        state: 'SP',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sudeste',
+        continent: 'América do Sul',
+        latitude: -23.5505,
+        longitude: -46.6333,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Maior metrópole do país com rica vida cultural e gastronômica'
+      },
+      {
+        name: 'Belo Horizonte',
+        state: 'MG',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sudeste',
+        continent: 'América do Sul',
+        latitude: -19.9191,
+        longitude: -43.9386,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Capital mineira com gastronomia tradicional e arquitetura moderna'
+      },
+      {
+        name: 'Vitória',
+        state: 'ES',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sudeste',
+        continent: 'América do Sul',
+        latitude: -20.3155,
+        longitude: -40.3128,
+        timezone: 'America/Sao_Paulo',
+        isPopular: false,
+        description: 'Capital capixaba com belas praias e cultura local'
+      },
+
+      // DESTINOS NACIONAIS - Sul
+      {
+        name: 'Porto Alegre',
+        state: 'RS',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sul',
+        continent: 'América do Sul',
+        latitude: -30.0346,
+        longitude: -51.2177,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Capital gaúcha com tradição cultural e gastronômica'
+      },
+      {
+        name: 'Gramado',
+        state: 'RS',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sul',
+        continent: 'América do Sul',
+        latitude: -29.3788,
+        longitude: -50.8738,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Charme europeu na Serra Gaúcha com arquitetura alemã'
+      },
+      {
+        name: 'Florianópolis',
+        state: 'SC',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sul',
+        continent: 'América do Sul',
+        latitude: -27.5954,
+        longitude: -48.5480,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Ilha da Magia com praias paradisíacas e vida noturna'
+      },
+      {
+        name: 'Curitiba',
+        state: 'PR',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sul',
+        continent: 'América do Sul',
+        latitude: -25.4284,
+        longitude: -49.2733,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Capital ecológica com planejamento urbano exemplar'
+      },
+      {
+        name: 'Foz do Iguaçu',
+        state: 'PR',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Sul',
+        continent: 'América do Sul',
+        latitude: -25.5478,
+        longitude: -54.5882,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Lar das famosas Cataratas do Iguaçu'
+      },
+
+      // DESTINOS NACIONAIS - Nordeste
+      {
+        name: 'Salvador',
+        state: 'BA',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Nordeste',
+        continent: 'América do Sul',
+        latitude: -12.9714,
+        longitude: -38.5014,
+        timezone: 'America/Bahia',
+        isPopular: true,
+        description: 'Primeira capital do Brasil com centro histórico preservado'
+      },
+      {
+        name: 'Recife',
+        state: 'PE',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Nordeste',
+        continent: 'América do Sul',
+        latitude: -8.0476,
+        longitude: -34.8770,
+        timezone: 'America/Recife',
+        isPopular: true,
+        description: 'Veneza brasileira com rica cultura e frevo'
+      },
+      {
+        name: 'Fortaleza',
+        state: 'CE',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Nordeste',
+        continent: 'América do Sul',
+        latitude: -3.7319,
+        longitude: -38.5267,
+        timezone: 'America/Fortaleza',
+        isPopular: true,
+        description: 'Praias paradisíacas e vida noturna agitada'
+      },
+
+      // DESTINOS NACIONAIS - Centro-Oeste
+      {
+        name: 'Brasília',
+        state: 'DF',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Centro-Oeste',
+        continent: 'América do Sul',
+        latitude: -15.8267,
+        longitude: -47.9218,
+        timezone: 'America/Sao_Paulo',
+        isPopular: true,
+        description: 'Capital federal com arquitetura modernista de Niemeyer'
+      },
+      {
+        name: 'Campo Grande',
+        state: 'MS',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Centro-Oeste',
+        continent: 'América do Sul',
+        latitude: -20.4697,
+        longitude: -54.6201,
+        timezone: 'America/Campo_Grande',
+        isPopular: false,
+        description: 'Portal de entrada para o Pantanal'
+      },
+      {
+        name: 'Bonito',
+        state: 'MS',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Centro-Oeste',
+        continent: 'América do Sul',
+        latitude: -21.1269,
+        longitude: -56.4295,
+        timezone: 'America/Campo_Grande',
+        isPopular: true,
+        description: 'Ecoturismo com águas cristalinas e cavernas'
+      },
+
+      // DESTINOS NACIONAIS - Norte
+      {
+        name: 'Manaus',
+        state: 'AM',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Norte',
+        continent: 'América do Sul',
+        latitude: -3.1190,
+        longitude: -60.0217,
+        timezone: 'America/Manaus',
+        isPopular: true,
+        description: 'Portal de entrada para a Amazônia'
+      },
+      {
+        name: 'Belém',
+        state: 'PA',
+        country: 'Brasil',
+        countryType: 'nacional' as const,
+        region: 'Norte',
+        continent: 'América do Sul',
+        latitude: -1.4558,
+        longitude: -48.5044,
+        timezone: 'America/Belem',
+        isPopular: true,
+        description: 'Portal de entrada para a Amazônia Oriental'
+      },
+
+      // DESTINOS INTERNACIONAIS - América do Norte
+      {
+        name: 'Nova York',
+        state: 'NY',
+        country: 'Estados Unidos',
+        countryType: 'internacional' as const,
+        region: 'Costa Leste',
+        continent: 'América do Norte',
+        latitude: 40.7128,
+        longitude: -74.0060,
+        timezone: 'America/New_York',
+        isPopular: true,
+        description: 'A cidade que nunca dorme com ícones mundiais'
+      },
+      {
+        name: 'Los Angeles',
+        state: 'CA',
+        country: 'Estados Unidos',
+        countryType: 'internacional' as const,
+        region: 'Costa Oeste',
+        continent: 'América do Norte',
+        latitude: 34.0522,
+        longitude: -118.2437,
+        timezone: 'America/Los_Angeles',
+        isPopular: true,
+        description: 'Cidade dos anjos e capital do cinema mundial'
+      },
+
+      // DESTINOS INTERNACIONAIS - Europa
+      {
+        name: 'Paris',
+        state: 'Île-de-France',
+        country: 'França',
+        countryType: 'internacional' as const,
+        region: 'Europa Ocidental',
+        continent: 'Europa',
+        latitude: 48.8566,
+        longitude: 2.3522,
+        timezone: 'Europe/Paris',
+        isPopular: true,
+        description: 'Cidade Luz com arte, cultura e romanticismo'
+      },
+      {
+        name: 'Londres',
+        state: 'Inglaterra',
+        country: 'Reino Unido',
+        countryType: 'internacional' as const,
+        region: 'Europa Ocidental',
+        continent: 'Europa',
+        latitude: 51.5074,
+        longitude: -0.1278,
+        timezone: 'Europe/London',
+        isPopular: true,
+        description: 'Capital britânica com história e tradição'
+      },
+      {
+        name: 'Roma',
+        state: 'Lazio',
+        country: 'Itália',
+        countryType: 'internacional' as const,
+        region: 'Europa Meridional',
+        continent: 'Europa',
+        latitude: 41.9028,
+        longitude: 12.4964,
+        timezone: 'Europe/Rome',
+        isPopular: true,
+        description: 'Cidade Eterna com história milenar'
+      },
+
+      // DESTINOS INTERNACIONAIS - América do Sul
+      {
+        name: 'Buenos Aires',
+        state: 'Buenos Aires',
+        country: 'Argentina',
+        countryType: 'internacional' as const,
+        region: 'América do Sul',
+        continent: 'América do Sul',
+        latitude: -34.6118,
+        longitude: -58.3960,
+        timezone: 'America/Argentina/Buenos_Aires',
+        isPopular: true,
+        description: 'Paris da América do Sul com tango e cultura portenha'
+      },
+      {
+        name: 'Santiago',
+        state: 'Metropolitana',
+        country: 'Chile',
+        countryType: 'internacional' as const,
+        region: 'América do Sul',
+        continent: 'América do Sul',
+        latitude: -33.4489,
+        longitude: -70.6693,
+        timezone: 'America/Santiago',
+        isPopular: true,
+        description: 'Capital chilena entre os Andes e o Pacífico'
+      }
+    ];
+
+    console.log(`📥 Inserindo ${destinationsData.length} destinos...`);
+    
+    let insertedCount = 0;
+    for (const destination of destinationsData) {
+      try {
+        await db.insert(destinations).values(destination);
+        console.log(`✅ ${destination.name}, ${destination.state} (${destination.country})`);
+        insertedCount++;
+      } catch (error: any) {
+        if (error.code === 'ER_DUP_ENTRY') {
+          console.log(`⚠️  ${destination.name} já existe - ignorando`);
+        } else {
+          console.error(`❌ Erro ao inserir ${destination.name}:`, error.message);
+        }
+      }
+    }
+
+    // Verificar resultados
+    const totalDestinations = await db.select().from(destinations);
+    console.log(`\n📊 RESUMO:`);
+    console.log(`   🌍 Destinos inseridos: ${insertedCount}`);
+    console.log(`   📊 Total no banco: ${totalDestinations.length}`);
+    console.log(`\n🎉 Criação de destinos concluída!`);
+
+    return insertedCount;
+
+  } catch (error) {
+    console.error('❌ Erro ao criar destinos:', error);
+    throw error;
+  }
+}
+
+// Executar se chamado diretamente
+if (import.meta.url === `file://${process.argv[1]}`) {
+  createDestinations()
+    .then((count) => {
+      console.log(`✅ Processo concluído! ${count} destinos criados.`);
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('❌ Erro no processo:', error);
+      process.exit(1);
+    });
+}
+
+export { createDestinations };
