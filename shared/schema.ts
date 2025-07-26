@@ -252,10 +252,10 @@ export const insertTripRequestSchema = createInsertSchema(tripRequests).omit({
 
 export const insertRatingReportSchema = createInsertSchema(ratingReports).omit({
   id: true,
-  reporter_id: true,
-  reviewed_at: true,
-  reviewed_by: true,
-  created_at: true,
+  reporterId: true,
+  reviewedAt: true,
+  reviewedBy: true,
+  createdAt: true,
 }).extend({
   reason: z.enum(["offensive", "spam", "inappropriate", "fake"], {
     errorMap: () => ({ message: "Motivo inválido" })
@@ -304,9 +304,9 @@ export type InsertExpenseSplit = z.infer<typeof insertExpenseSplitSchema>;
 // Interest list schema and types
 export const insertInterestListSchema = createInsertSchema(interestList).omit({ 
   id: true, 
-  created_at: true
+  createdAt: true
 }).extend({
-  full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
 });
@@ -322,9 +322,9 @@ export type VerificationRequest = typeof verificationRequests.$inferSelect;
 // Rating insert schemas (updated for enhanced system)
 export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   id: true,
-  rater_user_id: true,
-  created_at: true,
-  updated_at: true,
+  raterUserId: true,
+  createdAt: true,
+  updatedAt: true,
 }).extend({
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   comment: z.string().optional(),
@@ -339,9 +339,9 @@ export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
 
 export const insertDestinationRatingSchema = createInsertSchema(destinationRatings).omit({
   id: true,
-  user_id: true,
-  created_at: true,
-  updated_at: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
 }).extend({
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   comment: z.string().optional(),

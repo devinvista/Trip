@@ -1,55 +1,61 @@
-import { db } from './db.js';
-import { activities, activityBudgetProposals } from '../shared/schema.js';
-import { sql, eq } from 'drizzle-orm';
-import dotenv from 'dotenv';
+#!/usr/bin/env tsx
+import { db } from "./db.js";
 
-dotenv.config();
-
-async function checkDbInfo() {
+async function checkDatabaseInfo() {
   try {
-    // Verificar total de atividades
-    const totalActivities = await db.select({ count: sql`COUNT(*)` }).from(activities);
-    console.log('📊 Total de atividades:', totalActivities[0].count);
-
-    // Verificar máximo ID
-    const maxId = await db.select({ maxId: sql`MAX(id)` }).from(activities);
-    console.log('🔢 Máximo ID de atividades:', maxId[0].maxId);
-
-    // Verificar total de propostas
-    const totalProposals = await db.select({ count: sql`COUNT(*)` }).from(activityBudgetProposals);
-    console.log('💰 Total de propostas:', totalProposals[0].count);
-
-    // Verificar algumas atividades com seus IDs
-    const sampleActivities = await db.select({ id: activities.id, title: activities.title })
-      .from(activities)
-      .limit(10)
-      .orderBy(sql`id DESC`);
+    console.log("🔍 Checking database connection and basic info...");
     
-    console.log('\n🔍 Últimas 10 atividades:');
-    sampleActivities.forEach(activity => {
-      console.log(`  ID ${activity.id}: ${activity.title}`);
-    });
+    // Simple test query
+    const result = await db.execute("SELECT 1 as test");
+    console.log("✅ Database connection successful:", result);
+    
+    // Check tables
+    const tables = await db.execute("SHOW TABLES");
+    console.log("📊 Available tables:");
+    for (const table of tables as any[]) {
+      const tableName = Object.values(table)[0];
+      console.log(`   • ${tableName}`);
+    }
 
-    // Verificar propostas existentes
-    const proposalCount = await db.select({ 
-      activityId: activityBudgetProposals.activityId,
-      count: sql`COUNT(*)` 
-    })
-    .from(activityBudgetProposals)
-    .groupBy(activityBudgetProposals.activityId)
-    .limit(10);
+    // Check activities table exists and structure
+    try {
+      const activitiesInfo = await db.execute("SHOW COLUMNS FROM activities");
+      console.log("\n📊 Activities table columns:");
+      for (const column of activitiesInfo as any[]) {
+        console.log(`   • ${column.Field}: ${column.Type} ${column.Null === 'YES' ? '(nullable)' : '(not null)'}`);
+      }
+    } catch (error) {
+      console.log("❌ Activities table error:", error);
+    }
 
-    console.log('\n💡 Atividades com propostas:');
-    proposalCount.forEach(item => {
-      console.log(`  Atividade ${item.activityId}: ${item.count} propostas`);
-    });
+    // Check destinations table
+    try {
+      const destinationsInfo = await db.execute("SHOW COLUMNS FROM destinations");
+      console.log("\n📊 Destinations table columns:");
+      for (const column of destinationsInfo as any[]) {
+        console.log(`   • ${column.Field}: ${column.Type} ${column.Null === 'YES' ? '(nullable)' : '(not null)'}`);
+      }
+    } catch (error) {
+      console.log("❌ Destinations table error:", error);
+    }
+
+    // Quick count check
+    try {
+      const countResult = await db.execute("SELECT COUNT(*) as count FROM activities");
+      console.log(`\n📊 Activities count: ${Object.values(countResult[0] as any)[0]}`);
+    } catch (error) {
+      console.log("❌ Count error:", error);
+    }
 
   } catch (error) {
-    console.error('❌ Erro:', error);
+    console.error("❌ Database check error:", error);
   }
 }
 
-checkDbInfo().then(() => process.exit(0)).catch(err => {
-  console.error(err);
+checkDatabaseInfo().then(() => {
+  console.log("🏁 Database check completed");
+  process.exit(0);
+}).catch(error => {
+  console.error("💥 Fatal error:", error);
   process.exit(1);
 });

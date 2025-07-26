@@ -7,7 +7,7 @@ import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
 import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertLocalidadeRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, localidadeRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
+import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, localidadeRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList, destinations } from "@shared/schema";
 import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { z } from "zod";
 
@@ -1355,15 +1355,16 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/activities/hierarchy", async (req, res) => {
     try {
       const hierarchyData = await db.select({
-        countryType: activities.countryType,
-        region: activities.region,
-        city: activities.city,
+        countryType: destinations.countryType,
+        region: destinations.region,
+        city: destinations.name,
         count: sql<number>`count(*)`.as('count')
       })
       .from(activities)
+      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
       .where(eq(activities.isActive, true))
-      .groupBy(activities.countryType, activities.region, activities.city)
-      .orderBy(activities.countryType, activities.region, activities.city);
+      .groupBy(destinations.countryType, destinations.region, destinations.name)
+      .orderBy(destinations.countryType, destinations.region, destinations.name);
       
       // Organize data hierarchically
       const hierarchy: { [key: string]: { [key: string]: { [key: string]: number } } } = {};
@@ -1385,16 +1386,38 @@ export function registerRoutes(app: Express): Server {
     try {
       const { countryType, region, city, ...filters } = req.query;
       
-      let query = db.select().from(activities).where(eq(activities.isActive, true));
+      let query = db.select({
+        id: activities.id,
+        title: activities.title,
+        description: activities.description,
+        category: activities.category,
+        priceType: activities.priceType,
+        priceAmount: activities.priceAmount,
+        duration: activities.duration,
+        difficultyLevel: activities.difficultyLevel,
+        coverImage: activities.coverImage,
+        averageRating: activities.averageRating,
+        totalRatings: activities.totalRatings,
+        destination: {
+          id: destinations.id,
+          name: destinations.name,
+          country: destinations.country,
+          countryType: destinations.countryType,
+          region: destinations.region
+        }
+      })
+      .from(activities)
+      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
+      .where(eq(activities.isActive, true));
       
       if (countryType) {
-        query = query.where(eq(activities.countryType, countryType as string));
+        query = query.where(eq(destinations.countryType, countryType as string));
       }
       if (region) {
-        query = query.where(eq(activities.region, region as string));
+        query = query.where(eq(destinations.region, region as string));
       }
       if (city) {
-        query = query.where(eq(activities.city, city as string));
+        query = query.where(eq(destinations.name, city as string));
       }
       
       // Apply other filters
@@ -1478,12 +1501,34 @@ export function registerRoutes(app: Express): Server {
       // Extract destinations from upcoming trips
       const upcomingDestinations = upcomingTrips.map(trip => trip.destination);
       
-      // Get all activities
-      const activities = await storage.getActivities({});
+      // Get activities with destination info for matching
+      const activitiesWithDestinations = await db.select({
+        id: activities.id,
+        title: activities.title,
+        description: activities.description,
+        category: activities.category,
+        priceType: activities.priceType,
+        priceAmount: activities.priceAmount,
+        duration: activities.duration,
+        difficultyLevel: activities.difficultyLevel,
+        coverImage: activities.coverImage,
+        averageRating: activities.averageRating,
+        totalRatings: activities.totalRatings,
+        destination: {
+          id: destinations.id,
+          name: destinations.name,
+          country: destinations.country,
+          countryType: destinations.countryType,
+          region: destinations.region
+        }
+      })
+      .from(activities)
+      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
+      .where(eq(activities.isActive, true));
       
       // Filter activities that match upcoming destinations
-      const matchingActivities = activities.filter(activity => {
-        const activityCity = activity.location.split(',')[0].trim().toLowerCase();
+      const matchingActivities = activitiesWithDestinations.filter(activity => {
+        const activityCity = activity.destination.name.toLowerCase();
         return upcomingDestinations.some(destination => {
           const destCity = destination.split(',')[0].trim().toLowerCase();
           return activityCity.includes(destCity) || destCity.includes(activityCity);
