@@ -322,9 +322,9 @@ export type VerificationRequest = typeof verificationRequests.$inferSelect;
 // Rating insert schemas (updated for enhanced system)
 export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
   id: true,
-  raterUserId: true,
-  createdAt: true,
-  updatedAt: true,
+  rater_user_id: true,
+  created_at: true,
+  updated_at: true,
 }).extend({
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   comment: z.string().optional(),
