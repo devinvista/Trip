@@ -444,3 +444,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 26, 2025. **EXPANSÃO CENTRO-OESTE E NORTE**: Adicionados mais 34 destinos (Caldas Novas, Jalapão, Alter do Chão, Chapada dos Veadeiros, etc.)
 - July 26, 2025. **COBERTURA NACIONAL COMPLETA**: 260 destinos totais (171 nacionais + 89 internacionais) - todas as regiões brasileiras representadas
 - July 26, 2025. **DISTRIBUIÇÃO FINAL COMPLETA**: Sudeste (60), Sul (57), Norte (22), Nordeste (17), Centro-Oeste (15) + 89 destinos internacionais premium
+- July 26, 2025. **ATIVIDADES VINCULADAS A DESTINOS**: Corrigida vinculação de todas as 163 atividades com destination_id - removidas colunas desnecessárias (location, city_id)
+- July 26, 2025. **DISTRIBUIÇÃO GLOBAL DE ATIVIDADES**: Brasil (96), Estados Unidos (13), Itália (13), França (10), Argentina (8), Espanha (8) e outros países
+- July 26, 2025. **ARQUITETURA OTIMIZADA**: Atividades agora usam exclusivamente destination_id como foreign key para destinos - schema limpo e padronizado
+- July 26, 2025. **COBERTURA GEOGRÁFICA COMPLETA**: 163 atividades distribuídas em 32 destinos únicos com ênfase em destinos brasileiros e principais cidades internacionais
