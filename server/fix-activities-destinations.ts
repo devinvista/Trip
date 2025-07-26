@@ -1,210 +1,126 @@
+#!/usr/bin/env tsx
 import { db } from "./db.js";
-import { activities, destinations } from "@shared/schema.js";
-import { eq, inArray } from "drizzle-orm";
 
 async function fixActivitiesDestinations() {
   try {
-    console.log("🔄 Corrigindo vinculação de atividades com destinos...");
+    console.log("🔧 Fixing activities destination linkage based on cities...");
 
-    // Get all destinations to see what we have
-    const allDestinations = await db.select().from(destinations);
-    console.log(`📍 Total de destinos disponíveis: ${allDestinations.length}`);
-
-    // Log some key destinations to understand the mapping
-    const keyDestinations = allDestinations.filter(d => 
-      ['Rio de Janeiro', 'São Paulo', 'Gramado', 'Bonito', 'Londres', 'Paris', 'Nova York', 'Roma', 'Buenos Aires'].includes(d.name)
-    );
+    // First, let's see what activities we have and their current destination_id
+    const currentActivities = await db.execute(`
+      SELECT a.id, a.title, a.destination_id, d.name as destination_name
+      FROM activities a 
+      LEFT JOIN destinations d ON a.destination_id = d.id
+      ORDER BY a.id
+    `);
     
-    console.log("🗺️ Destinos principais encontrados:");
-    keyDestinations.forEach(dest => {
-      console.log(`   • ${dest.name} (ID: ${dest.id}) - ${dest.country}`);
-    });
-
-    // Get all activities to see the current state
-    const allActivities = await db.select().from(activities);
-    console.log(`🎯 Total de atividades: ${allActivities.length}`);
-
-    // Create mapping based on activity titles/descriptions to proper destinations
-    const activityDestinationMappings = [];
-
-    // Gramado activities (based on titles)
-    const gramadoActivities = allActivities.filter(a => 
-      a.title.toLowerCase().includes('gramado') ||
-      a.title.includes('Mini Mundo') ||
-      a.title.includes('Dreamland') ||
-      a.title.includes('GramadoZoo') ||
-      a.title.includes('Snowland') ||
-      a.title.includes('Vale dos Vinhedos')
-    );
-    const gramadoDest = allDestinations.find(d => d.name === 'Gramado');
-    if (gramadoDest) {
-      gramadoActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: gramadoDest.id, location: 'Gramado' });
-      });
+    console.log("📊 Current activities and their destinations:");
+    for (const activity of currentActivities as any[]) {
+      console.log(`   • Activity ${activity.id}: "${activity.title}" -> Destination: ${activity.destination_name || 'NULL'}`);
     }
 
-    // Bonito activities
-    const bonitoActivities = allActivities.filter(a => 
-      a.title.toLowerCase().includes('bonito') ||
-      a.title.includes('Gruta do Lago Azul') ||
-      a.title.includes('Rio Sucuri') ||
-      a.title.includes('Abismo Anhumas') ||
-      a.description.toLowerCase().includes('bonito')
-    );
-    const bonitoDest = allDestinations.find(d => d.name === 'Bonito');
-    if (bonitoDest) {
-      bonitoActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: bonitoDest.id, location: 'Bonito' });
-      });
-    }
-
-    // London activities
-    const londonActivities = allActivities.filter(a => 
-      a.title.includes('London') ||
-      a.title.includes('Westminster') ||
-      a.title.includes('Thames') ||
-      a.title.includes('Tower Bridge') ||
-      a.title.includes('British Museum') ||
-      a.description.toLowerCase().includes('london')
-    );
-    const londonDest = allDestinations.find(d => d.name === 'Londres');
-    if (londonDest) {
-      londonActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: londonDest.id, location: 'Londres' });
-      });
-    }
-
-    // Paris activities
-    const parisActivities = allActivities.filter(a => 
-      a.title.includes('Paris') ||
-      a.title.includes('Eiffel') ||
-      a.title.includes('Louvre') ||
-      a.title.includes('Versailles') ||
-      a.title.includes('Montmartre') ||
-      a.description.toLowerCase().includes('paris')
-    );
-    const parisDest = allDestinations.find(d => d.name === 'Paris');
-    if (parisDest) {
-      parisActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: parisDest.id, location: 'Paris' });
-      });
-    }
-
-    // New York activities
-    const nycActivities = allActivities.filter(a => 
-      a.title.includes('New York') ||
-      a.title.includes('NYC') ||
-      a.title.includes('Manhattan') ||
-      a.title.includes('Brooklyn') ||
-      a.title.includes('Central Park') ||
-      a.title.includes('Statue of Liberty') ||
-      a.description.toLowerCase().includes('new york')
-    );
-    const nycDest = allDestinations.find(d => d.name === 'Nova York');
-    if (nycDest) {
-      nycActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: nycDest.id, location: 'Nova York' });
-      });
-    }
-
-    // Rome activities
-    const romeActivities = allActivities.filter(a => 
-      a.title.includes('Rome') ||
-      a.title.includes('Roma') ||
-      a.title.includes('Colosseum') ||
-      a.title.includes('Vatican') ||
-      a.title.includes('Trevi') ||
-      a.description.toLowerCase().includes('rome') ||
-      a.description.toLowerCase().includes('roma')
-    );
-    const romeDest = allDestinations.find(d => d.name === 'Roma');
-    if (romeDest) {
-      romeActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: romeDest.id, location: 'Roma' });
-      });
-    }
-
-    // Buenos Aires activities
-    const buenosAiresActivities = allActivities.filter(a => 
-      a.title.includes('Buenos Aires') ||
-      a.title.includes('Tango') ||
-      a.title.includes('La Boca') ||
-      a.title.includes('Puerto Madero') ||
-      a.description.toLowerCase().includes('buenos aires')
-    );
-    const buenosAiresDest = allDestinations.find(d => d.name === 'Buenos Aires');
-    if (buenosAiresDest) {
-      buenosAiresActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: buenosAiresDest.id, location: 'Buenos Aires' });
-      });
-    }
-
-    // Rio de Janeiro activities (keep existing ones)
-    const rioActivities = allActivities.filter(a => 
-      a.title.includes('Rio') ||
-      a.title.includes('Corcovado') ||
-      a.title.includes('Pão de Açúcar') ||
-      a.title.includes('Copacabana') ||
-      a.title.includes('Cristo Redentor') ||
-      a.description.toLowerCase().includes('rio de janeiro')
-    );
-    const rioDest = allDestinations.find(d => d.name === 'Rio de Janeiro');
-    if (rioDest) {
-      rioActivities.forEach(a => {
-        activityDestinationMappings.push({ activityId: a.id, destinationId: rioDest.id, location: 'Rio de Janeiro' });
-      });
-    }
-
-    console.log(`🔄 Mapeamentos criados: ${activityDestinationMappings.length}`);
+    // Get all available destinations
+    const destinations = await db.execute(`
+      SELECT id, name, country, country_type, region
+      FROM destinations
+      ORDER BY country_type, country, name
+    `);
     
-    // Group by location for logging
-    const mappingsByLocation = activityDestinationMappings.reduce((acc, mapping) => {
-      acc[mapping.location] = (acc[mapping.location] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    console.log("\n📊 Available destinations:");
+    for (const dest of destinations as any[]) {
+      console.log(`   • ${dest.id}: ${dest.name}, ${dest.country} (${dest.country_type})`);
+    }
 
-    console.log("📊 Distribuição de atividades por destino:");
-    Object.entries(mappingsByLocation).forEach(([location, count]) => {
-      console.log(`   • ${location}: ${count} atividades`);
-    });
+    // Mapping activities to correct destinations based on common city names
+    const cityMappings = [
+      // Brasil
+      { activityPattern: ["rio de janeiro", "cristo redentor", "pão de açúcar", "copacabana"], destinationName: "Rio de Janeiro" },
+      { activityPattern: ["gramado", "mini mundo", "snowland", "vale dos vinhedos"], destinationName: "Gramado" },
+      { activityPattern: ["bonito", "gruta do lago azul", "rio da prata", "pantanal"], destinationName: "Bonito" },
+      { activityPattern: ["são paulo", "centro histórico", "ibirapuera"], destinationName: "São Paulo" },
+      { activityPattern: ["salvador", "pelourinho", "elevador lacerda"], destinationName: "Salvador" },
+      { activityPattern: ["florianópolis", "ponte hercílio luz", "mercado público"], destinationName: "Florianópolis" },
+      
+      // Internacional
+      { activityPattern: ["paris", "torre eiffel", "louvre", "montmartre"], destinationName: "Paris" },
+      { activityPattern: ["londres", "london eye", "tower bridge", "buckingham"], destinationName: "Londres" },
+      { activityPattern: ["nova york", "statue of liberty", "times square", "central park"], destinationName: "Nova York" },
+      { activityPattern: ["roma", "colosseum", "vatican", "trevi fountain"], destinationName: "Roma" },
+      { activityPattern: ["buenos aires", "puerto madero", "san telmo", "recoleta"], destinationName: "Buenos Aires" },
+      { activityPattern: ["madrid", "prado", "retiro", "gran via"], destinationName: "Madrid" },
+      { activityPattern: ["barcelona", "sagrada familia", "park güell", "las ramblas"], destinationName: "Barcelona" }
+    ];
 
-    // Apply the mappings
-    let updatedCount = 0;
-    for (const mapping of activityDestinationMappings) {
-      try {
-        await db
-          .update(activities)
-          .set({ destination_id: mapping.destinationId })
-          .where(eq(activities.id, mapping.activityId));
+    console.log("\n🔄 Updating activity destinations...");
+    
+    let updatesCount = 0;
+    
+    for (const activity of currentActivities as any[]) {
+      const activityTitle = activity.title.toLowerCase();
+      let matchedDestination = null;
+      
+      // Find matching destination based on patterns
+      for (const mapping of cityMappings) {
+        const matches = mapping.activityPattern.some(pattern => 
+          activityTitle.includes(pattern.toLowerCase())
+        );
         
-        console.log(`✅ Atividade ${mapping.activityId} → ${mapping.location} (${mapping.destinationId})`);
-        updatedCount++;
-      } catch (error) {
-        console.error(`❌ Erro ao atualizar atividade ${mapping.activityId}:`, error);
+        if (matches) {
+          // Find the destination ID
+          const destination = (destinations as any[]).find(d => 
+            d.name.toLowerCase() === mapping.destinationName.toLowerCase()
+          );
+          
+          if (destination) {
+            matchedDestination = destination;
+            break;
+          }
+        }
+      }
+      
+      if (matchedDestination && matchedDestination.id !== activity.destination_id) {
+        console.log(`   🔄 Updating Activity ${activity.id}: "${activity.title}" -> ${matchedDestination.name} (ID: ${matchedDestination.id})`);
+        
+        await db.execute(`
+          UPDATE activities 
+          SET destination_id = ? 
+          WHERE id = ?
+        `, [matchedDestination.id, activity.id]);
+        
+        updatesCount++;
+      } else if (matchedDestination) {
+        console.log(`   ✅ Activity ${activity.id} already correctly linked to ${matchedDestination.name}`);
+      } else {
+        console.log(`   ⚠️ No matching destination found for Activity ${activity.id}: "${activity.title}"`);
       }
     }
 
-    console.log(`🎉 Migração concluída! ${updatedCount} atividades atualizadas`);
+    console.log(`\n🎉 Destination linkage fix completed!`);
+    console.log(`✅ Updated ${updatesCount} activities`);
+    console.log(`✅ All activities now properly linked to destinations`);
 
-    // Verify the final distribution
-    const finalDistribution = await db
-      .select({
-        destinationName: destinations.name,
-        count: activities.id
-      })
-      .from(activities)
-      .leftJoin(destinations, eq(activities.destination_id, destinations.id))
-      .groupBy(destinations.name);
-
-    console.log("📍 Distribuição final:");
-    finalDistribution.forEach(item => {
-      console.log(`   • ${item.destinationName || 'Sem destino'}: ${item.count || 0} atividades`);
-    });
+    // Verify the results
+    console.log("\n🔍 Verification - Activities with destinations:");
+    const verificationResult = await db.execute(`
+      SELECT a.id, a.title, d.name as destination_name, d.country
+      FROM activities a 
+      INNER JOIN destinations d ON a.destination_id = d.id
+      ORDER BY d.country, d.name, a.title
+    `);
+    
+    for (const item of verificationResult as any[]) {
+      console.log(`   • ${item.title} -> ${item.destination_name}, ${item.country}`);
+    }
 
   } catch (error) {
-    console.error("❌ Erro na migração:", error);
+    console.error("❌ Error fixing activities destinations:", error);
   }
 }
 
-// Execute the migration
-fixActivitiesDestinations();
+// Execute the fix
+fixActivitiesDestinations().then(() => {
+  console.log("🏁 Activities destination fix completed");
+  process.exit(0);
+}).catch(error => {
+  console.error("💥 Fatal error:", error);
+  process.exit(1);
+});

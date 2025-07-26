@@ -1677,7 +1677,7 @@ export function registerRoutes(app: Express): Server {
           }
         })
         .from(activityReviews)
-        .innerJoin(users, eq(activityReviews.user_id, users.id))
+        .innerJoin(users, eq(activityReviews.userId, users.id))
         .where(and(
           eq(activityReviews.activityId, activityId),
           eq(activityReviews.isHidden, false)
@@ -1723,7 +1723,7 @@ export function registerRoutes(app: Express): Server {
         .from(activityReviews)
         .where(and(
           eq(activityReviews.activityId, activityId),
-          eq(activityReviews.user_id, userId)
+          eq(activityReviews.userId, userId)
         ))
         .limit(1);
 
@@ -1784,7 +1784,7 @@ export function registerRoutes(app: Express): Server {
             }
           })
           .from(activityReviews)
-          .innerJoin(users, eq(activityReviews.user_id, users.id))
+          .innerJoin(users, eq(activityReviews.userId, users.id))
           .where(eq(activityReviews.id, reviewId))
           .limit(1);
 

@@ -1,73 +1,102 @@
 #!/usr/bin/env tsx
+import { db } from "./db.js";
 
-import { db } from "./db";
-import { sql } from "drizzle-orm";
-
-async function fixDestinationSimple() {
-  console.log("🚀 Corrigindo referências destination_id de forma simples...");
-  
+async function fixDestinationsSimple() {
   try {
-    // 1. Primeiro, garantir que temos o Rio de Janeiro
-    console.log("📍 Verificando destino Rio de Janeiro...");
-    const rioCheck = await db.execute(sql`SELECT id FROM destinations WHERE name = 'Rio de Janeiro'`);
+    console.log("🔧 Simple destination fix based on activity titles...");
+
+    // Simple mappings based on clear patterns
+    const fixes = [
+      // Activities with clear city references
+      { pattern: "Rio de Janeiro", city: "Rio de Janeiro" },
+      { pattern: "Cristo Redentor", city: "Rio de Janeiro" },
+      { pattern: "Pão de Açúcar", city: "Rio de Janeiro" },
+      { pattern: "Copacabana", city: "Rio de Janeiro" },
+      
+      { pattern: "Gramado", city: "Gramado" },
+      { pattern: "Mini Mundo", city: "Gramado" },
+      { pattern: "Snowland", city: "Gramado" },
+      
+      { pattern: "Bonito", city: "Bonito" },
+      { pattern: "Gruta do Lago Azul", city: "Bonito" },
+      { pattern: "Rio da Prata", city: "Bonito" },
+      
+      { pattern: "Paris", city: "Paris" },
+      { pattern: "Torre Eiffel", city: "Paris" },
+      { pattern: "Louvre", city: "Paris" },
+      
+      { pattern: "London", city: "Londres" },
+      { pattern: "Londres", city: "Londres" },
+      { pattern: "London Eye", city: "Londres" },
+      { pattern: "Tower Bridge", city: "Londres" },
+      
+      { pattern: "New York", city: "Nova York" },
+      { pattern: "Nova York", city: "Nova York" },
+      { pattern: "Times Square", city: "Nova York" },
+      { pattern: "Central Park", city: "Nova York" },
+      
+      { pattern: "Rome", city: "Roma" },
+      { pattern: "Roma", city: "Roma" },
+      { pattern: "Colosseum", city: "Roma" },
+      { pattern: "Vatican", city: "Roma" },
+      
+      { pattern: "Buenos Aires", city: "Buenos Aires" },
+      { pattern: "Puerto Madero", city: "Buenos Aires" }
+    ];
+
+    console.log("🔍 Getting activities and destinations...");
     
-    let rioId: number;
-    if (rioCheck.length === 0) {
-      console.log("📍 Criando Rio de Janeiro...");
-      await db.execute(sql`
-        INSERT INTO destinations (name, state, country, country_type, continent, region, is_active, created_at)
-        VALUES ('Rio de Janeiro', 'RJ', 'Brasil', 'nacional', 'América do Sul', 'Sudeste', true, NOW())
-      `);
-      const newRio = await db.execute(sql`SELECT id FROM destinations WHERE name = 'Rio de Janeiro'`);
-      rioId = (newRio[0] as any).id;
-    } else {
-      rioId = (rioCheck[0] as any).id;
+    // Get basic counts first
+    const actCount = await db.execute("SELECT COUNT(*) as count FROM activities");
+    const destCount = await db.execute("SELECT COUNT(*) as count FROM destinations");
+    
+    console.log(`📊 Found ${Object.values(actCount[0] as any)[0]} activities and ${Object.values(destCount[0] as any)[0]} destinations`);
+
+    // Get simple activity data
+    const activities = await db.execute("SELECT id, title FROM activities LIMIT 50");
+    console.log(`📊 Processing ${(activities as any[]).length} activities...`);
+
+    // Get destinations with basic info
+    const destinations = await db.execute("SELECT id, name FROM destinations");
+    console.log(`📊 Available destinations: ${(destinations as any[]).length}`);
+
+    let updates = 0;
+    
+    for (const activity of activities as any[]) {
+      const actTitle = activity.title || "";
+      
+      for (const fix of fixes) {
+        if (actTitle.includes(fix.pattern)) {
+          // Find destination
+          const dest = (destinations as any[]).find(d => 
+            d.name && d.name.toLowerCase().includes(fix.city.toLowerCase())
+          );
+          
+          if (dest) {
+            console.log(`🔄 Updating "${actTitle}" -> ${dest.name}`);
+            
+            await db.execute(
+              "UPDATE activities SET destination_id = ? WHERE id = ?",
+              [dest.id, activity.id]
+            );
+            
+            updates++;
+            break;
+          }
+        }
+      }
     }
-    
-    console.log(`✅ Rio de Janeiro ID: ${rioId}`);
-    
-    // 2. Corrigir trips órfãos de forma simples
-    console.log("🔧 Corrigindo trips órfãos...");
-    await db.execute(sql.raw(`UPDATE trips SET destination_id = ${rioId} WHERE destination_id = 999 OR destination_id = 998 OR destination_id NOT IN (SELECT id FROM destinations)`));
-    console.log("✅ Trips corrigidos");
-    
-    // 3. Corrigir activities órfãos de forma simples
-    console.log("🔧 Corrigindo activities órfãos...");
-    await db.execute(sql.raw(`UPDATE activities SET destination_id = ${rioId} WHERE destination_id = 999 OR destination_id = 998 OR destination_id NOT IN (SELECT id FROM destinations)`));
-    console.log("✅ Activities corrigidos");
-    
-    // 4. Tentar adicionar foreign keys
-    console.log("🔗 Adicionando foreign keys...");
-    
-    try {
-      await db.execute(sql.raw(`ALTER TABLE trips ADD CONSTRAINT trips_destinations_fk FOREIGN KEY (destination_id) REFERENCES destinations(id)`));
-      console.log("✅ FK trips adicionada");
-    } catch (e: any) {
-      console.log("ℹ️ FK trips:", e.message.substring(0, 50));
-    }
-    
-    try {
-      await db.execute(sql.raw(`ALTER TABLE activities ADD CONSTRAINT activities_destinations_fk FOREIGN KEY (destination_id) REFERENCES destinations(id)`));
-      console.log("✅ FK activities adicionada");
-    } catch (e: any) {
-      console.log("ℹ️ FK activities:", e.message.substring(0, 50));
-    }
-    
-    console.log("🎉 Migração concluída!");
-    
+
+    console.log(`✅ Updated ${updates} activities`);
+
   } catch (error) {
-    console.error("❌ Erro:", error);
-    throw error;
+    console.error("❌ Error:", error);
   }
 }
 
-// Executar
-fixDestinationSimple()
-  .then(() => {
-    console.log("✅ Sucesso!");
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error("❌ Falha:", error);
-    process.exit(1);
-  });
+fixDestinationsSimple().then(() => {
+  process.exit(0);
+}).catch(error => {
+  console.error("💥 Error:", error);
+  process.exit(1);
+});
