@@ -441,3 +441,6 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 26, 2025. **EXPANSÃO ADICIONAL DE DESTINOS**: Adicionados mais 34 destinos nacionais Sul/Sudeste (Bagé, Bento Gonçalves, Caxias do Sul, Pelotas, etc.)
 - July 26, 2025. **TOTAL FINAL DE DESTINOS**: 226 destinos totais (137 nacionais + 89 internacionais) - cobertura completa do Brasil e principais destinos mundiais
 - July 26, 2025. **DISTRIBUIÇÃO ATUALIZADA**: Sudeste (60), Sul (57), Nordeste (13), Centro-Oeste (5), Norte (2) + 89 internacionais
+- July 26, 2025. **EXPANSÃO CENTRO-OESTE E NORTE**: Adicionados mais 34 destinos (Caldas Novas, Jalapão, Alter do Chão, Chapada dos Veadeiros, etc.)
+- July 26, 2025. **COBERTURA NACIONAL COMPLETA**: 260 destinos totais (171 nacionais + 89 internacionais) - todas as regiões brasileiras representadas
+- July 26, 2025. **DISTRIBUIÇÃO FINAL COMPLETA**: Sudeste (60), Sul (57), Norte (22), Nordeste (17), Centro-Oeste (15) + 89 destinos internacionais premium
