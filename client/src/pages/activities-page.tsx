@@ -1027,7 +1027,12 @@ function ActivitiesPage() {
                   <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
                     <MapPin className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="font-medium truncate">{activity.location}</span>
+                  <span className="font-medium truncate">
+                    {activity.destination 
+                      ? `${activity.destination.name}${activity.destination.state ? `, ${activity.destination.state}` : `, ${activity.destination.country}`}`
+                      : activity.location || 'Localização não definida'
+                    }
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
                   <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">

@@ -1,4 +1,4 @@
-import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, activityBudgetProposalVotes, tripActivities, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type ActivityBudgetProposalVote, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, popularDestinations } from "@shared/schema";
+import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, activityBudgetProposalVotes, tripActivities, destinations, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type ActivityBudgetProposalVote, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, popularDestinations } from "@shared/schema";
 import { fixCreatorsAsParticipants } from "./fix-creators-as-participants";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -1569,7 +1569,34 @@ export class DatabaseStorage implements IStorage {
     sortBy?: string; 
   }): Promise<Activity[]> {
     try {
-      let allActivities = await db.select().from(activities).where(eq(activities.isActive, true));
+      // Get activities with destination data using JOIN
+      const activitiesWithDestinations = await db.select({
+        id: activities.id,
+        title: activities.title,
+        description: activities.description,
+        category: activities.category,
+        priceType: activities.priceType,
+        priceAmount: activities.priceAmount,
+        duration: activities.duration,
+        difficultyLevel: activities.difficultyLevel,
+        coverImage: activities.coverImage,
+        averageRating: activities.averageRating,
+        totalRatings: activities.totalRatings,
+        isActive: activities.isActive,
+        destination: {
+          id: destinations.id,
+          name: destinations.name,
+          state: destinations.state,
+          country: destinations.country,
+          countryType: destinations.countryType,
+          region: destinations.region
+        }
+      })
+      .from(activities)
+      .leftJoin(destinations, eq(activities.destination_id, destinations.id))
+      .where(eq(activities.isActive, true));
+
+      let allActivities = activitiesWithDestinations;
 
       if (filters) {
         if (filters.search) {
