@@ -59,10 +59,11 @@ import { AdvancedActivityManager } from "@/components/advanced-activity-manager"
 import { CoverImageSelector } from "@/components/cover-image-selector";
 import { apiRequest } from "@/lib/queryClient";
 
-const createTripSchema = insertTripSchema.extend({
+const createTripSchema = insertTripSchema.omit({ destination_id: true }).extend({
   startDate: z.string().min(1, "Data de início é obrigatória"),
   endDate: z.string().min(1, "Data de fim é obrigatória"),
   planned_activities: z.array(z.any()).optional(),
+  destination: z.string().min(1, "Destino é obrigatório"),
 }).refine((data) => {
   const startDate = new Date(data.startDate);
   const endDate = new Date(data.endDate);
@@ -191,11 +192,11 @@ function CreateTripPageContent() {
       description: "",
       startDate: "",
       endDate: "",
-      maxParticipants: 4,
+      max_participants: 4,
       budget: undefined,
       budget_breakdown: undefined,
-      travelStyle: "",
-      sharedCosts: [],
+      travel_style: "",
+      shared_costs: [],
     },
   });
 
@@ -208,11 +209,11 @@ function CreateTripPageContent() {
     let completedCount = 0;
     
     // Research & Inspiration
-    if (watchedValues.destination && watchedValues.travelStyle) {
+    if (watchedValues.destination && watchedValues.travel_style) {
       updatedSteps[0].status = 'completed';
       totalProgress += updatedSteps[0].points;
       completedCount++;
-    } else if (watchedValues.destination || watchedValues.travelStyle) {
+    } else if (watchedValues.destination || watchedValues.travel_style) {
       updatedSteps[0].status = 'in-progress';
     }
     
@@ -272,7 +273,7 @@ function CreateTripPageContent() {
     let newPoints = 0;
     
     // Budget Master achievement
-    if (watchedValues.budget_breakdown && !achievements.find(a => a.id === 'budget_master')?.unlocked) {
+    if (watchedValues.budget_breakdown && typeof watchedValues.budget_breakdown === 'object' && !achievements.find(a => a.id === 'budget_master')?.unlocked) {
       const budgetMaster = newAchievements.find(a => a.id === 'budget_master');
       if (budgetMaster) {
         budgetMaster.unlocked = true;
@@ -285,7 +286,7 @@ function CreateTripPageContent() {
     }
 
     // Social Butterfly achievement
-    if (watchedValues.max_participants >= 6 && !achievements.find(a => a.id === 'social_butterfly')?.unlocked) {
+    if (watchedValues.max_participants && watchedValues.max_participants >= 6 && !achievements.find(a => a.id === 'social_butterfly')?.unlocked) {
       const socialButterfly = newAchievements.find(a => a.id === 'social_butterfly');
       if (socialButterfly) {
         socialButterfly.unlocked = true;
@@ -298,7 +299,7 @@ function CreateTripPageContent() {
     }
 
     // Adventurer achievement
-    if (watchedValues.travelStyle === 'aventura' && !achievements.find(a => a.id === 'adventurer')?.unlocked) {
+    if (watchedValues.travel_style === 'aventura' && !achievements.find(a => a.id === 'adventurer')?.unlocked) {
       const adventurer = newAchievements.find(a => a.id === 'adventurer');
       if (adventurer) {
         adventurer.unlocked = true;
@@ -333,8 +334,8 @@ function CreateTripPageContent() {
   const createTripMutation = useMutation({
     mutationFn: async (data: CreateTripForm) => {
       const activitiesCost = calculateActivitiesCost(planned_activities);
-      const totalBudget = data.budget_breakdown 
-        ? calculateTotalBudget(data.budget_breakdown) + activitiesCost
+      const totalBudget = data.budget_breakdown && typeof data.budget_breakdown === 'object'
+        ? calculateTotalBudget(data.budget_breakdown as BudgetBreakdown) + activitiesCost
         : (data.budget || 0) + activitiesCost;
         
       const tripData = {
@@ -344,6 +345,8 @@ function CreateTripPageContent() {
         budget: totalBudget,
         planned_activities: planned_activities,
         destination_id: selectedDestinationId,
+        max_participants: data.max_participants,
+        travel_style: data.travel_style,
       };
       
       const response = await apiRequest("POST", "/api/trips", tripData);
@@ -598,7 +601,7 @@ function CreateTripPageContent() {
 
                         <FormField
                           control={form.control}
-                          name="travelStyle"
+                          name="travel_style"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Estilo de Viagem</FormLabel>
@@ -626,14 +629,13 @@ function CreateTripPageContent() {
 
                         <FormField
                           control={form.control}
-                          name="cover_image"
+                          name="coverImage"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Imagem da Viagem</FormLabel>
                               <FormControl>
                                 <CoverImageSelector
                                   currentImage={field.value}
-                                  destination={form.watch('destination')}
                                   onImageSelect={field.onChange}
                                   trigger={
                                     <Button 
@@ -772,7 +774,7 @@ function CreateTripPageContent() {
                                       />
                                     </div>
                                   </FormControl>
-                                  {field.value && form.watch('maxParticipants') && (
+                                  {field.value && form.watch('max_participants') && (
                                     <div className="space-y-2">
                                       {calculateActivitiesCost(planned_activities) > 0 && (
                                         <div className="bg-purple-50 p-3 rounded-lg">
@@ -788,7 +790,7 @@ function CreateTripPageContent() {
                                       </div>
                                       <div className="bg-blue-50 p-3 rounded-lg">
                                         <p className="text-sm font-medium text-blue-900">
-                                          👥 Custo por pessoa: R$ {calculateCostPerPerson(field.value + calculateActivitiesCost(planned_activities), form.watch('maxParticipants')).toLocaleString('pt-BR')}
+                                          👥 Custo por pessoa: R$ {calculateCostPerPerson(field.value + calculateActivitiesCost(planned_activities), form.watch('max_participants')).toLocaleString('pt-BR')}
                                         </p>
                                       </div>
                                     </div>
@@ -850,13 +852,13 @@ function CreateTripPageContent() {
                                       R$ {(calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}
                                     </span>
                                   </div>
-                                  {form.watch('maxParticipants') && (calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities)) > 0 && (
+                                  {form.watch('max_participants') && (calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities)) > 0 && (
                                     <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border-2 border-green-200">
                                       <span className="font-bold text-green-900">👥 Custo por Pessoa:</span>
                                       <span className="text-xl font-bold text-green-900">
                                         R$ {calculateCostPerPerson(
                                           calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities), 
-                                          form.watch('maxParticipants')
+                                          form.watch('max_participants')
                                         ).toLocaleString('pt-BR')}
                                       </span>
                                     </div>
@@ -889,7 +891,7 @@ function CreateTripPageContent() {
                           onActivitiesChange={setPlannedActivities}
                           tripDestination={form.watch('destination')}
                           tripParticipants={1}
-                          tripMaxParticipants={form.watch('maxParticipants') || 1}
+                          tripMaxParticipants={form.watch('max_participants') || 1}
                           tripStartDate={form.watch('startDate')}
                           tripEndDate={form.watch('endDate')}
                           className="border-2 border-gray-200 rounded-lg p-4"
@@ -914,7 +916,7 @@ function CreateTripPageContent() {
                         
                         <FormField
                           control={form.control}
-                          name="maxParticipants"
+                          name="max_participants"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Máximo de Participantes</FormLabel>
