@@ -390,6 +390,24 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Get trip participants
+  app.get("/api/trips/:id/participants", async (req, res) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      
+      const trip = await storage.getTripById(tripId);
+      if (!trip) {
+        return res.status(404).json({ message: "Viagem não encontrada" });
+      }
+      
+      const participants = await storage.getTripParticipants(tripId);
+      res.json(participants);
+    } catch (error) {
+      console.error('Erro ao buscar participantes:', error);
+      res.status(500).json({ message: "Erro ao buscar participantes" });
+    }
+  });
+
   // Update trip planned activities
   app.patch("/api/trips/:id/activities", requireAuth, async (req, res) => {
     try {
