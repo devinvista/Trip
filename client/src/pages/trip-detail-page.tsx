@@ -2113,20 +2113,27 @@ export default function TripDetailPage() {
                           const totalExpenses = calculateTotalExpenses();
                           const totalBudget = (trip.budget || 0) + calculateActivitiesCost(planned_activities);
                           const percentage = totalBudget > 0 ? Math.round((totalExpenses / totalBudget) * 100) : 0;
+                          console.log('Progress Debug:', { totalExpenses, totalBudget, percentage });
                           return `${percentage}%`;
                         })()}
                       </span>
                     </div>
                     <div className="space-y-1">
-                      <Progress 
-                        value={(() => {
-                          const totalExpenses = calculateTotalExpenses();
-                          const totalBudget = (trip.budget || 0) + calculateActivitiesCost(planned_activities);
-                          const percentage = totalBudget > 0 ? (totalExpenses / totalBudget) * 100 : 0;
-                          return Math.min(100, Math.max(0, percentage));
-                        })()} 
-                        className="h-1.5 bg-gray-200"
-                      />
+                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                        <div 
+                          className="bg-blue-600 h-1.5 rounded-full transition-all duration-300 ease-in-out"
+                          style={{
+                            width: `${(() => {
+                              const totalExpenses = calculateTotalExpenses();
+                              const totalBudget = (trip.budget || 0) + calculateActivitiesCost(planned_activities);
+                              const percentage = totalBudget > 0 ? (totalExpenses / totalBudget) * 100 : 0;
+                              const clampedPercentage = Math.min(100, Math.max(0, percentage));
+                              console.log('Progress Bar Width:', clampedPercentage + '%');
+                              return clampedPercentage;
+                            })()}%`
+                          }}
+                        />
+                      </div>
                       <div className="flex justify-between text-xs text-gray-500">
                         <span>{formatBrazilianCurrency(calculateTotalExpenses())}</span>
                         <span>{formatBrazilianCurrency((trip.budget || 0) + calculateActivitiesCost(planned_activities))}</span>
