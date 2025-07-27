@@ -98,6 +98,7 @@ export interface IStorage {
   // Search and filter functions
   getPopularActivities(limit?: number): Promise<Activity[]>;
   getActivityCategories(): Promise<{ category: string; count: number }[]>;
+  getUserByPhone(phone: string): Promise<User | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -620,6 +621,11 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(sql`count(*)`));
     
     return result;
+  }
+
+  async getUserByPhone(phone: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.phone, phone));
+    return user || undefined;
   }
 }
 

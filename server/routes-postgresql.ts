@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { setupAuth } from "./auth";
+import { setupAuth } from "./auth-postgresql";
 import { storage } from "./storage";
 import { insertTripSchema, insertUserSchema, insertActivitySchema, insertExpenseSchema, insertMessageSchema, insertTripRequestSchema } from "@shared/schema";
 import { createServer } from "http";

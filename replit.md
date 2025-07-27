@@ -462,3 +462,5 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 27, 2025. **ROTAS POSTGRESQL IMPLEMENTADAS**: Criado routes-postgresql.ts com todas as rotas otimizadas para PostgreSQL
 - July 27, 2025. **SEED DE DADOS POSTGRESQL**: Dados de demonstração criados com sucesso (3 usuários, 3 destinos, 2 viagens, 2 atividades)
 - July 27, 2025. **APLICAÇÃO 100% POSTGRESQL**: PartiuTrip totalmente funcional com PostgreSQL, todas as funcionalidades preservadas
+- July 27, 2025. **AUTENTICAÇÃO POSTGRESQL CORRIGIDA**: Sistema de autenticação completamente migrado para PostgreSQL com auth-postgresql.ts
+- July 27, 2025. **CREDENCIAIS DE TESTE ATUALIZADAS**: tom/password123, maria/password123, carlos/password123 com hashes bcrypt corretos
