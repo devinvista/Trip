@@ -85,9 +85,9 @@ export async function createSimpleSeedData() {
       const [insertResult] = await db.insert(users).values({
         ...userData,
         password: hashedPassword
-      });
-      userIds.push(insertResult.insertId);
-      console.log(`✅ Usuário criado: ${userData.username} (ID: ${insertResult.insertId})`);
+      }).returning({ id: users.id });
+      userIds.push(insertResult.id);
+      console.log(`✅ Usuário criado: ${userData.username} (ID: ${insertResult.id})`);
     }
 
     // Create 3 trips
