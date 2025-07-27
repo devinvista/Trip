@@ -343,8 +343,86 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   // Additional placeholder methods - will be implemented as needed
-  async getTripExpenses(tripId: number): Promise<Expense[]> {
-    return await db.select().from(expenses).where(eq(expenses.trip_id, tripId));
+  async getTripExpenses(tripId: number): Promise<any[]> {
+    // First get all expenses with payer info
+    const expensesWithPayers = await db
+      .select({
+        id: expenses.id,
+        trip_id: expenses.trip_id,
+        paid_by: expenses.paid_by,
+        amount: expenses.amount,
+        description: expenses.description,
+        category: expenses.category,
+        receipt: expenses.receipt,
+        created_at: expenses.created_at,
+        settled_at: expenses.settled_at,
+        payer: {
+          id: users.id,
+          username: users.username,
+          email: users.email,
+          fullName: users.fullName,
+          phone: users.phone,
+          bio: users.bio,
+          location: users.location,
+          profilePhoto: users.profilePhoto,
+          languages: users.languages,
+          interests: users.interests,
+          travelStyles: users.travelStyles,
+          referredBy: users.referredBy,
+          isVerified: users.isVerified,
+          verificationMethod: users.verificationMethod,
+          averageRating: users.averageRating,
+          totalRatings: users.totalRatings,
+          createdAt: users.createdAt
+        }
+      })
+      .from(expenses)
+      .innerJoin(users, eq(expenses.paid_by, users.id))
+      .where(eq(expenses.trip_id, tripId))
+      .orderBy(desc(expenses.created_at));
+    
+    // For each expense, get its splits separately to avoid complex SQL
+    const expensesWithSplits = [];
+    for (const expense of expensesWithPayers) {
+      const splits = await db
+        .select({
+          id: expenseSplits.id,
+          user_id: expenseSplits.user_id,
+          amount: expenseSplits.amount,
+          paid: expenseSplits.paid,
+          settled_at: expenseSplits.settled_at,
+          user: {
+            id: users.id,
+            username: users.username,
+            email: users.email,
+            fullName: users.fullName,
+            phone: users.phone,
+            bio: users.bio,
+            location: users.location,
+            profilePhoto: users.profilePhoto,
+            languages: users.languages,
+            interests: users.interests,
+            travelStyles: users.travelStyles,
+            referredBy: users.referredBy,
+            isVerified: users.isVerified,
+            verificationMethod: users.verificationMethod,
+            averageRating: users.averageRating,
+            totalRatings: users.totalRatings,
+            createdAt: users.createdAt
+          }
+        })
+        .from(expenseSplits)
+        .innerJoin(users, eq(expenseSplits.user_id, users.id))
+        .where(eq(expenseSplits.expense_id, expense.id));
+      
+      expensesWithSplits.push({
+        ...expense,
+        createdAt: expense.created_at, // Add missing field expected by frontend
+        splits
+      });
+    }
+    
+    return expensesWithSplits;
   }
 
   async getTripBalances(tripId: number): Promise<any[]> {
