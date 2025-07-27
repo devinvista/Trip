@@ -148,21 +148,21 @@ export function setupAuth(app: Express) {
   // Estratégia local
   passport.use(new LocalStrategy(
     {
-      usernameField: 'username',
+      usernameField: 'identifier',
       passwordField: 'password'
     },
-    async (username, password, done) => {
+    async (identifier, password, done) => {
       try {
         // Tenta buscar o usuário por username, email ou telefone
-        let user = await storage.getUserByUsername(username);
+        let user = await storage.getUserByUsername(identifier);
         
         if (!user) {
-          user = await storage.getUserByEmail(username);
+          user = await storage.getUserByEmail(identifier);
         }
         
         if (!user) {
           // Remove formatação do telefone para busca
-          const cleanPhone = username.replace(/\D/g, '');
+          const cleanPhone = identifier.replace(/\D/g, '');
           user = await storage.getUserByPhone(cleanPhone);
         }
         
@@ -285,6 +285,12 @@ export function setupAuth(app: Express) {
 
   // Rota de login
   app.post("/api/auth/login", (req, res, next) => {
+    console.log('🔍 Dados do login recebidos:', {
+      body: req.body,
+      hasIdentifier: !!req.body?.identifier,
+      hasPassword: !!req.body?.password
+    });
+    
     passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
         console.error('Erro na autenticação:', err);
