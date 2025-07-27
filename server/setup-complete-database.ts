@@ -30,7 +30,7 @@ async function setupCompleteDatabase() {
     console.log(`✅ Destinos criados: ${destinationsCount}`);
     console.log(`✅ Atividades criadas: ${activitiesResult.activities}`);
     console.log(`✅ Propostas criadas: ${activitiesResult.proposals}`);
-    console.log('\n📋 O banco MySQL está agora completamente configurado e pronto para uso!');
+    console.log('\n📋 O banco PostgreSQL está agora completamente configurado e pronto para uso!');
     
     return {
       destinations: destinationsCount,

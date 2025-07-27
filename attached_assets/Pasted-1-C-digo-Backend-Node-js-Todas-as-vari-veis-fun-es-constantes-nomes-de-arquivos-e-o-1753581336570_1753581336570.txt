@@ -1,0 +1,48 @@
+1. **Código Backend (Node.js):**
+   - Todas as variáveis, funções, constantes, nomes de arquivos e objetos devem estar em camelCase.
+   - Ajuste qualquer função ou middleware que utilize ou espere dados em snake_case.
+   - Atualize chamadas a banco de dados para refletir os novos nomes camelCase.
+
+2. **Banco de Dados (PostgreSQL - Neon):**
+   - Converta todos os nomes de tabelas e colunas para camelCase.
+   - Atualize schemas, constraints, foreign keys e relacionamentos mantendo camelCase.
+   - Gere migrações seguras para renomear as tabelas e colunas existentes (ex: `ALTER TABLE users RENAME COLUMN user_name TO userName`).
+   - Ajuste views, triggers e stored procedures, se houver.
+
+3. **ORM (caso use Prisma, Sequelize, Knex ou outro):**
+   - Atualize os modelos para refletirem nomes em camelCase.
+   - Certifique-se de que o mapeamento entre os campos e as colunas reflita corretamente o novo padrão.
+   - Caso necessário, recrie migrations e rode novamente com o padrão ajustado.
+
+4. **Frontend (se houver):**
+   - As propriedades recebidas do backend devem estar em camelCase.
+   - Ajuste qualquer parser, desestruturação ou transformação de dados vindos do backend.
+   - Se usar TypeScript, ajuste interfaces e tipos para camelCase.
+
+5. **Storage / Uploads / JSON / APIs:**
+   - Todos os campos em objetos JSON (envio e resposta) devem seguir camelCase.
+   - Campos em formulários e APIs REST ou GraphQL devem ser camelCase.
+
+6. **Dependências e Integrações:**
+   - Certifique-se de que libs ou middlewares que fazem parsing de dados (como `express.json()`, `body-parser`, `cors`, etc.) não estejam convertendo ou esperando campos em snake_case.
+   - Se utilizar bibliotecas como `camelcase-keys` ou `snakecase-keys`, remova ou configure para manter camelCase de ponta a ponta.
+
+7. **Validação e Testes:**
+   - Atualize arquivos de testes unitários, mocks, fixtures e dados de exemplo para refletirem o novo padrão.
+   - Verifique se existem validações (Joi, Zod, Yup, etc.) que validam campos com nomes antigos, e corrija.
+
+8. **Documentação e Swagger (se houver):**
+   - Atualize os contratos de API, Swagger/OpenAPI ou Postman Collections com os nomes de campos em camelCase.
+   - Certifique-se de que o padrão documentado seja coerente com a implementação.
+
+9. **Requisitos Gerais:**
+   - O projeto deve funcionar integralmente com o novo padrão.
+   - Todos os nomes devem ser semanticamente equivalentes ao anterior, apenas com a mudança no estilo.
+   - Evite o uso misto de camelCase e snake_case em qualquer camada da aplicação.
+
+Exemplos de conversão:
+- `user_name` → `userName`
+- `created_at` → `createdAt`
+- `product_id` → `productId`
+
+O resultado final deve ser um projeto totalmente padronizado em camelCase, desde o banco até o frontend, com segurança, consistência e funcionalidade intactas.
