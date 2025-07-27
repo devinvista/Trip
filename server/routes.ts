@@ -2791,6 +2791,17 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Notifications endpoint - simple mock for now
+  app.get("/api/notifications", requireAuth, async (req, res) => {
+    try {
+      // Return empty array for now - can be implemented later
+      res.json([]);
+    } catch (error) {
+      console.error('Erro ao buscar notificações:', error);
+      res.status(500).json({ message: "Erro ao buscar notificações" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

@@ -309,7 +309,7 @@ export class DatabaseStorage implements IStorage {
 
   async getTripsByCreator(creator_id: number): Promise<Trip[]> {
     try {
-      return await db.select().from(trips).where(eq(trips.creator_id, creatorId));
+      return await db.select().from(trips).where(eq(trips.creator_id, creator_id));
     } catch (error) {
       console.error('❌ Erro ao buscar viagens do criador:', error);
       return [];
@@ -321,19 +321,19 @@ export class DatabaseStorage implements IStorage {
       return await db.select({
         id: trips.id,
         title: trips.title,
-        destinationId: trips.destination_id,
-        cover_image: trips.coverImage,
-        startDate: trips.startDate,
-        endDate: trips.endDate,
+        destination_id: trips.destination_id,
+        cover_image: trips.cover_image,
+        start_date: trips.start_date,
+        end_date: trips.end_date,
         budget: trips.budget,
-        maxParticipants: trips.max_participants,
+        max_participants: trips.max_participants,
         description: trips.description,
-        travelStyle: trips.travel_style,
+        travel_style: trips.travel_style,
         creator_id: trips.creator_id,
         status: trips.status,
-        budgetBreakdown: trips.budget_breakdown,
+        budget_breakdown: trips.budget_breakdown,
         current_participants: trips.current_participants,
-        sharedCosts: trips.shared_costs,
+        shared_costs: trips.shared_costs,
         created_at: trips.created_at
       })
       .from(trips)
