@@ -289,7 +289,7 @@ export type ExpenseSplit = typeof expenseSplits.$inferSelect;
 
 // Insert schemas for expenses
 export const insertExpenseSchema = z.object({
-  tripId: z.number(),
+  trip_id: z.number(),
   amount: z.number().positive("O valor deve ser positivo"),
   description: z.string().min(1, "Descrição é obrigatória"),
   category: z.string().default("other"),
@@ -300,6 +300,8 @@ export const insertExpenseSplitSchema = createInsertSchema(expenseSplits).omit({
   id: true,
   settled_at: true,
 }).extend({
+  expense_id: z.number(),
+  user_id: z.number(),
   amount: z.number().positive("O valor deve ser positivo"),
 });
 
