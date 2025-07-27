@@ -38,6 +38,7 @@ export interface IStorage {
   getAllDestinations(): Promise<any[]>;
   getDestinationById(id: number): Promise<any | null>;
   createDestination(destination: any): Promise<any>;
+  getDestinations(search?: string): Promise<any[]>;
   
   // Activities
   getAllActivities(): Promise<Activity[]>;
@@ -285,6 +286,18 @@ export class PostgreSQLStorage implements IStorage {
   async createDestination(destinationData: any): Promise<any> {
     const [destination] = await db.insert(destinations).values(destinationData).returning();
     return destination;
+  }
+
+  async getDestinations(search?: string): Promise<any[]> {
+    let query = db.select().from(destinations).where(eq(destinations.isActive, true));
+    
+    if (search) {
+      query = query.where(
+        sql`(${destinations.name} ILIKE ${`%${search}%`} OR ${destinations.region} ILIKE ${`%${search}%`})`
+      );
+    }
+    
+    return await query.orderBy(asc(destinations.name));
   }
 
   async getAllActivities(): Promise<Activity[]> {

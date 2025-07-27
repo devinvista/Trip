@@ -145,6 +145,7 @@ function CreateTripPageContent() {
   const [totalPoints, setTotalPoints] = useState(0);
   const [achievements, setAchievements] = useState(ACHIEVEMENTS);
   const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
+  const [selectedDestinationId, setSelectedDestinationId] = useState<number | null>(null);
   const [planned_activities, setPlannedActivities] = useState<PlannedActivity[]>([
     {
       id: '1',
@@ -342,6 +343,7 @@ function CreateTripPageContent() {
         endDate: new Date(data.endDate),
         budget: totalBudget,
         planned_activities: planned_activities,
+        destination_id: selectedDestinationId,
       };
       
       const response = await apiRequest("POST", "/api/trips", tripData);
@@ -582,6 +584,9 @@ function CreateTripPageContent() {
                                 <PlacesAutocomplete
                                   value={field.value}
                                   onChange={field.onChange}
+                                  onDestinationSelect={(destination) => {
+                                    setSelectedDestinationId(destination.id);
+                                  }}
                                   placeholder="Busque cidades incríveis como São Paulo, Paris, Tokyo..."
                                   className="border-2 focus:border-primary"
                                 />

@@ -4,33 +4,58 @@ import { MapPin, ChevronDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { popularDestinations } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
+
+interface Destination {
+  id: number;
+  name: string;
+  state?: string;
+  country: string;
+  region?: string;
+  continent: string;
+}
 
 interface PlacesAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
+  onDestinationSelect?: (destination: Destination) => void;
   placeholder?: string;
   className?: string;
 }
 
-// Get popular destinations from schema
-const popularCities = Object.keys(popularDestinations).sort();
-
 export function PlacesAutocomplete({ 
   value, 
   onChange, 
-  placeholder = "Buscar cidades...",
+  onDestinationSelect,
+  placeholder = "Buscar destinos...",
   className = "" 
 }: PlacesAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredCities = popularCities.filter(city =>
-    city.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Fetch destinations from API
+  const { data: destinations = [], isLoading } = useQuery({
+    queryKey: ['/api/destinations', searchTerm],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchTerm) {
+        params.append('search', searchTerm);
+      }
+      const response = await fetch(`/api/destinations?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch destinations');
+      }
+      return response.json();
+    }
+  });
 
-  const handleSelect = (city: string) => {
-    onChange(city);
+  const handleSelect = (destination: Destination) => {
+    const displayName = destination.state 
+      ? `${destination.name}, ${destination.state}` 
+      : `${destination.name}, ${destination.country}`;
+    
+    onChange(displayName);
+    onDestinationSelect?.(destination);
     setOpen(false);
     setSearchTerm("");
   };
@@ -69,19 +94,32 @@ export function PlacesAutocomplete({
             }}
           />
           <CommandList>
-            <CommandEmpty>Nenhuma cidade encontrada.</CommandEmpty>
+            <CommandEmpty>
+              {isLoading ? "Carregando destinos..." : "Nenhum destino encontrado."}
+            </CommandEmpty>
             <CommandGroup>
-              {filteredCities.slice(0, 10).map((city) => (
-                <CommandItem
-                  key={city}
-                  value={city}
-                  onSelect={() => handleSelect(city)}
-                  className="cursor-pointer"
-                >
-                  <MapPin className="mr-2 h-4 w-4" />
-                  {city}
-                </CommandItem>
-              ))}
+              {destinations.slice(0, 10).map((destination: Destination) => {
+                const displayName = destination.state 
+                  ? `${destination.name}, ${destination.state}` 
+                  : `${destination.name}, ${destination.country}`;
+                
+                return (
+                  <CommandItem
+                    key={destination.id}
+                    value={displayName}
+                    onSelect={() => handleSelect(destination)}
+                    className="cursor-pointer"
+                  >
+                    <MapPin className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span>{displayName}</span>
+                      {destination.region && (
+                        <span className="text-sm text-gray-500">{destination.region}</span>
+                      )}
+                    </div>
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

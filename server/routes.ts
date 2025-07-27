@@ -43,6 +43,18 @@ export function registerRoutes(app: Express): Server {
     res.json({ apiKey: process.env.GOOGLE_MAPS_API_KEY });
   });
 
+  // Destinations routes
+  app.get("/api/destinations", async (req, res) => {
+    try {
+      const { search } = req.query;
+      const destinations = await storage.getDestinations(search as string);
+      res.json(destinations);
+    } catch (error) {
+      console.error('Erro ao buscar destinos:', error);
+      res.status(500).json({ message: "Erro ao buscar destinos" });
+    }
+  });
+
   // Trip routes
   app.get("/api/trips", async (req, res) => {
     try {

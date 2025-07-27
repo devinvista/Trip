@@ -508,49 +508,52 @@ export type TripActivity = typeof tripActivities.$inferSelect;
 
 export const insertActivitySchema = createInsertSchema(activities).omit({
   id: true,
-  averageRating: true,
-  totalRatings: true,
-  createdAt: true,
-  updatedAt: true,
+  average_rating: true,
+  total_ratings: true,
+  created_at: true,
+  updated_at: true,
   // Campos herdados são preenchidos automaticamente
   city: true,
   state: true,
   country: true,
-  countryType: true,
+  country_type: true,
   region: true,
   continent: true,
 });
 
 export const insertActivityReviewSchema = createInsertSchema(activityReviews).omit({
   id: true,
-  userId: true,
-  helpfulVotes: true,
-  isVerified: true,
-  createdAt: true,
+  user_id: true,
+  helpful_votes: true,
+  is_verified: true,
+  created_at: true,
+  updated_at: true,
+  is_hidden: true,
+  report_count: true,
 }).extend({
-  activityId: z.number().positive("ID da atividade é obrigatório"),
+  activity_id: z.number().positive("ID da atividade é obrigatório"),
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   review: z.string().optional().or(z.literal("")),
   photos: z.array(z.string()).optional(),
-  visitDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+  visit_date: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 export const insertActivityBookingSchema = createInsertSchema(activityBookings).omit({
   id: true,
   status: true,
-  createdAt: true,
+  created_at: true,
 }).extend({
   participants: z.number().min(1),
-  totalAmount: z.number().positive(),
+  total_amount: z.number().positive(),
 });
 
 export const insertActivityBudgetProposalSchema = createInsertSchema(activityBudgetProposals).omit({
   id: true,
-  activityId: true,
-  createdBy: true,
+  activity_id: true,
+  created_by: true,
   votes: true,
-  createdAt: true,
-  updatedAt: true,
+  created_at: true,
+  updated_at: true,
 }).extend({
   amount: z.number().positive("Valor deve ser positivo"),
   title: z.string().min(1, "Título é obrigatório"),
@@ -560,13 +563,13 @@ export const insertActivityBudgetProposalSchema = createInsertSchema(activityBud
 
 export const insertTripActivitySchema = createInsertSchema(tripActivities).omit({
   id: true,
-  tripId: true,
-  addedBy: true,
+  trip_id: true,
+  added_by: true,
   status: true,
-  createdAt: true,
+  created_at: true,
 }).extend({
   participants: z.number().min(1),
-  totalCost: z.number().positive(),
+  total_cost: z.number().positive(),
 });
 
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
