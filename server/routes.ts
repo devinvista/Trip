@@ -630,8 +630,8 @@ export function registerRoutes(app: Express): Server {
       const splitAmount = expenseData.amount / splitParticipants.length;
       
       const splits = await storage.createExpenseSplits(
+        expense.id,
         splitParticipants.map((userId: number) => ({
-          expense_id: expense.id,
           user_id: userId,
           amount: splitAmount,
           paid: userId === req.user!.id // Payer's split is automatically marked as paid

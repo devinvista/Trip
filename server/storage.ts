@@ -486,6 +486,9 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createExpenseSplits(expenseId: number, splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]> {
+    if (!splits || !Array.isArray(splits)) {
+      throw new Error('Splits must be a valid array');
+    }
     const splitData = splits.map(split => ({ ...split, expense_id: expenseId }));
     return await db.insert(expenseSplits).values(splitData).returning();
   }
