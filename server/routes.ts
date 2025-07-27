@@ -601,7 +601,7 @@ export function registerRoutes(app: Express): Server {
       
       const expenseData = insertExpenseSchema.parse({
         ...req.body,
-        tripId
+        trip_id: tripId
       });
       
       // Verify user is a participant of the trip
@@ -615,7 +615,7 @@ export function registerRoutes(app: Express): Server {
       // Create the expense
       const expense = await storage.createExpense({
         ...expenseData,
-        paidBy: req.user!.id
+        paid_by: req.user!.id
       });
       
       // Create splits based on selected participants
@@ -631,8 +631,8 @@ export function registerRoutes(app: Express): Server {
       
       const splits = await storage.createExpenseSplits(
         splitParticipants.map((userId: number) => ({
-          expenseId: expense.id,
-          userId,
+          expense_id: expense.id,
+          user_id: userId,
           amount: splitAmount,
           paid: userId === req.user!.id // Payer's split is automatically marked as paid
         }))
