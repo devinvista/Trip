@@ -32,8 +32,8 @@ export async function testConnection() {
 
 // Reset completo do banco
 export async function resetDatabase() {
-  const { resetDatabase: resetDB } = await import("./reset-database");
-  return await resetDB();
+  console.log("⚠️ Reset de banco não implementado para PostgreSQL");
+  return false;
 }
 
 // Inicializar tabelas usando Drizzle

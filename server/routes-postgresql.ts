@@ -1,9 +1,11 @@
 import type { Express } from "express";
-import { setupAuth } from "./auth-postgresql";
+import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertTripSchema, insertUserSchema, insertActivitySchema, insertExpenseSchema, insertMessageSchema, insertTripRequestSchema } from "@shared/schema";
+import { insertTripSchema, insertUserSchema, insertActivitySchema, insertExpenseSchema, insertMessageSchema, insertTripRequestSchema, trips, tripParticipants } from "@shared/schema";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
+import { db } from "./db";
+import { eq, and, ne } from "drizzle-orm";
 
 function requireAuth(req: any, res: any, next: any) {
   console.log(`🔍 Verificando autenticação para rota: ${req.method} ${req.path}`);
@@ -116,17 +118,27 @@ export function registerPostgreSQLRoutes(app: Express) {
 
   app.get("/api/my-trips", requireAuth, async (req, res) => {
     try {
-      const userTrips = await storage.getTripsByUser(req.user!.id);
+      const createdTrips = await storage.getTripsByUser(req.user!.id);
+      
+      // Get trips where user is a participant but not creator
+      const participatingTrips = await db.select()
+        .from(trips)
+        .innerJoin(tripParticipants, eq(trips.id, tripParticipants.trip_id))
+        .where(and(
+          eq(tripParticipants.user_id, req.user!.id),
+          ne(trips.creator_id, req.user!.id)
+        ));
       
       const participatingTripsWithCreators = await Promise.all(
-        userTrips.participating.map(async (trip) => {
+        participatingTrips.map(async (result: any) => {
+          const trip = result.trips;
           const creator = await storage.getUser(trip.creator_id);
           return { ...trip, creator };
         })
       );
       
       res.json({ 
-        created: userTrips.created, 
+        created: createdTrips, 
         participating: participatingTripsWithCreators 
       });
     } catch (error) {
@@ -149,7 +161,7 @@ export function registerPostgreSQLRoutes(app: Express) {
       if (destination_id) filters.destination_id = parseInt(destination_id as string);
       if (difficulty_level) filters.difficulty_level = difficulty_level as string;
       
-      const activities = await storage.searchActivities(filters);
+      const activities = await storage.searchActivities(search as string || "");
       res.json(activities);
     } catch (error) {
       console.error('Erro ao buscar atividades:', error);
@@ -160,7 +172,7 @@ export function registerPostgreSQLRoutes(app: Express) {
   app.get("/api/activities/popular", async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 10;
-      const activities = await storage.getPopularActivities(limit);
+      const activities = await storage.getPopularActivities();
       res.json(activities);
     } catch (error) {
       console.error('Erro ao buscar atividades populares:', error);
@@ -247,7 +259,7 @@ export function registerPostgreSQLRoutes(app: Express) {
       const tripId = parseInt(req.params.id);
       const messageData = {
         trip_id: tripId,
-        user_id: req.user!.id,
+        sender_id: req.user!.id,
         content: req.body.content
       };
       
