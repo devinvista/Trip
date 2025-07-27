@@ -131,7 +131,7 @@ class DatabaseStorage implements IStorage {
   }
 
   async getAllActivities(): Promise<Activity[]> {
-    return await db.select().from(activities).orderBy(desc(activities.created_at));
+    return await db.select().from(activities).orderBy(desc(activities.createdAt));
   }
 
   async createActivity(activity: InsertActivity): Promise<Activity> {
@@ -153,7 +153,7 @@ class DatabaseStorage implements IStorage {
   }
 
   async getExpensesByTripId(tripId: number): Promise<Expense[]> {
-    return await db.select().from(expenses).where(eq(expenses.trip_id, tripId));
+    return await db.select().from(expenses).where(eq(expenses.tripId, tripId));
   }
 
   async createExpense(expense: InsertExpense): Promise<Expense> {
@@ -162,7 +162,7 @@ class DatabaseStorage implements IStorage {
   }
 
   async getMessagesByTripId(tripId: number): Promise<Message[]> {
-    return await db.select().from(messages).where(eq(messages.trip_id, tripId)).orderBy(desc(messages.sent_at));
+    return await db.select().from(messages).where(eq(messages.tripId, tripId)).orderBy(desc(messages.sentAt));
   }
 
   async createMessage(message: InsertMessage): Promise<Message> {
@@ -171,7 +171,7 @@ class DatabaseStorage implements IStorage {
   }
 
   async getTripRequestsByTripId(tripId: number): Promise<TripRequest[]> {
-    return await db.select().from(tripRequests).where(eq(tripRequests.trip_id, tripId));
+    return await db.select().from(tripRequests).where(eq(tripRequests.tripId, tripId));
   }
 
   async createTripRequest(request: InsertTripRequest): Promise<TripRequest> {
@@ -191,7 +191,7 @@ class DatabaseStorage implements IStorage {
   async searchTrips(query: string): Promise<Trip[]> {
     return await db.select().from(trips)
       .where(like(trips.title, `%${query}%`))
-      .orderBy(desc(trips.created_at));
+      .orderBy(desc(trips.createdAt));
   }
 
   async getUser(id: number): Promise<User | null> {
@@ -203,29 +203,29 @@ class DatabaseStorage implements IStorage {
   }
 
   async getTripParticipants(tripId: number): Promise<any[]> {
-    return await db.select().from(tripParticipants).where(eq(tripParticipants.trip_id, tripId));
+    return await db.select().from(tripParticipants).where(eq(tripParticipants.tripId, tripId));
   }
 
   async addParticipant(tripId: number, userId: number): Promise<any> {
     const [participant] = await db.insert(tripParticipants)
-      .values({ trip_id: tripId, user_id: userId })
+      .values({ tripId: tripId, userId: userId })
       .returning();
     return participant;
   }
 
   async getTripsByUser(userId: number): Promise<Trip[]> {
-    return await db.select().from(trips).where(eq(trips.creator_id, userId));
+    return await db.select().from(trips).where(eq(trips.creatorId, userId));
   }
 
   async searchActivities(query: string): Promise<Activity[]> {
     return await db.select().from(activities)
       .where(like(activities.title, `%${query}%`))
-      .orderBy(desc(activities.created_at));
+      .orderBy(desc(activities.createdAt));
   }
 
   async getPopularActivities(): Promise<Activity[]> {
     return await db.select().from(activities)
-      .orderBy(desc(activities.average_rating))
+      .orderBy(desc(activities.averageRating))
       .limit(10);
   }
 
@@ -240,12 +240,12 @@ class DatabaseStorage implements IStorage {
 
   async getActivityBudgetProposals(activityId: number): Promise<any[]> {
     return await db.select().from(activityBudgetProposals)
-      .where(eq(activityBudgetProposals.activity_id, activityId));
+      .where(eq(activityBudgetProposals.activityId, activityId));
   }
 
   async getActivityReviews(activityId: number): Promise<any[]> {
     return await db.select().from(activityReviews)
-      .where(eq(activityReviews.activity_id, activityId));
+      .where(eq(activityReviews.activityId, activityId));
   }
 
   async getAllDestinations(): Promise<any[]> {

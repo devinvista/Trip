@@ -103,9 +103,7 @@ async function fixUserVerificationStatus() {
 
   // Initialize database in background after server starts
   (async () => {
-    console.log("🔗 Testando conexão MySQL...");
     await testConnection();
-    console.log("🏗️ Inicializando tabelas MySQL...");
     await initializeTables();
     
     // Fix user verification status

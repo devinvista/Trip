@@ -1,0 +1,19 @@
+
++ activityReviews                         create table
++ destinations                           create table  
++ users                                  create table
++ trips                                  create table
++ tripParticipants                      create table
++ messages                               create table
++ tripRequests                          create table
++ expenses                               create table
++ expenseSplits                         create table
++ userRatings                           create table
++ destinationRatings                    create table
++ verificationRequests                  create table
++ activities                            create table
++ activityBookings                      create table
++ activityBudgetProposals              create table
++ tripActivities                        create table
++ referralCodes                         create table
+
