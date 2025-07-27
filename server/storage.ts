@@ -71,6 +71,14 @@ export interface IStorage {
   createExpense(expenseData: InsertExpense): Promise<Expense>;
   createExpenseSplits(expenseId: number, splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]>;
   getUserTripRequests(userId: number): Promise<TripRequest[]>;
+  
+  // Activity budget proposals
+  getActivityBudgetProposals(activityId: number): Promise<ActivityBudgetProposal[]>;
+  createActivityBudgetProposal(proposalData: InsertActivityBudgetProposal): Promise<ActivityBudgetProposal>;
+  
+  // Activity reviews
+  getActivityReviews(activityId: number): Promise<ActivityReview[]>;
+  createActivityReview(reviewData: InsertActivityReview): Promise<ActivityReview>;
 }
 
 // PostgreSQL Storage Implementation
@@ -416,13 +424,35 @@ export class PostgreSQLStorage implements IStorage {
       query = query.where(eq(activities.category, filters.category));
     }
     if (filters.location) {
-      query = query.where(eq(activities.location, filters.location));
+      query = query.where(eq(activities.localidade, filters.location));
     }
     if (filters.isActive !== undefined) {
       query = query.where(eq(activities.isActive, filters.isActive));
     }
     
     return await query.orderBy(desc(activities.averageRating), desc(activities.totalRatings));
+  }
+
+  async getActivityBudgetProposals(activityId: number): Promise<ActivityBudgetProposal[]> {
+    return await db.select().from(activityBudgetProposals)
+      .where(eq(activityBudgetProposals.activityId, activityId))
+      .orderBy(asc(activityBudgetProposals.price));
+  }
+
+  async createActivityBudgetProposal(proposalData: InsertActivityBudgetProposal): Promise<ActivityBudgetProposal> {
+    const [proposal] = await db.insert(activityBudgetProposals).values(proposalData);
+    return proposal;
+  }
+
+  async getActivityReviews(activityId: number): Promise<ActivityReview[]> {
+    return await db.select().from(activityReviews)
+      .where(eq(activityReviews.activityId, activityId))
+      .orderBy(desc(activityReviews.createdAt));
+  }
+
+  async createActivityReview(reviewData: InsertActivityReview): Promise<ActivityReview> {
+    const [review] = await db.insert(activityReviews).values(reviewData);
+    return review;
   }
 }
 
