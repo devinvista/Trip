@@ -2109,12 +2109,22 @@ export default function TripDetailPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-gray-700">Progresso</span>
                       <span className="text-xs font-semibold text-gray-900 tabular-nums">
-                        {Math.round((calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(planned_activities) || 1)) * 100)}%
+                        {(() => {
+                          const totalExpenses = calculateTotalExpenses();
+                          const totalBudget = (trip.budget || 0) + calculateActivitiesCost(planned_activities);
+                          const percentage = totalBudget > 0 ? Math.round((totalExpenses / totalBudget) * 100) : 0;
+                          return `${percentage}%`;
+                        })()}
                       </span>
                     </div>
                     <div className="space-y-1">
                       <Progress 
-                        value={Math.min(100, (calculateTotalExpenses() / ((trip.budget || 0) + calculateActivitiesCost(planned_activities) || 1)) * 100)} 
+                        value={(() => {
+                          const totalExpenses = calculateTotalExpenses();
+                          const totalBudget = (trip.budget || 0) + calculateActivitiesCost(planned_activities);
+                          const percentage = totalBudget > 0 ? (totalExpenses / totalBudget) * 100 : 0;
+                          return Math.min(100, Math.max(0, percentage));
+                        })()} 
                         className="h-1.5 bg-gray-200"
                       />
                       <div className="flex justify-between text-xs text-gray-500">
