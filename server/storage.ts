@@ -117,53 +117,53 @@ export interface IStorage {
 
   // Viagens
   getTrip(id: number): Promise<Trip | undefined>;
-  getTripsByCreator(creatorId: number): Promise<Trip[]>;
-  getTripsByParticipant(userId: number): Promise<Trip[]>;
+  getTripsByCreator(creator_id: number): Promise<Trip[]>;
+  getTripsByParticipant(user_id: number): Promise<Trip[]>;
   getTrips(filters?: { destination?: string; startDate?: Date; endDate?: Date; budget?: number; travelStyle?: string }): Promise<Trip[]>;
-  createTrip(trip: InsertTrip & { creatorId: number }): Promise<Trip>;
+  createTrip(trip: InsertTrip & { creator_id: number }): Promise<Trip>;
   updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined>;
-  updateTripActivities(tripId: number, plannedActivities: any): Promise<Trip | undefined>;
+  updateTripActivities(trip_id: number, planned_activities: any): Promise<Trip | undefined>;
   deleteTrip(id: number): Promise<boolean>;
 
   // Participantes de Viagem
-  getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]>;
-  addTripParticipant(tripId: number, userId: number): Promise<TripParticipant>;
-  updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined>;
-  removeTripParticipant(tripId: number, userId: number): Promise<void>;
-  recalculateExpenseSplits(tripId: number): Promise<void>;
+  getTripParticipants(trip_id: number): Promise<(TripParticipant & { user: User })[]>;
+  addTripParticipant(trip_id: number, user_id: number): Promise<TripParticipant>;
+  updateTripParticipant(trip_id: number, user_id: number, status: string): Promise<TripParticipant | undefined>;
+  removeTripParticipant(trip_id: number, user_id: number): Promise<void>;
+  recalculateExpenseSplits(trip_id: number): Promise<void>;
 
   // Mensagens
-  getTripMessages(tripId: number): Promise<(Message & { sender: User })[]>;
+  getTripMessages(trip_id: number): Promise<(Message & { sender: User })[]>;
   createMessage(message: InsertMessage & { senderId: number }): Promise<Message>;
 
   // Solicitações de Viagem
-  getTripRequests(tripId: number): Promise<(TripRequest & { user: User })[]>;
-  getUserTripRequests(userId: number): Promise<(TripRequest & { trip: Trip })[]>;
-  createTripRequest(request: InsertTripRequest & { userId: number }): Promise<TripRequest>;
+  getTripRequests(trip_id: number): Promise<(TripRequest & { user: User })[]>;
+  getUserTripRequests(user_id: number): Promise<(TripRequest & { trip: Trip })[]>;
+  createTripRequest(request: InsertTripRequest & { user_id: number }): Promise<TripRequest>;
   updateTripRequest(id: number, status: string): Promise<TripRequest | undefined>;
 
   // Despesas
-  getTripExpenses(tripId: number): Promise<(Expense & { payer: User; splits: (ExpenseSplit & { user: User })[] })[]>;
-  createExpense(expense: InsertExpense & { paidBy: number }): Promise<Expense>;
+  getTripExpenses(trip_id: number): Promise<(Expense & { payer: User; splits: (ExpenseSplit & { user: User })[] })[]>;
+  createExpense(expense: InsertExpense & { paid_by: number }): Promise<Expense>;
   createExpenseSplits(splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]>;
   updateExpenseSplit(id: number, paid: boolean): Promise<ExpenseSplit | undefined>;
-  getTripBalances(tripId: number): Promise<{ userId: number; user: User; balance: number }[]>;
+  getTripBalances(trip_id: number): Promise<{ user_id: number; user: User; balance: number }[]>;
 
   // Avaliações de Usuário
-  getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]>;
+  getUserRatings(user_id: number): Promise<(UserRating & { rater: User; trip: Trip })[]>;
   createUserRating(rating: InsertUserRating & { raterUserId: number }): Promise<UserRating>;
-  updateUserAverageRating(userId: number): Promise<void>;
+  updateUserAverageRating(user_id: number): Promise<void>;
 
   // Avaliações de Destino
   getDestinationRatings(destination: string): Promise<(DestinationRating & { user: User })[]>;
-  createDestinationRating(rating: InsertDestinationRating & { userId: number }): Promise<DestinationRating>;
+  createDestinationRating(rating: InsertDestinationRating & { user_id: number }): Promise<DestinationRating>;
   getDestinationAverageRating(destination: string): Promise<{ average: number; total: number }>;
 
   // Verificação de Usuário
-  getVerificationRequests(userId?: number): Promise<(VerificationRequest & { user: User })[]>;
-  createVerificationRequest(request: InsertVerificationRequest & { userId: number }): Promise<VerificationRequest>;
+  getVerificationRequests(user_id?: number): Promise<(VerificationRequest & { user: User })[]>;
+  createVerificationRequest(request: InsertVerificationRequest & { user_id: number }): Promise<VerificationRequest>;
   updateVerificationRequest(id: number, status: string, reviewedBy?: number, rejectionReason?: string): Promise<VerificationRequest | undefined>;
-  updateUserVerificationStatus(userId: number, isVerified: boolean, method?: string): Promise<void>;
+  updateUserVerificationStatus(user_id: number, isVerified: boolean, method?: string): Promise<void>;
 
   // Atividades
   getActivities(filters?: { 
@@ -183,13 +183,13 @@ export interface IStorage {
 
   // Avaliações de Atividades
   getActivityReviews(activityId: number): Promise<(ActivityReview & { user: User })[]>;
-  createActivityReview(review: InsertActivityReview & { userId: number }): Promise<ActivityReview>;
+  createActivityReview(review: InsertActivityReview & { user_id: number }): Promise<ActivityReview>;
   updateActivityAverageRating(activityId: number): Promise<void>;
 
   // Reservas de Atividades
   getActivityBookings(activityId: number): Promise<(ActivityBooking & { user: User })[]>;
-  getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]>;
-  createActivityBooking(booking: InsertActivityBooking & { userId: number }): Promise<ActivityBooking>;
+  getUserActivityBookings(user_id: number): Promise<(ActivityBooking & { activity: Activity })[]>;
+  createActivityBooking(booking: InsertActivityBooking & { user_id: number }): Promise<ActivityBooking>;
   updateActivityBooking(id: number, status: string): Promise<ActivityBooking | undefined>;
 
   // Propostas de Orçamento para Atividades
@@ -197,16 +197,16 @@ export interface IStorage {
   createActivityBudgetProposal(proposal: InsertActivityBudgetProposal & { createdBy: number }): Promise<ActivityBudgetProposal>;
   updateActivityBudgetProposal(id: number, updates: Partial<ActivityBudgetProposal>): Promise<ActivityBudgetProposal | undefined>;
   deleteActivityBudgetProposal(id: number): Promise<boolean>;
-  voteActivityBudgetProposal(proposalId: number, userId: number, increment: boolean): Promise<ActivityBudgetProposal | undefined>;
+  voteActivityBudgetProposal(proposalId: number, user_id: number, increment: boolean): Promise<ActivityBudgetProposal | undefined>;
 
   // Atividades de Viagem
-  getTripActivities(tripId: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]>;
+  getTripActivities(trip_id: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]>;
   addActivityToTrip(tripActivity: InsertTripActivity & { addedBy: number }): Promise<TripActivity>;
   updateTripActivity(id: number, updates: Partial<TripActivity>): Promise<TripActivity | undefined>;
   removeTripActivity(id: number): Promise<boolean>;
   
   // Obter viagens do usuário na mesma localização da atividade
-  getUserTripsInLocation(userId: number, location: string): Promise<Trip[]>;
+  getUserTripsInLocation(user_id: number, location: string): Promise<Trip[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -307,41 +307,41 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getTripsByCreator(creatorId: number): Promise<Trip[]> {
+  async getTripsByCreator(creator_id: number): Promise<Trip[]> {
     try {
-      return await db.select().from(trips).where(eq(trips.creatorId, creatorId));
+      return await db.select().from(trips).where(eq(trips.creator_id, creatorId));
     } catch (error) {
       console.error('❌ Erro ao buscar viagens do criador:', error);
       return [];
     }
   }
 
-  async getTripsByParticipant(userId: number): Promise<Trip[]> {
+  async getTripsByParticipant(user_id: number): Promise<Trip[]> {
     try {
       return await db.select({
         id: trips.id,
         title: trips.title,
-        destinationId: trips.destinationId,
-        coverImage: trips.coverImage,
+        destinationId: trips.destination_id,
+        cover_image: trips.coverImage,
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
-        maxParticipants: trips.maxParticipants,
+        maxParticipants: trips.max_participants,
         description: trips.description,
-        travelStyle: trips.travelStyle,
-        creatorId: trips.creatorId,
+        travelStyle: trips.travel_style,
+        creator_id: trips.creator_id,
         status: trips.status,
-        budgetBreakdown: trips.budgetBreakdown,
-        currentParticipants: trips.currentParticipants,
-        sharedCosts: trips.sharedCosts,
-        createdAt: trips.createdAt
+        budgetBreakdown: trips.budget_breakdown,
+        current_participants: trips.current_participants,
+        sharedCosts: trips.shared_costs,
+        created_at: trips.created_at
       })
       .from(trips)
-      .innerJoin(tripParticipants, eq(tripParticipants.tripId, trips.id))
+      .innerJoin(tripParticipants, eq(tripParticipants.trip_id, trips.id))
       .where(and(
-        eq(tripParticipants.userId, userId),
+        eq(tripParticipants.user_id, user_id),
         eq(tripParticipants.status, 'accepted'),
-        ne(trips.creatorId, userId)
+        ne(trips.creator_id, user_id)
       ));
     } catch (error) {
       console.error('❌ Erro ao buscar viagens do participante:', error);
@@ -357,7 +357,7 @@ export class DatabaseStorage implements IStorage {
         const conditions = [eq(trips.status, 'open')];
         
         if (filters.destination) {
-          conditions.push(like(trips.destination, `%${filters.destination}%`));
+          conditions.push(like(trips.destination_id, `%${filters.destination}%`));
         }
         if (filters.startDate) {
           conditions.push(gte(trips.startDate, filters.startDate));
@@ -369,31 +369,31 @@ export class DatabaseStorage implements IStorage {
           conditions.push(lte(trips.budget, filters.budget));
         }
         if (filters.travelStyle) {
-          conditions.push(eq(trips.travelStyle, filters.travelStyle));
+          conditions.push(eq(trips.travel_style, filters.travelStyle));
         }
 
         query = db.select().from(trips).where(and(...conditions));
       }
 
-      return await query.orderBy(desc(trips.createdAt));
+      return await query.orderBy(desc(trips.created_at));
     } catch (error) {
       console.error('❌ Erro ao buscar viagens:', error);
       return [];
     }
   }
 
-  async createTrip(tripData: InsertTrip & { creatorId: number }): Promise<Trip> {
+  async createTrip(tripData: InsertTrip & { creator_id: number }): Promise<Trip> {
     try {
-      const coverImage = tripData.coverImage || getCoverImageForDestination("default", tripData.travelStyle);
+      const coverImage = tripData.coverImage || getCoverImageForDestination("default", tripData.travel_style);
       
       const [trip] = await db.insert(trips).values({
         ...tripData,
-        coverImage,
-        currentParticipants: 1,
+        cover_image: coverImage,
+        current_participants: 1,
         status: 'open'
       }).returning();
 
-      await this.addTripParticipant(trip.id, tripData.creatorId);
+      await this.addTripParticipant(trip.id, tripData.creator_id);
       return trip;
     } catch (error) {
       console.error('❌ Erro ao criar viagem:', error);
@@ -414,12 +414,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateTripActivities(tripId: number, plannedActivities: any): Promise<Trip | undefined> {
+  async updateTripActivities(trip_id: number, planned_activities: any): Promise<Trip | undefined> {
     try {
-      const activitiesString = JSON.stringify(plannedActivities);
+      const activitiesString = JSON.stringify(planned_activities);
       const [updatedTrip] = await db.update(trips)
-        .set({ plannedActivities: activitiesString })
-        .where(eq(trips.id, tripId))
+        .set({ planned_activities: activitiesString })
+        .where(eq(trips.id, trip_id))
         .returning();
       return updatedTrip;
     } catch (error) {
@@ -438,15 +438,15 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getTripParticipants(tripId: number): Promise<(TripParticipant & { user: User })[]> {
+  async getTripParticipants(trip_id: number): Promise<(TripParticipant & { user: User })[]> {
     try {
       const participants = await db.select()
         .from(tripParticipants)
-        .where(eq(tripParticipants.tripId, tripId));
+        .where(eq(tripParticipants.trip_id, trip_id));
       
       const result = [];
       for (const p of participants) {
-        const user = await this.getUser(p.userId);
+        const user = await this.getUser(p.user_id);
         if (user) {
           result.push({ ...p, user: this.sanitizeUser(user) as User });
         }
@@ -458,13 +458,13 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async addTripParticipant(tripId: number, userId: number): Promise<TripParticipant> {
+  async addTripParticipant(trip_id: number, user_id: number): Promise<TripParticipant> {
     try {
       const existing = await db.select()
         .from(tripParticipants)
         .where(and(
-          eq(tripParticipants.tripId, tripId), 
-          eq(tripParticipants.userId, userId)
+          eq(tripParticipants.trip_id, trip_id), 
+          eq(tripParticipants.user_id, user_id)
         ));
 
       if (existing.length > 0) {
@@ -472,10 +472,10 @@ export class DatabaseStorage implements IStorage {
       }
 
       const [participant] = await db.insert(tripParticipants).values({
-        tripId,
-        userId,
+        trip_id,
+        user_id,
         status: 'accepted',
-        joinedAt: new Date()
+        joined_at: new Date()
       }).returning();
       
       return participant;
@@ -485,13 +485,13 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateTripParticipant(tripId: number, userId: number, status: string): Promise<TripParticipant | undefined> {
+  async updateTripParticipant(trip_id: number, user_id: number, status: string): Promise<TripParticipant | undefined> {
     try {
       const [participant] = await db.update(tripParticipants)
         .set({ status })
         .where(and(
-          eq(tripParticipants.tripId, tripId),
-          eq(tripParticipants.userId, userId)
+          eq(tripParticipants.trip_id, trip_id),
+          eq(tripParticipants.user_id, user_id)
         ))
         .returning();
 
@@ -502,31 +502,31 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async removeTripParticipant(tripId: number, userId: number): Promise<void> {
+  async removeTripParticipant(trip_id: number, user_id: number): Promise<void> {
     try {
-      const trip = await this.getTrip(tripId);
+      const trip = await this.getTrip(trip_id);
       if (!trip) return;
 
       await db.delete(tripParticipants)
         .where(and(
-          eq(tripParticipants.tripId, tripId),
-          eq(tripParticipants.userId, userId)
+          eq(tripParticipants.trip_id, trip_id),
+          eq(tripParticipants.user_id, user_id)
         ));
 
-      const participants = await this.getTripParticipants(tripId);
+      const participants = await this.getTripParticipants(trip_id);
       const activeParticipants = participants.filter(p => p.status === 'accepted');
       
       if (activeParticipants.length === 0) {
-        await this.deleteTrip(tripId);
-      } else if (trip.creatorId === userId) {
+        await this.deleteTrip(trip_id);
+      } else if (trip.creator_id === user_id) {
         const newOrganizer = activeParticipants[0];
-        await this.updateTrip(tripId, { 
-          creatorId: newOrganizer.userId,
-          currentParticipants: activeParticipants.length
+        await this.updateTrip(trip_id, { 
+          creator_id: newOrganizer.user_id,
+          current_participants: activeParticipants.length
         });
       } else {
-        await this.updateTrip(tripId, { 
-          currentParticipants: activeParticipants.length
+        await this.updateTrip(trip_id, { 
+          current_participants: activeParticipants.length
         });
       }
     } catch (error) {
@@ -534,7 +534,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async recalculateExpenseSplits(tripId: number): Promise<void> {
+  async recalculateExpenseSplits(trip_id: number): Promise<void> {
     try {
       // Implementação similar à anterior com ajustes de camelCase
       // (mantida a lógica de recálculo de divisão de despesas)
@@ -543,16 +543,16 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getTripMessages(tripId: number): Promise<(Message & { sender: User })[]> {
+  async getTripMessages(trip_id: number): Promise<(Message & { sender: User })[]> {
     try {
       const tripMessages = await db.select()
         .from(messages)
-        .where(eq(messages.tripId, tripId))
-        .orderBy(asc(messages.sentAt));
+        .where(eq(messages.trip_id, trip_id))
+        .orderBy(asc(messages.sent_at));
       
       const result = [];
       for (const message of tripMessages) {
-        const sender = await this.getUser(message.senderId);
+        const sender = await this.getUser(message.sender_id);
         if (sender) {
           result.push({ ...message, sender: this.sanitizeUser(sender) as User });
         }
@@ -568,7 +568,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const [message] = await db.insert(messages).values({
         ...messageData,
-        sentAt: new Date()
+        sent_at: new Date()
       }).returning();
       return message;
     } catch (error) {
@@ -583,10 +583,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Get trips by user (created + participating)
-  async getTripsByUser(userId: number): Promise<{ created: Trip[], participating: Trip[] }> {
+  async getTripsByUser(user_id: number): Promise<{ created: Trip[], participating: Trip[] }> {
     try {
-      const created = await this.getTripsByCreator(userId);
-      const participating = await this.getTripsByParticipant(userId);
+      const created = await this.getTripsByCreator(user_id);
+      const participating = await this.getTripsByParticipant(user_id);
       return { created, participating };
     } catch (error) {
       console.error('❌ Erro ao buscar viagens do usuário:', error);
@@ -595,16 +595,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Trip requests
-  async getTripRequests(tripId: number): Promise<(TripRequest & { user: User })[]> {
+  async getTripRequests(trip_id: number): Promise<(TripRequest & { user: User })[]> {
     try {
       const requests = await db.select()
         .from(tripRequests)
-        .where(eq(tripRequests.tripId, tripId))
-        .orderBy(desc(tripRequests.createdAt));
+        .where(eq(tripRequests.trip_id, trip_id))
+        .orderBy(desc(tripRequests.created_at));
       
       const result = [];
       for (const request of requests) {
-        const user = await this.getUser(request.userId);
+        const user = await this.getUser(request.user_id);
         if (user) {
           result.push({ ...request, user: this.sanitizeUser(user) as User });
         }
@@ -616,16 +616,16 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserTripRequests(userId: number): Promise<(TripRequest & { trip: Trip })[]> {
+  async getUserTripRequests(user_id: number): Promise<(TripRequest & { trip: Trip })[]> {
     try {
       const requests = await db.select()
         .from(tripRequests)
-        .where(eq(tripRequests.userId, userId))
-        .orderBy(desc(tripRequests.createdAt));
+        .where(eq(tripRequests.user_id, user_id))
+        .orderBy(desc(tripRequests.created_at));
       
       const result = [];
       for (const request of requests) {
-        const trip = await this.getTrip(request.tripId);
+        const trip = await this.getTrip(request.trip_id);
         if (trip) {
           result.push({ ...request, trip });
         }
@@ -637,12 +637,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createTripRequest(requestData: InsertTripRequest & { userId: number }): Promise<TripRequest> {
+  async createTripRequest(requestData: InsertTripRequest & { user_id: number }): Promise<TripRequest> {
     try {
       const [request] = await db.insert(tripRequests).values({
         ...requestData,
         status: 'pending',
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       return request;
     } catch (error) {
@@ -665,23 +665,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Expenses
-  async getTripExpenses(tripId: number): Promise<(Expense & { payer: User; splits: (ExpenseSplit & { user: User })[] })[]> {
+  async getTripExpenses(trip_id: number): Promise<(Expense & { payer: User; splits: (ExpenseSplit & { user: User })[] })[]> {
     try {
       const tripExpenses = await db.select()
         .from(expenses)
-        .where(eq(expenses.tripId, tripId))
-        .orderBy(desc(expenses.createdAt));
+        .where(eq(expenses.trip_id, trip_id))
+        .orderBy(desc(expenses.created_at));
       
       const result = [];
       for (const expense of tripExpenses) {
-        const payer = await this.getUser(expense.paidBy);
+        const payer = await this.getUser(expense.paid_by);
         const splits = await db.select()
           .from(expenseSplits)
-          .where(eq(expenseSplits.expenseId, expense.id));
+          .where(eq(expenseSplits.expense_id, expense.id));
         
         const splitsWithUsers = [];
         for (const split of splits) {
-          const user = await this.getUser(split.userId);
+          const user = await this.getUser(split.user_id);
           if (user) {
             splitsWithUsers.push({ ...split, user: this.sanitizeUser(user) as User });
           }
@@ -702,11 +702,11 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createExpense(expenseData: InsertExpense & { paidBy: number }): Promise<Expense> {
+  async createExpense(expenseData: InsertExpense & { paid_by: number }): Promise<Expense> {
     try {
       const [expense] = await db.insert(expenses).values({
         ...expenseData,
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       return expense;
     } catch (error) {
@@ -738,17 +738,17 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getTripBalances(tripId: number): Promise<{ userId: number; user: User; balance: number }[]> {
+  async getTripBalances(trip_id: number): Promise<{ user_id: number; user: User; balance: number }[]> {
     try {
-      const participants = await this.getTripParticipants(tripId);
+      const participants = await this.getTripParticipants(trip_id);
       const balances = [];
       
       for (const participant of participants) {
         // Calculate balance for each participant (simplified version)
-        const user = await this.getUser(participant.userId);
+        const user = await this.getUser(participant.user_id);
         if (user) {
           balances.push({
-            userId: participant.userId,
+            user_id: participant.user_id,
             user: this.sanitizeUser(user) as User,
             balance: 0 // Simplified - would need proper calculation
           });
@@ -763,17 +763,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   // User Ratings
-  async getUserRatings(userId: number): Promise<(UserRating & { rater: User; trip: Trip })[]> {
+  async getUserRatings(user_id: number): Promise<(UserRating & { rater: User; trip: Trip })[]> {
     try {
       const ratings = await db.select()
         .from(userRatings)
-        .where(eq(userRatings.ratedUserId, userId))
-        .orderBy(desc(userRatings.createdAt));
+        .where(eq(userRatings.ratedUserId, user_id))
+        .orderBy(desc(userRatings.created_at));
       
       const result = [];
       for (const rating of ratings) {
         const rater = await this.getUser(rating.raterUserId);
-        const trip = await this.getTrip(rating.tripId);
+        const trip = await this.getTrip(rating.trip_id);
         if (rater && trip) {
           result.push({ 
             ...rating, 
@@ -794,7 +794,7 @@ export class DatabaseStorage implements IStorage {
       const [rating] = await db.insert(userRatings).values({
         ...ratingData,
         raterUserId: ratingData.raterUserId,
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       
       await this.updateUserAverageRating(ratingData.ratedUserId);
@@ -805,21 +805,21 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateUserAverageRating(userId: number): Promise<void> {
+  async updateUserAverageRating(user_id: number): Promise<void> {
     try {
       const ratings = await db.select()
         .from(userRatings)
-        .where(eq(userRatings.ratedUserId, userId));
+        .where(eq(userRatings.ratedUserId, user_id));
       
       if (ratings.length === 0) {
-        await this.updateUser(userId, { averageRating: "5.00", totalRatings: 0 });
+        await this.updateUser(user_id, { averageRating: "5.00", totalRatings: 0 });
         return;
       }
       
       const total = ratings.reduce((sum, rating) => sum + rating.rating, 0);
       const average = (total / ratings.length).toFixed(2);
       
-      await this.updateUser(userId, { 
+      await this.updateUser(user_id, { 
         averageRating: average, 
         totalRatings: ratings.length 
       });
@@ -834,11 +834,11 @@ export class DatabaseStorage implements IStorage {
       const ratings = await db.select()
         .from(destinationRatings)
         .where(eq(destinationRatings.destination, destination))
-        .orderBy(desc(destinationRatings.createdAt));
+        .orderBy(desc(destinationRatings.created_at));
       
       const result = [];
       for (const rating of ratings) {
-        const user = await this.getUser(rating.userId);
+        const user = await this.getUser(rating.user_id);
         if (user) {
           result.push({ 
             ...rating, 
@@ -853,11 +853,11 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createDestinationRating(ratingData: InsertDestinationRating & { userId: number }): Promise<DestinationRating> {
+  async createDestinationRating(ratingData: InsertDestinationRating & { user_id: number }): Promise<DestinationRating> {
     try {
       const [rating] = await db.insert(destinationRatings).values({
         ...ratingData,
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       return rating;
     } catch (error) {
@@ -887,19 +887,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Verification Requests
-  async getVerificationRequests(userId?: number): Promise<(VerificationRequest & { user: User })[]> {
+  async getVerificationRequests(user_id?: number): Promise<(VerificationRequest & { user: User })[]> {
     try {
       let query = db.select().from(verificationRequests);
       
-      if (userId) {
-        query = query.where(eq(verificationRequests.userId, userId));
+      if (user_id) {
+        query = query.where(eq(verificationRequests.user_id, user_id));
       }
       
-      const requests = await query.orderBy(desc(verificationRequests.createdAt));
+      const requests = await query.orderBy(desc(verificationRequests.created_at));
       
       const result = [];
       for (const request of requests) {
-        const user = await this.getUser(request.userId);
+        const user = await this.getUser(request.user_id);
         if (user) {
           result.push({ 
             ...request, 
@@ -914,12 +914,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createVerificationRequest(requestData: InsertVerificationRequest & { userId: number }): Promise<VerificationRequest> {
+  async createVerificationRequest(requestData: InsertVerificationRequest & { user_id: number }): Promise<VerificationRequest> {
     try {
       const [request] = await db.insert(verificationRequests).values({
         ...requestData,
         status: 'pending',
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       return request;
     } catch (error) {
@@ -945,12 +945,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateUserVerificationStatus(userId: number, isVerified: boolean, method?: string): Promise<void> {
+  async updateUserVerificationStatus(user_id: number, isVerified: boolean, method?: string): Promise<void> {
     try {
       const updates: any = { isVerified };
       if (method) updates.verificationMethod = method;
       
-      await this.updateUser(userId, updates);
+      await this.updateUser(user_id, updates);
     } catch (error) {
       console.error('❌ Erro ao atualizar status de verificação:', error);
     }
@@ -993,7 +993,7 @@ export class DatabaseStorage implements IStorage {
         averageRating: activities.averageRating,
         totalReviews: activities.totalRatings,
         images: activities.images,
-        coverImage: activities.coverImage,
+        cover_image: activities.coverImage,
         minParticipants: activities.minParticipants,
         maxParticipants: activities.maxParticipants,
         inclusions: activities.inclusions,
@@ -1003,7 +1003,7 @@ export class DatabaseStorage implements IStorage {
         cancellationPolicy: activities.cancellationPolicy,
         isActive: activities.isActive,
         createdById: activities.createdById,
-        createdAt: activities.createdAt,
+        created_at: activities.created_at,
         updatedAt: activities.updatedAt,
       })
       .from(activities)
@@ -1020,7 +1020,7 @@ export class DatabaseStorage implements IStorage {
         query = query.where(like(destinations.name, `%${filters.location}%`));
       }
 
-      const result = await query.orderBy(desc(activities.createdAt));
+      const result = await query.orderBy(desc(activities.created_at));
       return result;
     } catch (error) {
       console.error('❌ Erro ao buscar atividades:', error);
@@ -1045,7 +1045,7 @@ export class DatabaseStorage implements IStorage {
         isActive: true,
         averageRating: "0.00",
         totalRatings: 0,
-        createdAt: new Date(),
+        created_at: new Date(),
         updatedAt: new Date()
       }).returning();
       return activity;
@@ -1086,11 +1086,11 @@ export class DatabaseStorage implements IStorage {
       const reviews = await db.select()
         .from(activityReviews)
         .where(eq(activityReviews.activityId, activityId))
-        .orderBy(desc(activityReviews.createdAt));
+        .orderBy(desc(activityReviews.created_at));
       
       const result = [];
       for (const review of reviews) {
-        const user = await this.getUser(review.userId);
+        const user = await this.getUser(review.user_id);
         if (user) {
           result.push({ 
             ...review, 
@@ -1105,11 +1105,11 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createActivityReview(reviewData: InsertActivityReview & { userId: number }): Promise<ActivityReview> {
+  async createActivityReview(reviewData: InsertActivityReview & { user_id: number }): Promise<ActivityReview> {
     try {
       const [review] = await db.insert(activityReviews).values({
         ...reviewData,
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       
       await this.updateActivityAverageRating(reviewData.activityId);
@@ -1149,11 +1149,11 @@ export class DatabaseStorage implements IStorage {
       const bookings = await db.select()
         .from(activityBookings)
         .where(eq(activityBookings.activityId, activityId))
-        .orderBy(desc(activityBookings.createdAt));
+        .orderBy(desc(activityBookings.created_at));
       
       const result = [];
       for (const booking of bookings) {
-        const user = await this.getUser(booking.userId);
+        const user = await this.getUser(booking.user_id);
         if (user) {
           result.push({ 
             ...booking, 
@@ -1168,12 +1168,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserActivityBookings(userId: number): Promise<(ActivityBooking & { activity: Activity })[]> {
+  async getUserActivityBookings(user_id: number): Promise<(ActivityBooking & { activity: Activity })[]> {
     try {
       const bookings = await db.select()
         .from(activityBookings)
-        .where(eq(activityBookings.userId, userId))
-        .orderBy(desc(activityBookings.createdAt));
+        .where(eq(activityBookings.user_id, user_id))
+        .orderBy(desc(activityBookings.created_at));
       
       const result = [];
       for (const booking of bookings) {
@@ -1189,12 +1189,12 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createActivityBooking(bookingData: InsertActivityBooking & { userId: number }): Promise<ActivityBooking> {
+  async createActivityBooking(bookingData: InsertActivityBooking & { user_id: number }): Promise<ActivityBooking> {
     try {
       const [booking] = await db.insert(activityBookings).values({
         ...bookingData,
         status: 'pending',
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       return booking;
     } catch (error) {
@@ -1222,7 +1222,7 @@ export class DatabaseStorage implements IStorage {
       const proposals = await db.select()
         .from(activityBudgetProposals)
         .where(eq(activityBudgetProposals.activityId, activityId))
-        .orderBy(desc(activityBudgetProposals.votes), desc(activityBudgetProposals.createdAt));
+        .orderBy(desc(activityBudgetProposals.votes), desc(activityBudgetProposals.created_at));
       
       const result = [];
       for (const proposal of proposals) {
@@ -1246,7 +1246,7 @@ export class DatabaseStorage implements IStorage {
       const [proposal] = await db.insert(activityBudgetProposals).values({
         ...proposalData,
         votes: 0,
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       return proposal;
     } catch (error) {
@@ -1281,11 +1281,11 @@ export class DatabaseStorage implements IStorage {
   // Note: ActivityBudgetProposalVote table doesn't exist in schema, using simple voting logic
 
   // Trip Activities
-  async getTripActivities(tripId: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]> {
+  async getTripActivities(trip_id: number): Promise<(TripActivity & { activity: Activity; proposal: ActivityBudgetProposal; addedByUser: User })[]> {
     try {
       const tripActivities = await db.select()
         .from(tripActivities)
-        .where(eq(tripActivities.tripId, tripId))
+        .where(eq(tripActivities.trip_id, trip_id))
         .orderBy(asc(tripActivities.scheduledDate));
       
       const result = [];
@@ -1317,7 +1317,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const [tripActivity] = await db.insert(tripActivities).values({
         ...tripActivityData,
-        createdAt: new Date()
+        created_at: new Date()
       }).returning();
       return tripActivity;
     } catch (error) {
@@ -1349,7 +1349,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async voteActivityBudgetProposal(proposalId: number, userId: number, increment: boolean): Promise<ActivityBudgetProposal | undefined> {
+  async voteActivityBudgetProposal(proposalId: number, user_id: number, increment: boolean): Promise<ActivityBudgetProposal | undefined> {
     try {
       const [proposal] = await db.select()
         .from(activityBudgetProposals)
@@ -1370,10 +1370,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserTripsInLocation(userId: number, location: string): Promise<Trip[]> {
+  async getUserTripsInLocation(user_id: number, location: string): Promise<Trip[]> {
     try {
-      const userTrips = await this.getTripsByCreator(userId);
-      const participantTrips = await this.getTripsByParticipant(userId);
+      const userTrips = await this.getTripsByCreator(user_id);
+      const participantTrips = await this.getTripsByParticipant(user_id);
       
       const allTrips = [...userTrips, ...participantTrips];
       const uniqueTrips = allTrips.filter((trip, index, self) => 
@@ -1410,16 +1410,16 @@ export class DatabaseStorage implements IStorage {
         const existing = await db.select()
           .from(tripParticipants)
           .where(and(
-            eq(tripParticipants.tripId, trip.id),
-            eq(tripParticipants.userId, trip.creatorId)
+            eq(tripParticipants.trip_id, trip.id),
+            eq(tripParticipants.user_id, trip.creator_id)
           ));
         
         if (existing.length === 0) {
           await db.insert(tripParticipants).values({
-            tripId: trip.id,
-            userId: trip.creatorId,
+            trip_id: trip.id,
+            user_id: trip.creator_id,
             status: 'accepted',
-            joinedAt: new Date()
+            joined_at: new Date()
           });
           fixedCount++;
         }
@@ -1495,7 +1495,7 @@ async function createDefaultTrips(user: User) {
     const trip1 = await storage.createTrip({
       title: 'Trilha na Chapada Diamantina',
       destination: 'Chapada Diamantina, BA',
-      coverImage: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
+      cover_image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80',
       startDate: new Date('2025-08-15'),
       endDate: new Date('2025-08-22'),
       budget: 2100,
@@ -1503,7 +1503,7 @@ async function createDefaultTrips(user: User) {
       description: 'Aventura incrível na Chapada Diamantina! Vamos explorar cachoeiras, fazer trilhas e acampar sob as estrelas.',
       travelStyle: 'aventura',
       sharedCosts: ['accommodation', 'transport', 'food'],
-      creatorId: user.id,
+      creator_id: user.id,
       budgetBreakdown: {
         transport: 800,
         accommodation: 600,
@@ -1515,7 +1515,7 @@ async function createDefaultTrips(user: User) {
     const trip2 = await storage.createTrip({
       title: 'Fim de semana relaxante em Campos do Jordão',
       destination: 'Campos do Jordão, SP',
-      coverImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+      cover_image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
       startDate: new Date('2025-08-01'),
       endDate: new Date('2025-08-03'),
       budget: 1200,
@@ -1523,7 +1523,7 @@ async function createDefaultTrips(user: User) {
       description: 'Escapada perfeita para relaxar no clima de montanha. Pousada aconchegante, gastronomia local e passeios de teleférico.',
       travelStyle: 'neve',
       sharedCosts: ['accommodation', 'transport'],
-      creatorId: user.id,
+      creator_id: user.id,
       budgetBreakdown: {
         transport: 300,
         accommodation: 600,
@@ -1595,7 +1595,7 @@ async function createMariaTripsWithTomAsParticipant(maria: User) {
     const trip = await storage.createTrip({
       title: 'Praia e Cultura no Rio de Janeiro',
       destination: 'Rio de Janeiro, RJ',
-      coverImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80',
+      cover_image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80',
       startDate: new Date('2025-09-10'),
       endDate: new Date('2025-09-15'),
       budget: 1600,
@@ -1603,7 +1603,7 @@ async function createMariaTripsWithTomAsParticipant(maria: User) {
       description: 'Descubra o Rio de Janeiro! Praias de Copacabana e Ipanema, Cristo Redentor e muito mais.',
       travelStyle: 'praia',
       sharedCosts: ['accommodation', 'transport', 'activities'],
-      creatorId: maria.id,
+      creator_id: maria.id,
       budgetBreakdown: {
         transport: 400,
         accommodation: 800,
