@@ -2746,6 +2746,29 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // User Requests endpoint
+  app.get("/api/user-requests", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user!.id;
+      const requests = await storage.getUserTripRequests(userId);
+      res.json(requests);
+    } catch (error) {
+      console.error('Erro ao buscar solicitações:', error);
+      res.status(500).json({ message: "Erro ao buscar solicitações" });
+    }
+  });
+
+  // Notifications endpoint (placeholder for now)
+  app.get("/api/notifications", requireAuth, async (req, res) => {
+    try {
+      // For now, return empty array as notifications system is not fully implemented
+      res.json([]);
+    } catch (error) {
+      console.error('Erro ao buscar notificações:', error);
+      res.status(500).json({ message: "Erro ao buscar notificações" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

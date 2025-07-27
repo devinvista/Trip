@@ -69,6 +69,7 @@ export interface IStorage {
   createMessage(messageData: InsertMessage): Promise<Message>;
   createExpense(expenseData: InsertExpense): Promise<Expense>;
   createExpenseSplits(expenseId: number, splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]>;
+  getUserTripRequests(userId: number): Promise<TripRequest[]>;
 }
 
 // PostgreSQL Storage Implementation
@@ -400,6 +401,10 @@ export class PostgreSQLStorage implements IStorage {
   async createExpenseSplits(expenseId: number, splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]> {
     const splitData = splits.map(split => ({ ...split, expense_id: expenseId }));
     return await db.insert(expenseSplits).values(splitData).returning();
+  }
+
+  async getUserTripRequests(userId: number): Promise<TripRequest[]> {
+    return await db.select().from(tripRequests).where(eq(tripRequests.user_id, userId));
   }
 }
 
