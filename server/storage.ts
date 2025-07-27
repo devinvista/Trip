@@ -1,6 +1,16 @@
-import { users, trips, tripParticipants, messages, tripRequests, expenses, expenseSplits, userRatings, destinationRatings, verificationRequests, activities, activityReviews, activityBookings, activityBudgetProposals, tripActivities, destinations, referralCodes, type User, type InsertUser, type Trip, type InsertTrip, type Message, type InsertMessage, type TripRequest, type InsertTripRequest, type TripParticipant, type Expense, type InsertExpense, type ExpenseSplit, type InsertExpenseSplit, type UserRating, type InsertUserRating, type DestinationRating, type InsertDestinationRating, type VerificationRequest, type InsertVerificationRequest, type Activity, type InsertActivity, type ActivityReview, type InsertActivityReview, type ActivityBooking, type InsertActivityBooking, type ActivityBudgetProposal, type InsertActivityBudgetProposal, type TripActivity, type InsertTripActivity, type ReferralCode, type InsertReferralCode, type Destination } from "@shared/schema";
+import { 
+  users, trips, tripParticipants, tripRequests, messages, destinations, activities, 
+  activityBookings, activityReviews, activityBudgetProposals, expenses, referralCodes, 
+  type User, type InsertUser, type Trip, type InsertTrip, type TripParticipant, 
+  type InsertTripParticipant, type TripRequest, type InsertTripRequest, type Message, 
+  type InsertMessage, type Destination, type InsertDestination, type Activity, 
+  type InsertActivity, type ActivityBooking, type InsertActivityBooking, 
+  type ActivityReview, type InsertActivityReview, type ActivityBudgetProposal, 
+  type InsertActivityBudgetProposal, type Expense, type InsertExpense, 
+  type ReferralCode, type InsertReferralCode
+} from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, asc, gte, lte, sql, count, or, inArray, like, ne } from "drizzle-orm";
+import { eq, and, or, desc, asc, sql, like, gte, lte, inArray, ne, gt } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -44,25 +54,6 @@ export interface IStorage {
   updateExpense(id: number, updates: Partial<Expense>): Promise<Expense | undefined>;
   deleteExpense(id: number): Promise<boolean>;
 
-  // Expense splits
-  createExpenseSplits(splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]>;
-  getExpenseSplits(expenseId: number): Promise<ExpenseSplit[]>;
-  updateExpenseSplit(id: number, updates: Partial<ExpenseSplit>): Promise<ExpenseSplit | undefined>;
-
-  // User ratings
-  createUserRating(rating: InsertUserRating): Promise<UserRating>;
-  getUserRatings(userId: number): Promise<UserRating[]>;
-  updateUserRating(id: number, updates: Partial<UserRating>): Promise<UserRating | undefined>;
-
-  // Destination ratings
-  createDestinationRating(rating: InsertDestinationRating): Promise<DestinationRating>;
-  getDestinationRatings(destination: string): Promise<DestinationRating[]>;
-
-  // Verification requests
-  createVerificationRequest(request: InsertVerificationRequest): Promise<VerificationRequest>;
-  getVerificationRequests(): Promise<VerificationRequest[]>;
-  updateVerificationRequest(id: number, updates: Partial<VerificationRequest>): Promise<VerificationRequest | undefined>;
-
   // Activities
   createActivity(activity: InsertActivity): Promise<Activity>;
   getActivity(id: number): Promise<Activity | undefined>;
@@ -90,20 +81,23 @@ export interface IStorage {
   updateActivityBudgetProposal(id: number, updates: Partial<ActivityBudgetProposal>): Promise<ActivityBudgetProposal | undefined>;
   deleteActivityBudgetProposal(id: number): Promise<boolean>;
 
-  // Trip activities
-  addActivityToTrip(tripActivity: InsertTripActivity): Promise<TripActivity>;
-  getTripActivities(tripId: number): Promise<TripActivity[]>;
-  removeActivityFromTrip(id: number): Promise<boolean>;
-
   // Destinations
-  getAllDestinations(): Promise<Destination[]>;
+  createDestination(destination: InsertDestination): Promise<Destination>;
   getDestination(id: number): Promise<Destination | undefined>;
-  getDestinationByName(name: string): Promise<Destination | undefined>;
+  getAllDestinations(): Promise<Destination[]>;
+  searchDestinations(query: string): Promise<Destination[]>;
+  updateDestination(id: number, updates: Partial<Destination>): Promise<Destination | undefined>;
+  deleteDestination(id: number): Promise<boolean>;
 
   // Referral codes
   createReferralCode(code: InsertReferralCode): Promise<ReferralCode>;
   getReferralCode(code: string): Promise<ReferralCode | undefined>;
-  updateReferralCodeUsage(code: string): Promise<boolean>;
+  useReferralCode(code: string): Promise<boolean>;
+  getAllReferralCodes(): Promise<ReferralCode[]>;
+
+  // Search and filter functions
+  getPopularActivities(limit?: number): Promise<Activity[]>;
+  getActivityCategories(): Promise<{ category: string; count: number }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -123,22 +117,26 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async createUser(user: InsertUser): Promise<User> {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    const [newUser] = await db
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const hashedPassword = await bcrypt.hash(insertUser.password, 10);
+    
+    const [user] = await db
       .insert(users)
-      .values({ ...user, password: hashedPassword })
+      .values({
+        ...insertUser,
+        password: hashedPassword,
+      })
       .returning();
-    return newUser;
+    return user;
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
-    const [updatedUser] = await db
+    const [user] = await db
       .update(users)
       .set(updates)
       .where(eq(users.id, id))
       .returning();
-    return updatedUser || undefined;
+    return user || undefined;
   }
 
   async deleteUser(id: number): Promise<boolean> {
@@ -147,7 +145,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users).orderBy(asc(users.createdAt));
+    return await db.select().from(users);
   }
 
   // Trip operations
@@ -166,52 +164,54 @@ export class DatabaseStorage implements IStorage {
     const created = await db
       .select()
       .from(trips)
-      .where(eq(trips.creator_id, userId))
-      .orderBy(desc(trips.created_at));
+      .where(eq(trips.creator_id, userId));
 
-    // Get trips user is participating in
+    // Get trips where user is a participant
     const participating = await db
       .select({
         id: trips.id,
-        creator_id: trips.creator_id,
         title: trips.title,
         destination_id: trips.destination_id,
-        coverImage: trips.coverImage,
         startDate: trips.startDate,
         endDate: trips.endDate,
         budget: trips.budget,
-        budget_breakdown: trips.budget_breakdown,
         max_participants: trips.max_participants,
         current_participants: trips.current_participants,
         description: trips.description,
         travel_style: trips.travel_style,
-        shared_costs: trips.shared_costs,
-        planned_activities: trips.planned_activities,
         status: trips.status,
+        creator_id: trips.creator_id,
         created_at: trips.created_at,
+        updated_at: trips.updated_at,
+        cover_image: trips.cover_image,
+        planned_activities: trips.planned_activities,
+        budget_breakdown: trips.budget_breakdown,
+        activities_cost: trips.activities_cost
       })
       .from(trips)
       .innerJoin(tripParticipants, eq(trips.id, tripParticipants.trip_id))
-      .where(and(
-        eq(tripParticipants.user_id, userId),
-        eq(tripParticipants.status, "accepted")
-      ))
-      .orderBy(desc(trips.created_at));
+      .where(
+        and(
+          eq(tripParticipants.user_id, userId),
+          eq(tripParticipants.status, 'accepted'),
+          ne(trips.creator_id, userId)
+        )
+      );
 
     return { created, participating };
   }
 
   async getAllTrips(): Promise<Trip[]> {
-    return await db.select().from(trips).orderBy(desc(trips.created_at));
+    return await db.select().from(trips);
   }
 
   async updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | undefined> {
-    const [updatedTrip] = await db
+    const [trip] = await db
       .update(trips)
       .set(updates)
       .where(eq(trips.id, id))
       .returning();
-    return updatedTrip || undefined;
+    return trip || undefined;
   }
 
   async deleteTrip(id: number): Promise<boolean> {
@@ -226,31 +226,31 @@ export class DatabaseStorage implements IStorage {
     
     if (filters.destination) {
       // Join with destinations table to search by name
-      // For now, we'll keep it simple and search by destination_id
-      conditions.push(eq(trips.destination_id, filters.destination));
+      query = query.leftJoin(destinations, eq(trips.destination_id, destinations.id));
+      conditions.push(like(destinations.name, `%${filters.destination}%`));
     }
     
     if (filters.startDate) {
-      conditions.push(gte(trips.startDate, new Date(filters.startDate)));
+      conditions.push(gte(trips.startDate, filters.startDate));
     }
     
     if (filters.endDate) {
-      conditions.push(lte(trips.endDate, new Date(filters.endDate)));
+      conditions.push(lte(trips.endDate, filters.endDate));
     }
     
-    if (filters.maxBudget) {
-      conditions.push(lte(trips.budget, filters.maxBudget));
+    if (filters.budget) {
+      conditions.push(lte(trips.budget, filters.budget));
     }
     
     if (filters.travelStyle) {
       conditions.push(eq(trips.travel_style, filters.travelStyle));
     }
-    
+
     if (conditions.length > 0) {
       query = query.where(and(...conditions));
     }
-    
-    return await query.orderBy(desc(trips.created_at));
+
+    return await query;
   }
 
   // Trip participants
@@ -258,17 +258,20 @@ export class DatabaseStorage implements IStorage {
     await db.insert(tripParticipants).values({
       trip_id: tripId,
       user_id: userId,
-      status: "pending"
+      status: 'accepted',
+      joined_at: new Date()
     });
   }
 
   async removeParticipant(tripId: number, userId: number): Promise<void> {
     await db
       .delete(tripParticipants)
-      .where(and(
-        eq(tripParticipants.trip_id, tripId),
-        eq(tripParticipants.user_id, userId)
-      ));
+      .where(
+        and(
+          eq(tripParticipants.trip_id, tripId),
+          eq(tripParticipants.user_id, userId)
+        )
+      );
   }
 
   async getTripParticipants(tripId: number): Promise<TripParticipant[]> {
@@ -282,10 +285,12 @@ export class DatabaseStorage implements IStorage {
     await db
       .update(tripParticipants)
       .set({ status })
-      .where(and(
-        eq(tripParticipants.trip_id, tripId),
-        eq(tripParticipants.user_id, userId)
-      ));
+      .where(
+        and(
+          eq(tripParticipants.trip_id, tripId),
+          eq(tripParticipants.user_id, userId)
+        )
+      );
   }
 
   // Messages
@@ -299,7 +304,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(messages)
       .where(eq(messages.trip_id, tripId))
-      .orderBy(asc(messages.sent_at));
+      .orderBy(asc(messages.created_at));
   }
 
   // Trip requests
@@ -312,25 +317,23 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(tripRequests)
-      .where(eq(tripRequests.trip_id, tripId))
-      .orderBy(desc(tripRequests.created_at));
+      .where(eq(tripRequests.trip_id, tripId));
   }
 
   async getUserTripRequests(userId: number): Promise<TripRequest[]> {
     return await db
       .select()
       .from(tripRequests)
-      .where(eq(tripRequests.user_id, userId))
-      .orderBy(desc(tripRequests.created_at));
+      .where(eq(tripRequests.user_id, userId));
   }
 
   async updateTripRequestStatus(id: number, status: string): Promise<TripRequest | undefined> {
-    const [updatedRequest] = await db
+    const [request] = await db
       .update(tripRequests)
       .set({ status })
       .where(eq(tripRequests.id, id))
       .returning();
-    return updatedRequest || undefined;
+    return request || undefined;
   }
 
   // Expenses
@@ -343,103 +346,21 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(expenses)
-      .where(eq(expenses.trip_id, tripId))
-      .orderBy(desc(expenses.created_at));
+      .where(eq(expenses.trip_id, tripId));
   }
 
   async updateExpense(id: number, updates: Partial<Expense>): Promise<Expense | undefined> {
-    const [updatedExpense] = await db
+    const [expense] = await db
       .update(expenses)
       .set(updates)
       .where(eq(expenses.id, id))
       .returning();
-    return updatedExpense || undefined;
+    return expense || undefined;
   }
 
   async deleteExpense(id: number): Promise<boolean> {
     const result = await db.delete(expenses).where(eq(expenses.id, id));
     return result.rowCount > 0;
-  }
-
-  // Expense splits
-  async createExpenseSplits(splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]> {
-    const newSplits = await db.insert(expenseSplits).values(splits).returning();
-    return newSplits;
-  }
-
-  async getExpenseSplits(expenseId: number): Promise<ExpenseSplit[]> {
-    return await db
-      .select()
-      .from(expenseSplits)
-      .where(eq(expenseSplits.expense_id, expenseId));
-  }
-
-  async updateExpenseSplit(id: number, updates: Partial<ExpenseSplit>): Promise<ExpenseSplit | undefined> {
-    const [updatedSplit] = await db
-      .update(expenseSplits)
-      .set(updates)
-      .where(eq(expenseSplits.id, id))
-      .returning();
-    return updatedSplit || undefined;
-  }
-
-  // User ratings
-  async createUserRating(rating: InsertUserRating): Promise<UserRating> {
-    const [newRating] = await db.insert(userRatings).values(rating).returning();
-    return newRating;
-  }
-
-  async getUserRatings(userId: number): Promise<UserRating[]> {
-    return await db
-      .select()
-      .from(userRatings)
-      .where(eq(userRatings.rated_user_id, userId))
-      .orderBy(desc(userRatings.created_at));
-  }
-
-  async updateUserRating(id: number, updates: Partial<UserRating>): Promise<UserRating | undefined> {
-    const [updatedRating] = await db
-      .update(userRatings)
-      .set(updates)
-      .where(eq(userRatings.id, id))
-      .returning();
-    return updatedRating || undefined;
-  }
-
-  // Destination ratings
-  async createDestinationRating(rating: InsertDestinationRating): Promise<DestinationRating> {
-    const [newRating] = await db.insert(destinationRatings).values(rating).returning();
-    return newRating;
-  }
-
-  async getDestinationRatings(destination: string): Promise<DestinationRating[]> {
-    return await db
-      .select()
-      .from(destinationRatings)
-      .where(eq(destinationRatings.destination, destination))
-      .orderBy(desc(destinationRatings.created_at));
-  }
-
-  // Verification requests
-  async createVerificationRequest(request: InsertVerificationRequest): Promise<VerificationRequest> {
-    const [newRequest] = await db.insert(verificationRequests).values(request).returning();
-    return newRequest;
-  }
-
-  async getVerificationRequests(): Promise<VerificationRequest[]> {
-    return await db
-      .select()
-      .from(verificationRequests)
-      .orderBy(desc(verificationRequests.created_at));
-  }
-
-  async updateVerificationRequest(id: number, updates: Partial<VerificationRequest>): Promise<VerificationRequest | undefined> {
-    const [updatedRequest] = await db
-      .update(verificationRequests)
-      .set(updates)
-      .where(eq(verificationRequests.id, id))
-      .returning();
-    return updatedRequest || undefined;
   }
 
   // Activities
@@ -454,38 +375,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllActivities(): Promise<Activity[]> {
-    return await db
-      .select()
-      .from(activities)
-      .where(eq(activities.is_active, true))
-      .orderBy(desc(activities.created_at));
+    return await db.select().from(activities).where(eq(activities.is_active, true));
   }
 
   async getActivitiesByDestination(destinationId: number): Promise<Activity[]> {
     return await db
       .select()
       .from(activities)
-      .where(and(
-        eq(activities.destination_id, destinationId),
-        eq(activities.is_active, true)
-      ))
-      .orderBy(desc(activities.created_at));
+      .where(
+        and(
+          eq(activities.destination_id, destinationId),
+          eq(activities.is_active, true)
+        )
+      );
   }
 
   async updateActivity(id: number, updates: Partial<Activity>): Promise<Activity | undefined> {
-    const [updatedActivity] = await db
+    const [activity] = await db
       .update(activities)
       .set(updates)
       .where(eq(activities.id, id))
       .returning();
-    return updatedActivity || undefined;
+    return activity || undefined;
   }
 
   async deleteActivity(id: number): Promise<boolean> {
-    const result = await db
-      .update(activities)
-      .set({ is_active: false })
-      .where(eq(activities.id, id));
+    const result = await db.delete(activities).where(eq(activities.id, id));
     return result.rowCount > 0;
   }
 
@@ -494,18 +409,18 @@ export class DatabaseStorage implements IStorage {
     
     const conditions = [eq(activities.is_active, true)];
     
-    if (filters.destination) {
-      conditions.push(eq(activities.destination_id, filters.destination));
+    if (filters.category && filters.category.length > 0) {
+      conditions.push(inArray(activities.category, filters.category));
     }
     
-    if (filters.category) {
-      conditions.push(eq(activities.category, filters.category));
+    if (filters.destination_id) {
+      conditions.push(eq(activities.destination_id, filters.destination_id));
     }
     
-    if (filters.difficulty) {
-      conditions.push(eq(activities.difficulty_level, filters.difficulty));
+    if (filters.difficulty_level) {
+      conditions.push(eq(activities.difficulty_level, filters.difficulty_level));
     }
-    
+
     if (filters.search) {
       conditions.push(
         or(
@@ -514,12 +429,10 @@ export class DatabaseStorage implements IStorage {
         )
       );
     }
-    
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    
-    return await query.orderBy(desc(activities.created_at));
+
+    query = query.where(and(...conditions));
+
+    return await query;
   }
 
   // Activity reviews
@@ -532,20 +445,17 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(activityReviews)
-      .where(and(
-        eq(activityReviews.activity_id, activityId),
-        eq(activityReviews.is_hidden, false)
-      ))
+      .where(eq(activityReviews.activity_id, activityId))
       .orderBy(desc(activityReviews.created_at));
   }
 
   async updateActivityReview(id: number, updates: Partial<ActivityReview>): Promise<ActivityReview | undefined> {
-    const [updatedReview] = await db
+    const [review] = await db
       .update(activityReviews)
       .set(updates)
       .where(eq(activityReviews.id, id))
       .returning();
-    return updatedReview || undefined;
+    return review || undefined;
   }
 
   async deleteActivityReview(id: number): Promise<boolean> {
@@ -563,25 +473,23 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(activityBookings)
-      .where(eq(activityBookings.activity_id, activityId))
-      .orderBy(desc(activityBookings.created_at));
+      .where(eq(activityBookings.activity_id, activityId));
   }
 
   async getUserActivityBookings(userId: number): Promise<ActivityBooking[]> {
     return await db
       .select()
       .from(activityBookings)
-      .where(eq(activityBookings.user_id, userId))
-      .orderBy(desc(activityBookings.created_at));
+      .where(eq(activityBookings.user_id, userId));
   }
 
   async updateActivityBooking(id: number, updates: Partial<ActivityBooking>): Promise<ActivityBooking | undefined> {
-    const [updatedBooking] = await db
+    const [booking] = await db
       .update(activityBookings)
       .set(updates)
       .where(eq(activityBookings.id, id))
       .returning();
-    return updatedBooking || undefined;
+    return booking || undefined;
   }
 
   // Activity budget proposals
@@ -594,56 +502,33 @@ export class DatabaseStorage implements IStorage {
     return await db
       .select()
       .from(activityBudgetProposals)
-      .where(and(
-        eq(activityBudgetProposals.activity_id, activityId),
-        eq(activityBudgetProposals.is_active, true)
-      ))
+      .where(
+        and(
+          eq(activityBudgetProposals.activity_id, activityId),
+          eq(activityBudgetProposals.is_active, true)
+        )
+      )
       .orderBy(asc(activityBudgetProposals.amount));
   }
 
   async updateActivityBudgetProposal(id: number, updates: Partial<ActivityBudgetProposal>): Promise<ActivityBudgetProposal | undefined> {
-    const [updatedProposal] = await db
+    const [proposal] = await db
       .update(activityBudgetProposals)
       .set(updates)
       .where(eq(activityBudgetProposals.id, id))
       .returning();
-    return updatedProposal || undefined;
+    return proposal || undefined;
   }
 
   async deleteActivityBudgetProposal(id: number): Promise<boolean> {
-    const result = await db
-      .update(activityBudgetProposals)
-      .set({ is_active: false })
-      .where(eq(activityBudgetProposals.id, id));
-    return result.rowCount > 0;
-  }
-
-  // Trip activities
-  async addActivityToTrip(tripActivity: InsertTripActivity): Promise<TripActivity> {
-    const [newTripActivity] = await db.insert(tripActivities).values(tripActivity).returning();
-    return newTripActivity;
-  }
-
-  async getTripActivities(tripId: number): Promise<TripActivity[]> {
-    return await db
-      .select()
-      .from(tripActivities)
-      .where(eq(tripActivities.trip_id, tripId))
-      .orderBy(asc(tripActivities.scheduled_date));
-  }
-
-  async removeActivityFromTrip(id: number): Promise<boolean> {
-    const result = await db.delete(tripActivities).where(eq(tripActivities.id, id));
+    const result = await db.delete(activityBudgetProposals).where(eq(activityBudgetProposals.id, id));
     return result.rowCount > 0;
   }
 
   // Destinations
-  async getAllDestinations(): Promise<Destination[]> {
-    return await db
-      .select()
-      .from(destinations)
-      .where(eq(destinations.isActive, true))
-      .orderBy(asc(destinations.name));
+  async createDestination(destination: InsertDestination): Promise<Destination> {
+    const [newDestination] = await db.insert(destinations).values(destination).returning();
+    return newDestination;
   }
 
   async getDestination(id: number): Promise<Destination | undefined> {
@@ -651,9 +536,38 @@ export class DatabaseStorage implements IStorage {
     return destination || undefined;
   }
 
-  async getDestinationByName(name: string): Promise<Destination | undefined> {
-    const [destination] = await db.select().from(destinations).where(eq(destinations.name, name));
+  async getAllDestinations(): Promise<Destination[]> {
+    return await db.select().from(destinations).where(eq(destinations.isActive, true));
+  }
+
+  async searchDestinations(query: string): Promise<Destination[]> {
+    return await db
+      .select()
+      .from(destinations)
+      .where(
+        and(
+          eq(destinations.isActive, true),
+          or(
+            like(destinations.name, `%${query}%`),
+            like(destinations.country, `%${query}%`),
+            like(destinations.state, `%${query}%`)
+          )
+        )
+      );
+  }
+
+  async updateDestination(id: number, updates: Partial<Destination>): Promise<Destination | undefined> {
+    const [destination] = await db
+      .update(destinations)
+      .set(updates)
+      .where(eq(destinations.id, id))
+      .returning();
     return destination || undefined;
+  }
+
+  async deleteDestination(id: number): Promise<boolean> {
+    const result = await db.delete(destinations).where(eq(destinations.id, id));
+    return result.rowCount > 0;
   }
 
   // Referral codes
@@ -666,21 +580,46 @@ export class DatabaseStorage implements IStorage {
     const [referralCode] = await db
       .select()
       .from(referralCodes)
-      .where(and(
-        eq(referralCodes.code, code),
-        eq(referralCodes.is_active, true)
-      ));
+      .where(eq(referralCodes.code, code));
     return referralCode || undefined;
   }
 
-  async updateReferralCodeUsage(code: string): Promise<boolean> {
+  async useReferralCode(code: string): Promise<boolean> {
     const result = await db
       .update(referralCodes)
       .set({ 
-        current_uses: sql`${referralCodes.current_uses} + 1` 
+        current_uses: sql`${referralCodes.current_uses} + 1`
       })
       .where(eq(referralCodes.code, code));
     return result.rowCount > 0;
+  }
+
+  async getAllReferralCodes(): Promise<ReferralCode[]> {
+    return await db.select().from(referralCodes);
+  }
+
+  // Search and filter functions
+  async getPopularActivities(limit: number = 10): Promise<Activity[]> {
+    return await db
+      .select()
+      .from(activities)
+      .where(eq(activities.is_active, true))
+      .orderBy(desc(activities.average_rating))
+      .limit(limit);
+  }
+
+  async getActivityCategories(): Promise<{ category: string; count: number }[]> {
+    const result = await db
+      .select({
+        category: activities.category,
+        count: sql<number>`count(*)`.as('count')
+      })
+      .from(activities)
+      .where(eq(activities.is_active, true))
+      .groupBy(activities.category)
+      .orderBy(desc(sql`count(*)`));
+    
+    return result;
   }
 }
 

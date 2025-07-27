@@ -55,7 +55,7 @@ export function registerRoutes(app: Express): Server {
       if (budget) filters.budget = parseInt(budget as string);
       if (travelStyle) filters.travelStyle = travelStyle as string;
       
-      const trips = await storage.getTrips(filters);
+      const trips = await storage.searchTrips(filters);
       
       // Include creator info for each trip
       const tripsWithCreators = await Promise.all(
@@ -1341,7 +1341,7 @@ export function registerRoutes(app: Express): Server {
       if (rating) filters.rating = rating as string;
       if (sortBy) filters.sortBy = sortBy as string;
       
-      const activities = await storage.getActivities(filters);
+      const activities = await storage.searchActivities(filters);
       res.json(activities);
     } catch (error) {
       console.error('Erro ao buscar atividades:', error);
