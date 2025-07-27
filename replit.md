@@ -13,6 +13,7 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **Propostas de Orçamento:** ✅ 150+ propostas ativas (3 por atividade)
 - **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada com variáveis de ambiente configuradas
 - **Cálculo de Ocupação:** ✅ Corrigido suporte para campos snake_case/camelCase na migração
+- **Sistema de Busca:** ✅ Pesquisa de destinos corrigida e funcionando perfeitamente
 
 ## Arquitetura do Sistema
 

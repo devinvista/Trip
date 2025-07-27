@@ -289,15 +289,22 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async getDestinations(search?: string): Promise<any[]> {
-    let query = db.select().from(destinations).where(eq(destinations.isActive, true));
+    let baseQuery = db.select().from(destinations);
     
     if (search) {
-      query = query.where(
-        sql`(${destinations.name} ILIKE ${`%${search}%`} OR ${destinations.region} ILIKE ${`%${search}%`})`
-      );
+      return await baseQuery
+        .where(
+          and(
+            eq(destinations.isActive, true),
+            sql`(${destinations.name} ILIKE ${`%${search}%`} OR ${destinations.region} ILIKE ${`%${search}%`} OR ${destinations.state} ILIKE ${`%${search}%`})`
+          )
+        )
+        .orderBy(asc(destinations.name));
     }
     
-    return await query.orderBy(asc(destinations.name));
+    return await baseQuery
+      .where(eq(destinations.isActive, true))
+      .orderBy(asc(destinations.name));
   }
 
   async getAllActivities(): Promise<Activity[]> {
