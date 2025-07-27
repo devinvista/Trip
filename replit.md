@@ -8,12 +8,13 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **Sistema de Autenticação:** ✅ Totalmente funcional
 - **API Endpoints:** ✅ Corrigidos para `/api/auth/login` e `/api/auth/register`
 - **Parsing JSON:** ✅ Erro JSON.parse resolvido com tratamento adequado de campos string
-- **Credenciais de Teste:** tom/maria com senha "password123"
+- **Credenciais de Teste:** tom/maria com senha "demo123"
 - **Database:** ✅ PostgreSQL com 10 atividades, 3 usuários, 2 viagens ativas, 9 destinos
 - **Propostas de Orçamento:** ✅ 12 propostas ativas cobrindo todas as atividades principais
 - **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada com variáveis de ambiente configuradas
 - **Migração Verificada:** ✅ 27 de julho de 2025 - Migração para ambiente Replit padrão confirmada pelo usuário como funcional
 - **PostgreSQL Exclusivo:** ✅ 27 de julho de 2025 - Sistema configurado para usar exclusivamente PostgreSQL via DATABASE_URL
+- **MIGRAÇÃO COMPLETA:** ✅ 27 de julho de 2025 - Login, sessões e PostgreSQL funcionando perfeitamente
 
 ## Arquitetura do Sistema
 

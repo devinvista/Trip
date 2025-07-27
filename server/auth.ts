@@ -283,6 +283,19 @@ export function setupAuth(app: Express) {
     res.json({ message: "API está funcionando", timestamp: new Date().toISOString() });
   });
 
+  // Debug route to test body parsing
+  app.post("/api/auth/test-body", (req, res) => {
+    console.log('🔍 Test body parsing:', {
+      body: req.body,
+      contentType: req.headers['content-type']
+    });
+    res.json({ 
+      message: "Body test", 
+      receivedBody: req.body,
+      contentType: req.headers['content-type']
+    });
+  });
+
   // Rota de login
   app.post("/api/auth/login", (req, res, next) => {
     console.log('🔍 Dados do login recebidos:', {
