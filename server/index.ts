@@ -5,7 +5,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { testConnection, initializeTables, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
-import { syncParticipantsCount } from "./sync-participants";
+import { syncParticipantsCount } from "./sync-participants.ts";
 import { setupReferralSystem } from "./setup-referral-system";
 
 const app = express();
@@ -70,7 +70,7 @@ async function fixUserVerificationStatus() {
 }
 
 (async () => {
-  const server = registerRoutes(app);
+  const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -103,7 +103,9 @@ async function fixUserVerificationStatus() {
 
   // Initialize database in background after server starts
   (async () => {
+    console.log("🔗 Testando conexão MySQL...");
     await testConnection();
+    console.log("🏗️ Inicializando tabelas MySQL...");
     await initializeTables();
     
     // Fix user verification status

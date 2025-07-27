@@ -118,7 +118,7 @@ export function setupAuth(app: Express) {
               profilePhoto: userWithoutPassword.profilePhoto || undefined,
               languages: userWithoutPassword.languages || undefined,
               interests: userWithoutPassword.interests || undefined,
-              travelStyles: userWithoutPassword.travelStyles || [],
+              travelStyle: userWithoutPassword.travelStyle || undefined,
             };
             
             req.user = cleanUser;
@@ -198,9 +198,9 @@ export function setupAuth(app: Express) {
           bio: userWithoutPassword.bio || undefined,
           location: userWithoutPassword.location || undefined,
           profilePhoto: userWithoutPassword.profilePhoto || undefined,
-          languages: userWithoutPassword.languages || [],
-          interests: userWithoutPassword.interests || [],
-          travelStyles: userWithoutPassword.travelStyles || [],
+          languages: userWithoutPassword.languages || undefined,
+          interests: userWithoutPassword.interests || undefined,
+          travelStyle: userWithoutPassword.travelStyle || undefined,
         };
         return done(null, cleanUser);
       } catch (error) {
@@ -229,9 +229,9 @@ export function setupAuth(app: Express) {
         bio: userWithoutPassword.bio || undefined,
         location: userWithoutPassword.location || undefined,
         profilePhoto: userWithoutPassword.profilePhoto || undefined,
-        languages: userWithoutPassword.languages || [],
-        interests: userWithoutPassword.interests || [],
-        travelStyles: userWithoutPassword.travelStyles || [],
+        languages: userWithoutPassword.languages || undefined,
+        interests: userWithoutPassword.interests || undefined,
+        travelStyle: userWithoutPassword.travelStyle || undefined,
       };
       done(null, cleanUser);
     } catch (error) {
@@ -252,9 +252,9 @@ export function setupAuth(app: Express) {
             bio: userWithoutPassword.bio || undefined,
             location: userWithoutPassword.location || undefined,
             profilePhoto: userWithoutPassword.profilePhoto || undefined,
-            languages: userWithoutPassword.languages || [],
-            interests: userWithoutPassword.interests || [],
-            travelStyles: userWithoutPassword.travelStyles || [],
+            languages: userWithoutPassword.languages || undefined,
+            interests: userWithoutPassword.interests || undefined,
+            travelStyle: userWithoutPassword.travelStyle || undefined,
           };
           console.log('✅ Fresh user data loaded, isVerified:', cleanUser.isVerified);
           res.json(cleanUser);
@@ -283,27 +283,8 @@ export function setupAuth(app: Express) {
     res.json({ message: "API está funcionando", timestamp: new Date().toISOString() });
   });
 
-  // Debug route to test body parsing
-  app.post("/api/auth/test-body", (req, res) => {
-    console.log('🔍 Test body parsing:', {
-      body: req.body,
-      contentType: req.headers['content-type']
-    });
-    res.json({ 
-      message: "Body test", 
-      receivedBody: req.body,
-      contentType: req.headers['content-type']
-    });
-  });
-
   // Rota de login
   app.post("/api/auth/login", (req, res, next) => {
-    console.log('🔍 Dados do login recebidos:', {
-      body: req.body,
-      hasIdentifier: !!req.body?.identifier,
-      hasPassword: !!req.body?.password
-    });
-    
     passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
         console.error('Erro na autenticação:', err);
@@ -390,7 +371,7 @@ export function setupAuth(app: Express) {
         location,
         languages,
         interests,
-        travelStyles: travelStyle || [],
+        travelStyle,
         referredBy,
         isVerified,
         verificationMethod
@@ -404,9 +385,9 @@ export function setupAuth(app: Express) {
         bio: userWithoutPassword.bio || undefined,
         location: userWithoutPassword.location || undefined,
         profilePhoto: userWithoutPassword.profilePhoto || undefined,
-        languages: userWithoutPassword.languages || [],
-        interests: userWithoutPassword.interests || [],
-        travelStyles: userWithoutPassword.travelStyles || [],
+        languages: userWithoutPassword.languages || undefined,
+        interests: userWithoutPassword.interests || undefined,
+        travelStyle: userWithoutPassword.travelStyle || undefined,
       };
       
       req.logIn(cleanUser, (err) => {

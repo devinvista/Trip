@@ -8,13 +8,10 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **Sistema de Autenticação:** ✅ Totalmente funcional
 - **API Endpoints:** ✅ Corrigidos para `/api/auth/login` e `/api/auth/register`
 - **Parsing JSON:** ✅ Erro JSON.parse resolvido com tratamento adequado de campos string
-- **Credenciais de Teste:** tom/maria com senha "demo123"
-- **Database:** ✅ PostgreSQL com 10 atividades, 3 usuários, 2 viagens ativas, 9 destinos
-- **Propostas de Orçamento:** ✅ 12 propostas ativas cobrindo todas as atividades principais
+- **Credenciais de Teste:** tom/maria com senha "password123"
+- **Database:** ✅ MySQL com 57+ atividades, 6 usuários, 70+ viagens ativas
+- **Propostas de Orçamento:** ✅ 150+ propostas ativas (3 por atividade)
 - **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada com variáveis de ambiente configuradas
-- **Migração Verificada:** ✅ 27 de julho de 2025 - Migração para ambiente Replit padrão confirmada pelo usuário como funcional
-- **PostgreSQL Exclusivo:** ✅ 27 de julho de 2025 - Sistema configurado para usar exclusivamente PostgreSQL via DATABASE_URL
-- **MIGRAÇÃO COMPLETA:** ✅ 27 de julho de 2025 - Login, sessões e PostgreSQL funcionando perfeitamente
 
 ## Arquitetura do Sistema
 
@@ -30,16 +27,14 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 ### Arquitetura Backend
 - **Runtime**: Node.js com Express.js
 - **Autenticação**: Passport.js com estratégia local e autenticação baseada em sessão
-- **Armazenamento de Sessão**: Sessões Express com armazenamento PostgreSQL
-- **Segurança de Senha**: bcryptjs com hash e salt automático
+- **Armazenamento de Sessão**: Sessões Express com armazenamento MySQL
+- **Segurança de Senha**: Módulo crypto do Node.js com hash scrypt
 - **Design de API**: Endpoints RESTful com respostas JSON
-- **Banco de Dados**: PostgreSQL com Drizzle ORM (@neondatabase/serverless driver)
-- **Armazenamento**: Sistema DatabaseStorage nativo PostgreSQL com queries otimizadas
-- **Schema**: Totalmente convertido para PostgreSQL (pgTable, serial, jsonb, timestamp) com camelCase
-- **Rotas**: Sistema routes-postgresql.ts com todas as funcionalidades migradas
+- **Banco de Dados**: MySQL com Drizzle ORM (migração completa da memória para persistência)
+- **Armazenamento**: Sistema totalmente migrado para MySQL com dados persistentes
 
 ### Esquema do Banco de Dados
-A aplicação usa PostgreSQL com as seguintes entidades principais:
+A aplicação usa MySQL com as seguintes entidades principais:
 - **Usuários**: Autenticação, informações de perfil e preferências de viagem
 - **Viagens**: Planos de viagem com destinos, datas, orçamentos e custos compartilhados
 - **Participantes da Viagem**: Relacionamento muitos-para-muitos entre usuários e viagens
@@ -90,7 +85,7 @@ A aplicação usa PostgreSQL com as seguintes entidades principais:
 
 ## Fluxo de Dados
 
-1. **Cadastro/Login de Usuário**: Usuários se autenticam através da estratégia local, sessões são armazenadas no PostgreSQL
+1. **Cadastro/Login de Usuário**: Usuários se autenticam através da estratégia local, sessões são armazenadas no MySQL
 2. **Criação de Viagem**: Usuários autenticados criam viagens com informações de planejamento detalhado
 3. **Descoberta de Viagem**: Usuários pesquisam e filtram viagens baseadas em preferências e compatibilidade
 4. **Solicitações de Participação**: Usuários solicitam participar de viagens, criadores aprovam/rejeitam solicitações
@@ -100,8 +95,8 @@ A aplicação usa PostgreSQL com as seguintes entidades principais:
 ## Dependências Externas
 
 ### Dependências Principais
-- **@neondatabase/serverless**: Driver PostgreSQL serverless para conexão com banco de dados
-- **drizzle-orm**: ORM type-safe com dialeto PostgreSQL
+- **mysql2**: Driver MySQL para conexão com banco de dados
+- **drizzle-orm**: ORM type-safe com dialeto MySQL
 - **passport & passport-local**: Middleware de autenticação
 - **@tanstack/react-query**: Gerenciamento de estado do servidor
 - **react-hook-form**: Manipulação de formulários com validação
@@ -127,8 +122,11 @@ A aplicação usa PostgreSQL com as seguintes entidades principais:
 - Artefato único de deploy com servir arquivos estáticos
 
 ### Configuração de Ambiente
-- Conexão com banco de dados PostgreSQL via variáveis de ambiente configuradas nos Replit Secrets:
-  - `DATABASE_URL`: String de conexão PostgreSQL completa via Neon serverless
+- Conexão com banco de dados MySQL via variáveis de ambiente configuradas nos Replit Secrets:
+  - `DB_HOST`: srv1661.hstgr.io (Servidor MySQL hospedado)
+  - `DB_USER`: u905571261_trip (Nome de usuário do banco MySQL)
+  - `DB_PASSWORD`: Senha do banco MySQL (configurada nos secrets)
+  - `DB_NAME`: u905571261_trip (Nome do banco de dados)
   - `SESSION_SECRET`: Chave secreta para segurança de autenticação
 - Todas as credenciais estão seguramente armazenadas nas variáveis de ambiente do Replit
 - Configuração de segurança aprimorada: credenciais nunca expostas no código
@@ -163,7 +161,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - **30 de junho de 2025** - Configuração inicial do projeto PartiuTrip
 
 ### Detalhes Técnicos
-- **Banco de Dados**: PostgreSQL nativo via @neondatabase/serverless com todas as tabelas e dados (removidas dependências MySQL residuais)
+- **Banco de Dados**: Migração completa para MySQL com todas as tabelas e dados (removidas dependências PostgreSQL residuais)
 - **Autenticação**: Sistema híbrido com suporte a cookies e headers de sessão
 - **Interface**: Design responsivo com Tailwind CSS e componentes Shadcn/UI
 - **Funcionalidades**: Sistema completo de viagens, divisão de custos, chat e gamificação
@@ -335,14 +333,14 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 23, 2025. **NAVEGAÇÃO OTIMIZADA**: Removidos todos os botões de navegação das abas despesas e participantes por redundância
 - July 23, 2025. Interface de navegação centralizada nos cards interativos da aba "Visão Geral" para melhor experiência do usuário
 - July 23, 2025. Headers das abas simplificados mantendo apenas informações contextuais relevantes
-- July 27, 2025. **CORREÇÕES TÉCNICAS LSP**: Corrigidos todos os 7 erros de TypeScript para garantir compatibilidade total com PostgreSQL
+- July 23, 2025. **CORREÇÕES TÉCNICAS LSP**: Corrigidos todos os 7 erros de TypeScript para garantir compatibilidade total com MySQL
 - July 23, 2025. Corrigidas mutations usando fetch em vez de apiRequest incorreto para operações CRUD de atividades
 - July 23, 2025. Adicionado campo status e casting de tipos para PlannedActivity para resolver incompatibilidades de schema
 - July 23, 2025. **NAVBAR TOTALMENTE RESPONSIVO**: Implementada responsividade completa do navbar para todos os tamanhos de tela
 - July 23, 2025. Sistema responsivo aprimorado: logo adaptativo, navegação mobile otimizada, botões com múltiplos breakpoints
 - July 23, 2025. Melhorias de UX: paddings adaptativos, textos truncados, ícones proporcionais e sheet com larguras responsivas
 - July 23, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - todas as funcionalidades operacionais e navbar responsivo implementado
-- July 27, 2025. **CONFIGURAÇÃO DE AMBIENTE IMPLEMENTADA**: Variáveis de ambiente PostgreSQL configuradas via DATABASE_URL
+- July 23, 2025. **CONFIGURAÇÃO DE AMBIENTE IMPLEMENTADA**: Criado arquivo .env com todas as credenciais do banco MySQL
 - July 23, 2025. Refatorado server/db.ts para usar variáveis de ambiente em vez de valores hardcoded
 - July 23, 2025. Configuração de segurança aprimorada: credenciais agora são carregadas de variáveis de ambiente
 - July 23, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - todas as funcionalidades operacionais incluindo sistema de indicações, avaliações, viagens e chat em tempo real
@@ -352,7 +350,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 23, 2025. **INTERFACE DE ORÇAMENTO APRIMORADA**: Alterado "Custo Individual" para "Custo Individual com Atividades" e ajustado cálculo de progresso para usar orçamento total (base + atividades)
 - July 23, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA COM SUCESSO**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - aplicação 100% funcional
 - July 23, 2025. **CORREÇÕES TÉCNICAS CRÍTICAS CONCLUÍDAS**: Corrigidos todos os erros LSP/TypeScript para garantir compatibilidade total com MySQL
-- July 27, 2025. Configuração SSL otimizada para PostgreSQL usando @neondatabase/serverless driver
+- July 23, 2025. Corrigido erro de SSL configuration no MySQL - alterado de `false` para `undefined` para compatibilidade com mysql2
 - July 23, 2025. Corrigidas todas as questões de tipagem TypeScript no sistema de atividades planejadas
 - July 23, 2025. Implementado handleActivitiesChange otimizado com React.useCallback para melhor performance
 - July 23, 2025. Sistema de PlannedActivity expandido com campo status opcional para total compatibilidade
@@ -377,21 +375,21 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 24, 2025. **PERFORMANCE APRIMORADA**: Cache de formatadores NumberFormat reduz overhead de criação de instâncias repetidas em ~70%
 - July 24, 2025. **INTERFACE DE ORÇAMENTO SIMPLIFICADA**: Removidos badges de porcentagem do detalhamento de orçamento - interface mais limpa focando apenas nos valores absolutos
 - July 25, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - banco MySQL padronizado para snake_case, todas as funcionalidades operacionais, aplicação 100% funcional no ambiente standard
-- July 27, 2025. **TODOS OS SCRIPTS ATUALIZADOS PARA POSTGRESQL**: Todos os scripts atualizados sistematicamente para compatibilidade total com PostgreSQL usando camelCase
-- July 27, 2025. **ZERO ERROS LSP ALCANÇADO**: Todos os erros de TypeScript e compatibilidade PostgreSQL resolvidos - aplicação agora roda sem erros de compilação
+- July 25, 2025. **TODOS OS SCRIPTS ATUALIZADOS PARA MYSQL**: Todos os 20+ scripts de atividades turísticas atualizados sistematicamente para compatibilidade total com MySQL usando snake_case (activity_id, cover_image, difficulty_level, etc.)
+- July 25, 2025. **ZERO ERROS LSP ALCANÇADO**: Todos os erros de TypeScript e compatibilidade MySQL resolvidos - aplicação agora roda sem erros de compilação
 - July 25, 2025. **MIGRAÇÃO REPLIT AGENT OFICIALMENTE CONCLUÍDA**: Processo de migração do Replit Agent para ambiente Replit padrão finalizado com sucesso total
 - July 25, 2025. **PROPOSTAS DE ORÇAMENTO CADASTRADAS**: Adicionadas 489 propostas de orçamento abrangentes para todas as 163 atividades turísticas, cobrindo destinos nacionais e internacionais com 3 níveis de preço (Econômico, Completo, Premium)
 - July 25, 2025. **TODOS OS SCRIPTS ATUALIZADOS PARA MYSQL**: Atualização sistemática completa de todos os 73 scripts do projeto para padrão MySQL snake_case
 - July 25, 2025. **ZERO ERROS LSP CONFIRMADO**: Todos os scripts agora seguem o padrão MySQL com campos corretos (activity_id, created_at, difficulty_level, etc.)
-- July 27, 2025. **COMPATIBILIDADE POSTGRESQL TOTAL**: Schema PostgreSQL nativo usando camelCase consistente entre JavaScript e banco
-- July 27, 2025. **PADRÕES POSTGRESQL IMPLEMENTADOS**: Suporte completo a .returning(), configuração SSL nativa, tipos timestamp PostgreSQL
+- July 25, 2025. **COMPATIBILIDADE MYSQL TOTAL**: Sistema de mapeamento automático implementado para converter camelCase JavaScript → snake_case MySQL
+- July 25, 2025. **PADRÕES MYSQL IMPLEMENTADOS**: Removidas todas as chamadas .returning() incompatíveis, corrigida configuração SSL, padronizados formatos de data/hora
 - July 25, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - banco MySQL padronizado para snake_case, todas as funcionalidades operacionais, aplicação 100% funcional no ambiente standard
 - July 24, 2025. **CONFIGURAÇÃO DE AMBIENTE IMPLEMENTADA**: Criado sistema de variáveis de ambiente seguras via Replit Secrets
 - July 24, 2025. Refatorado server/db.ts para usar variáveis de ambiente em vez de valores hardcoded
 - July 24, 2025. Configuração de segurança aprimorada: credenciais agora são carregadas de variáveis de ambiente
 - July 24, 2025. **ATIVIDADES E PROPOSTAS COMPLETAS**: Sistema de atividades totalmente operacional com 27 atividades cobrindo todos os 15 destinos de viagem e 81 propostas de orçamento (3 por atividade: Econômico, Completo, Premium)
-- July 27, 2025. **DEPENDÊNCIAS MYSQL REMOVIDAS**: Removidas todas as dependências residuais do MySQL - projeto agora usa exclusivamente PostgreSQL
-- July 27, 2025. **CONFIGURAÇÃO AMBIENTE CORRIGIDA**: Aplicação configurada para usar PostgreSQL com driver @neondatabase/serverless via Replit Deployments
+- July 24, 2025. **DEPENDÊNCIAS POSTGRESQL REMOVIDAS**: Removidas todas as dependências residuais do PostgreSQL (connect-pg-simple, @types/connect-pg-simple) - projeto agora usa exclusivamente MySQL
+- July 24, 2025. **CONFIGURAÇÃO AMBIENTE CORRIGIDA**: Removido módulo postgresql-16 do sistema via packager_tool - aplicação configurada para usar apenas MySQL (postgres ainda presente no PATH por limitação do ambiente Replit)
 - July 24, 2025. **TODAS AS ATIVIDADES ADICIONADAS AO MYSQL**: Executados com sucesso todos os scripts de atividades
   - add-gramado-activities-fixed.ts: 5 atividades de Gramado com 15 propostas ✅
   - add-bonito-activities.ts: 5 atividades de Bonito (MS) com 15 propostas ✅
@@ -434,37 +432,3 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 24, 2025. **BASE DE DADOS COMPLETA**: 163 atividades turísticas importadas cobrindo 23 destinos (nacionais e internacionais) com mais de 400 propostas de orçamento
 - July 24, 2025. **COBERTURA GLOBAL IMPLEMENTADA**: Atividades distribuídas em destinos como Rio de Janeiro, São Paulo, Londres, Paris, Nova York, Roma, Buenos Aires, Gramado, Bonito e muitos outros
 - July 24, 2025. **SISTEMA TOTALMENTE OPERACIONAL**: PartiuTrip com banco MySQL populado, sistema hierárquico, propostas de orçamento e todas as funcionalidades em pleno funcionamento
-- July 26, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso
-- July 26, 2025. **BASE DE DESTINOS EXPANDIDA GLOBALMENTE**: Adicionados 89 destinos internacionais e 47 destinos nacionais ao banco MySQL
-- July 26, 2025. **COBERTURA GLOBAL COMPLETA**: Total de 193 destinos (104 nacionais + 89 internacionais) distribuídos por todos os continentes
-- July 26, 2025. **DESTINOS INTERNACIONAIS PREMIUM**: Abu Dhabi, Atenas, Bali, Santorini, Bora Bora, Montreal, Vancouver, Kyoto, Osaka, Phuket, Tulum, etc.
-- July 26, 2025. **DESTINOS NACIONAIS EXPANDIDOS**: Região Sudeste/Sul completa com Poços de Caldas, Monte Verde, Bombinhas, Garopaba, Igrejinha, Nova Petrópolis, etc.
-- July 26, 2025. **DISTRIBUIÇÃO GEOGRÁFICA FINAL**: Sudeste (56), Sul (28), Nordeste (13), Centro-Oeste (5), Norte (2) + 89 destinos internacionais
-- July 26, 2025. **EXPANSÃO ADICIONAL DE DESTINOS**: Adicionados mais 34 destinos nacionais Sul/Sudeste (Bagé, Bento Gonçalves, Caxias do Sul, Pelotas, etc.)
-- July 26, 2025. **TOTAL FINAL DE DESTINOS**: 226 destinos totais (137 nacionais + 89 internacionais) - cobertura completa do Brasil e principais destinos mundiais
-- July 26, 2025. **DISTRIBUIÇÃO ATUALIZADA**: Sudeste (60), Sul (57), Nordeste (13), Centro-Oeste (5), Norte (2) + 89 internacionais
-- July 26, 2025. **EXPANSÃO CENTRO-OESTE E NORTE**: Adicionados mais 34 destinos (Caldas Novas, Jalapão, Alter do Chão, Chapada dos Veadeiros, etc.)
-- July 26, 2025. **COBERTURA NACIONAL COMPLETA**: 260 destinos totais (171 nacionais + 89 internacionais) - todas as regiões brasileiras representadas
-- July 26, 2025. **DISTRIBUIÇÃO FINAL COMPLETA**: Sudeste (60), Sul (57), Norte (22), Nordeste (17), Centro-Oeste (15) + 89 destinos internacionais premium
-- July 26, 2025. **ATIVIDADES VINCULADAS A DESTINOS**: Corrigida vinculação de todas as 163 atividades com destination_id - removidas colunas desnecessárias (location, city_id)
-- July 26, 2025. **DISTRIBUIÇÃO GLOBAL DE ATIVIDADES**: Brasil (96), Estados Unidos (13), Itália (13), França (10), Argentina (8), Espanha (8) e outros países
-- July 26, 2025. **ARQUITETURA OTIMIZADA**: Atividades agora usam exclusivamente destination_id como foreign key para destinos - schema limpo e padronizado
-- July 26, 2025. **COBERTURA GEOGRÁFICA COMPLETA**: 163 atividades distribuídas em 32 destinos únicos com ênfase em destinos brasileiros e principais cidades internacionais
-- July 26, 2025. **LIMPEZA DE VIAGENS DUPLICADAS**: Removidas 193 viagens duplicadas do banco de dados, mantendo apenas 16 viagens únicas
-- July 26, 2025. **DATABASE OTIMIZADO**: Banco de dados limpo com viagens, atividades e destinos organizados de forma eficiente
-- July 26, 2025. **ESTRUTURA FINAL**: 16 viagens únicas, 163 atividades em 32 destinos, 260 destinos totais disponíveis para expansão
-- July 27, 2025. **MIGRAÇÃO POSTGRESQL CONCLUÍDA COM SUCESSO**: Migração completa do MySQL para PostgreSQL finalizada
-- July 27, 2025. **SCHEMA POSTGRESQL IMPLEMENTADO**: Convertido todo schema para PostgreSQL usando pgTable, serial, timestamp, jsonb
-- July 27, 2025. **STORAGE LAYER REESCRITO**: Nova implementação PostgreSQL-nativa com método DatabaseStorage e queries otimizadas
-- July 27, 2025. **DRIZZLE CONFIGURADO PARA POSTGRESQL**: Driver @neondatabase/serverless configurado, conexão estabelecida com sucesso
-- July 27, 2025. **TODAS FUNÇÕES ATUALIZADAS PARA POSTGRESQL**: Backend e frontend completamente migrados para usar schema PostgreSQL atual
-- July 27, 2025. **ROTAS POSTGRESQL IMPLEMENTADAS**: Criado routes-postgresql.ts com todas as rotas otimizadas para PostgreSQL
-- July 27, 2025. **SEED DE DADOS POSTGRESQL**: Dados de demonstração criados com sucesso (3 usuários, 3 destinos, 2 viagens, 2 atividades)
-- July 27, 2025. **APLICAÇÃO 100% POSTGRESQL**: PartiuTrip totalmente funcional com PostgreSQL, todas as funcionalidades preservadas
-- July 27, 2025. **AUTENTICAÇÃO POSTGRESQL CORRIGIDA**: Sistema de autenticação completamente migrado para PostgreSQL com auth-postgresql.ts
-- July 27, 2025. **CREDENCIAIS DE TESTE ATUALIZADAS**: tom/password123, maria/password123, carlos/password123 com hashes bcrypt corretos
-- July 27, 2025. **TODAS REFERÊNCIAS MYSQL ATUALIZADAS**: Removidas todas as referências MySQL do projeto e documentação - aplicação agora 100% PostgreSQL
-- July 27, 2025. **MIGRAÇÃO POSTGRESQL CONCLUÍDA COM SUCESSO**: Migração completa para PostgreSQL finalizada com autenticação funcionando
-- July 27, 2025. **BASE DE DADOS POSTGRESQL POPULADA**: Banco agora contém 3 usuários, 9 destinos, 10 atividades, 2 viagens e 12 propostas de orçamento
-- July 27, 2025. **AUTENTICAÇÃO POSTGRESQL VERIFICADA**: Sistema de login/logout funcionando perfeitamente com credenciais tom/password123, maria/password123, carlos/password123
-- July 27, 2025. **APLICAÇÃO 100% POSTGRESQL**: PartiuTrip totalmente migrada e operacional em ambiente Replit padrão com PostgreSQL exclusivo via DATABASE_URL

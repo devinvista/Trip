@@ -7,7 +7,7 @@ import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
 import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertLocalidadeRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, localidadeRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList, destinations } from "@shared/schema";
+import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, localidadeRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
 import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { z } from "zod";
 
@@ -1355,16 +1355,15 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/activities/hierarchy", async (req, res) => {
     try {
       const hierarchyData = await db.select({
-        countryType: destinations.countryType,
-        region: destinations.region,
-        city: destinations.name,
+        countryType: activities.countryType,
+        region: activities.region,
+        city: activities.city,
         count: sql<number>`count(*)`.as('count')
       })
       .from(activities)
-      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
       .where(eq(activities.isActive, true))
-      .groupBy(destinations.countryType, destinations.region, destinations.name)
-      .orderBy(destinations.countryType, destinations.region, destinations.name);
+      .groupBy(activities.countryType, activities.region, activities.city)
+      .orderBy(activities.countryType, activities.region, activities.city);
       
       // Organize data hierarchically
       const hierarchy: { [key: string]: { [key: string]: { [key: string]: number } } } = {};
@@ -1386,38 +1385,16 @@ export function registerRoutes(app: Express): Server {
     try {
       const { countryType, region, city, ...filters } = req.query;
       
-      let query = db.select({
-        id: activities.id,
-        title: activities.title,
-        description: activities.description,
-        category: activities.category,
-        priceType: activities.priceType,
-        priceAmount: activities.priceAmount,
-        duration: activities.duration,
-        difficultyLevel: activities.difficultyLevel,
-        coverImage: activities.coverImage,
-        averageRating: activities.averageRating,
-        totalRatings: activities.totalRatings,
-        destination: {
-          id: destinations.id,
-          name: destinations.name,
-          country: destinations.country,
-          countryType: destinations.countryType,
-          region: destinations.region
-        }
-      })
-      .from(activities)
-      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
-      .where(eq(activities.isActive, true));
+      let query = db.select().from(activities).where(eq(activities.isActive, true));
       
       if (countryType) {
-        query = query.where(eq(destinations.countryType, countryType as string));
+        query = query.where(eq(activities.countryType, countryType as string));
       }
       if (region) {
-        query = query.where(eq(destinations.region, region as string));
+        query = query.where(eq(activities.region, region as string));
       }
       if (city) {
-        query = query.where(eq(destinations.name, city as string));
+        query = query.where(eq(activities.city, city as string));
       }
       
       // Apply other filters
@@ -1501,34 +1478,12 @@ export function registerRoutes(app: Express): Server {
       // Extract destinations from upcoming trips
       const upcomingDestinations = upcomingTrips.map(trip => trip.destination);
       
-      // Get activities with destination info for matching
-      const activitiesWithDestinations = await db.select({
-        id: activities.id,
-        title: activities.title,
-        description: activities.description,
-        category: activities.category,
-        priceType: activities.priceType,
-        priceAmount: activities.priceAmount,
-        duration: activities.duration,
-        difficultyLevel: activities.difficultyLevel,
-        coverImage: activities.coverImage,
-        averageRating: activities.averageRating,
-        totalRatings: activities.totalRatings,
-        destination: {
-          id: destinations.id,
-          name: destinations.name,
-          country: destinations.country,
-          countryType: destinations.countryType,
-          region: destinations.region
-        }
-      })
-      .from(activities)
-      .innerJoin(destinations, eq(activities.destination_id, destinations.id))
-      .where(eq(activities.isActive, true));
+      // Get all activities
+      const activities = await storage.getActivities({});
       
       // Filter activities that match upcoming destinations
-      const matchingActivities = activitiesWithDestinations.filter(activity => {
-        const activityCity = activity.destination.name.toLowerCase();
+      const matchingActivities = activities.filter(activity => {
+        const activityCity = activity.location.split(',')[0].trim().toLowerCase();
         return upcomingDestinations.some(destination => {
           const destCity = destination.split(',')[0].trim().toLowerCase();
           return activityCity.includes(destCity) || destCity.includes(activityCity);
@@ -1677,7 +1632,7 @@ export function registerRoutes(app: Express): Server {
           }
         })
         .from(activityReviews)
-        .innerJoin(users, eq(activityReviews.userId, users.id))
+        .innerJoin(users, eq(activityReviews.user_id, users.id))
         .where(and(
           eq(activityReviews.activityId, activityId),
           eq(activityReviews.isHidden, false)
@@ -1723,7 +1678,7 @@ export function registerRoutes(app: Express): Server {
         .from(activityReviews)
         .where(and(
           eq(activityReviews.activityId, activityId),
-          eq(activityReviews.userId, userId)
+          eq(activityReviews.user_id, userId)
         ))
         .limit(1);
 
@@ -1784,7 +1739,7 @@ export function registerRoutes(app: Express): Server {
             }
           })
           .from(activityReviews)
-          .innerJoin(users, eq(activityReviews.userId, users.id))
+          .innerJoin(users, eq(activityReviews.user_id, users.id))
           .where(eq(activityReviews.id, reviewId))
           .limit(1);
 
@@ -2788,17 +2743,6 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error('Erro ao adicionar à lista de interesse:', error);
       res.status(500).json({ message: "Erro interno do servidor" });
-    }
-  });
-
-  // Notifications endpoint - simple mock for now
-  app.get("/api/notifications", requireAuth, async (req, res) => {
-    try {
-      // Return empty array for now - can be implemented later
-      res.json([]);
-    } catch (error) {
-      console.error('Erro ao buscar notificações:', error);
-      res.status(500).json({ message: "Erro ao buscar notificações" });
     }
   });
 
