@@ -346,13 +346,13 @@ export const insertActivityBudgetProposalSchema = createInsertSchema(activityBud
 
 export const insertTripActivitySchema = createInsertSchema(tripActivities).omit({
   id: true,
-  created_at: true,
+  createdAt: true,
 });
 
 export const insertReferralCodeSchema = createInsertSchema(referralCodes).omit({
   id: true,
-  current_uses: true,
-  created_at: true,
+  currentUses: true,
+  createdAt: true,
 });
 
 // Select types
