@@ -13,6 +13,7 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **Propostas de Orçamento:** ✅ 150+ propostas ativas (3 por atividade)
 - **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada com variáveis de ambiente configuradas
 - **Migração Verificada:** ✅ 27 de julho de 2025 - Migração para ambiente Replit padrão confirmada pelo usuário como funcional
+- **PostgreSQL Exclusivo:** ✅ 27 de julho de 2025 - Sistema configurado para usar exclusivamente PostgreSQL via DATABASE_URL
 
 ## Arquitetura do Sistema
 
@@ -161,7 +162,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - **30 de junho de 2025** - Configuração inicial do projeto PartiuTrip
 
 ### Detalhes Técnicos
-- **Banco de Dados**: Migração completa para MySQL com todas as tabelas e dados (removidas dependências PostgreSQL residuais)
+- **Banco de Dados**: PostgreSQL nativo via @neondatabase/serverless com todas as tabelas e dados (removidas dependências MySQL residuais)
 - **Autenticação**: Sistema híbrido com suporte a cookies e headers de sessão
 - **Interface**: Design responsivo com Tailwind CSS e componentes Shadcn/UI
 - **Funcionalidades**: Sistema completo de viagens, divisão de custos, chat e gamificação
