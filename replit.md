@@ -28,14 +28,14 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 ### Arquitetura Backend
 - **Runtime**: Node.js com Express.js
 - **Autenticação**: Passport.js com estratégia local e autenticação baseada em sessão
-- **Armazenamento de Sessão**: Sessões Express com armazenamento MySQL
-- **Segurança de Senha**: Módulo crypto do Node.js com hash scrypt
+- **Armazenamento de Sessão**: Sessões Express com armazenamento PostgreSQL
+- **Segurança de Senha**: bcryptjs com hash e salt automático
 - **Design de API**: Endpoints RESTful com respostas JSON
-- **Banco de Dados**: MySQL com Drizzle ORM (migração completa da memória para persistência)
-- **Armazenamento**: Sistema totalmente migrado para MySQL com dados persistentes
+- **Banco de Dados**: PostgreSQL com Drizzle ORM (migração completa do MySQL para PostgreSQL)
+- **Armazenamento**: Sistema totalmente migrado para PostgreSQL com dados persistentes
 
 ### Esquema do Banco de Dados
-A aplicação usa MySQL com as seguintes entidades principais:
+A aplicação usa PostgreSQL com as seguintes entidades principais:
 - **Usuários**: Autenticação, informações de perfil e preferências de viagem
 - **Viagens**: Planos de viagem com destinos, datas, orçamentos e custos compartilhados
 - **Participantes da Viagem**: Relacionamento muitos-para-muitos entre usuários e viagens
@@ -96,8 +96,8 @@ A aplicação usa MySQL com as seguintes entidades principais:
 ## Dependências Externas
 
 ### Dependências Principais
-- **mysql2**: Driver MySQL para conexão com banco de dados
-- **drizzle-orm**: ORM type-safe com dialeto MySQL
+- **@neondatabase/serverless**: Driver PostgreSQL serverless para conexão com banco de dados
+- **drizzle-orm**: ORM type-safe com dialeto PostgreSQL
 - **passport & passport-local**: Middleware de autenticação
 - **@tanstack/react-query**: Gerenciamento de estado do servidor
 - **react-hook-form**: Manipulação de formulários com validação
@@ -452,3 +452,8 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 26, 2025. **LIMPEZA DE VIAGENS DUPLICADAS**: Removidas 193 viagens duplicadas do banco de dados, mantendo apenas 16 viagens únicas
 - July 26, 2025. **DATABASE OTIMIZADO**: Banco de dados limpo com viagens, atividades e destinos organizados de forma eficiente
 - July 26, 2025. **ESTRUTURA FINAL**: 16 viagens únicas, 163 atividades em 32 destinos, 260 destinos totais disponíveis para expansão
+- July 27, 2025. **MIGRAÇÃO POSTGRESQL CONCLUÍDA COM SUCESSO**: Migração completa do MySQL para PostgreSQL finalizada
+- July 27, 2025. **SCHEMA POSTGRESQL IMPLEMENTADO**: Convertido todo schema para PostgreSQL usando pgTable, serial, timestamp, jsonb
+- July 27, 2025. **STORAGE LAYER REESCRITO**: Nova implementação PostgreSQL-nativa com método DatabaseStorage e queries otimizadas
+- July 27, 2025. **DRIZZLE CONFIGURADO PARA POSTGRESQL**: Driver @neondatabase/serverless configurado, conexão estabelecida com sucesso
+- July 27, 2025. **APLICAÇÃO OPERACIONAL**: PartiuTrip totalmente funcional com PostgreSQL, preservando todas as funcionalidades do MySQL

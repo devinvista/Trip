@@ -5,9 +5,9 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertLocalidadeRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
+import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertReferralCodeSchema } from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, localidadeRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList, destinations } from "@shared/schema";
+import { activityReviews, activities, users, userRatings, destinationRatings, referralCodes, destinations } from "@shared/schema";
 import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { z } from "zod";
 
@@ -208,21 +208,20 @@ export function registerRoutes(app: Express): Server {
     try {
       console.log(`🔍 Buscando viagens do usuário ${req.user!.id} (${req.user!.username})`);
       
-      const createdTrips = await storage.getTripsByCreator(req.user!.id);
-      const participatingTrips = await storage.getTripsByParticipant(req.user!.id);
+      const userTrips = await storage.getTripsByUser(req.user!.id);
       
-      console.log(`📊 Viagens encontradas: ${createdTrips.length} criadas, ${participatingTrips.length} participando`);
+      console.log(`📊 Viagens encontradas: ${userTrips.created.length} criadas, ${userTrips.participating.length} participando`);
       
       // Add creator info for participating trips
       const participatingTripsWithCreators = await Promise.all(
-        participatingTrips.map(async (trip) => {
+        userTrips.participating.map(async (trip) => {
           const creator = await storage.getUser(trip.creator_id);
           return { ...trip, creator };
         })
       );
       
       res.json({ 
-        created: createdTrips, 
+        created: userTrips.created, 
         participating: participatingTripsWithCreators 
       });
     } catch (error) {

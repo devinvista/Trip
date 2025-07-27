@@ -1,60 +1,50 @@
 import { db } from "./db";
-import { sql } from "drizzle-orm";
+import { referralCodes } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export async function setupReferralSystem() {
   try {
     console.log('🚀 Configurando sistema de códigos de indicação...');
 
-    // Create referral_codes table
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS referral_codes (
-        id int PRIMARY KEY AUTO_INCREMENT,
-        code varchar(50) NOT NULL UNIQUE,
-        created_by int DEFAULT NULL,
-        max_uses int DEFAULT 1 NOT NULL,
-        current_uses int DEFAULT 0 NOT NULL,
-        is_active boolean DEFAULT true NOT NULL,
-        created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        expires_at timestamp DEFAULT NULL,
-        INDEX idx_code (code),
-        INDEX idx_active (is_active)
-      )
-    `);
+    // The tables are already created by Drizzle schema
+    console.log('✅ Tabelas disponíveis no schema PostgreSQL!');
 
-    // Create interest_list table
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS interest_list (
-        id int PRIMARY KEY AUTO_INCREMENT,
-        full_name varchar(255) NOT NULL,
-        email varchar(255) NOT NULL UNIQUE,
-        phone varchar(20) NOT NULL,
-        referral_code varchar(50) DEFAULT NULL,
-        status varchar(50) DEFAULT 'pending' NOT NULL,
-        created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        INDEX idx_email (email),
-        INDEX idx_status (status)
-      )
-    `);
-
-    console.log('✅ Tabelas criadas com sucesso!');
-
-    // Insert default referral codes
+    // Insert default referral codes using Drizzle ORM
     const codes = [
-      { code: 'BETA2025', maxUses: 100 },
-      { code: 'VIAJANTE', maxUses: 50 },
-      { code: 'AMIGO123', maxUses: 10 },
-      { code: 'TESTE', maxUses: 1 },
-      { code: 'EXPLORER', maxUses: 25 },
+      { code: 'BETA2025', max_uses: 100 },
+      { code: 'VIAJANTE', max_uses: 50 },
+      { code: 'AMIGO123', max_uses: 10 },
+      { code: 'TESTE', max_uses: 1 },
+      { code: 'EXPLORER', max_uses: 25 },
+      { code: 'PARTIU-TOM01', max_uses: 50 },
+      { code: 'PARTIU-MARIA01', max_uses: 50 },
     ];
 
     for (const codeData of codes) {
-      await db.execute(sql`
-        INSERT IGNORE INTO referral_codes (code, max_uses, current_uses, is_active, created_at) 
-        VALUES (${codeData.code}, ${codeData.maxUses}, 0, 1, NOW())
-      `);
+      try {
+        // Check if code already exists
+        const [existingCode] = await db
+          .select()
+          .from(referralCodes)
+          .where(eq(referralCodes.code, codeData.code));
+
+        if (!existingCode) {
+          await db.insert(referralCodes).values({
+            code: codeData.code,
+            max_uses: codeData.max_uses,
+            current_uses: 0,
+            is_active: true,
+          });
+          console.log(`✅ Código ${codeData.code} criado`);
+        } else {
+          console.log(`ℹ️ Código ${codeData.code} já existe`);
+        }
+      } catch (error) {
+        console.log(`⚠️ Erro ao criar código ${codeData.code}:`, error);
+      }
     }
 
-    console.log('✅ Códigos de indicação criados com sucesso!');
+    console.log('✅ Códigos de indicação configurados!');
     console.log('📋 Códigos disponíveis:', codes.map(c => c.code).join(', '));
 
     return true;
