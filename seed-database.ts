@@ -35,7 +35,7 @@ async function seedDatabase() {
       {
         username: 'tom',
         email: 'tom@example.com',
-        password: bcryptjs.hashSync('password123', 10),
+        password: bcryptjs.hashSync('t123', 10),
         fullName: 'Tom Silva',
         phone: '+5511999999999',
         bio: 'Aventureiro apaixonado por viagens',
@@ -47,7 +47,7 @@ async function seedDatabase() {
       {
         username: 'maria',
         email: 'maria@example.com',
-        password: bcryptjs.hashSync('password123', 10),
+        password: bcryptjs.hashSync('t123', 10),
         fullName: 'Maria Santos',
         phone: '+5511888888888',
         bio: 'Exploradora de culturas',

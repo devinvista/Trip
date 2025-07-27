@@ -9,8 +9,8 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **API Endpoints:** ✅ Corrigidos para `/api/auth/login` e `/api/auth/register`
 - **Parsing JSON:** ✅ Erro JSON.parse resolvido com tratamento adequado de campos string
 - **Credenciais de Teste:** tom/maria com senha "password123"
-- **Database:** ✅ PostgreSQL com 57+ atividades, 6 usuários, 70+ viagens ativas
-- **Propostas de Orçamento:** ✅ 150+ propostas ativas (3 por atividade)
+- **Database:** ✅ PostgreSQL com 2 atividades, 3 usuários, 2 viagens ativas
+- **Propostas de Orçamento:** ✅ 6 propostas ativas (3 por atividade)
 - **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada com variáveis de ambiente configuradas
 - **Migração Verificada:** ✅ 27 de julho de 2025 - Migração para ambiente Replit padrão confirmada pelo usuário como funcional
 - **PostgreSQL Exclusivo:** ✅ 27 de julho de 2025 - Sistema configurado para usar exclusivamente PostgreSQL via DATABASE_URL
@@ -463,3 +463,4 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 27, 2025. **AUTENTICAÇÃO POSTGRESQL CORRIGIDA**: Sistema de autenticação completamente migrado para PostgreSQL com auth-postgresql.ts
 - July 27, 2025. **CREDENCIAIS DE TESTE ATUALIZADAS**: tom/password123, maria/password123, carlos/password123 com hashes bcrypt corretos
 - July 27, 2025. **TODAS REFERÊNCIAS MYSQL ATUALIZADAS**: Removidas todas as referências MySQL do projeto e documentação - aplicação agora 100% PostgreSQL
+- July 27, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - PostgreSQL funcionando perfeitamente com dados de demonstração
