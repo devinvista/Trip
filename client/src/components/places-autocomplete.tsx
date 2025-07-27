@@ -33,13 +33,13 @@ export function PlacesAutocomplete({
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch destinations from API
+  // Fetch destinations from API - always fetch to show initial options
   const { data: destinations = [], isLoading } = useQuery({
     queryKey: ['/api/destinations', searchTerm],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (searchTerm) {
-        params.append('search', searchTerm);
+      if (searchTerm.trim()) {
+        params.append('search', searchTerm.trim());
       }
       const response = await fetch(`/api/destinations?${params}`);
       if (!response.ok) {
@@ -63,9 +63,16 @@ export function PlacesAutocomplete({
   const handleInputChange = (inputValue: string) => {
     onChange(inputValue);
     setSearchTerm(inputValue);
-    if (inputValue && !open) {
+    // Always open dropdown when typing
+    if (!open) {
       setOpen(true);
     }
+  };
+
+  const handleInputFocus = () => {
+    setOpen(true);
+    // Set search term to current value to show filtered results
+    setSearchTerm(value);
   };
 
   return (
@@ -79,48 +86,53 @@ export function PlacesAutocomplete({
             placeholder={placeholder}
             className={`pl-10 pr-10 ${className}`}
             autoComplete="off"
-            onFocus={() => setOpen(true)}
+            onFocus={handleInputFocus}
+            onClick={() => setOpen(true)}
           />
-          <ChevronDown className="absolute right-3 top-3 h-4 w-4 text-gray-500" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="absolute right-1 top-1 h-8 w-8 p-0"
+            onClick={() => setOpen(!open)}
+            type="button"
+          >
+            <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+          </Button>
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-        <Command>
-          <CommandInput
-            placeholder="Digite para buscar..."
-            value={searchTerm}
-            onValueChange={(value) => {
-              setSearchTerm(value);
-            }}
-          />
-          <CommandList>
-            <CommandEmpty>
-              {isLoading ? "Carregando destinos..." : "Nenhum destino encontrado."}
-            </CommandEmpty>
-            <CommandGroup>
-              {destinations.slice(0, 10).map((destination: Destination) => {
-                const displayName = destination.state 
-                  ? `${destination.name}, ${destination.state}` 
-                  : `${destination.name}, ${destination.country}`;
-                
-                return (
-                  <CommandItem
-                    key={destination.id}
-                    value={displayName}
-                    onSelect={() => handleSelect(destination)}
-                    className="cursor-pointer"
-                  >
-                    <MapPin className="mr-2 h-4 w-4" />
-                    <div className="flex flex-col">
-                      <span>{displayName}</span>
-                      {destination.region && (
-                        <span className="text-sm text-gray-500">{destination.region}</span>
-                      )}
-                    </div>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start" side="bottom">
+        <Command shouldFilter={false}>
+          <CommandList className="max-h-[200px]">
+            {isLoading ? (
+              <CommandEmpty>Carregando destinos...</CommandEmpty>
+            ) : destinations.length === 0 ? (
+              <CommandEmpty>Nenhum destino encontrado.</CommandEmpty>
+            ) : (
+              <CommandGroup>
+                {destinations.slice(0, 10).map((destination: Destination) => {
+                  const displayName = destination.state 
+                    ? `${destination.name}, ${destination.state}` 
+                    : `${destination.name}, ${destination.country}`;
+                  
+                  return (
+                    <CommandItem
+                      key={destination.id}
+                      value={displayName}
+                      onSelect={() => handleSelect(destination)}
+                      className="cursor-pointer"
+                    >
+                      <MapPin className="mr-2 h-4 w-4" />
+                      <div className="flex flex-col">
+                        <span>{displayName}</span>
+                        {destination.region && (
+                          <span className="text-sm text-gray-500">{destination.region}</span>
+                        )}
+                      </div>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
