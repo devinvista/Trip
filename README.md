@@ -27,7 +27,7 @@ O PartiuTrip é uma plataforma web que conecta viajantes com interesses, destino
 
 ### Backend
 - **Node.js** com Express
-- **MySQL** com Drizzle ORM
+- **POSTGREE** com Drizzle ORM
 - **Passport.js** para autenticação
 - **Express Session** para gerenciamento de sessões
 - **Bcrypt** para hash de senhas
@@ -36,7 +36,7 @@ O PartiuTrip é uma plataforma web que conecta viajantes com interesses, destino
 
 ### Pré-requisitos
 - Node.js 20+
-- MySQL 8.0+
+- PostgreSQL 16+
 
 ### Instalação das Dependências
 ```bash
