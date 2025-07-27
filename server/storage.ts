@@ -486,10 +486,21 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createExpenseSplits(expenseId: number, splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]> {
+    console.log('createExpenseSplits called with:', { expenseId, splits });
+    
     if (!splits || !Array.isArray(splits)) {
+      console.error('Invalid splits data:', splits);
       throw new Error('Splits must be a valid array');
     }
+    
+    if (splits.length === 0) {
+      console.error('Empty splits array');
+      throw new Error('Splits array cannot be empty');
+    }
+    
     const splitData = splits.map(split => ({ ...split, expense_id: expenseId }));
+    console.log('Final split data:', splitData);
+    
     return await db.insert(expenseSplits).values(splitData).returning();
   }
 

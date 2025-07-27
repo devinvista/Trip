@@ -629,14 +629,18 @@ export function registerRoutes(app: Express): Server {
       
       const splitAmount = expenseData.amount / splitParticipants.length;
       
-      const splits = await storage.createExpenseSplits(
-        expense.id,
-        splitParticipants.map((userId: number) => ({
-          user_id: userId,
-          amount: splitAmount,
-          paid: userId === req.user!.id // Payer's split is automatically marked as paid
-        }))
-      );
+      console.log('Split participants:', splitParticipants);
+      console.log('Split amount per person:', splitAmount);
+      
+      const splitData = splitParticipants.map((userId: number) => ({
+        user_id: userId,
+        amount: splitAmount,
+        paid: userId === req.user!.id // Payer's split is automatically marked as paid
+      }));
+      
+      console.log('Split data to create:', splitData);
+      
+      const splits = await storage.createExpenseSplits(expense.id, splitData);
       
       res.status(201).json({ expense, splits });
     } catch (error) {
