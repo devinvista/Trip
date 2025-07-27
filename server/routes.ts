@@ -1,29 +1,48 @@
-
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertReferralCodeSchema } from "@shared/schema";
+import { 
+  insertTripSchema,
+  insertMessageSchema,
+  insertTripRequestSchema,
+  insertExpenseSchema,
+  insertExpenseSplitSchema,
+  insertUserRatingSchema,
+  insertDestinationRatingSchema,
+  insertVerificationRequestSchema,
+  insertActivitySchema,
+  insertActivityReviewSchema,
+  insertActivityBookingSchema,
+  insertActivityBudgetProposalSchema,
+  insertTripActivitySchema,
+  insertReferralCodeSchema
+} from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, users, userRatings, destinationRatings, referralCodes, destinations } from "@shared/schema";
+import { 
+  activityReviews, 
+  activities, 
+  users, 
+  userRatings, 
+  destinationRatings, 
+  referralCodes, 
+  destinations 
+} from "@shared/schema";
 import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { z } from "zod";
 
-// Middleware para verificar autenticação
 function requireAuth(req: any, res: any, next: any) {
   console.log(`🔐 Verificando autenticação:`, {
     isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
     hasUser: !!req.user,
-    sessionID: req.sessionID,
+    sessionId: req.sessionID,
     session: !!req.session,
     sessionData: req.session,
     cookies: req.cookies,
     url: req.url
   });
   
-  // Check both standard authentication and manual authentication
   const isAuth = (req.isAuthenticated && req.isAuthenticated()) || !!req.user;
   
   if (!isAuth || !req.user) {
@@ -60,7 +79,7 @@ export function registerRoutes(app: Express): Server {
       // Include creator info for each trip
       const tripsWithCreators = await Promise.all(
         trips.map(async (trip) => {
-          const creator = await storage.getUser(trip.creator_id);
+          const creator = await storage.getUser(trip.creatorId);
           return { ...trip, creator };
         })
       );
@@ -81,14 +100,14 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      const creator = await storage.getUser(trip.creator_id);
+      const creator = await storage.getUser(trip.creatorId);
       const participants = await storage.getTripParticipants(tripId);
       
       // Check if user has a pending request
       let userRequest = null;
       if (req.isAuthenticated() && req.user) {
         const allRequests = await storage.getTripRequests(tripId);
-        userRequest = allRequests.find(r => r.user_id === req.user!.id && r.status === 'pending');
+        userRequest = allRequests.find(r => r.userId === req.user!.id && r.status === 'pending');
       }
       
       res.json({ ...trip, creator, participants, userRequest });
@@ -109,7 +128,7 @@ export function registerRoutes(app: Express): Server {
       // Criar viagem
       const trip = await storage.createTrip({ 
         ...tripData, 
-        creator_id: req.user!.id 
+        creatorId: req.user!.id 
       });
       
       console.log('Viagem criada com sucesso:', trip);
@@ -136,10 +155,10 @@ export function registerRoutes(app: Express): Server {
       }
 
       // Check if user is creator or accepted participant
-      const isCreator = trip.creator_id === req.user.id;
+      const isCreator = trip.creatorId === req.user.id;
       const participants = await storage.getTripParticipants(tripId);
       const isAcceptedParticipant = participants.some(
-        (p: any) => p.user_id === req.user.id && p.status === 'accepted'
+        (p: any) => p.userId === req.user.id && p.status === 'accepted'
       );
       
       if (!isCreator && !isAcceptedParticipant) {
@@ -147,9 +166,9 @@ export function registerRoutes(app: Express): Server {
       }
 
       // Validate that maxParticipants is not less than current participants
-      if (updates.maxParticipants && updates.maxParticipants < trip.current_participants) {
+      if (updates.maxParticipants && updates.maxParticipants < trip.currentParticipants) {
         return res.status(400).json({ 
-          message: `Máximo de participantes não pode ser menor que ${trip.current_participants} (participantes atuais)` 
+          message: `Máximo de participantes não pode ser menor que ${trip.currentParticipants} (participantes atuais)` 
         });
       }
 
@@ -178,11 +197,11 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
 
-      if (trip.creator_id !== req.user.id) {
+      if (trip.creatorId !== req.user.id) {
         return res.status(403).json({ message: "Apenas o criador pode excluir a viagem" });
       }
 
-      if (trip.current_participants > 1) {
+      if (trip.currentParticipants > 1) {
         return res.status(400).json({ 
           message: "Não é possível excluir viagem com outros participantes. Use a opção 'Cancelar' para transferir a organização." 
         });
@@ -202,8 +221,6 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-
-
   app.get("/api/my-trips", requireAuth, async (req, res) => {
     try {
       console.log(`🔍 Buscando viagens do usuário ${req.user!.id} (${req.user!.username})`);
@@ -215,7 +232,7 @@ export function registerRoutes(app: Express): Server {
       // Add creator info for participating trips
       const participatingTripsWithCreators = await Promise.all(
         userTrips.participating.map(async (trip) => {
-          const creator = await storage.getUser(trip.creator_id);
+          const creator = await storage.getUser(trip.creatorId);
           return { ...trip, creator };
         })
       );
@@ -234,9 +251,9 @@ export function registerRoutes(app: Express): Server {
   app.patch("/api/trips/:id/cover-image", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const { cover_image } = req.body;
+      const { coverImage } = req.body;
       
-      if (!cover_image) {
+      if (!coverImage) {
         return res.status(400).json({ message: "URL da imagem é obrigatória" });
       }
       
@@ -246,11 +263,11 @@ export function registerRoutes(app: Express): Server {
       }
       
       // Only trip creator can update cover image
-      if (trip.creator_id !== req.user!.id) {
+      if (trip.creatorId !== req.user!.id) {
         return res.status(403).json({ message: "Apenas o criador da viagem pode alterar a imagem" });
       }
       
-      const updatedTrip = await storage.updateTrip(tripId, { cover_image });
+      const updatedTrip = await storage.updateTrip(tripId, { coverImage });
       res.json(updatedTrip);
     } catch (error) {
       console.error('Erro ao atualizar imagem da viagem:', error);
@@ -262,7 +279,7 @@ export function registerRoutes(app: Express): Server {
   app.patch("/api/trips/:id/budget", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const { budget, budget_breakdown } = req.body;
+      const { budget, budgetBreakdown } = req.body;
       
       if (!budget || budget <= 0) {
         return res.status(400).json({ message: "Orçamento deve ser um valor positivo" });
@@ -274,11 +291,11 @@ export function registerRoutes(app: Express): Server {
       }
       
       // Only trip creator can update budget
-      if (trip.creator_id !== req.user!.id) {
+      if (trip.creatorId !== req.user!.id) {
         return res.status(403).json({ message: "Apenas o criador da viagem pode alterar o orçamento" });
       }
       
-      const updatedTrip = await storage.updateTrip(tripId, { budget, budget_breakdown });
+      const updatedTrip = await storage.updateTrip(tripId, { budget, budgetBreakdown });
       res.json(updatedTrip);
     } catch (error) {
       console.error('Erro ao atualizar orçamento da viagem:', error);
@@ -319,13 +336,13 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      if (trip.creator_id === req.user!.id) {
+      if (trip.creatorId === req.user!.id) {
         return res.status(400).json({ message: "Você não pode solicitar participação na sua própria viagem" });
       }
       
       // Check if user already has a pending request
       const existingRequests = await storage.getTripRequests(tripId);
-      const userRequest = existingRequests.find(r => r.user_id === req.user!.id);
+      const userRequest = existingRequests.find(r => r.userId === req.user!.id);
       if (userRequest && userRequest.status === 'pending') {
         return res.status(400).json({ message: "Você já tem uma solicitação pendente para esta viagem" });
       }
@@ -348,7 +365,7 @@ export function registerRoutes(app: Express): Server {
       const tripId = parseInt(req.params.id);
       const trip = await storage.getTrip(tripId);
       
-      if (!trip || trip.creator_id !== req.user!.id) {
+      if (!trip || trip.creatorId !== req.user!.id) {
         return res.status(403).json({ message: "Acesso negado" });
       }
       
@@ -376,10 +393,10 @@ export function registerRoutes(app: Express): Server {
       
       // If accepted, add user to trip participants
       if (status === 'accepted') {
-        await storage.addTripParticipant(request.trip_id, request.user_id);
+        await storage.addTripParticipant(request.tripId, request.userId);
         
         // Sync trip participant count based on actual accepted participants
-        await syncTripParticipants(request.trip_id);
+        await syncTripParticipants(request.tripId);
       }
       
       res.json(request);
@@ -393,7 +410,7 @@ export function registerRoutes(app: Express): Server {
   app.patch("/api/trips/:id/activities", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const { planned_activities } = req.body;
+      const { plannedActivities } = req.body;
       
       const trip = await storage.getTrip(tripId);
       if (!trip) {
@@ -401,15 +418,15 @@ export function registerRoutes(app: Express): Server {
       }
       
       // Check if user is creator or participant
-      const isCreator = trip.creator_id === req.user!.id;
+      const isCreator = trip.creatorId === req.user!.id;
       const participants = await storage.getTripParticipants(tripId);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
+      const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
       
       if (!isCreator && !isParticipant) {
         return res.status(403).json({ message: "Você não tem permissão para editar as atividades desta viagem" });
       }
       
-      const updatedTrip = await storage.updateTripActivities(tripId, planned_activities);
+      const updatedTrip = await storage.updateTripActivities(tripId, plannedActivities);
       res.json(updatedTrip);
     } catch (error) {
       console.error('Erro ao atualizar atividades:', error);
@@ -421,7 +438,7 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/trips/:id/participants/:userId", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const userIdToRemove = parseInt(req.params.user_id);
+      const userIdToRemove = parseInt(req.params.userId);
       
       const trip = await storage.getTrip(tripId);
       if (!trip) {
@@ -430,7 +447,7 @@ export function registerRoutes(app: Express): Server {
       
       // Verificar se o usuário atual tem permissão (é o próprio participante ou o organizador)
       const isOwnParticipation = req.user!.id === userIdToRemove;
-      const isOrganizer = trip.creator_id === req.user!.id;
+      const isOrganizer = trip.creatorId === req.user!.id;
       
       if (!isOwnParticipation && !isOrganizer) {
         return res.status(403).json({ message: "Você não tem permissão para remover este participante" });
@@ -438,7 +455,7 @@ export function registerRoutes(app: Express): Server {
       
       // Verificar se o usuário é realmente um participante
       const participants = await storage.getTripParticipants(tripId);
-      const participant = participants.find(p => p.user_id === userIdToRemove && p.status === 'accepted');
+      const participant = participants.find(p => p.userId === userIdToRemove && p.status === 'accepted');
       
       if (!participant) {
         return res.status(404).json({ message: "Participante não encontrado nesta viagem" });
@@ -477,13 +494,13 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      console.log(`✅ Viagem encontrada: ${trip.title} (criador: ${trip.creator_id})`);
+      console.log(`✅ Viagem encontrada: ${trip.title} (criador: ${trip.creatorId})`);
       
       const participants = await storage.getTripParticipants(tripId);
-      console.log(`👥 Participantes da viagem:`, participants.map(p => ({ userId: p.user_id, status: p.status })));
+      console.log(`👥 Participantes da viagem:`, participants.map(p => ({ userId: p.userId, status: p.status })));
       
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
-      const isCreator = trip.creator_id === req.user!.id;
+      const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
+      const isCreator = trip.creatorId === req.user!.id;
       
       console.log(`🔐 Verificação de acesso: isParticipant=${isParticipant}, isCreator=${isCreator}`);
       
@@ -513,8 +530,8 @@ export function registerRoutes(app: Express): Server {
       }
       
       const participants = await storage.getTripParticipants(tripId);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id);
-      const isCreator = trip.creator_id === req.user!.id;
+      const isParticipant = participants.some(p => p.userId === req.user!.id);
+      const isCreator = trip.creatorId === req.user!.id;
       
       if (!isParticipant && !isCreator) {
         return res.status(403).json({ message: "Acesso negado" });
@@ -587,7 +604,7 @@ export function registerRoutes(app: Express): Server {
       
       // Verify user is a participant of the trip
       const participants = await storage.getTripParticipants(tripId);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
+      const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
       
       if (!isParticipant) {
         return res.status(403).json({ message: "Você deve ser um participante da viagem para adicionar despesas" });
@@ -603,9 +620,9 @@ export function registerRoutes(app: Express): Server {
       let splitParticipants: number[];
       if (req.body.splitWith === 'all') {
         // Split equally among all participants (including future ones)
-        splitParticipants = participants.filter(p => p.status === 'accepted').map(p => p.user_id);
+        splitParticipants = participants.filter(p => p.status === 'accepted').map(p => p.userId);
       } else {
-        splitParticipants = req.body.splitWith || participants.filter(p => p.status === 'accepted').map(p => p.user_id);
+        splitParticipants = req.body.splitWith || participants.filter(p => p.status === 'accepted').map(p => p.userId);
       }
       
       const splitAmount = expenseData.amount / splitParticipants.length;
@@ -632,7 +649,7 @@ export function registerRoutes(app: Express): Server {
       
       // Verify user is a participant of the trip
       const participants = await storage.getTripParticipants(tripId);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
+      const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
       
       if (!isParticipant) {
         return res.status(403).json({ message: "Acesso negado" });
@@ -657,8 +674,8 @@ export function registerRoutes(app: Express): Server {
       }
       
       const participants = await storage.getTripParticipants(tripId);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
-      const isCreator = trip.creator_id === req.user!.id;
+      const isParticipant = participants.some(p => p.userId === req.user!.id && p.status === 'accepted');
+      const isCreator = trip.creatorId === req.user!.id;
       
       if (!isParticipant && !isCreator) {
         return res.status(403).json({ message: "Acesso negado" });
@@ -762,8 +779,8 @@ export function registerRoutes(app: Express): Server {
       for (const trip of allTrips) {
         const participants = await storage.getTripParticipants(trip.id);
         participants.forEach(p => {
-          if (p.user_id !== userId) {
-            travelPartners.add(p.user_id);
+          if (p.userId !== userId) {
+            travelPartners.add(p.userId);
           }
         });
       }
@@ -1037,7 +1054,7 @@ export function registerRoutes(app: Express): Server {
         .from(destinationRatings)
         .where(and(
           eq(destinationRatings.destination, destination),
-          eq(destinationRatings.user_id, userId)
+          eq(destinationRatings.userId, userId)
         ))
         .limit(1);
       
@@ -1076,7 +1093,7 @@ export function registerRoutes(app: Express): Server {
         .from(destinationRatings)
         .where(and(
           eq(destinationRatings.id, ratingId),
-          eq(destinationRatings.user_id, userId)
+          eq(destinationRatings.userId, userId)
         ))
         .limit(1);
       
@@ -1121,7 +1138,7 @@ export function registerRoutes(app: Express): Server {
         .from(destinationRatings)
         .where(and(
           eq(destinationRatings.id, ratingId),
-          eq(destinationRatings.user_id, userId)
+          eq(destinationRatings.userId, userId)
         ))
         .limit(1);
       
@@ -1506,7 +1523,6 @@ export function registerRoutes(app: Express): Server {
         title: activities.title,
         description: activities.description,
         category: activities.category,
-
         duration: activities.duration,
         difficultyLevel: activities.difficultyLevel,
         coverImage: activities.coverImage,
@@ -1839,7 +1855,7 @@ export function registerRoutes(app: Express): Server {
           }
         })
         .from(activityReviews)
-        .innerJoin(users, eq(activityReviews.user_id, users.id))
+        .innerJoin(users, eq(activityReviews.userId, users.id))
         .where(eq(activityReviews.id, reviewId))
         .limit(1);
 
@@ -1870,7 +1886,7 @@ export function registerRoutes(app: Express): Server {
         .from(activityReviews)
         .where(and(
           eq(activityReviews.id, reviewId),
-          eq(activityReviews.user_id, userId)
+          eq(activityReviews.userId, userId)
         ))
         .limit(1);
       
@@ -1915,7 +1931,7 @@ export function registerRoutes(app: Express): Server {
         .from(activityReviews)
         .where(and(
           eq(activityReviews.id, reviewId),
-          eq(activityReviews.user_id, userId)
+          eq(activityReviews.userId, userId)
         ))
         .limit(1);
       
@@ -1966,8 +1982,6 @@ export function registerRoutes(app: Express): Server {
       res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
-
-
 
   // ============ ACTIVITY BOOKINGS ROUTES ============
 
@@ -2251,7 +2265,7 @@ export function registerRoutes(app: Express): Server {
   // Get user trips in same location as activity (for adding activities to trips)
   app.get("/api/users/:userId/trips-in-location", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.user_id);
+      const userId = parseInt(req.params.userId);
       const { location } = req.query;
       
       if (!location) {
@@ -2289,8 +2303,8 @@ export function registerRoutes(app: Express): Server {
       for (const trip of allTrips) {
         const participants = await storage.getTripParticipants(trip.id);
         for (const participant of participants) {
-          if (participant.user_id !== userId && participant.status === 'accepted') {
-            const user = await storage.getUser(participant.user_id);
+          if (participant.userId !== userId && participant.status === 'accepted') {
+            const user = await storage.getUser(participant.userId);
             if (user) {
               const companionId = user.id;
               
@@ -2356,7 +2370,7 @@ export function registerRoutes(app: Express): Server {
       let sharedTripId = null;
       for (const trip of allUserTrips) {
         const participants = await storage.getTripParticipants(trip.id);
-        if (participants.some(p => p.user_id === companionId && p.status === 'accepted')) {
+        if (participants.some(p => p.userId === companionId && p.status === 'accepted')) {
           sharedTripId = trip.id;
           break;
         }
@@ -2379,7 +2393,7 @@ export function registerRoutes(app: Express): Server {
         .where(and(
           eq(userRatings.ratedUserId, companionId),
           eq(userRatings.raterUserId, userId),
-          eq(userRatings.trip_id, sharedTripId)
+          eq(userRatings.tripId, sharedTripId)
         ))
         .limit(1);
 
@@ -2464,7 +2478,7 @@ export function registerRoutes(app: Express): Server {
   // Get user ratings for a specific user
   app.get("/api/user/:userId/ratings", async (req, res) => {
     try {
-      const userId = parseInt(req.params.user_id);
+      const userId = parseInt(req.params.userId);
       const limit = parseInt(req.query.limit as string) || 10;
       const offset = parseInt(req.query.offset as string) || 0;
 
