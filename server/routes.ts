@@ -158,8 +158,8 @@ export function registerRoutes(app: Express): Server {
         return res.status(403).json({ message: "Apenas o criador e participantes aceitos podem editar a viagem" });
       }
 
-      // Validate that maxParticipants is not less than current participants
-      if (updates.maxParticipants && updates.maxParticipants < trip.current_participants) {
+      // Validate that max_participants is not less than current participants
+      if (updates.max_participants && updates.max_participants < trip.current_participants) {
         return res.status(400).json({ 
           message: `Máximo de participantes não pode ser menor que ${trip.current_participants} (participantes atuais)` 
         });

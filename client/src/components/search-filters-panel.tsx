@@ -29,7 +29,7 @@ interface SearchFilters {
   startDate: string;
   endDate: string;
   budgetRange: [number, number];
-  maxParticipants: number;
+  max_participants: number;
   travelStyles: string[];
   minRating: number;
   sortBy: string;

@@ -28,7 +28,7 @@ type Trip = {
   startDate: string;
   endDate: string;
   cover_image: string;
-  maxParticipants: number;
+  max_participants: number;
   budget: number;
 };
 

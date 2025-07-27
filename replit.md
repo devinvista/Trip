@@ -253,6 +253,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 27, 2025. **ENDPOINTS API FUNCIONANDO**: Activities (/api/activities) e Budget Proposals (/api/activities/:id/proposals) totalmente operacionais
 - July 27, 2025. **BANCO DE DADOS POPULADO**: 57+ atividades turísticas, múltiplos usuários, viagens e 150+ propostas de orçamento ativas
 - July 27, 2025. **MIGRAÇÃO REPLIT AGENT → REPLIT PADRÃO CONCLUÍDA**: Migração completa bem-sucedida do ambiente Replit Agent para Replit padrão - aplicação 100% funcional
+- July 27, 2025. **CORREÇÃO COMPLETA DE CAMPOS DEPRECIADOS**: Atualizadas todas as referências de maxParticipants para max_participants e destinations padronizadas em todo o frontend e backend
 - July 27, 2025. **CORREÇÃO CRÍTICA DE DESPESAS**: Corrigido erro de compatibilidade PostgreSQL nas rotas de despesas - campos `tripId` → `trip_id` e `paidBy` → `paid_by` padronizados para snake_case
 - July 27, 2025. **COMPATIBILIDADE SCHEMA CORRIGIDA**: Ajustado mapeamento entre frontend (camelCase) e backend (snake_case) para total compatibilidade com PostgreSQL
 - July 27, 2025. **SISTEMA DE DESPESAS OPERACIONAL**: Sistema completo de divisão de custos funcionando perfeitamente após correções de schema

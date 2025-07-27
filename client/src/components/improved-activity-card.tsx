@@ -17,7 +17,7 @@ interface Activity {
   averageRating: number;
   totalRatings: number;
   estimatedDuration?: string;
-  maxParticipants?: number;
+  max_participants?: number;
   difficulty?: string;
 }
 

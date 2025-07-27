@@ -17,7 +17,7 @@ interface BudgetEditorProps {
   tripId: number;
   currentBudget: number;
   currentBudgetBreakdown?: BudgetBreakdown;
-  maxParticipants: number;
+  max_participants: number;
   onBudgetUpdate?: (newBudget: number, newBreakdown?: BudgetBreakdown) => void;
 }
 
@@ -25,7 +25,7 @@ export function BudgetEditor({
   tripId, 
   currentBudget, 
   currentBudgetBreakdown, 
-  maxParticipants,
+  max_participants,
   onBudgetUpdate 
 }: BudgetEditorProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -195,7 +195,7 @@ export function BudgetEditor({
                         Custo por pessoa:
                       </span>
                       <span className="text-lg font-bold text-blue-900">
-                        {formatBrazilianCurrency(budget / maxParticipants)}
+                        {formatBrazilianCurrency(budget / max_participants)}
                       </span>
                     </div>
                   </div>
@@ -246,7 +246,7 @@ export function BudgetEditor({
                         Custo por pessoa:
                       </span>
                       <span className="text-lg font-bold text-green-900">
-                        {formatBrazilianCurrency(calculateTotalFromBreakdown() / maxParticipants)}
+                        {formatBrazilianCurrency(calculateTotalFromBreakdown() / max_participants)}
                       </span>
                     </div>
                   </div>

@@ -262,7 +262,7 @@ function TripStatistics({ trip, planned_activities = [] }: { trip: any; planned_
             <div className="text-xs sm:text-sm font-medium text-gray-600">Participantes</div>
           </div>
           <div className="text-base sm:text-lg font-bold text-gray-900">
-            {stats.realParticipants}/{trip.max_participants || trip.maxParticipants}
+            {stats.realParticipants}/{trip.max_participants}
           </div>
           <div className="text-xs text-purple-600">
             {Math.round(stats.occupancy)}% ocupação
@@ -1172,7 +1172,7 @@ export default function TripDetailPage() {
 
   const requestJoinMutation = useMutation({
     mutationFn: async (data: { tripId: string; message: string }) => {
-      const response = await apiRequest("POST", `/api/trips/${data.trip_id}/request`, {
+      const response = await apiRequest("POST", `/api/trips/${data.tripId}/request`, {
         message: data.message,
       });
       return response.json();
@@ -1385,7 +1385,6 @@ export default function TripDetailPage() {
               <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
                 <CoverImageSelector
                   currentImage={trip.cover_image}
-                  destination={trip.destination}
                   onImageSelect={(imageUrl) => updateCoverImageMutation.mutate(imageUrl)}
                   trigger={
                     <Button 
@@ -1635,7 +1634,7 @@ export default function TripDetailPage() {
                           tripId={parseInt(id!)}
                           currentBudget={trip.budget}
                           currentBudgetBreakdown={trip.budget_breakdown}
-                          maxParticipants={trip.max_participants}
+                          max_participants={trip.max_participants}
                           onBudgetUpdate={(newBudget, newBreakdown) => {
                             // Force refresh the trip data
                               refetch();
