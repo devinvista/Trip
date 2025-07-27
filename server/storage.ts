@@ -44,6 +44,7 @@ export interface IStorage {
   getActivityById(id: number): Promise<Activity | null>;
   createActivity(activity: InsertActivity): Promise<Activity>;
   getActivitiesByLocation(location: string): Promise<Activity[]>;
+  getActivities(filters: any): Promise<Activity[]>;
   
   // Trip requests
   getTripRequests(tripId: number): Promise<TripRequest[]>;
@@ -405,6 +406,23 @@ export class PostgreSQLStorage implements IStorage {
 
   async getUserTripRequests(userId: number): Promise<TripRequest[]> {
     return await db.select().from(tripRequests).where(eq(tripRequests.user_id, userId));
+  }
+
+  async getActivities(filters: any): Promise<Activity[]> {
+    let query = db.select().from(activities);
+    
+    // Apply filters if provided
+    if (filters.category) {
+      query = query.where(eq(activities.category, filters.category));
+    }
+    if (filters.location) {
+      query = query.where(eq(activities.location, filters.location));
+    }
+    if (filters.isActive !== undefined) {
+      query = query.where(eq(activities.isActive, filters.isActive));
+    }
+    
+    return await query.orderBy(desc(activities.averageRating), desc(activities.totalRatings));
   }
 }
 
