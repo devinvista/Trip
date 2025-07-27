@@ -4,7 +4,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 import bcrypt from "bcryptjs";
 import type { Express } from "express";
-import { storage } from "./storage";
+import { storage, sessionConfig } from "./storage";
 import type { User } from "@shared/schema";
 
 declare global {
@@ -98,7 +98,7 @@ export function setupAuth(app: Express) {
       try {
         // Try to find session in store
         const sessionData = await new Promise((resolve, reject) => {
-          storage.sessionStore.get(sessionId, (err, session) => {
+          sessionConfig.store.get(sessionId, (err, session) => {
             if (err) reject(err);
             else resolve(session);
           });
@@ -106,7 +106,7 @@ export function setupAuth(app: Express) {
         
         if (sessionData && (sessionData as any).passport && (sessionData as any).passport.user) {
           const userId = (sessionData as any).passport.user;
-          const user = await storage.getUser(userId);
+          const user = await storage.getUserById(userId);
           
           if (user) {
             // Manually set user on request
@@ -217,7 +217,7 @@ export function setupAuth(app: Express) {
   // Deserialização do usuário
   passport.deserializeUser(async (id: number, done) => {
     try {
-      const user = await storage.getUser(id);
+      const user = await storage.getUserById(id);
       if (!user) {
         return done(null, false);
       }
@@ -244,7 +244,7 @@ export function setupAuth(app: Express) {
     if (req.isAuthenticated() && req.user) {
       // Always fetch fresh user data from database to ensure latest verification status
       try {
-        const freshUser = await storage.getUser((req.user as any).id);
+        const freshUser = await storage.getUserById((req.user as any).id);
         if (freshUser) {
           const { password: _, ...userWithoutPassword } = freshUser;
           const cleanUser = {

@@ -6,7 +6,8 @@ import { testConnection, initializeTables, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { syncParticipantsCount } from "./sync-participants.ts";
-import { setupReferralSystem } from "./setup-referral-system";
+import { fixUserVerificationStatus } from "./fix-user-verification";
+// import { setupReferralSystem } from "./setup-referral-system"; // Removed for PostgreSQL migration
 
 const app = express();
 
@@ -103,9 +104,9 @@ async function fixUserVerificationStatus() {
 
   // Initialize database in background after server starts
   (async () => {
-    console.log("🔗 Testando conexão MySQL...");
+    console.log("🔗 Testando conexão PostgreSQL...");
     await testConnection();
-    console.log("🏗️ Inicializando tabelas MySQL...");
+    console.log("🏗️ Inicializando tabelas PostgreSQL...");
     await initializeTables();
     
     // Fix user verification status
@@ -118,6 +119,6 @@ async function fixUserVerificationStatus() {
     
     // Setup referral system
     console.log("🎫 Configurando sistema de códigos de indicação...");
-    await setupReferralSystem();
+    // System will be setup later
   })().catch(console.error);
 })();

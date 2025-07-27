@@ -55,12 +55,12 @@ export function registerRoutes(app: Express): Server {
       if (budget) filters.budget = parseInt(budget as string);
       if (travelStyle) filters.travelStyle = travelStyle as string;
       
-      const trips = await storage.getTrips(filters);
+      const trips = await storage.getAllTrips();
       
       // Include creator info for each trip
       const tripsWithCreators = await Promise.all(
         trips.map(async (trip) => {
-          const creator = await storage.getUser(trip.creator_id);
+          const creator = await storage.getUserById(trip.creator_id);
           return { ...trip, creator };
         })
       );
@@ -75,13 +75,13 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/trips/:id", async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      const creator = await storage.getUser(trip.creator_id);
+      const creator = await storage.getUserById(trip.creator_id);
       const participants = await storage.getTripParticipants(tripId);
       
       // Check if user has a pending request
@@ -130,7 +130,7 @@ export function registerRoutes(app: Express): Server {
       const updates = req.body;
 
       // Get the trip to verify ownership
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -173,7 +173,7 @@ export function registerRoutes(app: Express): Server {
       const tripId = parseInt(req.params.id);
 
       // Get the trip to verify ownership and participants
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -216,7 +216,7 @@ export function registerRoutes(app: Express): Server {
       // Add creator info for participating trips
       const participatingTripsWithCreators = await Promise.all(
         participatingTrips.map(async (trip) => {
-          const creator = await storage.getUser(trip.creator_id);
+          const creator = await storage.getUserById(trip.creator_id);
           return { ...trip, creator };
         })
       );
@@ -241,7 +241,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ message: "URL da imagem é obrigatória" });
       }
       
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -269,7 +269,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ message: "Orçamento deve ser um valor positivo" });
       }
       
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -315,7 +315,7 @@ export function registerRoutes(app: Express): Server {
       // Parse only the message from request body
       const { message } = req.body;
       
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -347,7 +347,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/trips/:id/requests", requireAuth, async (req, res) => {
     try {
       const tripId = parseInt(req.params.id);
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       
       if (!trip || trip.creator_id !== req.user!.id) {
         return res.status(403).json({ message: "Acesso negado" });
@@ -396,7 +396,7 @@ export function registerRoutes(app: Express): Server {
       const tripId = parseInt(req.params.id);
       const { planned_activities } = req.body;
       
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -424,7 +424,7 @@ export function registerRoutes(app: Express): Server {
       const tripId = parseInt(req.params.id);
       const userIdToRemove = parseInt(req.params.user_id);
       
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -449,7 +449,7 @@ export function registerRoutes(app: Express): Server {
       await storage.removeTripParticipant(tripId, userIdToRemove);
       
       // Atualizar contador de participantes
-      const updatedTrip = await storage.getTrip(tripId);
+      const updatedTrip = await storage.getTripById(tripId);
       if (updatedTrip && updatedTrip.status !== 'cancelled') {
         // Sync trip participant count based on actual accepted participants
         await syncTripParticipants(tripId);
@@ -472,7 +472,7 @@ export function registerRoutes(app: Express): Server {
       console.log(`📨 Buscando mensagens para viagem ${tripId} pelo usuário ${req.user!.id}`);
       
       // Check if user is participant or creator of the trip
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         console.log(`❌ Viagem ${tripId} não encontrada`);
         return res.status(404).json({ message: "Viagem não encontrada" });
@@ -508,7 +508,7 @@ export function registerRoutes(app: Express): Server {
       const messageData = insertMessageSchema.parse(req.body);
       
       // Check if user is participant or creator of the trip
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -538,7 +538,7 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/users/:id", async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId);
+      const user = await storage.getUserById(userId);
       
       if (!user) {
         return res.status(404).json({ message: "Usuário não encontrado" });
@@ -652,7 +652,7 @@ export function registerRoutes(app: Express): Server {
       const tripId = parseInt(req.params.id);
       
       // Verify user is a participant or creator of the trip
-      const trip = await storage.getTrip(tripId);
+      const trip = await storage.getTripById(tripId);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -841,7 +841,7 @@ export function registerRoutes(app: Express): Server {
       const userId = parseInt(userIdStr);
       
       // Find the user with this username and ID
-      const user = await storage.getUser(userId);
+      const user = await storage.getUserById(userId);
       
       if (!user || user.username.toUpperCase() !== username) {
         return res.status(400).json({ message: "Código de indicação inválido" });
@@ -2247,7 +2247,7 @@ export function registerRoutes(app: Express): Server {
         const participants = await storage.getTripParticipants(trip.id);
         for (const participant of participants) {
           if (participant.user_id !== userId && participant.status === 'accepted') {
-            const user = await storage.getUser(participant.user_id);
+            const user = await storage.getUserById(participant.user_id);
             if (user) {
               const companionId = user.id;
               
@@ -2591,7 +2591,7 @@ export function registerRoutes(app: Express): Server {
       const userId = req.user!.id;
       
       // Check if companion exists
-      const companion = await storage.getUser(companionId);
+      const companion = await storage.getUserById(companionId);
       if (!companion) {
         return res.status(404).json({ message: "Companheiro não encontrado" });
       }
