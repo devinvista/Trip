@@ -214,7 +214,7 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-8">
           {/* Welcome Banner */}
           <WelcomeBanner
-            userName={(user?.full_name || user?.fullName)?.split(' ')[0]}
+            userName={user?.fullName?.split(' ')[0]}
             onStartTour={startTour}
             onDismiss={() => {
               setShowWelcomeBanner(false);
@@ -230,12 +230,12 @@ export default function DashboardPage() {
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={user?.profilePhoto || ""} />
                   <AvatarFallback className="text-lg bg-gradient-to-br from-orange-400 to-amber-400 text-white">
-                    {(user?.full_name || user?.fullName)?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                    {user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <h1 className="font-bold text-3xl text-gray-900">
-                    Olá, {(user?.full_name || user?.fullName)?.split(' ')[0]}! 👋
+                    Olá, {user?.fullName?.split(' ')[0]}! 👋
                   </h1>
                   <p className="text-gray-600 flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
@@ -512,7 +512,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {tripsLoading ? (
               <div className="col-span-full flex items-center justify-center min-h-[300px]">
-                <LoadingSpinner size="lg" message="Carregando suas viagens..." />
+                <LoadingSpinner size="lg" />
               </div>
             ) : !tripsError && getFilteredTrips().length > 0 ? (
               getFilteredTrips().map((trip: any) => (
@@ -794,7 +794,7 @@ export default function DashboardPage() {
           onClose={closeTour}
           onComplete={completeTour}
           userPreferences={{
-            travelStyle: user?.travelStyles as string[] | undefined,
+            travelStyle: Array.isArray(user?.travelStyles) ? user.travelStyles.join(', ') : user?.travelStyles as string,
             interests: user?.interests as string[] | undefined,
             experience: 'iniciante' // Could be determined from user profile
           }}
