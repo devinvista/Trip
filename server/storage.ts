@@ -424,34 +424,53 @@ export class PostgreSQLStorage implements IStorage {
       query = query.where(eq(activities.category, filters.category));
     }
     if (filters.location) {
-      query = query.where(eq(activities.localidade, filters.location));
+      query = query.where(eq(activities.destination_name, filters.location));
     }
     if (filters.isActive !== undefined) {
-      query = query.where(eq(activities.isActive, filters.isActive));
+      query = query.where(eq(activities.is_active, filters.isActive));
     }
     
-    return await query.orderBy(desc(activities.averageRating), desc(activities.totalRatings));
+    return await query.orderBy(desc(activities.average_rating), desc(activities.total_ratings));
   }
 
   async getActivityBudgetProposals(activityId: number): Promise<ActivityBudgetProposal[]> {
-    return await db.select().from(activityBudgetProposals)
-      .where(eq(activityBudgetProposals.activityId, activityId))
-      .orderBy(asc(activityBudgetProposals.price));
+    try {
+      console.log('🔍 Buscando propostas para atividade:', activityId);
+      const result = await db.select().from(activityBudgetProposals)
+        .where(eq(activityBudgetProposals.activity_id, activityId))
+        .orderBy(asc(activityBudgetProposals.amount));
+      console.log('✅ Propostas encontradas:', result.length);
+      return result;
+    } catch (error) {
+      console.error('❌ Erro na query SQL:', error);
+      throw error;
+    }
   }
 
   async createActivityBudgetProposal(proposalData: InsertActivityBudgetProposal): Promise<ActivityBudgetProposal> {
-    const [proposal] = await db.insert(activityBudgetProposals).values(proposalData);
+    const [proposal] = await db.insert(activityBudgetProposals).values(proposalData).returning();
     return proposal;
   }
 
   async getActivityReviews(activityId: number): Promise<ActivityReview[]> {
-    return await db.select().from(activityReviews)
-      .where(eq(activityReviews.activityId, activityId))
-      .orderBy(desc(activityReviews.createdAt));
+    try {
+      console.log('🔍 Buscando avaliações para atividade:', activityId);
+      // Use raw SQL as a workaround for Drizzle schema issues
+      const result = await db.execute(sql`
+        SELECT * FROM activity_reviews 
+        WHERE activity_id = ${activityId} 
+        ORDER BY created_at DESC
+      `);
+      console.log('✅ Avaliações encontradas:', result.rows.length);
+      return result.rows as unknown as ActivityReview[];
+    } catch (error) {
+      console.error('❌ Erro ao buscar avaliações:', error);
+      throw error;
+    }
   }
 
   async createActivityReview(reviewData: InsertActivityReview): Promise<ActivityReview> {
-    const [review] = await db.insert(activityReviews).values(reviewData);
+    const [review] = await db.insert(activityReviews).values(reviewData).returning();
     return review;
   }
 }

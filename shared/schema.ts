@@ -382,118 +382,118 @@ export const activities = pgTable("activities", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  destinationName: varchar("destination_name", { length: 255 }).notNull(),
+  destination_name: varchar("destination_name", { length: 255 }).notNull(),
   category: categoryEnum("category").notNull(),
-  difficultyLevel: difficultyLevelEnum("difficulty_level").default("easy").notNull(),
+  difficulty_level: difficultyLevelEnum("difficulty_level").default("easy").notNull(),
   duration: varchar("duration", { length: 100 }).notNull(),
-  minParticipants: integer("min_participants").default(1).notNull(),
-  maxParticipants: integer("max_participants").default(50).notNull(),
+  min_participants: integer("min_participants").default(1).notNull(),
+  max_participants: integer("max_participants").default(50).notNull(),
   languages: json("languages"), // Available languages
   inclusions: json("inclusions"), // What's included
   exclusions: json("exclusions"), // What's not included
   requirements: json("requirements"), // Age restrictions, fitness level, etc.
-  cancellationPolicy: text("cancellation_policy"),
-  contactInfo: json("contact_info"), // { email, phone, website, whatsapp }
-  coverImage: text("cover_image").notNull(), // Main image
+  cancellation_policy: text("cancellation_policy"),
+  contact_info: json("contact_info"), // { email, phone, website, whatsapp }
+  cover_image: text("cover_image").notNull(), // Main image
   images: json("images"), // Array of image URLs
-  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("5.00").notNull(),
-  totalRatings: integer("total_ratings").default(0).notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
-  createdById: integer("created_by_id").notNull().references(() => users.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  average_rating: decimal("average_rating", { precision: 3, scale: 2 }).default("5.00").notNull(),
+  total_ratings: integer("total_ratings").default(0).notNull(),
+  is_active: boolean("is_active").default(true).notNull(),
+  created_by_id: integer("created_by_id").notNull().references(() => users.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
   // Campos herdados automaticamente do destino
   city: varchar("city", { length: 255 }),
   state: varchar("state", { length: 100 }),
   country: varchar("country", { length: 100 }),
-  countryType: countryTypeEnum("country_type"),
+  country_type: countryTypeEnum("country_type"),
   region: varchar("region", { length: 100 }),
   continent: varchar("continent", { length: 100 }),
 }, (table) => ({
-  destinationIndex: index("idx_destination").on(table.destinationName),
+  destinationIndex: index("idx_destination").on(table.destination_name),
   categoryIndex: index("idx_category").on(table.category),
-  difficultyIndex: index("idx_difficulty").on(table.difficultyLevel),
-  countryTypeIndex: index("idx_country_type").on(table.countryType),
+  difficultyIndex: index("idx_difficulty").on(table.difficulty_level),
+  countryTypeIndex: index("idx_country_type").on(table.country_type),
   regionIndex: index("idx_region").on(table.region),
-  activeIndex: index("idx_active").on(table.isActive),
+  activeIndex: index("idx_active").on(table.is_active),
 }));
 
 // Activity Reviews/Ratings
 export const activityReviews = pgTable("activity_reviews", {
   id: serial("id").primaryKey(),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  userId: integer("user_id").notNull().references(() => users.id),
+  activity_id: integer("activity_id").notNull().references(() => activities.id),
+  user_id: integer("user_id").notNull().references(() => users.id),
   rating: integer("rating").notNull(), // 1-5 stars
   review: text("review"), // Optional review text
   photos: json("photos"), // Optional review photos
-  visitDate: timestamp("visit_date"), // When they participated
-  helpfulVotes: integer("helpful_votes").default(0).notNull(), // How many found this helpful
-  isVerified: boolean("is_verified").default(false).notNull(), // Verified purchase/participation
-  isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
-  reportCount: integer("report_count").default(0).notNull(), // Number of reports
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  visit_date: timestamp("visit_date"), // When they participated
+  helpful_votes: integer("helpful_votes").default(0).notNull(), // How many found this helpful
+  is_verified: boolean("is_verified").default(false).notNull(), // Verified purchase/participation
+  is_hidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
+  report_count: integer("report_count").default(0).notNull(), // Number of reports
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Activity Budget Proposals - Multiple budget options per activity
 export const activityBudgetProposals = pgTable("activity_budget_proposals", {
   id: serial("id").primaryKey(),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  createdBy: integer("created_by").notNull().references(() => users.id),
+  activity_id: integer("activity_id").notNull().references(() => activities.id),
+  created_by: integer("created_by").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(), // "Opção Básica", "Pacote Premium", etc.
   description: text("description"), // Description of what's included
-  priceType: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group
+  price_type: varchar("price_type", { length: 50 }).notNull().default("per_person"), // per_person, per_group
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 10 }).default("BRL").notNull(),
   inclusions: json("inclusions"), // What's included in this proposal
   exclusions: json("exclusions"), // What's not included
-  validUntil: timestamp("valid_until"), // Optional expiry date
-  isActive: boolean("is_active").default(true).notNull(),
+  valid_until: timestamp("valid_until"), // Optional expiry date
+  is_active: boolean("is_active").default(true).notNull(),
   votes: integer("votes").default(0).notNull(), // Community votes for this proposal
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Activity Budget Proposal Votes - Track user votes on proposals
 export const activityBudgetProposalVotes = pgTable("activity_budget_proposal_votes", {
   id: serial("id").primaryKey(),
-  proposalId: integer("proposal_id").notNull().references(() => activityBudgetProposals.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  voteType: varchar("vote_type", { length: 10 }).notNull(), // "up" or "down"
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  proposal_id: integer("proposal_id").notNull().references(() => activityBudgetProposals.id),
+  user_id: integer("user_id").notNull().references(() => users.id),
+  activity_id: integer("activity_id").notNull().references(() => activities.id),
+  vote_type: varchar("vote_type", { length: 10 }).notNull(), // "up" or "down"
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Trip Activities - Links activities to trips with selected budget proposal
 export const tripActivities = pgTable("trip_activities", {
   id: serial("id").primaryKey(),
-  tripId: integer("trip_id").notNull().references(() => trips.id),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  budgetProposalId: integer("budget_proposal_id").notNull().references(() => activityBudgetProposals.id),
-  addedBy: integer("added_by").notNull().references(() => users.id),
+  trip_id: integer("trip_id").notNull().references(() => trips.id),
+  activity_id: integer("activity_id").notNull().references(() => activities.id),
+  budget_proposal_id: integer("budget_proposal_id").notNull().references(() => activityBudgetProposals.id),
+  added_by: integer("added_by").notNull().references(() => users.id),
   status: varchar("status", { length: 50 }).default("proposed").notNull(), // proposed, approved, rejected
   participants: integer("participants").notNull().default(1),
-  totalCost: decimal("total_cost", { precision: 10, scale: 2 }).notNull(),
-  scheduledDate: timestamp("scheduled_date"), // When in the trip this activity is scheduled
+  total_cost: decimal("total_cost", { precision: 10, scale: 2 }).notNull(),
+  scheduled_date: timestamp("scheduled_date"), // When in the trip this activity is scheduled
   notes: text("notes"), // Additional notes about this activity for the trip
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Activity Bookings/Reservations
 export const activityBookings = pgTable("activity_bookings", {
   id: serial("id").primaryKey(),
-  activityId: integer("activity_id").notNull().references(() => activities.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  tripId: integer("trip_id").references(() => trips.id), // Optional: if booked for a specific trip
+  activity_id: integer("activity_id").notNull().references(() => activities.id),
+  user_id: integer("user_id").notNull().references(() => users.id),
+  trip_id: integer("trip_id").references(() => trips.id), // Optional: if booked for a specific trip
   participants: integer("participants").notNull(),
-  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
-  bookingDate: timestamp("booking_date").notNull(), // When activity will happen
+  total_amount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+  booking_date: timestamp("booking_date").notNull(), // When activity will happen
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, confirmed, cancelled, completed
-  contactName: text("contact_name").notNull(),
-  contactEmail: text("contact_email").notNull(),
-  contactPhone: text("contact_phone"),
-  specialRequests: text("special_requests"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  contact_name: text("contact_name").notNull(),
+  contact_email: text("contact_email").notNull(),
+  contact_phone: text("contact_phone"),
+  special_requests: text("special_requests"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Activity types and schemas

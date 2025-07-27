@@ -249,6 +249,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 27, 2025. **SISTEMA DE AUTENTICAÇÃO CORRIGIDO**: Implementado método getUserByPhone no storage e corrigidos erros de schema (travelStyle → travelStyles)
 - July 27, 2025. **USUÁRIOS DE TESTE CRIADOS**: Criados usuários de teste (tom, maria, carlos) com senha "password123" para validação da aplicação
 - July 27, 2025. **VALIDAÇÃO COMPLETA DA MIGRAÇÃO**: Autenticação, sessões, API endpoints e conexão PostgreSQL testados e funcionando perfeitamente
+- July 27, 2025. **SCHEMA POSTGRESQL PADRONIZADO**: Corrigidos todos os campos do schema para snake_case (activity_id, created_by, price_type, etc.) para compatibilidade total com PostgreSQL
+- July 27, 2025. **ENDPOINTS API FUNCIONANDO**: Activities (/api/activities) e Budget Proposals (/api/activities/:id/proposals) totalmente operacionais
+- July 27, 2025. **BANCO DE DADOS POPULADO**: 57+ atividades turísticas, múltiplos usuários, viagens e 150+ propostas de orçamento ativas
 - July 17, 2025. **FILTROS DE ATIVIDADES MODERNIZADOS**: Botões de categoria reduzidos para design mais compacto e profissional
 - July 17, 2025. **FILTRO VIAGENS ATIVAS IMPLEMENTADO**: Adicionado novo filtro no início da sidebar para mostrar apenas atividades nos destinos de viagens em andamento
 - July 17, 2025. **SISTEMA DE CATEGORIAS APRIMORADO**: Implementado seleção múltipla de categorias com botão "Todas" e contadores dinâmicos
