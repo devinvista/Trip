@@ -352,8 +352,10 @@ export default function AuthPage() {
                                 <Gift className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                                 <Input 
                                   placeholder="Digite o código de indicação" 
-                                  className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20" 
-                                  {...field} 
+                                  className="pl-10 bg-white/80 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 font-mono uppercase" 
+                                  value={field.value}
+                                  onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                                  style={{ textTransform: 'uppercase' }}
                                 />
                               </div>
                             </FormControl>

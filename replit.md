@@ -262,6 +262,9 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 27, 2025. **COMPONENTES PRINCIPAIS ATUALIZADOS**: enhanced-trip-card.tsx, trip-detail-page.tsx, edit-trip-page.tsx, expense-manager.tsx, travel-board.tsx, dashboard-page.tsx padronizados
 - July 27, 2025. **COMPATIBILIDADE TOTAL POSTGRESQL**: Todos os campos agora seguem convenção snake_case (start_date, end_date, max_participants, travel_style, full_name, etc.)
 - July 27, 2025. **ZERO ERROS LSP ALCANÇADO**: Aplicação totalmente compatível com PostgreSQL sem erros de compilação ou schema
+- July 27, 2025. **SISTEMA DE BUSCA DE DESTINOS CORRIGIDO**: Corrigida funcionalidade de busca onde "Rio" não retornava "Rio de Janeiro" - agora busca por nome, região e estado simultaneamente
+- July 27, 2025. **CÓDIGOS DE INDICAÇÃO FUNCIONAIS**: Sistema de códigos de indicação totalmente operacional - códigos BETA2025, VIAJANTE, AMIGO123, TESTE, EXPLORER criados e funcionando
+- July 27, 2025. **CAMPO DE CÓDIGO MAIÚSCULO**: Campo de código de indicação agora converte automaticamente texto para maiúsculas com estilo monospace
 - July 17, 2025. **FILTROS DE ATIVIDADES MODERNIZADOS**: Botões de categoria reduzidos para design mais compacto e profissional
 - July 17, 2025. **FILTRO VIAGENS ATIVAS IMPLEMENTADO**: Adicionado novo filtro no início da sidebar para mostrar apenas atividades nos destinos de viagens em andamento
 - July 17, 2025. **SISTEMA DE CATEGORIAS APRIMORADO**: Implementado seleção múltipla de categorias com botão "Todas" e contadores dinâmicos
