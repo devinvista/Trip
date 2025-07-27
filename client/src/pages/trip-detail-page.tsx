@@ -217,8 +217,8 @@ function TripStatistics({ trip, planned_activities = [] }: { trip: any; planned_
     const realParticipants = getRealParticipantsCount(trip);
     const budgetParticipants = getParticipantsForBudgetCalculation(trip);
     const perPerson = budgetParticipants > 0 ? totalBudget / budgetParticipants : 0;
-    const daysUntil = differenceInDays(new Date(trip.startDate), new Date());
-    const duration = differenceInDays(new Date(trip.endDate), new Date(trip.startDate));
+    const daysUntil = differenceInDays(new Date(trip.start_date || trip.startDate), new Date());
+    const duration = differenceInDays(new Date(trip.end_date || trip.endDate), new Date(trip.start_date || trip.startDate));
     const occupancy = getTripOccupancy(trip);
 
     return {
@@ -262,7 +262,7 @@ function TripStatistics({ trip, planned_activities = [] }: { trip: any; planned_
             <div className="text-xs sm:text-sm font-medium text-gray-600">Participantes</div>
           </div>
           <div className="text-base sm:text-lg font-bold text-gray-900">
-            {stats.realParticipants}/{trip.max_participants}
+            {stats.realParticipants}/{trip.max_participants || trip.maxParticipants}
           </div>
           <div className="text-xs text-purple-600">
             {Math.round(stats.occupancy)}% ocupação

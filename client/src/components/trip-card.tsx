@@ -41,7 +41,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
   const currentParticipants = getRealParticipantsCount(trip);
   const availableSpots = getAvailableSpots(trip);
   const isFull = isTripFull(trip);
-  const duration = Math.ceil((new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
+  const duration = Math.ceil((new Date(trip.end_date || trip.endDate).getTime() - new Date(trip.start_date || trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
 
   const getDestinationImage = (trip: any) => {
     // Use the trip's cover image if available
@@ -50,7 +50,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
     }
     
     // For cruise trips, use cruise ship images instead of destination images
-    if (trip.travelStyle === 'cruzeiros') {
+    if (trip.travel_style === 'cruzeiros' || trip.travelStyle === 'cruzeiros') {
       const cruiseImages = [
         "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80", // Luxury cruise ship
         "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", // Cruise ship at sunset

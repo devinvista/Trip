@@ -37,8 +37,8 @@ export default function EditTripPage() {
     title: '',
     destination: '',
     description: '',
-    startDate: '',
-    endDate: '',
+    start_date: '',
+    end_date: '',
     budget: '',
     maxParticipants: '',
     travelStyle: ''
@@ -72,11 +72,11 @@ export default function EditTripPage() {
         title: trip.title || '',
         destination: trip.destination || '',
         description: trip.description || '',
-        startDate: trip.startDate ? new Date(trip.startDate).toISOString().split('T')[0] : '',
-        endDate: trip.endDate ? new Date(trip.endDate).toISOString().split('T')[0] : '',
+        start_date: trip.start_date ? new Date(trip.start_date).toISOString().split('T')[0] : '',
+        end_date: trip.end_date ? new Date(trip.end_date).toISOString().split('T')[0] : '',
         budget: trip.budget?.toString() || '',
-        maxParticipants: trip.max_participants?.toString() || '',
-        travelStyle: trip.travelStyle || ''
+        maxParticipants: (trip.max_participants || trip.maxParticipants)?.toString() || '',
+        travelStyle: trip.travel_style || trip.travelStyle || ''
       });
     }
   }, [trip, user?.id, setLocation, toast]);
@@ -133,7 +133,7 @@ export default function EditTripPage() {
     e.preventDefault();
     
     // Validation
-    if (!formData.title.trim() || !formData.destination.trim() || !formData.startDate || !formData.endDate) {
+    if (!formData.title.trim() || !formData.destination.trim() || !formData.start_date || !formData.end_date) {
       toast({
         variant: "destructive",
         title: "Campos obrigatórios",
@@ -142,7 +142,7 @@ export default function EditTripPage() {
       return;
     }
 
-    if (new Date(formData.startDate) >= new Date(formData.endDate)) {
+    if (new Date(formData.start_date) >= new Date(formData.end_date)) {
       toast({
         variant: "destructive",
         title: "Datas inválidas",
@@ -154,7 +154,7 @@ export default function EditTripPage() {
     const data = {
       ...formData,
       budget: formData.budget ? parseInt(formData.budget) : 0,
-      maxParticipants: formData.max_participants ? parseInt(formData.max_participants) : 2
+      max_participants: formData.maxParticipants ? parseInt(formData.maxParticipants) : 2
     };
 
     updateTripMutation.mutate(data);
@@ -310,8 +310,8 @@ export default function EditTripPage() {
                           </label>
                           <Input
                             type="date"
-                            value={formData.startDate}
-                            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                            value={formData.start_date}
+                            onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                             min={new Date().toISOString().split('T')[0]}
                             className="w-full"
                             required
@@ -323,9 +323,9 @@ export default function EditTripPage() {
                           </label>
                           <Input
                             type="date"
-                            value={formData.endDate}
-                            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                            min={formData.startDate}
+                            value={formData.end_date}
+                            onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                            min={formData.start_date}
                             className="w-full"
                             required
                           />
@@ -353,7 +353,7 @@ export default function EditTripPage() {
                           </label>
                           <Input
                             type="number"
-                            value={formData.max_participants}
+                            value={formData.maxParticipants}
                             onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
                             placeholder="6"
                             min={getRealParticipantsCount(trip) || 1}

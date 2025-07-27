@@ -176,21 +176,21 @@ export default function DashboardPage() {
   }, [user?.id, refetchTrips, refetchRequests]);
 
   // Calculate trip statistics
-  const upcomingTrips = allTrips.filter(trip => new Date(trip.startDate) > new Date());
-  const completedTrips = allTrips.filter(trip => new Date(trip.endDate) < new Date());
+  const upcomingTrips = allTrips.filter(trip => new Date(trip.start_date || trip.startDate) > new Date());
+  const completedTrips = allTrips.filter(trip => new Date(trip.end_date || trip.endDate) < new Date());
   const inProgressTrips = allTrips.filter(trip => {
     const now = new Date();
-    return new Date(trip.startDate) <= now && new Date(trip.endDate) >= now;
+    return new Date(trip.start_date || trip.startDate) <= now && new Date(trip.end_date || trip.endDate) >= now;
   });
 
   const totalBudget = allTrips.reduce((sum, trip) => sum + (trip.budget || 0), 0);
   const totalParticipants = allTrips.reduce((sum, trip) => sum + getRealParticipantsCount(trip), 0);
 
   // Get next trip
-  const nextTrip = upcomingTrips.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+  const nextTrip = upcomingTrips.sort((a, b) => new Date(a.start_date || a.startDate).getTime() - new Date(b.start_date || b.startDate).getTime())[0];
 
   // Calculate days until next trip
-  const daysUntilNextTrip = nextTrip ? Math.ceil((new Date(nextTrip.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : 0;
+  const daysUntilNextTrip = nextTrip ? Math.ceil((new Date(nextTrip.start_date || nextTrip.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : 0;
 
   // Filter trips by timeframe
   const getFilteredTrips = () => {
@@ -214,7 +214,7 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-8">
           {/* Welcome Banner */}
           <WelcomeBanner
-            userName={user?.fullName?.split(' ')[0]}
+            userName={(user?.full_name || user?.fullName)?.split(' ')[0]}
             onStartTour={startTour}
             onDismiss={() => {
               setShowWelcomeBanner(false);
@@ -230,12 +230,12 @@ export default function DashboardPage() {
                 <Avatar className="w-16 h-16">
                   <AvatarImage src={user?.profilePhoto || ""} />
                   <AvatarFallback className="text-lg bg-gradient-to-br from-orange-400 to-amber-400 text-white">
-                    {user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                    {(user?.full_name || user?.fullName)?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <h1 className="font-bold text-3xl text-gray-900">
-                    Olá, {user?.fullName?.split(' ')[0]}! 👋
+                    Olá, {(user?.full_name || user?.fullName)?.split(' ')[0]}! 👋
                   </h1>
                   <p className="text-gray-600 flex items-center gap-2">
                     <MapPin className="h-4 w-4" />

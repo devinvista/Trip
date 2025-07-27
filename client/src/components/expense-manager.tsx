@@ -35,7 +35,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
     amount: "",
     description: "",
     category: "other",
-    splitWith: participants.map(p => p.user_id),
+    splitWith: participants.map(p => p.user_id || p.userId),
     receipt: null as string | null,
     splitEqually: true,
   });
@@ -92,7 +92,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
         amount: "",
         description: "",
         category: "other",
-        splitWith: participants.map(p => p.user_id),
+        splitWith: participants.map(p => p.user_id || p.userId),
         receipt: null,
         splitEqually: true,
       });

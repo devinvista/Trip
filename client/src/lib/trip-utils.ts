@@ -2,9 +2,9 @@
 
 export interface TripParticipant {
   id: number;
-  userId: number;
+  user_id: number;
   status: 'accepted' | 'pending' | 'rejected';
-  joinedAt: string;
+  joined_at: string;
   user?: {
     id: number;
     username: string;
@@ -15,11 +15,11 @@ export interface TripParticipant {
 
 export interface Trip {
   id: number;
-  currentParticipants?: number;
-  maxParticipants?: number;
   current_participants?: number;
   max_participants?: number;
   participants?: TripParticipant[];
+  start_date?: string;
+  end_date?: string;
   [key: string]: any;
 }
 
@@ -33,8 +33,8 @@ export function getRealParticipantsCount(trip: Trip): number {
     // Always prioritize counting accepted participants from the participants array
     return trip.participants.filter(p => p.status === 'accepted').length;
   }
-  // Fallback to currentParticipants field (support both camelCase and snake_case)
-  return trip.currentParticipants || trip.current_participants || 1;
+  // Fallback to current_participants field
+  return trip.current_participants || 1;
 }
 
 /**
@@ -42,7 +42,7 @@ export function getRealParticipantsCount(trip: Trip): number {
  */
 export function getAvailableSpots(trip: Trip): number {
   const currentCount = getRealParticipantsCount(trip);
-  const maxParticipants = trip.maxParticipants || trip.max_participants || 1;
+  const maxParticipants = trip.max_participants || 1;
   return Math.max(0, maxParticipants - currentCount);
 }
 
@@ -58,7 +58,7 @@ export function isTripFull(trip: Trip): boolean {
  */
 export function getTripOccupancy(trip: Trip): number {
   const currentCount = getRealParticipantsCount(trip);
-  const maxParticipants = trip.maxParticipants || trip.max_participants || 1;
+  const maxParticipants = trip.max_participants || 1;
   return maxParticipants > 0 ? (currentCount / maxParticipants) * 100 : 0;
 }
 
@@ -66,8 +66,8 @@ export function getTripOccupancy(trip: Trip): number {
  * Determines if a trip has started based on start date
  */
 export function hasTripStarted(trip: Trip): boolean {
-  if (!trip.startDate) return false;
-  const startDate = new Date(trip.startDate);
+  if (!trip.start_date) return false;
+  const startDate = new Date(trip.start_date);
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Reset time to compare only dates
   startDate.setHours(0, 0, 0, 0);
@@ -83,5 +83,5 @@ export function getParticipantsForBudgetCalculation(trip: Trip): number {
   if (hasTripStarted(trip)) {
     return getRealParticipantsCount(trip);
   }
-  return trip.maxParticipants || trip.max_participants || 1;
+  return trip.max_participants || 1;
 }

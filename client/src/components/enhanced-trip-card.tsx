@@ -16,12 +16,12 @@ interface Trip {
   title: string;
   description: string;
   localidade: string;
-  startDate: string;
-  endDate: string;
+  start_date: string;
+  end_date: string;
   budget: number;
-  maxParticipants: number;
-  currentParticipants: number;
-  travelStyle: string;
+  max_participants: number;
+  current_participants: number;
+  travel_style: string;
   creator: {
     id: number;
     fullName: string;
@@ -75,7 +75,7 @@ export function EnhancedTripCard({
   };
 
   const getDaysUntilTrip = () => {
-    const startDate = new Date(trip.startDate);
+    const startDate = new Date(trip.start_date);
     const today = new Date();
     const diffTime = startDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -142,10 +142,10 @@ export function EnhancedTripCard({
         <Badge 
           className={cn(
             "absolute top-3 left-3",
-            travelStyleColors[trip.travelStyle as keyof typeof travelStyleColors] || 'bg-gray-100 text-gray-800'
+            travelStyleColors[trip.travel_style as keyof typeof travelStyleColors] || 'bg-gray-100 text-gray-800'
           )}
         >
-          {trip.travelStyle}
+          {trip.travel_style}
         </Badge>
 
         {/* Featured Badge */}
@@ -190,7 +190,7 @@ export function EnhancedTripCard({
           <div className="flex items-center text-sm text-gray-600">
             <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
             <span className="truncate">
-              {format(new Date(trip.startDate), 'dd MMM', { locale: ptBR })} - {format(new Date(trip.endDate), 'dd MMM', { locale: ptBR })}
+              {format(new Date(trip.start_date), 'dd MMM', { locale: ptBR })} - {format(new Date(trip.end_date), 'dd MMM', { locale: ptBR })}
             </span>
           </div>
         </div>

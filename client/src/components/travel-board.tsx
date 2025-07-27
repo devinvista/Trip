@@ -24,13 +24,13 @@ interface Trip {
   id: number;
   title: string;
   destination: string;
-  startDate: string;
-  endDate: string;
+  start_date: string;
+  end_date: string;
   budget: number;
-  maxParticipants: number;
-  currentParticipants: number;
+  max_participants: number;
+  current_participants: number;
   description: string;
-  travelStyle: string;
+  travel_style: string;
   status: string;
   creator?: any;
 }
@@ -275,10 +275,10 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1 text-gray-600">
                           <Calendar className="h-3 w-3" />
-                          <span>{format(new Date(trip.startDate), "dd/MM", { locale: ptBR })}</span>
+                          <span>{format(new Date(trip.start_date), "dd/MM", { locale: ptBR })}</span>
                         </div>
                         <span className="text-xs text-gray-500">
-                          {getDaysUntil(trip.startDate)}
+                          {getDaysUntil(trip.start_date)}
                         </span>
                       </div>
                       
@@ -295,18 +295,18 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
                     </div>
 
                     {/* Travel Style Badge */}
-                    <Badge className={`text-xs ${getTravelStyleColor(trip.travelStyle)}`}>
-                      {getTravelStyleLabel(trip.travelStyle)}
+                    <Badge className={`text-xs ${getTravelStyleColor(trip.travel_style)}`}>
+                      {getTravelStyleLabel(trip.travel_style)}
                     </Badge>
 
                     {/* Creator Info */}
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
                         <AvatarFallback className="text-xs">
-                          {trip.creator?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                          {(trip.creator?.full_name || trip.creator?.fullName)?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-xs text-gray-600">{trip.creator?.fullName}</span>
+                      <span className="text-xs text-gray-600">{trip.creator?.full_name || trip.creator?.fullName}</span>
                     </div>
 
                     {/* Action Buttons */}
