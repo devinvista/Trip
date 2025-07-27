@@ -9,8 +9,8 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **API Endpoints:** ✅ Corrigidos para `/api/auth/login` e `/api/auth/register`
 - **Parsing JSON:** ✅ Erro JSON.parse resolvido com tratamento adequado de campos string
 - **Credenciais de Teste:** tom/maria com senha "password123"
-- **Database:** ✅ PostgreSQL com 2 atividades, 3 usuários, 2 viagens ativas
-- **Propostas de Orçamento:** ✅ 6 propostas ativas (3 por atividade)
+- **Database:** ✅ PostgreSQL com 10 atividades, 3 usuários, 2 viagens ativas, 9 destinos
+- **Propostas de Orçamento:** ✅ 12 propostas ativas cobrindo todas as atividades principais
 - **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada com variáveis de ambiente configuradas
 - **Migração Verificada:** ✅ 27 de julho de 2025 - Migração para ambiente Replit padrão confirmada pelo usuário como funcional
 - **PostgreSQL Exclusivo:** ✅ 27 de julho de 2025 - Sistema configurado para usar exclusivamente PostgreSQL via DATABASE_URL
@@ -463,4 +463,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 27, 2025. **AUTENTICAÇÃO POSTGRESQL CORRIGIDA**: Sistema de autenticação completamente migrado para PostgreSQL com auth-postgresql.ts
 - July 27, 2025. **CREDENCIAIS DE TESTE ATUALIZADAS**: tom/password123, maria/password123, carlos/password123 com hashes bcrypt corretos
 - July 27, 2025. **TODAS REFERÊNCIAS MYSQL ATUALIZADAS**: Removidas todas as referências MySQL do projeto e documentação - aplicação agora 100% PostgreSQL
-- July 27, 2025. **MIGRAÇÃO REPLIT AGENT FINALIZADA DEFINITIVAMENTE**: Migração completa do Replit Agent para ambiente Replit padrão concluída com sucesso - PostgreSQL funcionando perfeitamente com dados de demonstração
+- July 27, 2025. **MIGRAÇÃO POSTGRESQL CONCLUÍDA COM SUCESSO**: Migração completa para PostgreSQL finalizada com autenticação funcionando
+- July 27, 2025. **BASE DE DADOS POSTGRESQL POPULADA**: Banco agora contém 3 usuários, 9 destinos, 10 atividades, 2 viagens e 12 propostas de orçamento
+- July 27, 2025. **AUTENTICAÇÃO POSTGRESQL VERIFICADA**: Sistema de login/logout funcionando perfeitamente com credenciais tom/password123, maria/password123, carlos/password123
+- July 27, 2025. **APLICAÇÃO 100% POSTGRESQL**: PartiuTrip totalmente migrada e operacional em ambiente Replit padrão com PostgreSQL exclusivo via DATABASE_URL
