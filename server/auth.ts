@@ -118,7 +118,7 @@ export function setupAuth(app: Express) {
               profilePhoto: userWithoutPassword.profilePhoto || undefined,
               languages: userWithoutPassword.languages || undefined,
               interests: userWithoutPassword.interests || undefined,
-              travelStyle: userWithoutPassword.travelStyle || undefined,
+              travelStyles: userWithoutPassword.travelStyless || undefined,
             };
             
             req.user = cleanUser;
@@ -200,7 +200,7 @@ export function setupAuth(app: Express) {
           profilePhoto: userWithoutPassword.profilePhoto || undefined,
           languages: userWithoutPassword.languages || undefined,
           interests: userWithoutPassword.interests || undefined,
-          travelStyle: userWithoutPassword.travelStyle || undefined,
+          travelStyles: userWithoutPassword.travelStyless || undefined,
         };
         return done(null, cleanUser);
       } catch (error) {
@@ -231,7 +231,7 @@ export function setupAuth(app: Express) {
         profilePhoto: userWithoutPassword.profilePhoto || undefined,
         languages: userWithoutPassword.languages || undefined,
         interests: userWithoutPassword.interests || undefined,
-        travelStyle: userWithoutPassword.travelStyle || undefined,
+        travelStyles: userWithoutPassword.travelStyles || undefined,
       };
       done(null, cleanUser);
     } catch (error) {
@@ -254,7 +254,7 @@ export function setupAuth(app: Express) {
             profilePhoto: userWithoutPassword.profilePhoto || undefined,
             languages: userWithoutPassword.languages || undefined,
             interests: userWithoutPassword.interests || undefined,
-            travelStyle: userWithoutPassword.travelStyle || undefined,
+            travelStyles: userWithoutPassword.travelStyles || undefined,
           };
           console.log('✅ Fresh user data loaded, isVerified:', cleanUser.isVerified);
           res.json(cleanUser);
@@ -334,7 +334,7 @@ export function setupAuth(app: Express) {
   // Rota de registro
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const { username, password, email, fullName, phone, bio, location, languages, interests, travelStyle, referredBy } = req.body;
+      const { username, password, email, fullName, phone, bio, location, languages, interests, travelStyles, referredBy } = req.body;
 
       // Verificar se usuário já existe
       const existingUser = await storage.getUserByUsername(username);
@@ -371,7 +371,7 @@ export function setupAuth(app: Express) {
         location,
         languages,
         interests,
-        travelStyle,
+        travelStyles,
         referredBy,
         isVerified,
         verificationMethod
@@ -387,7 +387,7 @@ export function setupAuth(app: Express) {
         profilePhoto: userWithoutPassword.profilePhoto || undefined,
         languages: userWithoutPassword.languages || undefined,
         interests: userWithoutPassword.interests || undefined,
-        travelStyle: userWithoutPassword.travelStyle || undefined,
+        travelStyles: userWithoutPassword.travelStyles || undefined,
       };
       
       req.logIn(cleanUser, (err) => {

@@ -6,7 +6,6 @@ import { testConnection, initializeTables, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { syncParticipantsCount } from "./sync-participants.ts";
-import { fixUserVerificationStatus } from "./fix-user-verification";
 // import { setupReferralSystem } from "./setup-referral-system"; // Removed for PostgreSQL migration
 
 const app = express();
@@ -50,8 +49,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Function to fix user verification status
-async function fixUserVerificationStatus() {
+// Function to fix user verification status  
+async function fixUserVerificationStatusLocal() {
   try {
     const verifiedUsers = ['tom', 'maria', 'carlos'];
     
@@ -111,7 +110,7 @@ async function fixUserVerificationStatus() {
     
     // Fix user verification status
     console.log("🔧 Corrigindo status de verificação dos usuários...");
-    await fixUserVerificationStatus();
+    await fixUserVerificationStatusLocal();
     
     // Sync participants count
     console.log("🔄 Sincronizando contagem de participantes...");
