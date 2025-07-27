@@ -15,8 +15,10 @@ export interface TripParticipant {
 
 export interface Trip {
   id: number;
-  currentParticipants: number;
-  maxParticipants: number;
+  currentParticipants?: number;
+  maxParticipants?: number;
+  current_participants?: number;
+  max_participants?: number;
   participants?: TripParticipant[];
   [key: string]: any;
 }
@@ -31,8 +33,8 @@ export function getRealParticipantsCount(trip: Trip): number {
     // Always prioritize counting accepted participants from the participants array
     return trip.participants.filter(p => p.status === 'accepted').length;
   }
-  // Fallback to currentParticipants field only when participants array is not available
-  return trip.currentParticipants || 1;
+  // Fallback to currentParticipants field (support both camelCase and snake_case)
+  return trip.currentParticipants || trip.current_participants || 1;
 }
 
 /**
@@ -40,7 +42,8 @@ export function getRealParticipantsCount(trip: Trip): number {
  */
 export function getAvailableSpots(trip: Trip): number {
   const currentCount = getRealParticipantsCount(trip);
-  return Math.max(0, trip.maxParticipants - currentCount);
+  const maxParticipants = trip.maxParticipants || trip.max_participants || 1;
+  return Math.max(0, maxParticipants - currentCount);
 }
 
 /**
@@ -55,7 +58,8 @@ export function isTripFull(trip: Trip): boolean {
  */
 export function getTripOccupancy(trip: Trip): number {
   const currentCount = getRealParticipantsCount(trip);
-  return trip.maxParticipants > 0 ? (currentCount / trip.maxParticipants) * 100 : 0;
+  const maxParticipants = trip.maxParticipants || trip.max_participants || 1;
+  return maxParticipants > 0 ? (currentCount / maxParticipants) * 100 : 0;
 }
 
 /**
@@ -79,5 +83,5 @@ export function getParticipantsForBudgetCalculation(trip: Trip): number {
   if (hasTripStarted(trip)) {
     return getRealParticipantsCount(trip);
   }
-  return trip.maxParticipants || 1;
+  return trip.maxParticipants || trip.max_participants || 1;
 }

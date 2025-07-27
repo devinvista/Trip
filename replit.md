@@ -9,9 +9,10 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **API Endpoints:** ✅ Corrigidos para `/api/auth/login` e `/api/auth/register`
 - **Parsing JSON:** ✅ Erro JSON.parse resolvido com tratamento adequado de campos string
 - **Credenciais de Teste:** tom/maria com senha "password123"
-- **Database:** ✅ MySQL com 57+ atividades, 6 usuários, 70+ viagens ativas
+- **Database:** ✅ PostgreSQL com 57+ atividades, 6 usuários, 70+ viagens ativas
 - **Propostas de Orçamento:** ✅ 150+ propostas ativas (3 por atividade)
 - **Migração Concluída:** ✅ Replit Agent → Replit Padrão finalizada com variáveis de ambiente configuradas
+- **Cálculo de Ocupação:** ✅ Corrigido suporte para campos snake_case/camelCase na migração
 
 ## Arquitetura do Sistema
 
@@ -30,11 +31,11 @@ PartiuTrip é uma plataforma web que conecta viajantes com interesses, destinos 
 - **Armazenamento de Sessão**: Sessões Express com armazenamento MySQL
 - **Segurança de Senha**: Módulo crypto do Node.js com hash scrypt
 - **Design de API**: Endpoints RESTful com respostas JSON
-- **Banco de Dados**: MySQL com Drizzle ORM (migração completa da memória para persistência)
+- **Banco de Dados**: PostgreSQL com Drizzle ORM (migração completa da memória para persistência)
 - **Armazenamento**: Sistema totalmente migrado para MySQL com dados persistentes
 
 ### Esquema do Banco de Dados
-A aplicação usa MySQL com as seguintes entidades principais:
+A aplicação usa PostgreSQL com as seguintes entidades principais:
 - **Usuários**: Autenticação, informações de perfil e preferências de viagem
 - **Viagens**: Planos de viagem com destinos, datas, orçamentos e custos compartilhados
 - **Participantes da Viagem**: Relacionamento muitos-para-muitos entre usuários e viagens
@@ -244,6 +245,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - July 17, 2025. Componente OptimizedImage com lazy loading, fallback para imagens
 - July 17, 2025. **MIGRAÇÃO REPLIT AGENT CONCLUÍDA**: Migração completa do Replit Agent para ambiente Replit padrão finalizada com sucesso - todas as funcionalidades operacionais e verificadas pelo usuário
 - July 27, 2025. **MIGRAÇÃO REPLIT AGENT → REPLIT PADRÃO FINALIZADA**: Migração completa bem-sucedida do ambiente Replit Agent para Replit padrão - aplicação 100% funcional
+- July 27, 2025. **CÁLCULO DE OCUPAÇÃO CORRIGIDO**: Corrigido problema de compatibilidade entre campos snake_case (database) e camelCase (frontend) para cálculos de ocupação das viagens
 - July 27, 2025. **SISTEMA DE AUTENTICAÇÃO CORRIGIDO**: Implementado método getUserByPhone no storage e corrigidos erros de schema (travelStyle → travelStyles)
 - July 27, 2025. **USUÁRIOS DE TESTE CRIADOS**: Criados usuários de teste (tom, maria, carlos) com senha "password123" para validação da aplicação
 - July 27, 2025. **VALIDAÇÃO COMPLETA DA MIGRAÇÃO**: Autenticação, sessões, API endpoints e conexão PostgreSQL testados e funcionando perfeitamente
