@@ -1103,10 +1103,10 @@ function ActivityFormTab({
           <Label htmlFor="title">Título *</Label>
           <Input
             id="title"
-            value={formData.title}
+            value={formData.title || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
             placeholder="Ex: Visitar Cristo Redentor"
-            className="border-2 focus:border-primary"
+            className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20"
           />
         </div>
         
@@ -1130,14 +1130,16 @@ function ActivityFormTab({
           <Label htmlFor="estimatedCost">Custo Estimado (R$)</Label>
           <Input
             id="estimatedCost"
-            type="text"
-            value={formatBrazilianNumber(formData.estimatedCost || 0)}
+            type="number"
+            step="0.01"
+            min="0"
+            value={formData.estimatedCost || ''}
             onChange={(e) => {
-              const value = e.target.value.replace(/[^\d,]/g, '').replace(',', '.');
-              setFormData(prev => ({ ...prev, estimatedCost: parseFloat(value) || 0 }));
+              const value = parseFloat(e.target.value) || 0;
+              setFormData(prev => ({ ...prev, estimatedCost: value }));
             }}
-            placeholder="0,00"
-            className="border-2 focus:border-primary"
+            placeholder="0.00"
+            className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
@@ -1159,10 +1161,10 @@ function ActivityFormTab({
           <Label htmlFor="duration">Duração</Label>
           <Input
             id="duration"
-            value={formData.duration}
+            value={formData.duration || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
             placeholder="Ex: 2-3 horas"
-            className="border-2 focus:border-primary"
+            className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
@@ -1170,10 +1172,10 @@ function ActivityFormTab({
           <Label htmlFor="location">Local</Label>
           <Input
             id="location"
-            value={formData.location}
+            value={formData.location || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
             placeholder="Ex: Corcovado, Rio de Janeiro"
-            className="border-2 focus:border-primary"
+            className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20"
           />
         </div>
 
@@ -1183,10 +1185,16 @@ function ActivityFormTab({
             id="dateTime"
             type="date"
             value={formData.dateTime ? formData.dateTime.split('T')[0] : ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, dateTime: e.target.value }))}
+            onChange={(e) => {
+              const currentTime = formData.dateTime && formData.dateTime.includes('T') 
+                ? formData.dateTime.split('T')[1] 
+                : '';
+              const newDateTime = currentTime ? `${e.target.value}T${currentTime}` : e.target.value;
+              setFormData(prev => ({ ...prev, dateTime: newDateTime }));
+            }}
             min={tripStartDate ? formatDateForInput(tripStartDate) : undefined}
             max={tripEndDate ? formatDateForInput(tripEndDate) : undefined}
-            className="border-2 focus:border-primary"
+            className="border-2 focus:border-primary transition-colors"
           />
           {tripStartDate && tripEndDate && (
             <p className="text-xs text-gray-500">
@@ -1203,14 +1211,13 @@ function ActivityFormTab({
             value={formData.dateTime && formData.dateTime.includes('T') ? formData.dateTime.split('T')[1]?.split('.')[0] : ''}
             onChange={(e) => {
               const date = formData.dateTime ? formData.dateTime.split('T')[0] : '';
-              const time = e.target.value;
-              if (date && time) {
-                setFormData(prev => ({ ...prev, dateTime: `${date}T${time}` }));
+              if (date && e.target.value) {
+                setFormData(prev => ({ ...prev, dateTime: `${date}T${e.target.value}` }));
               } else if (date) {
                 setFormData(prev => ({ ...prev, dateTime: date }));
               }
             }}
-            className="border-2 focus:border-primary"
+            className="border-2 focus:border-primary transition-colors"
           />
         </div>
       </div>
@@ -1220,11 +1227,11 @@ function ActivityFormTab({
         <Label htmlFor="description">Descrição</Label>
         <Textarea
           id="description"
-          value={formData.description}
+          value={formData.description || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           placeholder="Descreva os detalhes da atividade..."
           rows={3}
-          className="border-2 focus:border-primary"
+          className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20 resize-none"
         />
       </div>
 
@@ -1236,7 +1243,7 @@ function ActivityFormTab({
             value={newLink}
             onChange={(e) => setNewLink(e.target.value)}
             placeholder="https://exemplo.com"
-            className="flex-1"
+            className="flex-1 border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20"
           />
           <Button onClick={addLink} variant="outline">
             <Plus className="h-4 w-4" />
@@ -1311,11 +1318,11 @@ function ActivityFormTab({
         <Label htmlFor="notes">Observações</Label>
         <Textarea
           id="notes"
-          value={formData.notes}
+          value={formData.notes || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
           placeholder="Observações adicionais..."
           rows={2}
-          className="border-2 focus:border-primary"
+          className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20 resize-none"
         />
       </div>
 
@@ -1394,14 +1401,16 @@ function EditActivityForm({
           <Label htmlFor="cost">Custo Estimado (R$)</Label>
           <Input
             id="cost"
-            type="text"
-            value={formatBrazilianNumber(formData.estimatedCost)}
+            type="number"
+            step="0.01"
+            min="0"
+            value={formData.estimatedCost || ''}
             onChange={(e) => {
-              const value = e.target.value.replace(/[^\d,]/g, '').replace(',', '.');
-              setFormData(prev => ({ ...prev, estimatedCost: parseFloat(value) || 0 }));
+              const value = parseFloat(e.target.value) || 0;
+              setFormData(prev => ({ ...prev, estimatedCost: value }));
             }}
-            placeholder="0,00"
-            className="border-2 focus:border-primary"
+            placeholder="0.00"
+            className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20"
           />
         </div>
         
@@ -1454,8 +1463,13 @@ function EditActivityForm({
           onChange={(e) => setFormData(prev => ({ ...prev, dateTime: e.target.value }))}
           min={tripStartDate ? new Date(tripStartDate).toISOString().slice(0, 16) : undefined}
           max={tripEndDate ? new Date(tripEndDate).toISOString().slice(0, 16) : undefined}
-          className="border-2 focus:border-primary"
+          className="border-2 focus:border-primary transition-colors"
         />
+        {tripStartDate && tripEndDate && (
+          <p className="text-xs text-gray-500">
+            Entre {new Date(tripStartDate).toLocaleDateString('pt-BR')} e {new Date(tripEndDate).toLocaleDateString('pt-BR')}
+          </p>
+        )}
       </div>
 
       {/* Notes */}
