@@ -65,7 +65,7 @@ export function registerPostgreSQLRoutes(app: Express) {
       
       const tripsWithCreators = await Promise.all(
         trips.map(async (trip) => {
-          const creator = await storage.getUser(trip.creator_id);
+          const creator = await storage.getUser(trip.creatorId);
           return { ...trip, creator };
         })
       );
@@ -86,7 +86,7 @@ export function registerPostgreSQLRoutes(app: Express) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      const creator = await storage.getUser(trip.creator_id);
+      const creator = await storage.getUser(trip.creatorId);
       const participants = await storage.getTripParticipants(tripId);
       
       res.json({ ...trip, creator, participants });
@@ -100,8 +100,8 @@ export function registerPostgreSQLRoutes(app: Express) {
     try {
       const tripData = insertTripSchema.parse({
         ...req.body,
-        creator_id: req.user!.id,
-        current_participants: 1
+        creatorId: req.user!.id,
+        currentParticipants: 1
       });
       
       const trip = await storage.createTrip(tripData);
@@ -123,16 +123,16 @@ export function registerPostgreSQLRoutes(app: Express) {
       // Get trips where user is a participant but not creator
       const participatingTrips = await db.select()
         .from(trips)
-        .innerJoin(tripParticipants, eq(trips.id, tripParticipants.trip_id))
+        .innerJoin(tripParticipants, eq(trips.id, tripParticipants.tripId))
         .where(and(
-          eq(tripParticipants.user_id, req.user!.id),
-          ne(trips.creator_id, req.user!.id)
+          eq(tripParticipants.userId, req.user!.id),
+          ne(trips.creatorId, req.user!.id)
         ));
       
       const participatingTripsWithCreators = await Promise.all(
         participatingTrips.map(async (result: any) => {
           const trip = result.trips;
-          const creator = await storage.getUser(trip.creator_id);
+          const creator = await storage.getUser(trip.creatorId);
           return { ...trip, creator };
         })
       );
@@ -258,8 +258,8 @@ export function registerPostgreSQLRoutes(app: Express) {
     try {
       const tripId = parseInt(req.params.id);
       const messageData = {
-        trip_id: tripId,
-        sender_id: req.user!.id,
+        tripId: tripId,
+        senderId: req.user!.id,
         content: req.body.content
       };
       
