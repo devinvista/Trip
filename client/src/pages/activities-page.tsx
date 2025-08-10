@@ -313,8 +313,8 @@ function ActivitiesPage() {
         const now = new Date();
         return userTrips.some(trip => {
           const tripCity = trip.destination.split(',')[0].trim();
-          const tripStart = new Date(trip.startDate);
-          const tripEnd = new Date(trip.endDate);
+          const tripStart = new Date(trip.start_date || trip.startDate);
+          const tripEnd = new Date(trip.end_date || trip.endDate);
           return (
             tripCity.toLowerCase() === activityCity.toLowerCase() &&
             tripStart <= now && now <= tripEnd
@@ -604,8 +604,8 @@ function ActivitiesPage() {
 
   // Check if activity is both popular and highly rated
   const isTopQuality = (activity: Activity) => {
-    const rating = Number(activity.averageRating || activity.rating || 0);
-    const totalRatings = activity.totalRatings || activity.reviewCount || 0;
+    const rating = Number(activity.average_rating || activity.averageRating || activity.rating || 0);
+    const totalRatings = activity.total_ratings || activity.totalRatings || activity.review_count || activity.reviewCount || 0;
     return rating >= 4.5 && totalRatings >= 5;
   };
 
@@ -719,7 +719,7 @@ function ActivitiesPage() {
             <div className="relative z-10">
               <div className="relative overflow-hidden">
                 <motion.img
-                  src={activity.imageUrl || activity.cover_image || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
+                  src={activity.cover_image || activity.imageUrl || `https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop&crop=center`}
                   alt={activity.title}
                   className="w-full h-44 object-cover transition-all duration-700 group-hover:scale-115"
                   whileHover={{ scale: 1.1 }}
@@ -818,7 +818,7 @@ function ActivitiesPage() {
                       <Star className="w-4 h-4 fill-white text-white drop-shadow-sm" />
                     </motion.div>
                     <span className="text-sm font-black text-white drop-shadow-sm">
-                      {formatBrazilianNumber(Number(activity.averageRating || activity.rating || 0)).replace(',00', ',0')}
+                      {formatBrazilianNumber(Number(activity.average_rating || activity.averageRating || activity.rating || 0)).replace(',00', ',0')}
                     </span>
                   </motion.div>
                 </div>
@@ -867,9 +867,9 @@ function ActivitiesPage() {
                   {/* Enhanced Footer */}
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                     <div className="flex items-center gap-1">
-                      {renderStars(Number(activity.averageRating || activity.rating || 0))}
+                      {renderStars(Number(activity.average_rating || activity.averageRating || activity.rating || 0))}
                       <span className="text-xs text-gray-500 ml-1 font-medium">
-                        ({activity.totalRatings || activity.reviewCount || 0})
+                        ({activity.total_ratings || activity.totalRatings || activity.review_count || activity.reviewCount || 0})
                       </span>
                     </div>
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
@@ -996,7 +996,7 @@ function ActivitiesPage() {
               <div className="bg-yellow-400/95 backdrop-blur-sm px-3 py-1 rounded-lg shadow-lg flex items-center gap-1">
                 <Star className="w-4 h-4 fill-white text-white" />
                 <span className="text-sm font-bold text-white">
-                  {Number(activity.averageRating || activity.rating || 0).toFixed(1)}
+                  {Number(activity.average_rating || activity.averageRating || activity.rating || 0).toFixed(1)}
                 </span>
               </div>
             </div>
@@ -1015,9 +1015,9 @@ function ActivitiesPage() {
               
               <div className="flex items-center justify-between py-2">
                 <div className="flex items-center gap-1">
-                  {renderStars(Number(activity.averageRating || activity.rating || 0))}
+                  {renderStars(Number(activity.average_rating || activity.averageRating || activity.rating || 0))}
                   <span className="text-sm text-gray-600 ml-2 font-medium">
-                    ({activity.totalRatings || activity.reviewCount || 0} avaliações)
+                    ({activity.total_ratings || activity.totalRatings || activity.review_count || activity.reviewCount || 0} avaliações)
                   </span>
                 </div>
               </div>
@@ -1041,7 +1041,7 @@ function ActivitiesPage() {
                 <div className="flex items-center gap-2 text-gray-600">
                   <Users className="w-4 h-4" />
                   <span className="text-sm font-medium">
-                    {activity.minParticipants || 1}-{activity.max_participants || 20} pessoas
+                    {activity.min_participants || activity.minParticipants || 1}-{activity.max_participants || activity.maxParticipants || 20} pessoas
                   </span>
                 </div>
                 <Badge 
