@@ -16,19 +16,21 @@ export async function createSimpleSeedData() {
         username: 'tom',
         email: 'tom@example.com',
         password: hashPassword('password123'),
-        fullName: 'Tom Silva',
-        isVerified: true,
-        averageRating: 5.0,
-        totalRatings: 0
+        full_name: 'Tom Silva',
+        phone: '+5511999999999',
+        is_verified: true,
+        average_rating: '5.00',
+        total_ratings: 0
       },
       {
         username: 'maria',
         email: 'maria@example.com', 
         password: hashPassword('password123'),
-        fullName: 'Maria Santos',
-        isVerified: true,
-        averageRating: 5.0,
-        totalRatings: 0
+        full_name: 'Maria Santos',
+        phone: '+5511888888888',
+        is_verified: true,
+        average_rating: '5.00',
+        total_ratings: 0
       }
     ];
 
@@ -47,17 +49,19 @@ export async function createSimpleSeedData() {
         name: 'Rio de Janeiro',
         state: 'RJ',
         country: 'Brasil',
+        country_type: 'nacional',
         continent: 'América do Sul',
         timezone: 'America/Sao_Paulo',
-        isActive: true
+        is_active: true
       },
       {
         name: 'São Paulo',
         state: 'SP', 
         country: 'Brasil',
+        country_type: 'nacional',
         continent: 'América do Sul',
         timezone: 'America/Sao_Paulo',
-        isActive: true
+        is_active: true
       }
     ];
 

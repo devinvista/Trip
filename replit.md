@@ -26,7 +26,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - **Session Storage**: Express sessions with MySQL storage
 - **Password Security**: Node.js crypto module with scrypt hashing
 - **API Design**: RESTful endpoints with JSON responses
-- **Database**: PostgreSQL with Drizzle ORM (fully migrated from in-memory to persistent MySQL)
+- **Database**: PostgreSQL with Drizzle ORM (fully migrated from MySQL to PostgreSQL)
 
 ### Database Schema
 The application uses PostgreSQL with the following main entities:
@@ -50,7 +50,7 @@ The application uses PostgreSQL with the following main entities:
 - **Localization**: All UI elements are translated to Brazilian Portuguese.
 
 ### Data Flow
-1. **User Registration/Login**: Users authenticate, sessions stored in MySQL.
+1. **User Registration/Login**: Users authenticate, sessions stored in PostgreSQL.
 2. **Trip Creation**: Authenticated users create detailed travel plans.
 3. **Trip Discovery**: Users search and filter trips based on preferences.
 4. **Participation Requests**: Users request to join trips, creators approve/reject.
@@ -60,8 +60,8 @@ The application uses PostgreSQL with the following main entities:
 ## External Dependencies
 
 ### Core Dependencies
-- **mysql2**: MySQL driver.
-- **drizzle-orm**: Type-safe ORM for MySQL.
+- **postgres**: PostgreSQL driver.
+- **drizzle-orm**: Type-safe ORM for PostgreSQL.
 - **passport & passport-local**: Authentication middleware.
 - **@tanstack/react-query**: Server state management.
 - **react-hook-form**: Form handling with validation.

@@ -121,7 +121,7 @@ export function setupAuth(app: Express) {
               travelStyles: userWithoutPassword.travelStyless || undefined,
             };
             
-            req.user = cleanUser;
+            req.user = cleanUser as any;
             req.isAuthenticated = () => true;
             console.log('✅ Autenticação manual bem-sucedida:', user.username);
           }

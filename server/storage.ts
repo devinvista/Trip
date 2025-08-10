@@ -275,7 +275,7 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async getAllDestinations(): Promise<any[]> {
-    return await db.select().from(destinations).where(eq(destinations.isActive, true));
+    return await db.select().from(destinations).where(eq(destinations.is_active, true));
   }
 
   async getDestinationById(id: number): Promise<any | null> {
@@ -295,7 +295,7 @@ export class PostgreSQLStorage implements IStorage {
       return await baseQuery
         .where(
           and(
-            eq(destinations.isActive, true),
+            eq(destinations.is_active, true),
             sql`(${destinations.name} ILIKE ${`%${search}%`} OR ${destinations.region} ILIKE ${`%${search}%`} OR ${destinations.state} ILIKE ${`%${search}%`})`
           )
         )
@@ -303,7 +303,7 @@ export class PostgreSQLStorage implements IStorage {
     }
     
     return await baseQuery
-      .where(eq(destinations.isActive, true))
+      .where(eq(destinations.is_active, true))
       .orderBy(asc(destinations.name));
   }
 
