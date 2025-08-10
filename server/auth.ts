@@ -171,12 +171,23 @@ export function setupAuth(app: Express) {
         }
 
         // Check password using scrypt hash (same as used in database)
+        console.log(`🔑 Debug senha para ${user.username}:`);
+        console.log(`  Senha fornecida: "${password}"`);
+        console.log(`  Hash armazenado: "${user.password}"`);
+        
         const { scryptSync } = await import('crypto');
         const [hash, salt] = user.password.split('.');
+        console.log(`  Hash extraído: "${hash}"`);
+        console.log(`  Salt extraído: "${salt}"`);
+        
         const hashedPassword = scryptSync(password, salt, 64).toString('hex');
+        console.log(`  Hash calculado: "${hashedPassword}"`);
+        
         const isValid = hash === hashedPassword;
+        console.log(`  ✅ Senhas coincidem: ${isValid}`);
         
         if (!isValid) {
+          console.log(`❌ Login falhado: Senha incorreta para ${user.username}`);
           return done(null, false, { message: 'Senha incorreta' });
         }
 
