@@ -86,27 +86,51 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
   });
 
   useEffect(() => {
+    if (!targetDate) return;
+    
     const timer = setInterval(() => {
-      const now = new Date();
-      const target = new Date(targetDate);
-      const difference = target.getTime() - now.getTime();
+      try {
+        const now = new Date();
+        const target = new Date(targetDate);
+        
+        // Check if target date is valid
+        if (isNaN(target.getTime())) {
+          console.warn('Invalid target date:', targetDate);
+          return;
+        }
+        
+        const difference = target.getTime() - now.getTime();
 
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60)
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        if (difference > 0) {
+          setTimeLeft({
+            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+            minutes: Math.floor((difference / 1000 / 60) % 60),
+            seconds: Math.floor((difference / 1000) % 60)
+          });
+        } else {
+          setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        }
+      } catch (error) {
+        console.warn('Error in countdown timer:', error);
       }
     }, 1000);
 
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const isPast = new Date(targetDate) < new Date();
+  // Safe date comparison
+  let isPast = false;
+  try {
+    if (targetDate) {
+      const target = new Date(targetDate);
+      if (!isNaN(target.getTime())) {
+        isPast = target < new Date();
+      }
+    }
+  } catch (error) {
+    console.warn('Error checking if date is past:', error);
+  }
 
   // Função para determinar o gradiente baseado nos dias restantes
   const getGradientClasses = (days: number) => {
@@ -217,8 +241,32 @@ function TripStatistics({ trip, planned_activities = [] }: { trip: any; planned_
     const realParticipants = getRealParticipantsCount(trip);
     const budgetParticipants = getParticipantsForBudgetCalculation(trip);
     const perPerson = budgetParticipants > 0 ? totalBudget / budgetParticipants : 0;
-    const daysUntil = differenceInDays(new Date(trip.start_date || trip.startDate), new Date());
-    const duration = differenceInDays(new Date(trip.end_date || trip.endDate), new Date(trip.start_date || trip.startDate));
+    
+    // Safe date parsing with fallbacks
+    const startDate = trip.start_date || trip.startDate;
+    const endDate = trip.end_date || trip.endDate;
+    
+    let daysUntil = 0;
+    let duration = 1;
+    
+    try {
+      if (startDate) {
+        const start = new Date(startDate);
+        if (!isNaN(start.getTime())) {
+          daysUntil = differenceInDays(start, new Date());
+        }
+        
+        if (endDate) {
+          const end = new Date(endDate);
+          if (!isNaN(end.getTime())) {
+            duration = differenceInDays(end, start);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Error calculating date differences:', error);
+    }
+    
     const occupancy = getTripOccupancy(trip);
 
     return {
@@ -522,38 +570,59 @@ function ActivitiesTimeline({
     
     activities.forEach(activity => {
       if (activity.scheduledDate) {
-        const date = parseISO(activity.scheduledDate);
-        const dateKey = format(date, 'yyyy-MM-dd');
-        
-        if (!grouped[dateKey]) {
-          grouped[dateKey] = [];
+        try {
+          const date = parseISO(activity.scheduledDate);
+          if (!isNaN(date.getTime())) {
+            const dateKey = format(date, 'yyyy-MM-dd');
+            
+            if (!grouped[dateKey]) {
+              grouped[dateKey] = [];
+            }
+            grouped[dateKey].push(activity);
+          }
+        } catch (error) {
+          console.warn('Error parsing activity date:', activity.scheduledDate, error);
         }
-        grouped[dateKey].push(activity);
       }
     });
 
     // Sort dates and activities within each date
     return Object.entries(grouped)
       .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
-      .map(([date, dayActivities]) => ({
-        date,
-        displayDate: format(parseISO(date), 'EEEE, dd/MM', { locale: ptBR }),
-        fullDate: format(parseISO(date), 'dd \'de\' MMMM \'de\' yyyy', { locale: ptBR }),
-        shortDate: format(parseISO(date), 'dd/MM', { locale: ptBR }),
-        dayOfWeek: format(parseISO(date), 'EEEE', { locale: ptBR }),
-        activities: dayActivities.sort((a, b) => {
-          // Sort by priority (high > medium > low), then by title
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
-          const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
-          
-          if (aPriority !== bPriority) {
-            return bPriority - aPriority;
-          }
-          
-          return a.title.localeCompare(b.title);
-        })
-      }));
+      .map(([date, dayActivities]) => {
+        try {
+          const dateObj = parseISO(date);
+          return {
+            date,
+            displayDate: format(dateObj, 'EEEE, dd/MM', { locale: ptBR }),
+            fullDate: format(dateObj, 'dd \'de\' MMMM \'de\' yyyy', { locale: ptBR }),
+            shortDate: format(dateObj, 'dd/MM', { locale: ptBR }),
+            dayOfWeek: format(dateObj, 'EEEE', { locale: ptBR }),
+            activities: dayActivities.sort((a, b) => {
+              // Sort by priority (high > medium > low), then by title
+              const priorityOrder = { high: 3, medium: 2, low: 1 };
+              const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
+              const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
+              
+              if (aPriority !== bPriority) {
+                return bPriority - aPriority;
+              }
+              
+              return a.title.localeCompare(b.title);
+            })
+          };
+        } catch (error) {
+          console.warn('Error formatting date:', date, error);
+          return {
+            date,
+            displayDate: date,
+            fullDate: date,
+            shortDate: date,
+            dayOfWeek: 'Data inválida',
+            activities: dayActivities
+          };
+        }
+      });
   }, [activities]);
 
   if (activities.length === 0) {
@@ -1403,9 +1472,11 @@ export default function TripDetailPage() {
             )}
             
             {/* Countdown Timer */}
-            <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-10">
-              <CountdownTimer targetDate={trip.startDate} />
-            </div>
+            {(trip.start_date || trip.startDate) && (
+              <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-10">
+                <CountdownTimer targetDate={trip.start_date || trip.startDate} />
+              </div>
+            )}
           </div>
           
           {/* Content */}
