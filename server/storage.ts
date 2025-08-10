@@ -295,12 +295,41 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createActivity(activityData: InsertActivity): Promise<Activity> {
-    const [activity] = await db.insert(activities).values(activityData).returning();
+    // Get destination data to populate inherited fields
+    const { getDestinationForActivity } = await import("./activity-destination-helper");
+    const destinationFields = await getDestinationForActivity(activityData.destination_id);
+    
+    // Merge activity data with destination fields
+    const completeActivityData = {
+      ...activityData,
+      ...destinationFields
+    };
+    
+    const [activity] = await db.insert(activities).values(completeActivityData).returning();
     return activity;
   }
 
   async getActivitiesByLocation(location: string): Promise<Activity[]> {
-    return await db.select().from(activities).where(like(activities.location, `%${location}%`));
+    return await db.select().from(activities).where(like(activities.destination_name, `%${location}%`));
+  }
+
+  async updateActivity(id: number, updates: Partial<Activity>): Promise<Activity | null> {
+    // If destination_id is being updated, refresh destination fields
+    if (updates.destination_id) {
+      const { getDestinationForActivity } = await import("./activity-destination-helper");
+      const destinationFields = await getDestinationForActivity(updates.destination_id);
+      updates = { ...updates, ...destinationFields };
+    }
+    
+    const [activity] = await db.update(activities)
+      .set(updates)
+      .where(eq(activities.id, id))
+      .returning();
+    return activity;
+  }
+
+  async getActivity(id: number): Promise<Activity | null> {
+    return this.getActivityById(id);
   }
 
   async getTripRequests(tripId: number): Promise<TripRequest[]> {

@@ -384,7 +384,7 @@ export const activities = pgTable("activities", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  destination_name: varchar("destination_name", { length: 255 }).notNull(),
+  destination_id: integer("destination_id").notNull().references(() => destinations.id), // Foreign key para destinations
   category: categoryEnum("category").notNull(),
   difficulty_level: difficultyLevelEnum("difficulty_level").default("easy").notNull(),
   duration: varchar("duration", { length: 100 }).notNull(),
@@ -404,7 +404,8 @@ export const activities = pgTable("activities", {
   created_by_id: integer("created_by_id").notNull().references(() => users.id),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
-  // Campos herdados automaticamente do destino
+  // Campos herdados automaticamente do destino (preenchidos via trigger/aplicação)
+  destination_name: varchar("destination_name", { length: 255 }),
   city: varchar("city", { length: 255 }),
   state: varchar("state", { length: 100 }),
   country: varchar("country", { length: 100 }),
@@ -412,7 +413,7 @@ export const activities = pgTable("activities", {
   region: varchar("region", { length: 100 }),
   continent: varchar("continent", { length: 100 }),
 }, (table) => ({
-  destinationIndex: index("idx_destination").on(table.destination_name),
+  destinationIdIndex: index("idx_destination_id").on(table.destination_id),
   categoryIndex: index("idx_category").on(table.category),
   difficultyIndex: index("idx_difficulty").on(table.difficulty_level),
   countryTypeIndex: index("idx_country_type").on(table.country_type),
@@ -513,12 +514,15 @@ export const insertActivitySchema = createInsertSchema(activities).omit({
   created_at: true,
   updated_at: true,
   // Campos herdados são preenchidos automaticamente
+  destination_name: true,
   city: true,
   state: true,
   country: true,
   country_type: true,
   region: true,
   continent: true,
+}).extend({
+  destination_id: z.number().positive("ID do destino é obrigatório"),
 });
 
 export const insertActivityReviewSchema = createInsertSchema(activityReviews).omit({

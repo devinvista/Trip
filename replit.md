@@ -61,14 +61,15 @@ The application uses PostgreSQL with consistent snake_case naming throughout all
 6. **expense_management**: Trip creators define shared expenses with snake_case field structures.
 
 ### Recent Changes (August 2025)
+- **Activities-Destinations Linkage**: Implemented mandatory relationship between activities and destinations with foreign key constraint.
+- **Geographical Classification Inheritance**: Activities now automatically inherit geographical data (continent, region, country, etc.) from their linked destination.
+- **Destination Validation**: Activities can only be created in pre-registered, active destinations.
+- **Enhanced API Routes**: Updated activities API to validate destination relationships and provide destination management endpoints.
 - **Complete snake_case Migration**: Full architectural conversion from camelCase to snake_case.
 - **Database Consistency**: All database fields, API endpoints, and data structures use snake_case.
 - **Frontend Adaptation**: React components and state management converted to snake_case.
 - **Authentication Fix**: Login system repaired with correct password hashing for demo users.
 - **PostgreSQL Integration**: Successfully migrated from MySQL to PostgreSQL with full snake_case schema.
-- **Replit Migration**: Successfully migrated from Replit Agent to Replit environment with enhanced security.
-- **Database Security Implementation**: Comprehensive security measures to protect against unauthorized database connections.
-- **Replit Migration**: Successfully migrated from Replit Agent to Replit environment with enhanced security.
 - **Database Security Implementation**: Comprehensive security measures to protect against unauthorized database connections.
 
 ### Security Features

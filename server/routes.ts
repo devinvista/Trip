@@ -1352,6 +1352,36 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // ============ DESTINATIONS ROUTES ============
+  
+  // Get all available destinations for activities
+  app.get("/api/destinations", async (req, res) => {
+    try {
+      const destinations = await storage.getAllDestinations();
+      res.json(destinations);
+    } catch (error) {
+      console.error('Erro ao buscar destinos:', error);
+      res.status(500).json({ message: "Erro ao buscar destinos" });
+    }
+  });
+
+  // Get destination by ID
+  app.get("/api/destinations/:id", async (req, res) => {
+    try {
+      const destinationId = parseInt(req.params.id);
+      const destination = await storage.getDestinationById(destinationId);
+      
+      if (!destination) {
+        return res.status(404).json({ message: "Destino não encontrado" });
+      }
+      
+      res.json(destination);
+    } catch (error) {
+      console.error('Erro ao buscar destino:', error);
+      res.status(500).json({ message: "Erro ao buscar destino" });
+    }
+  });
+
   // ============ ACTIVITIES ROUTES ============
 
   // Get all activities with optional filters
@@ -1418,18 +1448,24 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/activities/by-location", async (req, res) => {
     try {
-      const { countryType, region, city, ...filters } = req.query;
+      const { destination_id, countryType, region, city, ...filters } = req.query;
       
       let query = db.select().from(activities).where(eq(activities.is_active, true));
       
-      if (countryType) {
-        query = query.where(eq(activities.country_type, countryType as string));
-      }
-      if (region) {
-        query = query.where(eq(activities.region, region as string));
-      }
-      if (city) {
-        query = query.where(eq(activities.city, city as string));
+      // Prefer destination_id if provided
+      if (destination_id) {
+        query = query.where(eq(activities.destination_id, parseInt(destination_id as string)));
+      } else {
+        // Fallback to location filters for compatibility
+        if (countryType) {
+          query = query.where(eq(activities.country_type, countryType as string));
+        }
+        if (region) {
+          query = query.where(eq(activities.region, region as string));
+        }
+        if (city) {
+          query = query.where(eq(activities.city, city as string));
+        }
       }
       
       // Apply other filters
@@ -1510,20 +1546,17 @@ export function registerRoutes(app: Express): Server {
         return res.redirect('/api/activities/suggestions/popular?limit=' + limit);
       }
       
-      // Extract destinations from upcoming trips
-      const upcomingDestinations = upcomingTrips.map(trip => trip.destination);
+      // Extract destination IDs from upcoming trips
+      const upcomingDestinationIds = upcomingTrips.map(trip => trip.destination_id);
       
-      // Get all activities
-      const activities = await storage.getActivities({});
-      
-      // Filter activities that match upcoming destinations
-      const matchingActivities = activities.filter(activity => {
-        const activityCity = activity.location.split(',')[0].trim().toLowerCase();
-        return upcomingDestinations.some(destination => {
-          const destCity = destination.split(',')[0].trim().toLowerCase();
-          return activityCity.includes(destCity) || destCity.includes(activityCity);
-        });
-      });
+      // Get activities that match upcoming destinations
+      const matchingActivities = await db
+        .select()
+        .from(activities)
+        .where(and(
+          eq(activities.is_active, true),
+          sql`${activities.destination_id} IN (${upcomingDestinationIds.join(',')})`
+        ));
       
       // Sort by rating and popularity
       const personalizedActivities = matchingActivities
@@ -1564,6 +1597,14 @@ export function registerRoutes(app: Express): Server {
     try {
       const creatorId = req.user!.id;
       const activityData = insertActivitySchema.parse(req.body);
+      
+      // Validate destination exists and is active
+      const { validateDestination } = await import("./activity-destination-helper");
+      const isValidDestination = await validateDestination(activityData.destination_id);
+      
+      if (!isValidDestination) {
+        return res.status(400).json({ message: "Destino inválido ou inativo" });
+      }
       
       const activity = await storage.createActivity({
         ...activityData,
