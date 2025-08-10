@@ -13,14 +13,14 @@ export const destinations = pgTable("destinations", {
   name: varchar("name", { length: 255 }).notNull(), // e.g., "Rio de Janeiro"
   state: varchar("state", { length: 255 }), // e.g., "RJ" 
   country: varchar("country", { length: 255 }).notNull(), // e.g., "Brasil"
-  countryType: varchar("country_type", { length: 50 }).notNull(), // "Nacional" or "Internacional"
+  country_type: varchar("country_type", { length: 50 }).notNull(), // "Nacional" or "Internacional"
   region: varchar("region", { length: 255 }), // e.g., "Sudeste", "Europa"
   continent: varchar("continent", { length: 100 }).notNull(), // e.g., "América do Sul", "Europa", "Ásia"
   latitude: decimal("latitude", { precision: 10, scale: 8 }),
   longitude: decimal("longitude", { precision: 11, scale: 8 }),
   timezone: varchar("timezone", { length: 50 }),
-  isActive: boolean("is_active").default(true).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  is_active: boolean("is_active").default(true).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const users = pgTable("users", {
@@ -28,20 +28,20 @@ export const users = pgTable("users", {
   username: varchar("username", { length: 255 }).notNull().unique(),
   password: text("password").notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  fullName: varchar("full_name", { length: 255 }).notNull(),
+  full_name: varchar("full_name", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 20 }).notNull(),
   bio: text("bio"),
   location: varchar("location", { length: 255 }),
-  profilePhoto: text("profile_photo"),
+  profile_photo: text("profile_photo"),
   languages: json("languages"),
   interests: json("interests"),
-  travelStyles: json("travel_styles"), // User's travel style preferences (array)
-  referredBy: varchar("referred_by", { length: 50 }), // Referral code used during registration
-  isVerified: boolean("is_verified").default(false).notNull(), // User verification status
-  verificationMethod: varchar("verification_method", { length: 50 }), // email, phone, document, etc.
-  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).default("5.00"), // Average rating from other users
-  totalRatings: integer("total_ratings").default(0).notNull(), // Total number of ratings received
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  travel_styles: json("travel_styles"), // User's travel style preferences (array)
+  referred_by: varchar("referred_by", { length: 50 }), // Referral code used during registration
+  is_verified: boolean("is_verified").default(false).notNull(), // User verification status
+  verification_method: varchar("verification_method", { length: 50 }), // email, phone, document, etc.
+  average_rating: decimal("average_rating", { precision: 3, scale: 2 }).default("5.00"), // Average rating from other users
+  total_ratings: integer("total_ratings").default(0).notNull(), // Total number of ratings received
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const trips = pgTable("trips", {
@@ -49,9 +49,9 @@ export const trips = pgTable("trips", {
   creator_id: integer("creator_id").notNull().references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),
   destination_id: integer("destination_id").notNull().references(() => destinations.id), // Reference to destinations table
-  coverImage: text("cover_image"), // URL for trip cover image
-  startDate: timestamp("start_date").notNull(),
-  endDate: timestamp("end_date").notNull(),
+  cover_image: text("cover_image"), // URL for trip cover image
+  start_date: timestamp("start_date").notNull(),
+  end_date: timestamp("end_date").notNull(),
   budget: integer("budget"), // Now optional - total estimated budget
   budget_breakdown: json("budget_breakdown"), // JSON object with expense categories
   max_participants: integer("max_participants").notNull(),
@@ -204,13 +204,13 @@ export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   email: true,
-  fullName: true,
+  full_name: true,
   phone: true,
   bio: true,
   location: true,
   languages: true,
   interests: true,
-  travelStyles: true,
+  travel_styles: true,
 }).extend({
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
 });

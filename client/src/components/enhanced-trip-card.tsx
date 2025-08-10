@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatBrazilianCurrency, formatBrazilianNumber } from '@shared/utils';
+import { getDaysUntilDate } from '@/lib/date-utils';
 
 interface Trip {
   id: number;
@@ -74,13 +75,7 @@ export function EnhancedTripCard({
     'neve': 'bg-cyan-100 text-cyan-800'
   };
 
-  const getDaysUntilTrip = () => {
-    const startDate = new Date(trip.start_date);
-    const today = new Date();
-    const diffTime = startDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
+  const getDaysUntilTrip = () => getDaysUntilDate(trip.start_date);
 
   const daysUntil = getDaysUntilTrip();
   const isUpcoming = daysUntil > 0;

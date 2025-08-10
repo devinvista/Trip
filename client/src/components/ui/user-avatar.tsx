@@ -4,9 +4,12 @@ import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
   user?: {
-    fullName: string;
+    fullName?: string;
+    full_name?: string;
     profilePhoto?: string;
+    profile_photo?: string;
     isVerified?: boolean;
+    is_verified?: boolean;
   };
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
@@ -34,6 +37,9 @@ export function UserAvatar({
   showVerificationBadge = true 
 }: UserAvatarProps) {
   const getInitials = (name: string) => {
+    if (!name || typeof name !== 'string') {
+      return '?';
+    }
     return name
       .split(' ')
       .map(word => word.charAt(0))
@@ -58,10 +64,10 @@ export function UserAvatar({
   return (
     <div className="relative inline-block">
       <Avatar className={cn(sizeClasses[size], className)}>
-        {user.profilePhoto && (
+        {(user.profile_photo || user.profilePhoto) && (
           <AvatarImage 
-            src={user.profilePhoto} 
-            alt={user.fullName}
+            src={user.profile_photo || user.profilePhoto} 
+            alt={user.full_name || user.fullName || 'Usuário'}
             className="object-cover"
           />
         )}
@@ -71,7 +77,7 @@ export function UserAvatar({
             background: 'linear-gradient(135deg, #1B2B49 0%, #41B6FF 100%)' 
           }}
         >
-          {getInitials(user.fullName)}
+          {getInitials(user.full_name || user.fullName || '')}
         </AvatarFallback>
       </Avatar>
       

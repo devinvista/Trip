@@ -5,9 +5,9 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { syncTripParticipants } from "./sync-participants.js";
-import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertLocalidadeRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
+import { insertTripSchema, insertMessageSchema, insertTripRequestSchema, insertExpenseSchema, insertExpenseSplitSchema, insertUserRatingSchema, insertDestinationRatingSchema, insertVerificationRequestSchema, insertActivitySchema, insertActivityReviewSchema, insertActivityBookingSchema, insertActivityBudgetProposalSchema, insertTripActivitySchema, insertRatingReportSchema } from "@shared/schema";
 import { db } from "./db";
-import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, localidadeRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
+import { activityReviews, activities, activityBudgetProposalVotes, users, userRatings, destinationRatings, ratingReports, activityRatingHelpfulVotes, referralCodes, interestList } from "@shared/schema";
 import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { z } from "zod";
 
@@ -58,12 +58,12 @@ export function registerRoutes(app: Express): Server {
   // Trip routes
   app.get("/api/trips", async (req, res) => {
     try {
-      const { destination, startDate, endDate, budget, travelStyle } = req.query;
+      const { destination, start_date, end_date, budget, travelStyle } = req.query;
       const filters: any = {};
       
       if (destination) filters.destination = destination as string;
-      if (startDate) filters.startDate = new Date(startDate as string);
-      if (endDate) filters.endDate = new Date(endDate as string);
+      if (start_date) filters.start_date = new Date(start_date as string);
+      if (end_date) filters.end_date = new Date(end_date as string);
       if (budget) filters.budget = parseInt(budget as string);
       if (travelStyle) filters.travelStyle = travelStyle as string;
       
@@ -86,20 +86,20 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/trips/:id", async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
-      const trip = await storage.getTripById(tripId);
+      const trip_id = parseInt(req.params.id);
+      const trip = await storage.getTripById(trip_id);
       
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
       const creator = await storage.getUserById(trip.creator_id);
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       
       // Check if user has a pending request
       let userRequest = null;
       if (req.isAuthenticated() && req.user) {
-        const allRequests = await storage.getTripRequests(tripId);
+        const allRequests = await storage.getTripRequests(trip_id);
         userRequest = allRequests.find(r => r.user_id === req.user!.id && r.status === 'pending');
       }
       
@@ -135,18 +135,18 @@ export function registerRoutes(app: Express): Server {
   // Update a trip (only creator can update)
   app.patch("/api/trips/:id", requireAuth, async (req: any, res: any) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       const updates = req.body;
 
       // Get the trip to verify ownership
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
 
       // Check if user is creator or accepted participant
       const isCreator = trip.creator_id === req.user.id;
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       const isAcceptedParticipant = participants.some(
         (p: any) => p.user_id === req.user.id && p.status === 'accepted'
       );
@@ -162,7 +162,7 @@ export function registerRoutes(app: Express): Server {
         });
       }
 
-      const updatedTrip = await storage.updateTrip(tripId, updates);
+      const updatedTrip = await storage.updateTrip(trip_id, updates);
       if (!updatedTrip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -179,10 +179,10 @@ export function registerRoutes(app: Express): Server {
   // Delete a trip (only creator can delete, and only if no other participants)
   app.delete("/api/trips/:id", requireAuth, async (req: any, res: any) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
 
       // Get the trip to verify ownership and participants
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -197,7 +197,7 @@ export function registerRoutes(app: Express): Server {
         });
       }
 
-      const deleted = await storage.deleteTrip(tripId);
+      const deleted = await storage.deleteTrip(trip_id);
       if (!deleted) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -243,14 +243,14 @@ export function registerRoutes(app: Express): Server {
   // Update trip cover image
   app.patch("/api/trips/:id/cover-image", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       const { cover_image } = req.body;
       
       if (!cover_image) {
         return res.status(400).json({ message: "URL da imagem é obrigatória" });
       }
       
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -260,7 +260,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(403).json({ message: "Apenas o criador da viagem pode alterar a imagem" });
       }
       
-      const updatedTrip = await storage.updateTrip(tripId, { coverImage: cover_image });
+      const updatedTrip = await storage.updateTrip(trip_id, { cover_image: cover_image });
       res.json(updatedTrip);
     } catch (error) {
       console.error('Erro ao atualizar imagem da viagem:', error);
@@ -271,14 +271,14 @@ export function registerRoutes(app: Express): Server {
   // Update trip budget
   app.patch("/api/trips/:id/budget", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       const { budget, budget_breakdown } = req.body;
       
       if (!budget || budget <= 0) {
         return res.status(400).json({ message: "Orçamento deve ser um valor positivo" });
       }
       
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -288,7 +288,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(403).json({ message: "Apenas o criador da viagem pode alterar o orçamento" });
       }
       
-      const updatedTrip = await storage.updateTrip(tripId, { budget, budget_breakdown });
+      const updatedTrip = await storage.updateTrip(trip_id, { budget, budget_breakdown });
       res.json(updatedTrip);
     } catch (error) {
       console.error('Erro ao atualizar orçamento da viagem:', error);
@@ -300,7 +300,7 @@ export function registerRoutes(app: Express): Server {
   app.post('/api/admin/fix-creators-participants', requireAuth, async (req, res) => {
     try {
       // Only allow verified users to run this fix
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: 'Acesso negado. Apenas usuários verificados podem executar esta correção.' });
       }
 
@@ -319,12 +319,12 @@ export function registerRoutes(app: Express): Server {
   // Trip request routes
   app.post("/api/trips/:id/request", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       
       // Parse only the message from request body
       const { message } = req.body;
       
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -334,7 +334,7 @@ export function registerRoutes(app: Express): Server {
       }
       
       // Check if user already has a pending request
-      const existingRequests = await storage.getTripRequests(tripId);
+      const existingRequests = await storage.getTripRequests(trip_id);
       const userRequest = existingRequests.find(r => r.user_id === req.user!.id);
       if (userRequest && userRequest.status === 'pending') {
         return res.status(400).json({ message: "Você já tem uma solicitação pendente para esta viagem" });
@@ -342,8 +342,8 @@ export function registerRoutes(app: Express): Server {
       
       const request = await storage.createTripRequest({ 
         message: message || "",
-        tripId, 
-        userId: req.user!.id 
+        trip_id, 
+        user_id: req.user!.id 
       });
       
       res.status(201).json(request);
@@ -355,14 +355,14 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/trips/:id/requests", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
-      const trip = await storage.getTripById(tripId);
+      const trip_id = parseInt(req.params.id);
+      const trip = await storage.getTripById(trip_id);
       
       if (!trip || trip.creator_id !== req.user!.id) {
         return res.status(403).json({ message: "Acesso negado" });
       }
       
-      const requests = await storage.getTripRequests(tripId);
+      const requests = await storage.getTripRequests(trip_id);
       res.json(requests);
     } catch (error) {
       console.error('Erro ao buscar solicitações:', error);
@@ -402,14 +402,14 @@ export function registerRoutes(app: Express): Server {
   // Get trip participants
   app.get("/api/trips/:id/participants", async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       res.json(participants);
     } catch (error) {
       console.error('Erro ao buscar participantes:', error);
@@ -420,24 +420,24 @@ export function registerRoutes(app: Express): Server {
   // Update trip planned activities
   app.patch("/api/trips/:id/activities", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       const { planned_activities } = req.body;
       
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
       // Check if user is creator or participant
       const isCreator = trip.creator_id === req.user!.id;
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
       
       if (!isCreator && !isParticipant) {
         return res.status(403).json({ message: "Você não tem permissão para editar as atividades desta viagem" });
       }
       
-      const updatedTrip = await storage.updateTripActivities(tripId, planned_activities);
+      const updatedTrip = await storage.updateTripActivities(trip_id, planned_activities);
       res.json(updatedTrip);
     } catch (error) {
       console.error('Erro ao atualizar atividades:', error);
@@ -448,10 +448,10 @@ export function registerRoutes(app: Express): Server {
   // Remove participant from trip
   app.delete("/api/trips/:id/participants/:userId", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
-      const userIdToRemove = parseInt(req.params.user_id);
+      const trip_id = parseInt(req.params.id);
+      const userIdToRemove = parseInt(req.params.userId);
       
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
@@ -465,7 +465,7 @@ export function registerRoutes(app: Express): Server {
       }
       
       // Verificar se o usuário é realmente um participante
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       const participant = participants.find(p => p.user_id === userIdToRemove && p.status === 'accepted');
       
       if (!participant) {
@@ -473,13 +473,13 @@ export function registerRoutes(app: Express): Server {
       }
       
       // Remover participante
-      await storage.removeTripParticipant(tripId, userIdToRemove);
+      await storage.removeTripParticipant(trip_id, userIdToRemove);
       
       // Atualizar contador de participantes
-      const updatedTrip = await storage.getTripById(tripId);
+      const updatedTrip = await storage.getTripById(trip_id);
       if (updatedTrip && updatedTrip.status !== 'cancelled') {
         // Sync trip participant count based on actual accepted participants
-        await syncTripParticipants(tripId);
+        await syncTripParticipants(trip_id);
       }
       
       res.json({ 
@@ -495,20 +495,20 @@ export function registerRoutes(app: Express): Server {
   // Message routes
   app.get("/api/trips/:id/messages", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
-      console.log(`📨 Buscando mensagens para viagem ${tripId} pelo usuário ${req.user!.id}`);
+      const trip_id = parseInt(req.params.id);
+      console.log(`📨 Buscando mensagens para viagem ${trip_id} pelo usuário ${req.user!.id}`);
       
       // Check if user is participant or creator of the trip
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
-        console.log(`❌ Viagem ${tripId} não encontrada`);
+        console.log(`❌ Viagem ${trip_id} não encontrada`);
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
       console.log(`✅ Viagem encontrada: ${trip.title} (criador: ${trip.creator_id})`);
       
-      const participants = await storage.getTripParticipants(tripId);
-      console.log(`👥 Participantes da viagem:`, participants.map(p => ({ userId: p.user_id, status: p.status })));
+      const participants = await storage.getTripParticipants(trip_id);
+      console.log(`👥 Participantes da viagem:`, participants.map(p => ({ user_id: p.user_id, status: p.status })));
       
       const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
       const isCreator = trip.creator_id === req.user!.id;
@@ -520,7 +520,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(403).json({ message: "Acesso negado" });
       }
       
-      const messages = await storage.getTripMessages(tripId);
+      const messages = await storage.getTripMessages(trip_id);
       console.log(`✅ ${messages.length} mensagens encontradas`);
       res.json(messages);
     } catch (error) {
@@ -531,16 +531,16 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/trips/:id/messages", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       const messageData = insertMessageSchema.parse(req.body);
       
       // Check if user is participant or creator of the trip
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       const isParticipant = participants.some(p => p.user_id === req.user!.id);
       const isCreator = trip.creator_id === req.user!.id;
       
@@ -550,7 +550,7 @@ export function registerRoutes(app: Express): Server {
       
       const message = await storage.createMessage({ 
         ...messageData, 
-        tripId,
+        trip_id,
         senderId: req.user!.id 
       });
       
@@ -604,17 +604,17 @@ export function registerRoutes(app: Express): Server {
   // Expense routes
   app.post("/api/trips/:id/expenses", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       console.log('Dados recebidos para criação de despesa:', req.body);
       console.log('Usuário autenticado:', req.user);
       
       const expenseData = insertExpenseSchema.parse({
         ...req.body,
-        trip_id: tripId
+        tripId: trip_id
       });
       
       // Verify user is a participant of the trip
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
       
       if (!isParticipant) {
@@ -641,10 +641,10 @@ export function registerRoutes(app: Express): Server {
       console.log('Split participants:', splitParticipants);
       console.log('Split amount per person:', splitAmount);
       
-      const splitData = splitParticipants.map((userId: number) => ({
-        user_id: userId,
+      const splitData = splitParticipants.map((user_id: number) => ({
+        user_id: user_id,
         amount: splitAmount,
-        paid: userId === req.user!.id // Payer's split is automatically marked as paid
+        paid: user_id === req.user!.id // Payer's split is automatically marked as paid
       }));
       
       console.log('Split data to create:', splitData);
@@ -660,17 +660,17 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/trips/:id/expenses", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       
       // Verify user is a participant of the trip
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
       
       if (!isParticipant) {
         return res.status(403).json({ message: "Acesso negado" });
       }
       
-      const expenses = await storage.getTripExpenses(tripId);
+      const expenses = await storage.getTripExpenses(trip_id);
       res.json(expenses);
     } catch (error) {
       console.error('Erro ao buscar despesas:', error);
@@ -680,15 +680,15 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/trips/:id/balances", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       
       // Verify user is a participant or creator of the trip
-      const trip = await storage.getTripById(tripId);
+      const trip = await storage.getTripById(trip_id);
       if (!trip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
       
-      const participants = await storage.getTripParticipants(tripId);
+      const participants = await storage.getTripParticipants(trip_id);
       const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
       const isCreator = trip.creator_id === req.user!.id;
       
@@ -696,7 +696,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(403).json({ message: "Acesso negado" });
       }
       
-      const balances = await storage.getTripBalances(tripId);
+      const balances = await storage.getTripBalances(trip_id);
       
       // Set cache control headers to prevent caching
       res.set({
@@ -732,11 +732,11 @@ export function registerRoutes(app: Express): Server {
   // Profile routes
   app.put("/api/user/profile", requireAuth, async (req, res) => {
     try {
-      const { fullName, email, phone, bio, location, languages, interests, travelStyle, travelStyles } = req.body;
+      const { full_name, email, phone, bio, location, languages, interests, travelStyle, travelStyles } = req.body;
       
       console.log('🔍 Dados recebidos para atualização de perfil:', {
-        userId: req.user!.id,
-        fullName,
+        user_id: req.user!.id,
+        full_name,
         email,
         phone,
         bio,
@@ -748,7 +748,7 @@ export function registerRoutes(app: Express): Server {
       
       // Prepare update data with proper field names
       const updateData = {
-        fullName,
+        full_name,
         email,
         phone: phone.replace(/\D/g, ''), // Remove formatting from phone
         bio,
@@ -784,7 +784,7 @@ export function registerRoutes(app: Express): Server {
       
       const totalTrips = createdTrips.length + participatingTrips.length;
       const completedTrips = [...createdTrips, ...participatingTrips].filter(trip => 
-        trip.status === 'completed' || new Date(trip.endDate) < new Date()
+        trip.status === 'completed' || new Date(trip.end_date) < new Date()
       ).length;
       
       // Get travel partners (unique users from all trips)
@@ -804,7 +804,7 @@ export function registerRoutes(app: Express): Server {
         totalTrips,
         completedTrips,
         travelPartners: travelPartners.size,
-        averageRating: "5.0" // Mock rating for now
+        average_rating: "5.0" // Mock rating for now
       };
       
       res.json(stats);
@@ -825,14 +825,14 @@ export function registerRoutes(app: Express): Server {
       // Find all users who were referred by this user's referral code (excluding self-referrals)
       const referredUsers = await db.select({
         id: users.id,
-        fullName: users.fullName,
+        full_name: users.full_name,
         email: users.email,
-        createdAt: users.createdAt,
-        isVerified: users.isVerified
+        created_at: users.created_at,
+        is_verified: users.is_verified
       })
       .from(users)
       .where(and(
-        eq(users.referredBy, referralCode),
+        eq(users.referred_by, referralCode),
         ne(users.id, userId) // Exclude self-referrals
       ));
       
@@ -880,7 +880,7 @@ export function registerRoutes(app: Express): Server {
       
       res.json({ 
         valid: true, 
-        referrerName: user.fullName,
+        referrerName: user.full_name,
         referrerUsername: user.username
       });
     } catch (error) {
@@ -896,7 +896,7 @@ export function registerRoutes(app: Express): Server {
       const ratings = await storage.getUserRatings(userId);
       
       // Filter out hidden ratings
-      const visibleRatings = ratings.filter(rating => !rating.isHidden);
+      const visibleRatings = ratings.filter(rating => !rating.is_hidden);
       
       res.json(visibleRatings);
     } catch (error) {
@@ -907,16 +907,16 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/users/:id/ratings", requireAuth, async (req, res) => {
     try {
-      const ratedUserId = parseInt(req.params.id);
-      const raterUserId = req.user!.id;
+      const rated_user_id = parseInt(req.params.id);
+      const rater_user_id = req.user!.id;
       
       // Only verified users can rate
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: "Apenas usuários verificados podem avaliar" });
       }
       
       // Prevent self-rating
-      if (ratedUserId === raterUserId) {
+      if (rated_user_id === rater_user_id) {
         return res.status(400).json({ message: "Não é possível avaliar a si mesmo" });
       }
       
@@ -925,8 +925,8 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(userRatings)
         .where(and(
-          eq(userRatings.ratedUserId, ratedUserId),
-          eq(userRatings.raterUserId, raterUserId)
+          eq(userRatings.rated_user_id, rated_user_id),
+          eq(userRatings.rater_user_id, rater_user_id)
         ))
         .limit(1);
       
@@ -937,8 +937,8 @@ export function registerRoutes(app: Express): Server {
       const ratingData = insertUserRatingSchema.parse(req.body);
       const rating = await storage.createUserRating({
         ...ratingData,
-        ratedUserId,
-        raterUserId
+        rated_user_id,
+        rater_user_id
       });
       
       res.status(201).json(rating);
@@ -949,13 +949,13 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Edit user rating (only within 7 days)
-  app.put("/api/users/:id/ratings/:ratingId", requireAuth, async (req, res) => {
+  app.put("/api/users/:id/ratings/:rating_id", requireAuth, async (req, res) => {
     try {
-      const ratingId = parseInt(req.params.ratingId);
+      const rating_id = parseInt(req.params.rating_id);
       const userId = req.user!.id;
       
       // Only verified users can edit ratings
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: "Apenas usuários verificados podem editar avaliações" });
       }
       
@@ -964,8 +964,8 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(userRatings)
         .where(and(
-          eq(userRatings.id, ratingId),
-          eq(userRatings.raterUserId, userId)
+          eq(userRatings.id, rating_id),
+          eq(userRatings.rater_user_id, userId)
         ))
         .limit(1);
       
@@ -976,7 +976,7 @@ export function registerRoutes(app: Express): Server {
       const rating = existingRating[0];
       
       // Check if rating is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - rating.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
       }
@@ -987,9 +987,9 @@ export function registerRoutes(app: Express): Server {
         .update(userRatings)
         .set({
           ...ratingData,
-          updatedAt: new Date()
+          updated_at: new Date()
         })
-        .where(eq(userRatings.id, ratingId));
+        .where(eq(userRatings.id, rating_id));
       
       res.json({ message: "Avaliação atualizada com sucesso" });
     } catch (error) {
@@ -999,9 +999,9 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Delete user rating (only within 7 days)
-  app.delete("/api/users/:id/ratings/:ratingId", requireAuth, async (req, res) => {
+  app.delete("/api/users/:id/ratings/:rating_id", requireAuth, async (req, res) => {
     try {
-      const ratingId = parseInt(req.params.ratingId);
+      const rating_id = parseInt(req.params.rating_id);
       const userId = req.user!.id;
       
       // Check if rating exists and belongs to user
@@ -1009,8 +1009,8 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(userRatings)
         .where(and(
-          eq(userRatings.id, ratingId),
-          eq(userRatings.raterUserId, userId)
+          eq(userRatings.id, rating_id),
+          eq(userRatings.rater_user_id, userId)
         ))
         .limit(1);
       
@@ -1021,14 +1021,14 @@ export function registerRoutes(app: Express): Server {
       const rating = existingRating[0];
       
       // Check if rating is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - rating.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
       }
       
       await db
         .delete(userRatings)
-        .where(eq(userRatings.id, ratingId));
+        .where(eq(userRatings.id, rating_id));
       
       res.json({ message: "Avaliação excluída com sucesso" });
     } catch (error) {
@@ -1044,7 +1044,7 @@ export function registerRoutes(app: Express): Server {
       const ratings = await storage.getDestinationRatings(destination);
       
       // Filter out hidden ratings
-      const visibleRatings = ratings.filter(rating => !rating.isHidden);
+      const visibleRatings = ratings.filter(rating => !rating.is_hidden);
       
       res.json(visibleRatings);
     } catch (error) {
@@ -1059,7 +1059,7 @@ export function registerRoutes(app: Express): Server {
       const userId = req.user!.id;
       
       // Only verified users can rate
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: "Apenas usuários verificados podem avaliar destinos" });
       }
       
@@ -1092,13 +1092,13 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Edit destination rating (only within 7 days)
-  app.put("/api/destinations/:destination/ratings/:ratingId", requireAuth, async (req, res) => {
+  app.put("/api/destinations/:destination/ratings/:rating_id", requireAuth, async (req, res) => {
     try {
-      const ratingId = parseInt(req.params.ratingId);
+      const rating_id = parseInt(req.params.rating_id);
       const userId = req.user!.id;
       
       // Only verified users can edit ratings
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: "Apenas usuários verificados podem editar avaliações" });
       }
       
@@ -1107,7 +1107,7 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(destinationRatings)
         .where(and(
-          eq(destinationRatings.id, ratingId),
+          eq(destinationRatings.id, rating_id),
           eq(destinationRatings.user_id, userId)
         ))
         .limit(1);
@@ -1119,7 +1119,7 @@ export function registerRoutes(app: Express): Server {
       const rating = existingRating[0];
       
       // Check if rating is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - rating.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
       }
@@ -1130,9 +1130,9 @@ export function registerRoutes(app: Express): Server {
         .update(destinationRatings)
         .set({
           ...ratingData,
-          updatedAt: new Date()
+          updated_at: new Date()
         })
-        .where(eq(destinationRatings.id, ratingId));
+        .where(eq(destinationRatings.id, rating_id));
       
       res.json({ message: "Avaliação atualizada com sucesso" });
     } catch (error) {
@@ -1142,9 +1142,9 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Delete destination rating (only within 7 days)
-  app.delete("/api/destinations/:destination/ratings/:ratingId", requireAuth, async (req, res) => {
+  app.delete("/api/destinations/:destination/ratings/:rating_id", requireAuth, async (req, res) => {
     try {
-      const ratingId = parseInt(req.params.ratingId);
+      const rating_id = parseInt(req.params.rating_id);
       const userId = req.user!.id;
       
       // Check if rating exists and belongs to user
@@ -1152,7 +1152,7 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(destinationRatings)
         .where(and(
-          eq(destinationRatings.id, ratingId),
+          eq(destinationRatings.id, rating_id),
           eq(destinationRatings.user_id, userId)
         ))
         .limit(1);
@@ -1164,14 +1164,14 @@ export function registerRoutes(app: Express): Server {
       const rating = existingRating[0];
       
       // Check if rating is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - rating.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - rating.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
       }
       
       await db
         .delete(destinationRatings)
-        .where(eq(destinationRatings.id, ratingId));
+        .where(eq(destinationRatings.id, rating_id));
       
       res.json({ message: "Avaliação excluída com sucesso" });
     } catch (error) {
@@ -1249,7 +1249,7 @@ export function registerRoutes(app: Express): Server {
   // Report a rating
   app.post("/api/ratings/report", requireAuth, async (req, res) => {
     try {
-      const reporterId = req.user!.id;
+      const reporter_id = req.user!.id;
       const reportData = insertRatingReportSchema.parse(req.body);
       
       // Check if user already reported this rating
@@ -1257,9 +1257,9 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(ratingReports)
         .where(and(
-          eq(ratingReports.reporterId, reporterId),
-          eq(ratingReports.ratingType, reportData.ratingType),
-          eq(ratingReports.ratingId, reportData.ratingId)
+          eq(ratingReports.reporter_id, reporter_id),
+          eq(ratingReports.rating_type, reportData.rating_type),
+          eq(ratingReports.rating_id, reportData.rating_id)
         ))
         .limit(1);
       
@@ -1269,79 +1269,79 @@ export function registerRoutes(app: Express): Server {
       
       await db.insert(ratingReports).values({
         ...reportData,
-        reporterId
+        reporter_id
       });
       
       console.log('📝 Report de avaliação criado:', {
-        reporterId,
-        ratingType: reportData.ratingType,
-        ratingId: reportData.ratingId,
+        reporter_id,
+        rating_type: reportData.rating_type,
+        rating_id: reportData.rating_id,
         reason: reportData.reason
       });
       
       // Increment report count on the rating
-      if (reportData.ratingType === 'user') {
+      if (reportData.rating_type === 'user') {
         await db
           .update(userRatings)
           .set({
-            reportCount: sql`${userRatings.reportCount} + 1`
+            report_count: sql`${userRatings.report_count} + 1`
           })
-          .where(eq(userRatings.id, reportData.ratingId));
+          .where(eq(userRatings.id, reportData.rating_id));
           
         // Auto-hide if report count >= 5
         const updatedRating = await db
           .select()
           .from(userRatings)
-          .where(eq(userRatings.id, reportData.ratingId))
+          .where(eq(userRatings.id, reportData.rating_id))
           .limit(1);
           
-        if (updatedRating.length > 0 && updatedRating[0].reportCount >= 5) {
+        if (updatedRating.length > 0 && updatedRating[0].report_count >= 5) {
           await db
             .update(userRatings)
-            .set({ isHidden: true })
-            .where(eq(userRatings.id, reportData.ratingId));
+            .set({ is_hidden: true })
+            .where(eq(userRatings.id, reportData.rating_id));
         }
-      } else if (reportData.ratingType === 'destination') {
+      } else if (reportData.rating_type === 'destination') {
         await db
           .update(destinationRatings)
           .set({
-            reportCount: sql`${destinationRatings.reportCount} + 1`
+            report_count: sql`${destinationRatings.report_count} + 1`
           })
-          .where(eq(destinationRatings.id, reportData.ratingId));
+          .where(eq(destinationRatings.id, reportData.rating_id));
           
         // Auto-hide if report count >= 5
         const updatedRating = await db
           .select()
           .from(destinationRatings)
-          .where(eq(destinationRatings.id, reportData.ratingId))
+          .where(eq(destinationRatings.id, reportData.rating_id))
           .limit(1);
           
-        if (updatedRating.length > 0 && updatedRating[0].reportCount >= 5) {
+        if (updatedRating.length > 0 && updatedRating[0].report_count >= 5) {
           await db
             .update(destinationRatings)
-            .set({ isHidden: true })
-            .where(eq(destinationRatings.id, reportData.ratingId));
+            .set({ is_hidden: true })
+            .where(eq(destinationRatings.id, reportData.rating_id));
         }
-      } else if (reportData.ratingType === 'activity') {
+      } else if (reportData.rating_type === 'activity') {
         await db
           .update(activityReviews)
           .set({
-            reportCount: sql`${activityReviews.reportCount} + 1`
+            report_count: sql`${activityReviews.report_count} + 1`
           })
-          .where(eq(activityReviews.id, reportData.ratingId));
+          .where(eq(activityReviews.id, reportData.rating_id));
           
         // Auto-hide if report count >= 5
         const updatedRating = await db
           .select()
           .from(activityReviews)
-          .where(eq(activityReviews.id, reportData.ratingId))
+          .where(eq(activityReviews.id, reportData.rating_id))
           .limit(1);
           
-        if (updatedRating.length > 0 && updatedRating[0].reportCount >= 5) {
+        if (updatedRating.length > 0 && updatedRating[0].report_count >= 5) {
           await db
             .update(activityReviews)
-            .set({ isHidden: true })
-            .where(eq(activityReviews.id, reportData.ratingId));
+            .set({ is_hidden: true })
+            .where(eq(activityReviews.id, reportData.rating_id));
         }
       }
       
@@ -1500,7 +1500,7 @@ export function registerRoutes(app: Express): Server {
       const allTrips = [...createdTrips, ...participatingTrips];
       
       const upcomingTrips = allTrips.filter(trip => {
-        const tripDate = new Date(trip.startDate);
+        const tripDate = new Date(trip.start_date);
         const now = new Date();
         return tripDate > now;
       });
@@ -1529,7 +1529,7 @@ export function registerRoutes(app: Express): Server {
       const personalizedActivities = matchingActivities
         .map(activity => ({
           ...activity,
-          popularityScore: Number(activity.averageRating || 0) * Math.log((activity.totalRatings || 0) + 1)
+          popularityScore: Number(activity.average_rating || 0) * Math.log((activity.total_ratings || 0) + 1)
         }))
         .sort((a, b) => b.popularityScore - a.popularityScore)
         .slice(0, limit)
@@ -1545,8 +1545,8 @@ export function registerRoutes(app: Express): Server {
   // Get single activity
   app.get("/api/activities/:id", async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
-      const activity = await storage.getActivity(activityId);
+      const activity_id = parseInt(req.params.id);
+      const activity = await storage.getActivity(activity_id);
       
       if (!activity) {
         return res.status(404).json({ message: "Atividade não encontrada" });
@@ -1567,7 +1567,7 @@ export function registerRoutes(app: Express): Server {
       
       const activity = await storage.createActivity({
         ...activityData,
-        createdById: creatorId
+        created_by_id: creatorId
       });
       
       res.status(201).json(activity);
@@ -1580,21 +1580,21 @@ export function registerRoutes(app: Express): Server {
   // Update activity (requires authentication and ownership)
   app.put("/api/activities/:id", requireAuth, async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
+      const activity_id = parseInt(req.params.id);
       const userId = req.user!.id;
       
       // Check if user owns the activity
-      const activity = await storage.getActivity(activityId);
+      const activity = await storage.getActivity(activity_id);
       if (!activity) {
         return res.status(404).json({ message: "Atividade não encontrada" });
       }
       
-      if (activity.createdById !== userId) {
+      if (activity.created_by_id !== userId) {
         return res.status(403).json({ message: "Você não tem permissão para editar esta atividade" });
       }
       
       const updates = req.body;
-      const updatedActivity = await storage.updateActivity(activityId, updates);
+      const updatedActivity = await storage.updateActivity(activity_id, updates);
       
       if (!updatedActivity) {
         return res.status(404).json({ message: "Atividade não encontrada" });
@@ -1610,20 +1610,20 @@ export function registerRoutes(app: Express): Server {
   // Delete activity (requires authentication and ownership)
   app.delete("/api/activities/:id", requireAuth, async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
+      const activity_id = parseInt(req.params.id);
       const userId = req.user!.id;
       
       // Check if user owns the activity
-      const activity = await storage.getActivity(activityId);
+      const activity = await storage.getActivity(activity_id);
       if (!activity) {
         return res.status(404).json({ message: "Atividade não encontrada" });
       }
       
-      if (activity.createdById !== userId) {
+      if (activity.created_by_id !== userId) {
         return res.status(403).json({ message: "Você não tem permissão para deletar esta atividade" });
       }
       
-      const deleted = await storage.deleteActivity(activityId);
+      const deleted = await storage.deleteActivity(activity_id);
       if (!deleted) {
         return res.status(404).json({ message: "Atividade não encontrada" });
       }
@@ -1640,39 +1640,39 @@ export function registerRoutes(app: Express): Server {
   // Get reviews for an activity (filter out hidden reviews)
   app.get("/api/activities/:id/reviews", async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
+      const activity_id = parseInt(req.params.id);
       const limit = parseInt(req.query.limit as string) || 10;
       const offset = parseInt(req.query.offset as string) || 0;
 
       const reviews = await db
         .select({
           id: activityReviews.id,
-          activityId: activityReviews.activityId,
+          activity_id: activityReviews.activity_id,
           rating: activityReviews.rating,
           review: activityReviews.review,
           photos: activityReviews.photos,
-          visitDate: activityReviews.visitDate,
-          helpfulVotes: activityReviews.helpfulVotes,
-          isVerified: activityReviews.isVerified,
-          isHidden: activityReviews.isHidden,
-          reportCount: activityReviews.reportCount,
-          createdAt: activityReviews.createdAt,
+          visit_date: activityReviews.visit_date,
+          helpful_votes: activityReviews.helpful_votes,
+          is_verified: activityReviews.is_verified,
+          is_hidden: activityReviews.is_hidden,
+          report_count: activityReviews.report_count,
+          created_at: activityReviews.created_at,
           user: {
             id: users.id,
             username: users.username,
-            fullName: users.fullName,
-            profilePhoto: users.profilePhoto,
-            averageRating: users.averageRating,
-            isVerified: users.isVerified
+            full_name: users.full_name,
+            profile_photo: users.profile_photo,
+            average_rating: users.average_rating,
+            is_verified: users.is_verified
           }
         })
         .from(activityReviews)
         .innerJoin(users, eq(activityReviews.user_id, users.id))
         .where(and(
-          eq(activityReviews.activityId, activityId),
-          eq(activityReviews.isHidden, false)
+          eq(activityReviews.activity_id, activity_id),
+          eq(activityReviews.is_hidden, false)
         ))
-        .orderBy(desc(activityReviews.createdAt))
+        .orderBy(desc(activityReviews.created_at))
         .limit(limit)
         .offset(offset);
 
@@ -1686,15 +1686,15 @@ export function registerRoutes(app: Express): Server {
   // Create a new activity review (enhanced with verification)
   app.post("/api/activities/:id/reviews", requireAuth, async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
+      const activity_id = parseInt(req.params.id);
       const userId = req.user!.id;
       
       // Only verified users can create reviews
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: "Apenas usuários verificados podem criar avaliações" });
       }
       
-      console.log('🔍 Creating review - Activity ID:', activityId, 'User ID:', userId);
+      console.log('🔍 Creating review - Activity ID:', activity_id, 'User ID:', userId);
       console.log('🔍 Request body:', req.body);
       console.log('🔍 User from req:', req.user);
       console.log('🔍 Authentication status:', req.isAuthenticated());
@@ -1702,7 +1702,7 @@ export function registerRoutes(app: Express): Server {
       // Validate request body
       const validatedData = insertActivityReviewSchema.parse({
         ...req.body,
-        activityId: activityId
+        activity_id: activity_id
       });
       
       console.log('🔍 Validated data:', validatedData);
@@ -1712,14 +1712,14 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(activityReviews)
         .where(and(
-          eq(activityReviews.activityId, activityId),
+          eq(activityReviews.activity_id, activity_id),
           eq(activityReviews.user_id, userId)
         ))
         .limit(1);
 
       if (existingReview.length > 0) {
         // Check if review is within 7 days edit window
-        const daysSinceCreation = Math.floor((Date.now() - existingReview[0].createdAt.getTime()) / (1000 * 60 * 60 * 24));
+        const daysSinceCreation = Math.floor((Date.now() - existingReview[0].created_at.getTime()) / (1000 * 60 * 60 * 24));
         if (daysSinceCreation > 7) {
           return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
         }
@@ -1730,8 +1730,8 @@ export function registerRoutes(app: Express): Server {
             rating: validatedData.rating,
             review: validatedData.review,
             photos: validatedData.photos || [],
-            visitDate: validatedData.visitDate || null,
-            updatedAt: new Date()
+            visit_date: validatedData.visit_date || null,
+            updated_at: new Date()
           })
           .where(eq(activityReviews.id, existingReview[0].id));
         
@@ -1741,36 +1741,36 @@ export function registerRoutes(app: Express): Server {
         const allReviews = await db
           .select({ rating: activityReviews.rating })
           .from(activityReviews)
-          .where(eq(activityReviews.activityId, activityId));
+          .where(eq(activityReviews.activity_id, activity_id));
 
-        const averageRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+        const average_rating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
 
         await db.update(activities)
           .set({
-            averageRating: averageRating.toFixed(2),
-            totalRatings: allReviews.length
+            average_rating: average_rating.toFixed(2),
+            total_ratings: allReviews.length
           })
-          .where(eq(activities.id, activityId));
+          .where(eq(activities.id, activity_id));
 
         // Return the updated review with user data
         const reviewWithUser = await db
           .select({
             id: activityReviews.id,
-            activityId: activityReviews.activityId,
+            activity_id: activityReviews.activity_id,
             rating: activityReviews.rating,
             review: activityReviews.review,
             photos: activityReviews.photos,
-            visitDate: activityReviews.visitDate,
-            helpfulVotes: activityReviews.helpfulVotes,
-            isVerified: activityReviews.isVerified,
-            createdAt: activityReviews.createdAt,
+            visit_date: activityReviews.visit_date,
+            helpful_votes: activityReviews.helpful_votes,
+            is_verified: activityReviews.is_verified,
+            created_at: activityReviews.created_at,
             user: {
               id: users.id,
               username: users.username,
-              fullName: users.fullName,
-              profilePhoto: users.profilePhoto,
-              averageRating: users.averageRating,
-              isVerified: users.isVerified
+              full_name: users.full_name,
+              profile_photo: users.profile_photo,
+              average_rating: users.average_rating,
+              is_verified: users.is_verified
             }
           })
           .from(activityReviews)
@@ -1783,12 +1783,12 @@ export function registerRoutes(app: Express): Server {
 
       // Create the review
       const insertResult = await db.insert(activityReviews).values({
-        activityId,
+        activity_id,
         userId,
         rating: validatedData.rating,
         review: validatedData.review,
         photos: validatedData.photos || [],
-        visitDate: validatedData.visitDate || null
+        visit_date: validatedData.visit_date || null
       });
       
       // Get the inserted review ID
@@ -1798,36 +1798,36 @@ export function registerRoutes(app: Express): Server {
       const allReviews = await db
         .select({ rating: activityReviews.rating })
         .from(activityReviews)
-        .where(eq(activityReviews.activityId, activityId));
+        .where(eq(activityReviews.activity_id, activity_id));
 
-      const averageRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
+      const average_rating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length;
 
       await db.update(activities)
         .set({
-          averageRating: averageRating.toFixed(2),
-          totalRatings: allReviews.length
+          average_rating: average_rating.toFixed(2),
+          total_ratings: allReviews.length
         })
-        .where(eq(activities.id, activityId));
+        .where(eq(activities.id, activity_id));
 
       // Return the new review with user data
       const reviewWithUser = await db
         .select({
           id: activityReviews.id,
-          activityId: activityReviews.activityId,
+          activity_id: activityReviews.activity_id,
           rating: activityReviews.rating,
           review: activityReviews.review,
           photos: activityReviews.photos,
-          visitDate: activityReviews.visitDate,
-          helpfulVotes: activityReviews.helpfulVotes,
-          isVerified: activityReviews.isVerified,
-          createdAt: activityReviews.createdAt,
+          visit_date: activityReviews.visit_date,
+          helpful_votes: activityReviews.helpful_votes,
+          is_verified: activityReviews.is_verified,
+          created_at: activityReviews.created_at,
           user: {
             id: users.id,
             username: users.username,
-            fullName: users.fullName,
-            profilePhoto: users.profilePhoto,
-            averageRating: users.averageRating,
-            isVerified: users.isVerified
+            full_name: users.full_name,
+            profile_photo: users.profile_photo,
+            average_rating: users.average_rating,
+            is_verified: users.is_verified
           }
         })
         .from(activityReviews)
@@ -1852,7 +1852,7 @@ export function registerRoutes(app: Express): Server {
       const userId = req.user!.id;
       
       // Only verified users can edit reviews
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: "Apenas usuários verificados podem editar avaliações" });
       }
       
@@ -1873,7 +1873,7 @@ export function registerRoutes(app: Express): Server {
       const review = existingReview[0];
       
       // Check if review is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - review.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - review.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
       }
@@ -1884,7 +1884,7 @@ export function registerRoutes(app: Express): Server {
         .update(activityReviews)
         .set({
           ...reviewData,
-          updatedAt: new Date()
+          updated_at: new Date()
         })
         .where(eq(activityReviews.id, reviewId));
       
@@ -1918,7 +1918,7 @@ export function registerRoutes(app: Express): Server {
       const review = existingReview[0];
       
       // Check if review is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - review.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - review.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
       }
@@ -1941,7 +1941,7 @@ export function registerRoutes(app: Express): Server {
 
       await db.update(activityReviews)
         .set({
-          helpfulVotes: sql`${activityReviews.helpfulVotes} + 1`
+          helpful_votes: sql`${activityReviews.helpful_votes} + 1`
         })
         .where(eq(activityReviews.id, reviewId));
 
@@ -1966,8 +1966,8 @@ export function registerRoutes(app: Express): Server {
   // Get bookings for an activity
   app.get("/api/activities/:id/bookings", requireAuth, async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
-      const bookings = await storage.getActivityBookings(activityId);
+      const activity_id = parseInt(req.params.id);
+      const bookings = await storage.getActivityBookings(activity_id);
       res.json(bookings);
     } catch (error) {
       console.error('Erro ao buscar reservas:', error);
@@ -1990,13 +1990,13 @@ export function registerRoutes(app: Express): Server {
   // Create booking for an activity (requires authentication)
   app.post("/api/activities/:id/bookings", requireAuth, async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
+      const activity_id = parseInt(req.params.id);
       const userId = req.user!.id;
       const bookingData = insertActivityBookingSchema.parse(req.body);
       
       const booking = await storage.createActivityBooking({
         ...bookingData,
-        activityId,
+        activity_id,
         userId
       });
       
@@ -2031,8 +2031,8 @@ export function registerRoutes(app: Express): Server {
   // Get all budget proposals for an activity
   app.get("/api/activities/:id/proposals", async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
-      const proposals = await storage.getActivityBudgetProposals(activityId);
+      const activity_id = parseInt(req.params.id);
+      const proposals = await storage.getActivityBudgetProposals(activity_id);
       res.json(proposals);
     } catch (error) {
       console.error('Erro ao buscar propostas de orçamento:', error);
@@ -2043,11 +2043,11 @@ export function registerRoutes(app: Express): Server {
   // Create new budget proposal for activity (requires authentication)
   app.post("/api/activities/:id/proposals", requireAuth, async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
+      const activity_id = parseInt(req.params.id);
       const userId = req.user!.id;
       
       console.log('🔍 Dados recebidos para criação de proposta:', {
-        activityId,
+        activity_id,
         userId,
         body: req.body
       });
@@ -2058,8 +2058,8 @@ export function registerRoutes(app: Express): Server {
       
       const proposal = await storage.createActivityBudgetProposal({
         ...proposalData,
-        activityId,
-        createdBy: userId
+        activity_id,
+        createdBy: user_id
       });
       
       console.log('✅ Proposta criada com sucesso:', proposal);
@@ -2133,10 +2133,10 @@ export function registerRoutes(app: Express): Server {
   // Check if user has voted on an activity
   app.get("/api/activities/:id/user-vote", requireAuth, async (req, res) => {
     try {
-      const activityId = parseInt(req.params.id);
+      const activity_id = parseInt(req.params.id);
       const userId = req.user!.id;
       
-      const vote = await storage.getUserVoteForActivity(userId, activityId);
+      const vote = await storage.getUserVoteForActivity(userId, activity_id);
       
       res.json({ hasVoted: !!vote, vote });
     } catch (error) {
@@ -2165,8 +2165,8 @@ export function registerRoutes(app: Express): Server {
   // Get all activities for a trip
   app.get("/api/trips/:id/activities", async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
-      const tripActivities = await storage.getTripActivities(tripId);
+      const trip_id = parseInt(req.params.id);
+      const tripActivities = await storage.getTripActivities(trip_id);
       res.json(tripActivities);
     } catch (error) {
       console.error('Erro ao buscar atividades da viagem:', error);
@@ -2177,14 +2177,14 @@ export function registerRoutes(app: Express): Server {
   // Add activity to trip with selected proposal (requires authentication)
   app.post("/api/trips/:id/activities", requireAuth, async (req, res) => {
     try {
-      const tripId = parseInt(req.params.id);
+      const trip_id = parseInt(req.params.id);
       const userId = req.user!.id;
       const tripActivityData = insertTripActivitySchema.parse(req.body);
       
       console.log('🔍 Adicionando atividade à viagem:', {
-        tripId,
+        trip_id,
         userId,
-        activityId: tripActivityData.activityId,
+        activity_id: tripActivityData.activity_id,
         budgetProposalId: tripActivityData.budgetProposalId,
         totalCost: tripActivityData.totalCost,
         participants: tripActivityData.participants
@@ -2192,8 +2192,8 @@ export function registerRoutes(app: Express): Server {
       
       const tripActivity = await storage.addActivityToTrip({
         ...tripActivityData,
-        tripId,
-        addedBy: userId
+        trip_id,
+        addedBy: user_id
       });
       
       console.log('✅ Atividade adicionada com sucesso:', tripActivity);
@@ -2243,7 +2243,7 @@ export function registerRoutes(app: Express): Server {
   // Get user trips in same location as activity (for adding activities to trips)
   app.get("/api/users/:userId/trips-in-location", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.user_id);
+      const userId = parseInt(req.params.userId);
       const { location } = req.query;
       
       if (!location) {
@@ -2290,16 +2290,16 @@ export function registerRoutes(app: Express): Server {
               if (!companionsMap.has(companionId)) {
                 companionsMap.set(companionId, {
                   id: user.id,
-                  fullName: user.fullName,
+                  full_name: user.full_name,
                   username: user.username,
                   email: user.email,
                   location: user.location,
-                  profilePhoto: user.profilePhoto,
-                  isVerified: user.isVerified,
+                  profile_photo: user.profile_photo,
+                  is_verified: user.is_verified,
                   bio: user.bio,
-                  averageRating: user.averageRating || "0.0",
+                  average_rating: user.average_rating || "0.0",
                   tripsCount: 1,
-                  lastTrip: trip.endDate
+                  lastTrip: trip.end_date
                 });
               } else {
                 // Update trip count and last trip date if this trip is more recent
@@ -2307,8 +2307,8 @@ export function registerRoutes(app: Express): Server {
                 existingCompanion.tripsCount += 1;
                 
                 // Update last trip if this trip is more recent
-                if (new Date(trip.endDate) > new Date(existingCompanion.lastTrip)) {
-                  existingCompanion.lastTrip = trip.endDate;
+                if (new Date(trip.end_date) > new Date(existingCompanion.lastTrip)) {
+                  existingCompanion.lastTrip = trip.end_date;
                 }
               }
             }
@@ -2331,7 +2331,7 @@ export function registerRoutes(app: Express): Server {
       const userId = req.user!.id;
       
       // Only verified users can create ratings
-      if (!req.user!.isVerified) {
+      if (!req.user!.is_verified) {
         return res.status(403).json({ message: "Apenas usuários verificados podem criar avaliações" });
       }
       
@@ -2369,8 +2369,8 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(userRatings)
         .where(and(
-          eq(userRatings.ratedUserId, companionId),
-          eq(userRatings.raterUserId, userId),
+          eq(userRatings.rated_user_id, companionId),
+          eq(userRatings.rater_user_id, userId),
           eq(userRatings.trip_id, sharedTripId)
         ))
         .limit(1);
@@ -2379,7 +2379,7 @@ export function registerRoutes(app: Express): Server {
 
       if (existingRating.length > 0) {
         // Check if rating is within 7 days edit window
-        const daysSinceCreation = Math.floor((Date.now() - existingRating[0].createdAt.getTime()) / (1000 * 60 * 60 * 24));
+        const daysSinceCreation = Math.floor((Date.now() - existingRating[0].created_at.getTime()) / (1000 * 60 * 60 * 24));
         if (daysSinceCreation > 7) {
           return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
         }
@@ -2389,33 +2389,33 @@ export function registerRoutes(app: Express): Server {
           .set({
             rating: rating,
             comment: comment || null,
-            updatedAt: new Date()
+            updated_at: new Date()
           })
           .where(eq(userRatings.id, existingRating[0].id));
         
         console.log('📝 Avaliação de companheiro atualizada:', {
-          ratingId: existingRating[0].id,
-          raterId: userId,
-          ratedUserId: companionId,
+          rating_id: existingRating[0].id,
+          raterId: user_id,
+          rated_user_id: companionId,
           rating,
           comment: comment || null
         });
       } else {
         // Create new rating
         await db.insert(userRatings).values({
-          tripId: sharedTripId,
-          ratedUserId: companionId,
-          raterUserId: userId,
+          trip_id: sharedTripId,
+          rated_user_id: companionId,
+          rater_user_id: user_id,
           rating: rating,
           comment: comment || null,
-          isHidden: false,
-          reportCount: 0
+          is_hidden: false,
+          report_count: 0
         });
         
         console.log('📝 Avaliação de companheiro criada:', {
-          tripId: sharedTripId,
-          ratedUserId: companionId,
-          raterUserId: userId,
+          trip_id: sharedTripId,
+          rated_user_id: companionId,
+          rater_user_id: user_id,
           rating: rating,
           comment: comment || null
         });
@@ -2426,26 +2426,26 @@ export function registerRoutes(app: Express): Server {
         .select({ rating: userRatings.rating })
         .from(userRatings)
         .where(and(
-          eq(userRatings.ratedUserId, companionId),
-          eq(userRatings.isHidden, false)
+          eq(userRatings.rated_user_id, companionId),
+          eq(userRatings.is_hidden, false)
         ));
 
-      const averageRating = allUserRatings.length > 0 
+      const average_rating = allUserRatings.length > 0 
         ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
         : 5.0;
 
       await db.update(users)
         .set({
-          averageRating: averageRating.toString(),
-          totalRatings: allUserRatings.length
+          average_rating: average_rating.toString(),
+          total_ratings: allUserRatings.length
         })
         .where(eq(users.id, companionId));
       
-      console.log('📊 Média de avaliações atualizada para usuário', companionId, ':', averageRating);
+      console.log('📊 Média de avaliações atualizada para usuário', companionId, ':', average_rating);
       
       res.json({ 
         message: "Avaliação enviada com sucesso!",
-        averageRating: averageRating
+        average_rating: average_rating
       });
     } catch (error) {
       console.error('Erro ao avaliar companheiro:', error);
@@ -2456,7 +2456,7 @@ export function registerRoutes(app: Express): Server {
   // Get user ratings for a specific user
   app.get("/api/user/:userId/ratings", async (req, res) => {
     try {
-      const userId = parseInt(req.params.user_id);
+      const userId = parseInt(req.params.userId);
       const limit = parseInt(req.query.limit as string) || 10;
       const offset = parseInt(req.query.offset as string) || 0;
 
@@ -2465,22 +2465,22 @@ export function registerRoutes(app: Express): Server {
           id: userRatings.id,
           rating: userRatings.rating,
           comment: userRatings.comment,
-          createdAt: userRatings.createdAt,
+          created_at: userRatings.created_at,
           rater: {
             id: users.id,
             username: users.username,
-            fullName: users.fullName,
-            profilePhoto: users.profilePhoto,
-            isVerified: users.isVerified
+            full_name: users.full_name,
+            profile_photo: users.profile_photo,
+            is_verified: users.is_verified
           }
         })
         .from(userRatings)
-        .innerJoin(users, eq(userRatings.raterUserId, users.id))
+        .innerJoin(users, eq(userRatings.rater_user_id, users.id))
         .where(and(
-          eq(userRatings.ratedUserId, userId),
-          eq(userRatings.isHidden, false)
+          eq(userRatings.rated_user_id, userId),
+          eq(userRatings.is_hidden, false)
         ))
-        .orderBy(desc(userRatings.createdAt))
+        .orderBy(desc(userRatings.created_at))
         .limit(limit)
         .offset(offset);
 
@@ -2492,9 +2492,9 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Edit user rating (within 7 days)
-  app.put("/api/user/ratings/:ratingId", requireAuth, async (req, res) => {
+  app.put("/api/user/ratings/:rating_id", requireAuth, async (req, res) => {
     try {
-      const ratingId = parseInt(req.params.ratingId);
+      const rating_id = parseInt(req.params.rating_id);
       const userId = req.user!.id;
       const { rating, comment } = req.body;
       
@@ -2508,8 +2508,8 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(userRatings)
         .where(and(
-          eq(userRatings.id, ratingId),
-          eq(userRatings.raterUserId, userId)
+          eq(userRatings.id, rating_id),
+          eq(userRatings.rater_user_id, userId)
         ))
         .limit(1);
       
@@ -2520,7 +2520,7 @@ export function registerRoutes(app: Express): Server {
       const ratingData = existingRating[0];
       
       // Check if rating is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - ratingData.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - ratingData.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de edição expirado (7 dias)" });
       }
@@ -2529,29 +2529,29 @@ export function registerRoutes(app: Express): Server {
         .set({
           rating: rating,
           comment: comment || null,
-          updatedAt: new Date()
+          updated_at: new Date()
         })
-        .where(eq(userRatings.id, ratingId));
+        .where(eq(userRatings.id, rating_id));
       
       // Update user's average rating
       const allUserRatings = await db
         .select({ rating: userRatings.rating })
         .from(userRatings)
         .where(and(
-          eq(userRatings.ratedUserId, ratingData.ratedUserId),
-          eq(userRatings.isHidden, false)
+          eq(userRatings.rated_user_id, ratingData.rated_user_id),
+          eq(userRatings.is_hidden, false)
         ));
 
-      const averageRating = allUserRatings.length > 0 
+      const average_rating = allUserRatings.length > 0 
         ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
         : 5.0;
 
       await db.update(users)
         .set({
-          averageRating: averageRating,
-          totalRatings: allUserRatings.length
+          average_rating: average_rating,
+          total_ratings: allUserRatings.length
         })
-        .where(eq(users.id, ratingData.ratedUserId));
+        .where(eq(users.id, ratingData.rated_user_id));
       
       res.json({ message: "Avaliação atualizada com sucesso" });
     } catch (error) {
@@ -2561,9 +2561,9 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Delete user rating (within 7 days)
-  app.delete("/api/user/ratings/:ratingId", requireAuth, async (req, res) => {
+  app.delete("/api/user/ratings/:rating_id", requireAuth, async (req, res) => {
     try {
-      const ratingId = parseInt(req.params.ratingId);
+      const rating_id = parseInt(req.params.rating_id);
       const userId = req.user!.id;
       
       // Check if rating exists and belongs to user
@@ -2571,8 +2571,8 @@ export function registerRoutes(app: Express): Server {
         .select()
         .from(userRatings)
         .where(and(
-          eq(userRatings.id, ratingId),
-          eq(userRatings.raterUserId, userId)
+          eq(userRatings.id, rating_id),
+          eq(userRatings.rater_user_id, userId)
         ))
         .limit(1);
       
@@ -2583,34 +2583,34 @@ export function registerRoutes(app: Express): Server {
       const ratingData = existingRating[0];
       
       // Check if rating is within 7 days edit window
-      const daysSinceCreation = Math.floor((Date.now() - ratingData.createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceCreation = Math.floor((Date.now() - ratingData.created_at.getTime()) / (1000 * 60 * 60 * 24));
       if (daysSinceCreation > 7) {
         return res.status(403).json({ message: "Período de exclusão expirado (7 dias)" });
       }
       
       await db
         .delete(userRatings)
-        .where(eq(userRatings.id, ratingId));
+        .where(eq(userRatings.id, rating_id));
       
       // Update user's average rating
       const allUserRatings = await db
         .select({ rating: userRatings.rating })
         .from(userRatings)
         .where(and(
-          eq(userRatings.ratedUserId, ratingData.ratedUserId),
-          eq(userRatings.isHidden, false)
+          eq(userRatings.rated_user_id, ratingData.rated_user_id),
+          eq(userRatings.is_hidden, false)
         ));
 
-      const averageRating = allUserRatings.length > 0 
+      const average_rating = allUserRatings.length > 0 
         ? parseFloat((allUserRatings.reduce((sum, r) => sum + r.rating, 0) / allUserRatings.length).toFixed(2))
         : 5.0;
 
       await db.update(users)
         .set({
-          averageRating: averageRating,
-          totalRatings: allUserRatings.length
+          average_rating: average_rating,
+          total_ratings: allUserRatings.length
         })
-        .where(eq(users.id, ratingData.ratedUserId));
+        .where(eq(users.id, ratingData.rated_user_id));
       
       res.json({ message: "Avaliação excluída com sucesso" });
     } catch (error) {
@@ -2637,7 +2637,7 @@ export function registerRoutes(app: Express): Server {
       
       res.json({ 
         message: "Companheiro removido da sua rede com sucesso!",
-        removedCompanion: companion.fullName
+        removedCompanion: companion.full_name
       });
     } catch (error) {
       console.error('Erro ao remover companheiro:', error);
@@ -2746,9 +2746,9 @@ export function registerRoutes(app: Express): Server {
   // Add to interest list
   app.post("/api/interest-list", async (req, res) => {
     try {
-      const { fullName, email, phone, referralCode } = req.body;
+      const { full_name, email, phone, referralCode } = req.body;
       
-      if (!fullName || !email || !phone) {
+      if (!full_name || !email || !phone) {
         return res.status(400).json({ message: "Todos os campos são obrigatórios" });
       }
 
@@ -2764,7 +2764,7 @@ export function registerRoutes(app: Express): Server {
 
       // Add to interest list
       await db.insert(interestList).values({
-        fullName,
+        full_name,
         email,
         phone,
         referralCode: referralCode || null,

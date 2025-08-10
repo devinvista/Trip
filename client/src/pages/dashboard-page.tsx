@@ -36,6 +36,7 @@ import {
   X
 } from "lucide-react";
 import { getRealParticipantsCount } from "@/lib/trip-utils";
+import { safeParseDate, getDaysUntilDate } from "@/lib/date-utils";
 import { formatBrazilianCurrency } from "@shared/utils";
 
 export default function DashboardPage() {
@@ -176,21 +177,33 @@ export default function DashboardPage() {
   }, [user?.id, refetchTrips, refetchRequests]);
 
   // Calculate trip statistics
-  const upcomingTrips = allTrips.filter(trip => new Date(trip.start_date || trip.startDate) > new Date());
-  const completedTrips = allTrips.filter(trip => new Date(trip.end_date || trip.endDate) < new Date());
+  const upcomingTrips = allTrips.filter(trip => {
+    const startDate = safeParseDate(trip.start_date || trip.startDate);
+    return startDate > new Date();
+  });
+  const completedTrips = allTrips.filter(trip => {
+    const endDate = safeParseDate(trip.end_date || trip.endDate);
+    return endDate < new Date();
+  });
   const inProgressTrips = allTrips.filter(trip => {
     const now = new Date();
-    return new Date(trip.start_date || trip.startDate) <= now && new Date(trip.end_date || trip.endDate) >= now;
+    const startDate = safeParseDate(trip.start_date || trip.startDate);
+    const endDate = safeParseDate(trip.end_date || trip.endDate);
+    return startDate <= now && endDate >= now;
   });
 
   const totalBudget = allTrips.reduce((sum, trip) => sum + (trip.budget || 0), 0);
   const totalParticipants = allTrips.reduce((sum, trip) => sum + getRealParticipantsCount(trip), 0);
 
   // Get next trip
-  const nextTrip = upcomingTrips.sort((a, b) => new Date(a.start_date || a.startDate).getTime() - new Date(b.start_date || b.startDate).getTime())[0];
+  const nextTrip = upcomingTrips.sort((a, b) => {
+    const dateA = safeParseDate(a.start_date || a.startDate);
+    const dateB = safeParseDate(b.start_date || b.startDate);
+    return dateA.getTime() - dateB.getTime();
+  })[0];
 
   // Calculate days until next trip
-  const daysUntilNextTrip = nextTrip ? Math.ceil((new Date(nextTrip.start_date || nextTrip.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : 0;
+  const daysUntilNextTrip = nextTrip ? getDaysUntilDate(nextTrip.start_date || nextTrip.startDate) : 0;
 
   // Filter trips by timeframe
   const getFilteredTrips = () => {
@@ -302,11 +315,11 @@ export default function DashboardPage() {
                                   <div className="flex-1">
                                     <p className="font-medium text-sm text-gray-900">{trip.title}</p>
                                     <p className="text-xs text-gray-600 mt-1">
-                                      Viagem em {Math.ceil((new Date(trip.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias
+                                      Viagem em {getDaysUntilDate(trip.start_date || trip.startDate)} dias
                                     </p>
                                     <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                                       <Calendar className="h-3 w-3" />
-                                      {new Date(trip.startDate).toLocaleDateString('pt-BR')}
+                                      {safeParseDate(trip.start_date || trip.startDate).toLocaleDateString('pt-BR')}
                                     </p>
                                   </div>
                                 </div>
@@ -357,7 +370,7 @@ export default function DashboardPage() {
                       <p className="text-xl font-bold">{nextTrip.title}</p>
                       <p className="text-orange-100 flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
-                        {new Date(nextTrip.startDate).toLocaleDateString('pt-BR')}
+                        {safeParseDate(nextTrip.start_date || nextTrip.startDate).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
                   </div>
@@ -530,7 +543,7 @@ export default function DashboardPage() {
                     
                     {/* Status Badge */}
                     <div className="absolute top-3 right-3">
-                      {new Date(trip.startDate) > new Date() ? (
+                      {safeParseDate(trip.start_date || trip.startDate) > new Date() ? (
                         <Badge className="bg-emerald-500/90 backdrop-blur-sm hover:bg-emerald-600 text-white border-0 shadow-sm">
                           <Clock className="h-3 w-3 mr-1" />
                           Próxima
@@ -577,7 +590,7 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2 text-sm text-slate-600">
                         <Calendar className="h-4 w-4 text-blue-500" />
                         <span className="font-medium">
-                          {new Date(trip.startDate).toLocaleDateString('pt-BR')} - {new Date(trip.endDate).toLocaleDateString('pt-BR')}
+                          {safeParseDate(trip.start_date || trip.startDate).toLocaleDateString('pt-BR')} - {safeParseDate(trip.end_date || trip.endDate).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
                       

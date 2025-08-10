@@ -57,8 +57,8 @@ async function fixUserVerificationStatusLocal() {
     for (const username of verifiedUsers) {
       const result = await db.update(users)
         .set({ 
-          isVerified: true, 
-          verificationMethod: 'referral' 
+          is_verified: true, 
+          verification_method: 'referral' 
         })
         .where(eq(users.username, username));
         

@@ -25,6 +25,7 @@ import { useState, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { getRealParticipantsCount, getAvailableSpots, isTripFull } from "@/lib/trip-utils";
+import { getTripDuration, safeParseDate } from "@/lib/date-utils";
 
 interface TripCardProps {
   trip: any;
@@ -41,7 +42,10 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
   const currentParticipants = getRealParticipantsCount(trip);
   const availableSpots = getAvailableSpots(trip);
   const isFull = isTripFull(trip);
-  const duration = Math.ceil((new Date(trip.end_date || trip.endDate).getTime() - new Date(trip.start_date || trip.startDate).getTime()) / (1000 * 60 * 60 * 24));
+  const duration = getTripDuration(
+    trip.start_date || trip.startDate, 
+    trip.end_date || trip.endDate
+  );
 
   const getDestinationImage = (trip: any) => {
     // Use the trip's cover image if available
@@ -199,7 +203,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>
-                {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM", { locale: ptBR })}
+                {format(safeParseDate(trip.start_date || trip.startDate), "dd/MM", { locale: ptBR })} - {format(safeParseDate(trip.end_date || trip.endDate), "dd/MM", { locale: ptBR })}
               </span>
             </div>
           </div>
@@ -233,7 +237,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
             <div>
               <span className="text-sm text-gray-600">Por</span>
               <span className="text-sm font-medium text-gray-800 ml-1">
-                {trip.creator?.fullName?.split(' ')[0]}
+                {(trip.creator?.full_name || trip.creator?.fullName || 'Usuário')?.split(' ')[0]}
               </span>
             </div>
           </div>
