@@ -6,6 +6,8 @@ import { testConnection, initializeTables, db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { syncParticipantsCount } from "./sync-participants.ts";
+// Importar proteções de segurança do banco
+import "./db-security";
 // import { setupReferralSystem } from "./setup-referral-system"; // Removed for PostgreSQL migration
 
 const app = express();
@@ -18,6 +20,17 @@ app.use(cookieParser());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Adicionar middlewares de segurança
+import { 
+  securityMonitorMiddleware, 
+  environmentProtectionMiddleware, 
+  auditLogMiddleware 
+} from "./middleware/security";
+
+app.use(auditLogMiddleware);
+app.use(securityMonitorMiddleware);
+app.use(environmentProtectionMiddleware);
 
 app.use((req, res, next) => {
   const start = Date.now();
