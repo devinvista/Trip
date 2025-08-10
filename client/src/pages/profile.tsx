@@ -583,7 +583,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <span>Membro desde {new Date(user.createdAt || '2025-01-01').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</span>
+                <span>Membro desde {new Date(user.created_at || user.createdAt || '2025-01-01').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</span>
               </div>
             </div>
           </div>
@@ -850,7 +850,7 @@ export default function ProfilePage() {
                         <div>
                           <div className="font-medium">{friend.fullName}</div>
                           <div className="text-sm text-gray-500">
-                            Entrou em {new Date(friend.createdAt).toLocaleDateString('pt-BR')}
+                            Entrou em {new Date(friend.created_at || friend.createdAt).toLocaleDateString('pt-BR')}
                           </div>
                         </div>
                       </div>
@@ -1414,7 +1414,7 @@ export default function ProfilePage() {
                               <div className="flex-1">
                                 <p className="font-medium">{referredUser.fullName}</p>
                                 <p className="text-sm text-slate-600">
-                                  Entrou em {new Date(referredUser.createdAt).toLocaleDateString()}
+                                  Entrou em {new Date(referredUser.created_at || referredUser.createdAt).toLocaleDateString()}
                                 </p>
                               </div>
                               <Badge variant="secondary">

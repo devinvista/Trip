@@ -1040,7 +1040,7 @@ function ActivityFormTab({
       notes: formData.notes,
       dateTime: formData.dateTime,
       status: "planned",
-      createdAt: activity?.createdAt || new Date().toISOString(),
+      createdAt: activity?.created_at || activity?.createdAt || new Date().toISOString(),
     };
 
     onSave(savedActivity);
@@ -1532,8 +1532,8 @@ export function AdvancedActivityManager({
 }: AdvancedActivityManagerProps) {
   const realParticipantsCount = trip ? getRealParticipantsCount(trip) : tripParticipants;
   const maxParticipantsCount = trip ? trip.max_participants : (tripMaxParticipants || tripParticipants);
-  const startDate = trip ? trip.startDate : tripStartDate;
-  const endDate = trip ? trip.endDate : tripEndDate;
+  const startDate = trip ? (trip.start_date || trip.startDate) : tripStartDate;
+  const endDate = trip ? (trip.end_date || trip.endDate) : tripEndDate;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<PlannedActivity | undefined>();
 

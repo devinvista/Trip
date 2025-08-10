@@ -158,7 +158,7 @@ export function NotificationCenter() {
                         {notification.message}
                       </p>
                       <p className="text-xs text-gray-400 mt-2">
-                        {new Date(notification.createdAt).toLocaleString('pt-BR')}
+                        {new Date(notification.created_at || notification.createdAt).toLocaleString('pt-BR')}
                       </p>
                     </div>
                   </div>

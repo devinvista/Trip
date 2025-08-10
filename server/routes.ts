@@ -449,7 +449,7 @@ export function registerRoutes(app: Express): Server {
   app.delete("/api/trips/:id/participants/:userId", requireAuth, async (req, res) => {
     try {
       const trip_id = parseInt(req.params.id);
-      const userIdToRemove = parseInt(req.params.userId);
+      const userIdToRemove = parseInt(req.params.user_id || req.params.userId);
       
       const trip = await storage.getTripById(trip_id);
       if (!trip) {
@@ -2284,7 +2284,7 @@ export function registerRoutes(app: Express): Server {
   // Get user trips in same location as activity (for adding activities to trips)
   app.get("/api/users/:userId/trips-in-location", requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = parseInt(req.params.user_id || req.params.userId);
       const { location } = req.query;
       
       if (!location) {
@@ -2497,7 +2497,7 @@ export function registerRoutes(app: Express): Server {
   // Get user ratings for a specific user
   app.get("/api/user/:userId/ratings", async (req, res) => {
     try {
-      const userId = parseInt(req.params.userId);
+      const userId = parseInt(req.params.user_id || req.params.userId);
       const limit = parseInt(req.query.limit as string) || 10;
       const offset = parseInt(req.query.offset as string) || 0;
 

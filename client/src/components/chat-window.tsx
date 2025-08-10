@@ -112,7 +112,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
       sentAt: new Date().toISOString(),
       sender: {
         id: user?.id || 1,
-        fullName: user?.fullName || "Usuário",
+        fullName: user?.full_name || user?.fullName || "Usuário",
         profilePhoto: undefined
       },
       status: "sent"
@@ -204,7 +204,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                   />
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs font-medium text-gray-900 truncate">
-                      {participant.user?.fullName || participant.user?.username}
+                      {participant.user?.full_name || participant.user?.fullName || participant.user?.username}
                     </span>
                     <div className="flex items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${isOrganizer ? 'bg-green-500' : 'bg-gray-400'}`}></div>
@@ -271,7 +271,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                     <div className={`flex-1 max-w-[75%] ${message.senderId === user?.id ? 'text-right' : ''}`}>
                       <div className={`flex items-center gap-2 mb-1 ${message.senderId === user?.id ? 'justify-end' : ''}`}>
                         <span className="text-sm font-semibold text-gray-700">
-                          {message.senderId === user?.id ? 'Você' : message.sender?.fullName}
+                          {message.senderId === user?.id ? 'Você' : (message.sender?.full_name || message.sender?.fullName)}
                         </span>
                         <span className="text-xs text-gray-500 flex items-center gap-1">
                           <Clock className="h-3 w-3" />

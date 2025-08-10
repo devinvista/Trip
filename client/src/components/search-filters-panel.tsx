@@ -98,8 +98,8 @@ export function SearchFiltersPanel({
   const hasActiveFilters = 
     filters.query ||
     filters.destination ||
-    filters.startDate ||
-    filters.endDate ||
+    filters.start_date || filters.startDate ||
+    filters.end_date || filters.endDate ||
     filters.budgetRange[0] > 0 ||
     filters.budgetRange[1] < 10000 ||
     filters.max_participants < 20 ||
@@ -201,8 +201,8 @@ export function SearchFiltersPanel({
               <Input
                 id="start-date"
                 type="date"
-                value={filters.startDate}
-                onChange={(e) => updateFilters({ startDate: e.target.value })}
+                value={filters.start_date || filters.startDate}
+                onChange={(e) => updateFilters({ start_date: e.target.value })}
               />
             </div>
             <div className="space-y-2">
@@ -210,8 +210,8 @@ export function SearchFiltersPanel({
               <Input
                 id="end-date"
                 type="date"
-                value={filters.endDate}
-                onChange={(e) => updateFilters({ endDate: e.target.value })}
+                value={filters.end_date || filters.endDate}
+                onChange={(e) => updateFilters({ end_date: e.target.value })}
               />
             </div>
           </CollapsibleContent>

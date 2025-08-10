@@ -227,7 +227,7 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-8">
           {/* Welcome Banner */}
           <WelcomeBanner
-            userName={user?.fullName?.split(' ')[0]}
+            userName={(user?.full_name || user?.fullName)?.split(' ')[0]}
             onStartTour={startTour}
             onDismiss={() => {
               setShowWelcomeBanner(false);

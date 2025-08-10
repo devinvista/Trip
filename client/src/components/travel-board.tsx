@@ -109,8 +109,8 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
     };
 
     trips.forEach((trip: Trip) => {
-      const startDate = new Date(trip.startDate);
-      const endDate = new Date(trip.endDate);
+      const startDate = new Date(trip.start_date || trip.startDate);
+      const endDate = new Date(trip.end_date || trip.endDate);
       
       if (endDate < now) {
         categorized.completed.push(trip);

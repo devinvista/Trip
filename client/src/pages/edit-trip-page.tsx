@@ -457,7 +457,7 @@ export default function EditTripPage() {
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Criada em:</span>
                         <span className="text-sm text-gray-500">
-                          {new Date(trip.createdAt).toLocaleDateString('pt-BR')}
+                          {new Date(trip.created_at || trip.createdAt).toLocaleDateString('pt-BR')}
                         </span>
                       </div>
                     </div>

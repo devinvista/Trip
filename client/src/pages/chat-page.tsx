@@ -247,11 +247,11 @@ export default function ChatPage() {
                   <Avatar className="w-10 h-10 ring-2 ring-blue-200">
                     <AvatarImage src={trip.creator?.profilePhoto || ""} />
                     <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
-                      {trip.creator?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                      {(trip.creator?.full_name || trip.creator?.fullName)?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-sm text-gray-900 truncate">{trip.creator?.fullName}</h4>
+                    <h4 className="font-semibold text-sm text-gray-900 truncate">{trip.creator?.full_name || trip.creator?.fullName}</h4>
                     <div className="flex items-center gap-2">
                       <Badge variant="default" className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-100">
                         Organizador
@@ -267,11 +267,11 @@ export default function ChatPage() {
                     <Avatar className="w-10 h-10">
                       <AvatarImage src={participant.user?.profilePhoto || ""} />
                       <AvatarFallback className="bg-gray-100 text-gray-700 font-semibold">
-                        {participant.user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                        {(participant.user?.full_name || participant.user?.fullName)?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm text-gray-900 truncate">{participant.user?.fullName}</h4>
+                      <h4 className="font-semibold text-sm text-gray-900 truncate">{participant.user?.full_name || participant.user?.fullName}</h4>
                       <div className="flex items-center gap-2">
                         <p className="text-xs text-gray-600 truncate">{participant.user?.location || "Sem localização"}</p>
                         <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
