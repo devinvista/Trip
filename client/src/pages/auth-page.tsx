@@ -37,7 +37,7 @@ const loginSchema = z.object({
 });
 
 const referralValidationSchema = z.object({
-  referralCode: z.string().min(1, "Código de indicação é obrigatório"),
+  referral_code: z.string().min(1, "Código de indicação é obrigatório"),
 });
 
 const registerSchema = insertUserSchema.extend({
@@ -78,7 +78,7 @@ export default function AuthPage() {
   const referralForm = useForm<ReferralForm>({
     resolver: zodResolver(referralValidationSchema),
     defaultValues: {
-      referralCode: "",
+      referral_code: "",
     },
   });
 
@@ -102,7 +102,7 @@ export default function AuthPage() {
   const interestForm = useForm<InterestListForm>({
     resolver: zodResolver(interestListSchema),
     defaultValues: {
-      fullName: "",
+      full_name: "",
       email: "",
       phone: "",
     },
@@ -131,7 +131,7 @@ export default function AuthPage() {
     },
     onSuccess: (data, variables) => {
       if (data.isValid) {
-        setValidatedCode(variables.referralCode);
+        setValidatedCode(variables.referral_code);
         setStep('register');
         toast({
           title: "Código válido!",
@@ -143,7 +143,7 @@ export default function AuthPage() {
       // If code is invalid, go to interest list
       setStep('interest');
       // Pre-fill the invalid code in interest form
-      interestForm.setValue("referralCode", referralForm.getValues().referralCode);
+      interestForm.setValue("referral_code", referralForm.getValues().referral_code);
       toast({
         title: "Código inválido",
         description: error.message + ". Complete o formulário para entrar na lista de interesse.",
@@ -203,7 +203,6 @@ export default function AuthPage() {
     
     register_mutation.mutate({
       ...registerData,
-      referred_by: validatedCode,
     }, {
       onSuccess: () => {
         navigate("/dashboard");
@@ -214,7 +213,7 @@ export default function AuthPage() {
   const onAddToInterest = (data: InterestListForm) => {
     addToInterestMutation.mutate({
       ...data,
-      referralCode: referralForm.getValues().referralCode,
+      referralCode: referralForm.getValues().referral_code,
     });
   };
 
@@ -313,9 +312,9 @@ export default function AuthPage() {
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200" 
-                      disabled={loginMutation.isPending}
+                      disabled={login_mutation.isPending}
                     >
-                      {loginMutation.isPending ? "Entrando..." : "Entrar"}
+                      {login_mutation.isPending ? "Entrando..." : "Entrar"}
                     </Button>
                   </form>
                 </Form>
@@ -343,7 +342,7 @@ export default function AuthPage() {
                     <form onSubmit={referralForm.handleSubmit(onValidateReferral)} className="space-y-4">
                       <FormField
                         control={referralForm.control}
-                        name="referralCode"
+                        name="referral_code"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-slate-700 font-medium">Código de Indicação</FormLabel>
@@ -387,7 +386,7 @@ export default function AuthPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <FormField
                             control={registerForm.control}
-                            name="fullName"
+                            name="full_name"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-slate-700 font-medium">Nome Completo</FormLabel>
@@ -492,9 +491,9 @@ export default function AuthPage() {
                         <Button 
                           type="submit" 
                           className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200" 
-                          disabled={registerMutation.isPending}
+                          disabled={register_mutation.isPending}
                         >
-                          {registerMutation.isPending ? "Criando conta..." : "Criar conta"}
+                          {register_mutation.isPending ? "Criando conta..." : "Criar conta"}
                         </Button>
                       </form>
                     </Form>
@@ -512,7 +511,7 @@ export default function AuthPage() {
                       <form onSubmit={interestForm.handleSubmit(onAddToInterest)} className="space-y-4">
                         <FormField
                           control={interestForm.control}
-                          name="fullName"
+                          name="full_name"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-slate-700 font-medium">Nome Completo</FormLabel>
