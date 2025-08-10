@@ -14,12 +14,12 @@ interface RegisterData {
   username: string;
   password: string;
   email: string;
-  fullName: string;
+  full_name: string;
   bio?: string;
   location?: string;
   languages?: string[];
   interests?: string[];
-  travelStyle?: string;
+  travel_styles?: string[];
 }
 
 interface AuthContextType {

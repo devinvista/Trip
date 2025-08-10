@@ -29,14 +29,17 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - **Database**: PostgreSQL with Drizzle ORM (fully migrated from MySQL to PostgreSQL)
 
 ### Database Schema
-The application uses PostgreSQL with the following main entities:
-- **Users**: Authentication, profile information, and travel preferences.
-- **Trips**: Travel plans with destinations, dates, budgets, and shared costs.
-- **Trip Participants**: Many-to-many relationship between users and trips.
-- **Messages**: Real-time chat functionality for travel groups.
-- **Trip Requests**: Request system for joining trips.
-- **Activities**: Tourist activities with ratings, proposals, and integration into travel plans.
-- **Cities**: Centralized city data with geographical classification.
+The application uses PostgreSQL with consistent snake_case naming throughout all entities:
+- **users**: Authentication, profile information, and travel preferences.
+- **trips**: Travel plans with destinations, dates, budgets, and shared costs.
+- **trip_participants**: Many-to-many relationship between users and trips.
+- **messages**: Real-time chat functionality for travel groups.
+- **trip_requests**: Request system for joining trips.
+- **activities**: Tourist activities with ratings, proposals, and integration into travel plans.
+- **destinations**: Centralized city data with geographical classification.
+- **expenses**: Shared expense tracking with detailed splits.
+- **user_ratings**: Peer review system for travel companions.
+- **activity_reviews**: TripAdvisor-style activity reviews and ratings.
 
 ### Core Components and Features
 - **Authentication System**: Local authentication, session-based management, scrypt password hashing, protected routes, user profile management.
@@ -49,24 +52,31 @@ The application uses PostgreSQL with the following main entities:
 - **Gamification**: Includes traveler levels and a "PartiuAmigos" program.
 - **Localization**: All UI elements are translated to Brazilian Portuguese.
 
-### Data Flow
-1. **User Registration/Login**: Users authenticate, sessions stored in PostgreSQL.
-2. **Trip Creation**: Authenticated users create detailed travel plans.
-3. **Trip Discovery**: Users search and filter trips based on preferences.
-4. **Participation Requests**: Users request to join trips, creators approve/reject.
-5. **Communication**: Approved participants can chat within trip groups.
-6. **Cost Sharing**: Trip creators define shared expenses, participants coordinate payments.
+### Data Flow (Full snake_case Implementation)
+1. **user_authentication**: Users authenticate with snake_case credentials, sessions stored in PostgreSQL.
+2. **trip_creation**: Authenticated users create detailed travel plans with snake_case field names.
+3. **trip_discovery**: Users search and filter trips using snake_case query parameters.
+4. **participation_requests**: Users request to join trips, creators approve/reject with snake_case status fields.
+5. **real_time_communication**: Approved participants chat using snake_case message properties.
+6. **expense_management**: Trip creators define shared expenses with snake_case field structures.
+
+### Recent Changes (August 2025)
+- **Complete snake_case Migration**: Full architectural conversion from camelCase to snake_case.
+- **Database Consistency**: All database fields, API endpoints, and data structures use snake_case.
+- **Frontend Adaptation**: React components and state management converted to snake_case.
+- **Authentication Fix**: Login system repaired with correct password hashing for demo users.
+- **PostgreSQL Integration**: Successfully migrated from MySQL to PostgreSQL with full snake_case schema.
 
 ## External Dependencies
 
 ### Core Dependencies
-- **postgres**: PostgreSQL driver.
-- **drizzle-orm**: Type-safe ORM for PostgreSQL.
-- **passport & passport-local**: Authentication middleware.
-- **@tanstack/react-query**: Server state management.
-- **react-hook-form**: Form handling with validation.
-- **zod**: Schema validation library.
-- **date-fns**: Date manipulation and formatting.
+- **postgres**: PostgreSQL driver with snake_case field naming.
+- **drizzle-orm**: Type-safe ORM configured for PostgreSQL with snake_case consistency.
+- **passport & passport-local**: Authentication middleware with snake_case user properties.
+- **@tanstack/react-query**: Server state management maintaining snake_case data flow.
+- **react-hook-form**: Form handling with validation using snake_case field names.
+- **zod**: Schema validation library with snake_case field validation.
+- **date-fns**: Date manipulation and formatting in Portuguese locale.
 
 ### UI Dependencies
 - **@radix-ui/***: Accessible UI primitives.

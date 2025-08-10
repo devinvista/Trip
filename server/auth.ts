@@ -13,17 +13,17 @@ declare global {
       id: number;
       username: string;
       email: string;
-      fullName: string;
+      full_name: string;
       phone: string;
       bio?: string;
       location?: string;
-      profilePhoto?: string;
+      profile_photo?: string;
       languages?: string[];
       interests?: string[];
-      travelStyles?: string[];
-      isVerified?: boolean;
-      averageRating?: string;
-      totalRatings?: number;
+      travel_styles?: string[];
+      is_verified?: boolean;
+      average_rating?: string;
+      total_ratings?: number;
     }
   }
 }
@@ -115,10 +115,10 @@ export function setupAuth(app: Express) {
               ...userWithoutPassword,
               bio: userWithoutPassword.bio || undefined,
               location: userWithoutPassword.location || undefined,
-              profilePhoto: userWithoutPassword.profilePhoto || undefined,
+              profile_photo: userWithoutPassword.profile_photo || undefined,
               languages: userWithoutPassword.languages || undefined,
               interests: userWithoutPassword.interests || undefined,
-              travelStyles: userWithoutPassword.travelStyless || undefined,
+              travel_styles: userWithoutPassword.travel_styles || undefined,
             };
             
             req.user = cleanUser as any;
@@ -186,10 +186,10 @@ export function setupAuth(app: Express) {
           ...userWithoutPassword,
           bio: userWithoutPassword.bio || undefined,
           location: userWithoutPassword.location || undefined,
-          profilePhoto: userWithoutPassword.profilePhoto || undefined,
+          profile_photo: userWithoutPassword.profile_photo || undefined,
           languages: userWithoutPassword.languages || undefined,
           interests: userWithoutPassword.interests || undefined,
-          travelStyles: userWithoutPassword.travelStyless || undefined,
+          travel_styles: userWithoutPassword.travel_styles || undefined,
         };
         return done(null, cleanUser);
       } catch (error) {
@@ -217,10 +217,10 @@ export function setupAuth(app: Express) {
         ...userWithoutPassword,
         bio: userWithoutPassword.bio || undefined,
         location: userWithoutPassword.location || undefined,
-        profilePhoto: userWithoutPassword.profilePhoto || undefined,
+        profile_photo: userWithoutPassword.profile_photo || undefined,
         languages: userWithoutPassword.languages || undefined,
         interests: userWithoutPassword.interests || undefined,
-        travelStyles: userWithoutPassword.travelStyles || undefined,
+        travel_styles: userWithoutPassword.travel_styles || undefined,
       };
       done(null, cleanUser);
     } catch (error) {
@@ -240,12 +240,12 @@ export function setupAuth(app: Express) {
             ...userWithoutPassword,
             bio: userWithoutPassword.bio || undefined,
             location: userWithoutPassword.location || undefined,
-            profilePhoto: userWithoutPassword.profilePhoto || undefined,
+            profile_photo: userWithoutPassword.profile_photo || undefined,
             languages: userWithoutPassword.languages || undefined,
             interests: userWithoutPassword.interests || undefined,
-            travelStyles: userWithoutPassword.travelStyles || undefined,
+            travel_styles: userWithoutPassword.travel_styles || undefined,
           };
-          console.log('✅ Fresh user data loaded, isVerified:', cleanUser.isVerified);
+          console.log('✅ Fresh user data loaded, is_verified:', cleanUser.is_verified);
           res.json(cleanUser);
         } else {
           res.status(401).json({ message: "Usuário não encontrado" });
