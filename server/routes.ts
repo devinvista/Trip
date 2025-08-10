@@ -3152,19 +3152,19 @@ export function registerRoutes(app: Express): Server {
     try {
       // Contar atividades ativas
       const totalActivities = await db
-        .select({ count: sql`COUNT(*)::int` })
+        .select({ count: sql`COUNT(*)` })
         .from(activities)
         .where(eq(activities.is_active, true));
 
       // Contar propostas ativas
       const totalProposals = await db
-        .select({ count: sql`COUNT(*)::int` })
+        .select({ count: sql`COUNT(*)` })
         .from(activityBudgetProposals)
         .where(eq(activityBudgetProposals.is_active, true));
 
       // Contar reviews
       const totalReviews = await db
-        .select({ count: sql`COUNT(*)::int` })
+        .select({ count: sql`COUNT(*)` })
         .from(activityReviews)
         .where(eq(activityReviews.is_hidden, false));
 
@@ -3172,43 +3172,106 @@ export function registerRoutes(app: Express): Server {
       const byCategory = await db
         .select({
           category: activities.category,
-          count: sql`COUNT(*)::int`
+          count: sql`COUNT(*)`
         })
         .from(activities)
         .where(eq(activities.is_active, true))
         .groupBy(activities.category);
 
-      // Estatísticas por destino
+      // Estatísticas por destino (consolidando nomes similares)
       const byDestination = await db
         .select({
           destination: activities.destination_name,
-          count: sql`COUNT(*)::int`
+          count: sql`COUNT(*)`
         })
         .from(activities)
         .where(eq(activities.is_active, true))
         .groupBy(activities.destination_name)
         .limit(10);
 
+      // Consolidar destinos similares
+      const consolidatedDestinations: Record<string, number> = {};
+      byDestination.forEach(item => {
+        let dest = item.destination || 'Sem destino';
+        
+        // Normalizar nomes de destinos
+        if (dest.includes('São Paulo')) {
+          dest = 'São Paulo';
+        } else if (dest.includes('Rio de Janeiro')) {
+          dest = 'Rio de Janeiro';
+        } else if (dest.includes('Salvador')) {
+          dest = 'Salvador';
+        }
+        
+        consolidatedDestinations[dest] = (consolidatedDestinations[dest] || 0) + Number(item.count);
+      });
+
       const stats = {
-        totalActivities: totalActivities[0]?.count || 0,
-        totalProposals: totalProposals[0]?.count || 0,
-        totalReviews: totalReviews[0]?.count || 0,
-        avgProposalsPerActivity: totalActivities[0]?.count > 0 ? 
-          Math.round((totalProposals[0]?.count || 0) / totalActivities[0].count * 10) / 10 : 0,
+        totalActivities: Number(totalActivities[0]?.count || 0),
+        totalProposals: Number(totalProposals[0]?.count || 0),
+        totalReviews: Number(totalReviews[0]?.count || 0),
+        avgProposalsPerActivity: Number(totalActivities[0]?.count) > 0 ? 
+          Math.round((Number(totalProposals[0]?.count || 0) / Number(totalActivities[0]?.count)) * 10) / 10 : 0,
         byCategory: byCategory.reduce((acc, item) => {
-          acc[item.category] = item.count;
+          acc[item.category] = Number(item.count);
           return acc;
         }, {} as Record<string, number>),
-        byDestination: byDestination.reduce((acc, item) => {
-          acc[item.destination || 'Sem destino'] = item.count;
-          return acc;
-        }, {} as Record<string, number>)
+        byDestination: consolidatedDestinations
       };
 
       res.json(stats);
     } catch (error) {
       console.error('Erro ao buscar estatísticas de atividades:', error);
       res.status(500).json({ message: "Erro ao buscar estatísticas de atividades" });
+    }
+  });
+
+  // ===== ENDPOINT PARA CORRIGIR DESTINOS DUPLICADOS =====
+  app.post("/api/admin/fix-destinations", async (req, res) => {
+    try {
+      console.log("🔧 Corrigindo destinos duplicados...");
+      
+      // Corrigir São Paulo
+      await db.update(activities)
+        .set({ destination_name: "São Paulo" })
+        .where(eq(activities.destination_name, "São Paulo, SP"));
+      
+      // Corrigir Rio de Janeiro
+      await db.update(activities)
+        .set({ destination_name: "Rio de Janeiro" })
+        .where(eq(activities.destination_name, "Rio de Janeiro, RJ"));
+      
+      // Corrigir Salvador
+      await db.update(activities)
+        .set({ destination_name: "Salvador" })
+        .where(eq(activities.destination_name, "Salvador, BA"));
+
+      // Contar atividades após correção
+      const stats = await db
+        .select({
+          destination: activities.destination_name,
+          count: sql`COUNT(*)`
+        })
+        .from(activities)
+        .where(eq(activities.is_active, true))
+        .groupBy(activities.destination_name);
+
+      console.log("✅ Destinos corrigidos:");
+      stats.forEach(stat => {
+        console.log(`  ${stat.destination}: ${stat.count} atividades`);
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Destinos corrigidos com sucesso",
+        stats: stats.reduce((acc, item) => {
+          acc[item.destination || 'Sem destino'] = Number(item.count);
+          return acc;
+        }, {} as Record<string, number>)
+      });
+    } catch (error) {
+      console.error('Erro ao corrigir destinos:', error);
+      res.status(500).json({ message: "Erro ao corrigir destinos" });
     }
   });
 
