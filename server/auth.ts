@@ -170,10 +170,11 @@ export function setupAuth(app: Express) {
           return done(null, false, { message: 'Usuário não encontrado' });
         }
 
-        // Check password using simple hash (demo123 -> sha256 with salt)
-        const { createHash } = await import('crypto');
-        const expectedHash = createHash('sha256').update(password + 'salt').digest('hex');
-        const isValid = user.password === expectedHash;
+        // Check password using scrypt hash (same as used in database)
+        const { scryptSync } = await import('crypto');
+        const [hash, salt] = user.password.split('.');
+        const hashedPassword = scryptSync(password, salt, 64).toString('hex');
+        const isValid = hash === hashedPassword;
         
         if (!isValid) {
           return done(null, false, { message: 'Senha incorreta' });
