@@ -26,17 +26,17 @@ type ActivityReview = {
   rating: number;
   review: string | null;
   photos: string[];
-  visitDate: string | null;
-  helpfulVotes: number;
-  isVerified: boolean;
-  createdAt: string;
+  visit_date: string | null;
+  helpful_votes: number;
+  is_verified: boolean;
+  created_at: string;
   user: {
     id: number;
     username: string;
-    fullName: string;
-    profilePhoto: string | null;
-    averageRating: number;
-    isVerified: boolean;
+    full_name: string;
+    profile_photo: string | null;
+    average_rating: number;
+    is_verified: boolean;
   };
 };
 
@@ -62,7 +62,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
       rating: 5,
       review: "",
       photos: [],
-      visitDate: ""
+      visit_date: ""
     }
   });
 
@@ -347,7 +347,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                   <CardContent className="p-4">
                     <div className="flex gap-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={review.user.profilePhoto || ""} />
+                        <AvatarImage src={review.user.profile_photo || ""} />
                         <AvatarFallback>
                           <User className="h-5 w-5" />
                         </AvatarFallback>
@@ -356,11 +356,11 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">{review.user.fullName}</span>
-                            {review.user.isVerified && (
+                            <span className="font-medium">{review.user.full_name}</span>
+                            {review.user.is_verified && (
                               <CheckCircle className="h-4 w-4 text-blue-500" />
                             )}
-                            {review.isVerified && (
+                            {review.is_verified && (
                               <Badge variant="outline" className="text-xs text-green-600 border-green-200">
                                 Verificado
                               </Badge>
@@ -369,15 +369,15 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                           <div className="flex items-center gap-2">
                             {renderStars(review.rating, "sm")}
                             <span className="text-xs text-gray-500">
-                              {format(new Date(review.createdAt), "dd 'de' MMM 'de' yyyy", { locale: ptBR })}
+                              {format(new Date(review.created_at), "dd 'de' MMM 'de' yyyy", { locale: ptBR })}
                             </span>
                           </div>
                         </div>
 
-                        {review.visitDate && (
+                        {review.visit_date && (
                           <div className="flex items-center gap-1 text-xs text-gray-500">
                             <Calendar className="h-3 w-3" />
-                            Visitou em {format(new Date(review.visitDate), "MMM 'de' yyyy", { locale: ptBR })}
+                            Visitou em {format(new Date(review.visit_date), "MMM 'de' yyyy", { locale: ptBR })}
                           </div>
                         )}
 
@@ -394,12 +394,12 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                             className="text-gray-500 hover:text-blue-600 hover:bg-blue-50"
                           >
                             <ThumbsUp className="h-3 w-3 mr-1" />
-                            Útil ({review.helpfulVotes})
+                            Útil ({review.helpful_votes})
                           </Button>
                           
-                          {review.user.averageRating && Number(review.user.averageRating) > 0 && (
+                          {review.user.average_rating && Number(review.user.average_rating) > 0 && (
                             <div className="text-xs text-gray-500">
-                              Viajante {formatBrazilianNumber(Number(review.user.averageRating)).replace(',00', ',0')} ⭐
+                              Viajante {formatBrazilianNumber(Number(review.user.average_rating)).replace(',00', ',0')} ⭐
                             </div>
                           )}
                         </div>

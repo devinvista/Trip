@@ -59,15 +59,15 @@ function ActivitiesTimeline({
   onEdit,
   onDelete,
   onReorder,
-  startDate,
-  endDate
+  start_date,
+  end_date
 }: {
   activities: PlannedActivity[];
   onEdit: (activity: PlannedActivity) => void;
   onDelete: (id: string) => void;
   onReorder: (activities: PlannedActivity[]) => void;
-  startDate?: string;
-  endDate?: string;
+  start_date?: string;
+  end_date?: string;
 }) {
   // Group activities by date with better date handling
   const groupedActivities = activities.reduce((groups, activity) => {
@@ -239,7 +239,7 @@ function ActivitiesTimeline({
                         Custo estimado
                       </div>
                       <div className="text-lg font-bold text-blue-600">
-                        R$ {groupedActivities[dateGroup].reduce((sum, activity) => sum + (activity.estimatedCost || 0), 0).toLocaleString('pt-BR')}
+                        R$ {groupedActivities[dateGroup].reduce((sum, activity) => sum + (activity.estimated_cost || 0), 0).toLocaleString('pt-BR')}
                       </div>
                     </div>
                   </div>
@@ -409,10 +409,10 @@ function ActivitiesTimeline({
                                   </div>
                                 )}
 
-                                {activity.estimatedCost && activity.estimatedCost > 0 && (
+                                {activity.estimated_cost && activity.estimated_cost > 0 && (
                                   <div className="flex items-center gap-2 text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
                                     <DollarSign className="h-4 w-4 flex-shrink-0" />
-                                    <span className="font-bold">R$ {activity.estimatedCost.toLocaleString('pt-BR')}</span>
+                                    <span className="font-bold">R$ {activity.estimated_cost.toLocaleString('pt-BR')}</span>
                                   </div>
                                 )}
 

@@ -14,8 +14,8 @@ interface Activity {
   location: string;
   cover_image: string;
   category: string;
-  averageRating: number;
-  totalRatings: number;
+  average_rating: number;
+  total_ratings: number;
   estimatedDuration?: string;
   max_participants?: number;
   difficulty?: string;
@@ -163,10 +163,10 @@ export function ImprovedActivityCard({
               <div className="flex items-center">
                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
                 <span className="ml-1 text-sm font-medium text-gray-900">
-                  {formatBrazilianNumber(activity.averageRating).replace(',00', ',0')}
+                  {formatBrazilianNumber(activity.average_rating).replace(',00', ',0')}
                 </span>
                 <span className="ml-1 text-sm text-gray-500">
-                  ({activity.totalRatings})
+                  ({activity.total_ratings})
                 </span>
               </div>
 

@@ -144,9 +144,9 @@ export class PostgreSQLStorage implements IStorage {
         creator_id: trips.creator_id,
         title: trips.title,
         destination_id: trips.destination_id,
-        coverImage: trips.coverImage,
-        startDate: trips.startDate,
-        endDate: trips.endDate,
+        cover_image: trips.cover_image,
+        start_date: trips.start_date,
+        end_date: trips.end_date,
         budget: trips.budget,
         budget_breakdown: trips.budget_breakdown,
         max_participants: trips.max_participants,
@@ -210,20 +210,20 @@ export class PostgreSQLStorage implements IStorage {
           id: users.id,
           username: users.username,
           email: users.email,
-          fullName: users.fullName,
+          full_name: users.full_name,
           phone: users.phone,
           bio: users.bio,
           location: users.location,
-          profilePhoto: users.profilePhoto,
+          profile_photo: users.profile_photo,
           languages: users.languages,
           interests: users.interests,
-          travelStyles: users.travelStyles,
-          referredBy: users.referredBy,
-          isVerified: users.isVerified,
-          verificationMethod: users.verificationMethod,
-          averageRating: users.averageRating,
-          totalRatings: users.totalRatings,
-          createdAt: users.createdAt
+          travel_styles: users.travel_styles,
+          referred_by: users.referred_by,
+          is_verified: users.is_verified,
+          verification_method: users.verification_method,
+          average_rating: users.average_rating,
+          total_ratings: users.total_ratings,
+          created_at: users.created_at
         }
       })
       .from(tripParticipants)
@@ -252,20 +252,20 @@ export class PostgreSQLStorage implements IStorage {
           id: users.id,
           username: users.username,
           email: users.email,
-          fullName: users.fullName,
+          full_name: users.full_name,
           phone: users.phone,
           bio: users.bio,
           location: users.location,
-          profilePhoto: users.profilePhoto,
+          profile_photo: users.profile_photo,
           languages: users.languages,
           interests: users.interests,
-          travelStyles: users.travelStyles,
-          referredBy: users.referredBy,
-          isVerified: users.isVerified,
-          verificationMethod: users.verificationMethod,
-          averageRating: users.averageRating,
-          totalRatings: users.totalRatings,
-          createdAt: users.createdAt
+          travel_styles: users.travel_styles,
+          referred_by: users.referred_by,
+          is_verified: users.is_verified,
+          verification_method: users.verification_method,
+          average_rating: users.average_rating,
+          total_ratings: users.total_ratings,
+          created_at: users.created_at
         }
       })
       .from(messages)
@@ -340,9 +340,9 @@ export class PostgreSQLStorage implements IStorage {
         creator_id: trips.creator_id,
         title: trips.title,
         destination_id: trips.destination_id,
-        coverImage: trips.coverImage,
-        startDate: trips.startDate,
-        endDate: trips.endDate,
+        cover_image: trips.cover_image,
+        start_date: trips.start_date,
+        end_date: trips.end_date,
         budget: trips.budget,
         budget_breakdown: trips.budget_breakdown,
         max_participants: trips.max_participants,
@@ -380,20 +380,20 @@ export class PostgreSQLStorage implements IStorage {
           id: users.id,
           username: users.username,
           email: users.email,
-          fullName: users.fullName,
+          full_name: users.full_name,
           phone: users.phone,
           bio: users.bio,
           location: users.location,
-          profilePhoto: users.profilePhoto,
+          profile_photo: users.profile_photo,
           languages: users.languages,
           interests: users.interests,
-          travelStyles: users.travelStyles,
-          referredBy: users.referredBy,
-          isVerified: users.isVerified,
-          verificationMethod: users.verificationMethod,
-          averageRating: users.averageRating,
-          totalRatings: users.totalRatings,
-          createdAt: users.createdAt
+          travel_styles: users.travel_styles,
+          referred_by: users.referred_by,
+          is_verified: users.is_verified,
+          verification_method: users.verification_method,
+          average_rating: users.average_rating,
+          total_ratings: users.total_ratings,
+          created_at: users.created_at
         }
       })
       .from(expenses)
@@ -415,20 +415,20 @@ export class PostgreSQLStorage implements IStorage {
             id: users.id,
             username: users.username,
             email: users.email,
-            fullName: users.fullName,
+            full_name: users.full_name,
             phone: users.phone,
             bio: users.bio,
             location: users.location,
-            profilePhoto: users.profilePhoto,
+            profile_photo: users.profile_photo,
             languages: users.languages,
             interests: users.interests,
-            travelStyles: users.travelStyles,
-            referredBy: users.referredBy,
-            isVerified: users.isVerified,
-            verificationMethod: users.verificationMethod,
-            averageRating: users.averageRating,
-            totalRatings: users.totalRatings,
-            createdAt: users.createdAt
+            travel_styles: users.travel_styles,
+            referred_by: users.referred_by,
+            is_verified: users.is_verified,
+            verification_method: users.verification_method,
+            average_rating: users.average_rating,
+            total_ratings: users.total_ratings,
+            created_at: users.created_at
           }
         })
         .from(expenseSplits)
@@ -437,7 +437,7 @@ export class PostgreSQLStorage implements IStorage {
       
       expensesWithSplits.push({
         ...expense,
-        createdAt: expense.created_at, // Add missing field expected by frontend
+        created_at: expense.created_at, // Add missing field expected by frontend
         splits
       });
     }

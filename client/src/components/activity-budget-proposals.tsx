@@ -34,7 +34,7 @@ type ActivityBudgetProposal = {
   creator: {
     id: number;
     username: string;
-    fullName: string;
+    full_name: string;
   };
 };
 
@@ -614,7 +614,7 @@ export function ActivityBudgetProposals({
                         </CardTitle>
                         <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
                           <User className="h-4 w-4" />
-                          <span>{proposal.creator.fullName}</span>
+                          <span>{proposal.creator.full_name}</span>
                         </div>
                       </div>
                     </div>

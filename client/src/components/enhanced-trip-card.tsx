@@ -24,10 +24,10 @@ interface Trip {
   travel_style: string;
   creator: {
     id: number;
-    fullName: string;
-    profilePhoto?: string;
-    averageRating: number;
-    isVerified: boolean;
+    full_name: string;
+    profile_photo?: string;
+    average_rating: number;
+    is_verified: boolean;
   };
   cover_image?: string;
 }
@@ -201,16 +201,16 @@ export function EnhancedTripCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Avatar className="w-6 h-6">
-                <AvatarImage src={trip.creator.profilePhoto} />
+                <AvatarImage src={trip.creator.profile_photo} />
                 <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
-                  {trip.creator.fullName.split(' ').map(n => n[0]).join('')}
+                  {trip.creator.full_name.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
               <div className="flex items-center space-x-1">
                 <span className="text-sm text-gray-600 truncate max-w-20">
-                  {trip.creator.fullName.split(' ')[0]}
+                  {trip.creator.full_name.split(' ')[0]}
                 </span>
-                {trip.creator.isVerified && (
+                {trip.creator.is_verified && (
                   <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-xs">✓</span>
                   </div>
@@ -222,7 +222,7 @@ export function EnhancedTripCard({
             <div className="flex items-center">
               <Star className="w-3 h-3 text-yellow-400 fill-current" />
               <span className="ml-1 text-sm font-medium text-gray-900">
-                {formatBrazilianNumber(trip.creator.averageRating).replace(',00', ',0')}
+                {formatBrazilianNumber(trip.creator.average_rating).replace(',00', ',0')}
               </span>
             </div>
           </div>

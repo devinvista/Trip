@@ -25,8 +25,8 @@ type Trip = {
   id: number;
   title: string;
   localidade: string;
-  startDate: string;
-  endDate: string;
+  start_date: string;
+  end_date: string;
   cover_image: string;
   max_participants: number;
   budget: number;
@@ -46,7 +46,7 @@ type ActivityBudgetProposal = {
   creator: {
     id: number;
     username: string;
-    fullName: string;
+    full_name: string;
   };
 };
 
@@ -288,7 +288,7 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                             <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {new Date(trip.startDate).toLocaleDateString('pt-BR')}
+                                {new Date(trip.start_date).toLocaleDateString('pt-BR')}
                               </span>
                               <span className="flex items-center gap-1">
                                 <Users className="h-3 w-3" />
@@ -375,8 +375,8 @@ export function AddActivityToTrip({ activity, isOpen, onClose, selectedProposals
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-gray-500" />
                       <span>
-                        {new Date(selectedTrip.startDate).toLocaleDateString('pt-BR')} - {' '}
-                        {new Date(selectedTrip.endDate).toLocaleDateString('pt-BR')}
+                        {new Date(selectedTrip.start_date).toLocaleDateString('pt-BR')} - {' '}
+                        {new Date(selectedTrip.end_date).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">

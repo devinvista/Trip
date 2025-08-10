@@ -231,13 +231,13 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                 {balances.map((balance: any) => (
                   <div key={balance.user_id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={balance.user.profilePhoto || ""} />
+                      <AvatarImage src={balance.user.profile_photo || ""} />
                       <AvatarFallback>
-                        {balance.user.fullName?.substring(0, 2).toUpperCase() || balance.user.username?.substring(0, 2).toUpperCase() || "??"}
+                        {balance.user.full_name?.substring(0, 2).toUpperCase() || balance.user.username?.substring(0, 2).toUpperCase() || "??"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-medium">{balance.user.fullName || balance.user.username}</p>
+                      <p className="font-medium">{balance.user.full_name || balance.user.username}</p>
                       <p className={`text-sm font-semibold ${
                         balance.balance > 0 ? 'text-green-600' : balance.balance < 0 ? 'text-red-600' : 'text-gray-600'
                       }`}>
@@ -266,11 +266,11 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                     <div className="space-y-2">
                       {settlements.map((settlement, index) => (
                         <div key={index} className="flex items-center gap-2 text-sm">
-                          <span className="font-medium">{settlement.from.fullName}</span>
+                          <span className="font-medium">{settlement.from.full_name}</span>
                           <span className="text-gray-600">deve</span>
                           <span className="font-semibold text-primary">{formatBrazilianCurrency(settlement.amount)}</span>
                           <span className="text-gray-600">para</span>
-                          <span className="font-medium">{settlement.to.fullName}</span>
+                          <span className="font-medium">{settlement.to.full_name}</span>
                         </div>
                       ))}
                     </div>
@@ -372,12 +372,12 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                               className="flex items-center gap-2 cursor-pointer"
                             >
                               <Avatar className="h-6 w-6">
-                                <AvatarImage src={participant.user.profilePhoto || ""} />
+                                <AvatarImage src={participant.user.profile_photo || ""} />
                                 <AvatarFallback className="text-xs">
-                                  {participant.user.fullName.substring(0, 2).toUpperCase()}
+                                  {participant.user.full_name.substring(0, 2).toUpperCase()}
                                 </AvatarFallback>
                               </Avatar>
-                              <span>{participant.user.fullName}</span>
+                              <span>{participant.user.full_name}</span>
                             </Label>
                           </div>
                         ))}
@@ -431,7 +431,7 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                     <div>
                       <h4 className="font-medium">{expense.description}</h4>
                       <p className="text-sm text-gray-600">
-                        Pago por {expense.payer.fullName} • {format(new Date(expense.createdAt), "dd 'de' MMM", { locale: ptBR })}
+                        Pago por {expense.payer.full_name} • {format(new Date(expense.created_at), "dd 'de' MMM", { locale: ptBR })}
                       </p>
                     </div>
                     <div className="text-right">
@@ -451,12 +451,12 @@ export function ExpenseManager({ tripId, participants }: ExpenseManagerProps) {
                         <div key={split.id} className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6">
-                              <AvatarImage src={split.user.profilePhoto || ""} />
+                              <AvatarImage src={split.user.profile_photo || ""} />
                               <AvatarFallback className="text-xs">
-                                {split.user.fullName.substring(0, 2).toUpperCase()}
+                                {split.user.full_name.substring(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
-                            <span>{split.user.fullName}</span>
+                            <span>{split.user.full_name}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={split.paid ? 'text-green-600' : 'text-gray-600'}>

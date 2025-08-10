@@ -130,87 +130,87 @@ export const userRatings = pgTable("user_ratings", {
 export const destinationRatings = pgTable("destination_ratings", {
   id: serial("id").primaryKey(),
   destination_id: integer("destination_id").notNull().references(() => destinations.id), // Reference to destinations table
-  userId: integer("user_id").notNull().references(() => users.id), // User who rated
-  tripId: integer("trip_id").references(() => trips.id), // Optional: trip this rating is from
+  user_id: integer("user_id").notNull().references(() => users.id), // User who rated
+  trip_id: integer("trip_id").references(() => trips.id), // Optional: trip this rating is from
   rating: integer("rating").notNull(), // 1-5 stars
   comment: text("comment"), // Optional comment
   photos: json("photos"), // Array of photo URLs
-  visitDate: timestamp("visit_date"), // When they visited
-  isHidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
-  reportCount: integer("report_count").default(0).notNull(), // Number of reports
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  visit_date: timestamp("visit_date"), // When they visited
+  is_hidden: boolean("is_hidden").default(false).notNull(), // Hidden if reported multiple times
+  report_count: integer("report_count").default(0).notNull(), // Number of reports
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // User verification requests
 export const verificationRequests = pgTable("verification_requests", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
-  verificationType: varchar("verification_type", { length: 100 }).notNull(), // email, phone, document, social_media
-  verificationData: json("verification_data"), // Store verification info (phone, document images, etc.)
+  user_id: integer("user_id").notNull().references(() => users.id),
+  verification_type: varchar("verification_type", { length: 100 }).notNull(), // email, phone, document, social_media
+  verification_data: json("verification_data"), // Store verification info (phone, document images, etc.)
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, approved, rejected
-  submittedAt: timestamp("submitted_at").defaultNow().notNull(),
-  reviewedAt: timestamp("reviewed_at"),
-  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed
-  rejectionReason: text("rejection_reason"), // If rejected, why
+  submitted_at: timestamp("submitted_at").defaultNow().notNull(),
+  reviewed_at: timestamp("reviewed_at"),
+  reviewed_by: integer("reviewed_by").references(() => users.id), // Admin who reviewed
+  rejection_reason: text("rejection_reason"), // If rejected, why
 });
 
 // Rating reports - for reporting inappropriate reviews
 export const ratingReports = pgTable("rating_reports", {
   id: serial("id").primaryKey(),
-  reporterId: integer("reporter_id").notNull().references(() => users.id), // User who reported
-  ratingType: varchar("rating_type", { length: 50 }).notNull(), // 'user', 'localidade', 'activity'
-  ratingId: integer("rating_id").notNull(), // ID of the rating being reported
+  reporter_id: integer("reporter_id").notNull().references(() => users.id), // User who reported
+  rating_type: varchar("rating_type", { length: 50 }).notNull(), // 'user', 'localidade', 'activity'
+  rating_id: integer("rating_id").notNull(), // ID of the rating being reported
   reason: varchar("reason", { length: 100 }).notNull(), // 'offensive', 'spam', 'inappropriate', 'fake'
   description: text("description"), // Optional detailed description
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, reviewed, dismissed
-  reviewedAt: timestamp("reviewed_at"),
-  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  reviewed_at: timestamp("reviewed_at"),
+  reviewed_by: integer("reviewed_by").references(() => users.id), // Admin who reviewed
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Activity rating helpful votes - track who found reviews helpful
 export const activityRatingHelpfulVotes = pgTable("activity_rating_helpful_votes", {
   id: serial("id").primaryKey(),
-  reviewId: integer("review_id").notNull().references(() => activityReviews.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  review_id: integer("review_id").notNull().references(() => activityReviews.id),
+  user_id: integer("user_id").notNull().references(() => users.id),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Interest list table for users without valid referral codes
 export const interestList = pgTable("interest_list", {
   id: serial("id").primaryKey(),
-  fullName: varchar("full_name", { length: 255 }).notNull(),
+  full_name: varchar("full_name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   phone: varchar("phone", { length: 20 }).notNull(),
-  referralCode: varchar("referral_code", { length: 50 }), // Invalid code they tried to use
+  referral_code: varchar("referral_code", { length: 50 }), // Invalid code they tried to use
   status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, contacted, approved, rejected
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Referral codes table to manage valid invitation codes
 export const referralCodes = pgTable("referral_codes", {
   id: serial("id").primaryKey(),
   code: varchar("code", { length: 50 }).notNull().unique(),
-  createdBy: integer("created_by").references(() => users.id),
-  maxUses: integer("max_uses").default(1).notNull(),
-  currentUses: integer("current_uses").default(0).notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  expiresAt: timestamp("expires_at"),
+  created_by: integer("created_by").references(() => users.id),
+  max_uses: integer("max_uses").default(1).notNull(),
+  current_uses: integer("current_uses").default(0).notNull(),
+  is_active: boolean("is_active").default(true).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  expires_at: timestamp("expires_at"),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   email: true,
-  fullName: true,
+  full_name: true,
   phone: true,
   bio: true,
   location: true,
   languages: true,
   interests: true,
-  travelStyles: true,
+  travel_styles: true,
 }).extend({
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
 });
@@ -224,8 +224,8 @@ export const insertTripSchema = createInsertSchema(trips).omit({
 }).extend({
   title: z.string().min(3, "O título deve ter pelo menos 3 caracteres"),
   budget: z.number().optional(),
-  coverImage: z.string().optional(),
-  budgetBreakdown: z.object({
+  cover_image: z.string().optional(),
+  budget_breakdown: z.object({
     transport: z.number().optional(),
     accommodation: z.number().optional(),
     food: z.number().optional(),
@@ -235,10 +235,10 @@ export const insertTripSchema = createInsertSchema(trips).omit({
     visas: z.number().optional(),
     other: z.number().optional(),
   }).optional(),
-  startDate: z.union([z.string(), z.date()]).transform(val => 
+  start_date: z.union([z.string(), z.date()]).transform(val => 
     typeof val === 'string' ? new Date(val) : val
   ),
-  endDate: z.union([z.string(), z.date()]).transform(val => 
+  end_date: z.union([z.string(), z.date()]).transform(val => 
     typeof val === 'string' ? new Date(val) : val
   ),
 });
@@ -257,10 +257,10 @@ export const insertTripRequestSchema = createInsertSchema(tripRequests).omit({
 
 export const insertRatingReportSchema = createInsertSchema(ratingReports).omit({
   id: true,
-  reporterId: true,
-  reviewedAt: true,
-  reviewedBy: true,
-  createdAt: true,
+  reporter_id: true,
+  reviewed_at: true,
+  reviewed_by: true,
+  created_at: true,
 }).extend({
   reason: z.enum(["offensive", "spam", "inappropriate", "fake"], {
     errorMap: () => ({ message: "Motivo inválido" })
@@ -311,9 +311,9 @@ export type InsertExpenseSplit = z.infer<typeof insertExpenseSplitSchema>;
 // Interest list schema and types
 export const insertInterestListSchema = createInsertSchema(interestList).omit({ 
   id: true, 
-  createdAt: true
+  created_at: true
 }).extend({
-  fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
 });
@@ -346,9 +346,9 @@ export const insertUserRatingSchema = createInsertSchema(userRatings).omit({
 
 export const insertDestinationRatingSchema = createInsertSchema(destinationRatings).omit({
   id: true,
-  userId: true,
-  createdAt: true,
-  updatedAt: true,
+  user_id: true,
+  created_at: true,
+  updated_at: true,
 }).extend({
   rating: z.number().min(1, "Avaliação deve ser entre 1 e 5 estrelas").max(5, "Avaliação deve ser entre 1 e 5 estrelas"),
   comment: z.string().optional(),
@@ -361,14 +361,14 @@ export const insertDestinationRatingSchema = createInsertSchema(destinationRatin
     nightlife: z.number().min(1).max(5).optional(),
   }).optional(),
   photos: z.array(z.string()).optional(),
-  visitDate: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+  visit_date: z.string().optional().transform((val) => val ? new Date(val) : undefined),
 });
 
 export const insertVerificationRequestSchema = createInsertSchema(verificationRequests).omit({
   id: true,
-  submittedAt: true,
-  reviewedAt: true,
-  reviewedBy: true,
+  submitted_at: true,
+  reviewed_at: true,
+  reviewed_by: true,
   status: true,
 });
 
@@ -598,7 +598,7 @@ export interface PlannedActivity {
   id: string;
   title: string;
   description?: string;
-  estimatedCost?: number;
+  estimated_cost?: number;
   priority: 'high' | 'medium' | 'low';
   category: 'sightseeing' | 'food' | 'adventure' | 'culture' | 'relaxation' | 'nightlife' | 'shopping' | 'other';
   duration?: string; // e.g., "2 hours", "full day"
@@ -610,10 +610,10 @@ export interface PlannedActivity {
   }>;
   notes?: string;
   completed?: boolean;
-  scheduledDate?: string; // ISO date string
+  scheduled_date?: string; // ISO date string
   location?: string;
   status?: string; // Add status property for compatibility
-  createdAt: string;
+  created_at: string;
 }
 
 // Activity categories with labels and icons (standardized across app)
