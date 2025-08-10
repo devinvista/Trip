@@ -1195,7 +1195,7 @@ export default function TripDetailPage() {
 
   // Calculate user permissions
   const isCreator = trip && user && trip.creator_id === user.id;
-  const isParticipant = trip && user && trip.participants?.some((p: any) => p.user_id === user.id && p.status === 'accepted');
+  const isParticipant = trip && user && trip.participants?.some((p: any) => p.user_id === user.id && (p.status === 'accepted' || p.status === 'approved'));
 
   // Handle activities change and save to database
   const handleActivitiesChange = React.useCallback(async (newActivities: PlannedActivity[]) => {
@@ -1960,11 +1960,11 @@ export default function TripDetailPage() {
                             <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                               <AvatarImage src={participant.user.profilePhoto} />
                               <AvatarFallback className="text-xs sm:text-sm">
-                                {participant.user.fullName?.[0] || participant.user.username[0]}
+                                {(participant.user.full_name || participant.user.fullName)?.[0] || participant.user.username[0]}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm sm:text-base truncate">{participant.user.fullName || participant.user.username}</p>
+                              <p className="font-medium text-sm sm:text-base truncate">{participant.user.full_name || participant.user.fullName || participant.user.username}</p>
                               <p className="text-xs sm:text-sm text-gray-600 truncate">{participant.user.location}</p>
                             </div>
                           </div>
@@ -1973,7 +1973,7 @@ export default function TripDetailPage() {
                               <Badge className="bg-yellow-100 text-yellow-800 text-xs">Organizador</Badge>
                             )}
                             <Badge variant="outline" className="text-green-800 border-green-200 text-xs">
-                              {participant.status === 'accepted' ? 'Aceito' : 
+                              {(participant.status === 'accepted' || participant.status === 'approved') ? 'Aceito' : 
                                participant.status === 'pending' ? 'Pendente' : 
                                participant.status === 'rejected' ? 'Rejeitado' : 
                                participant.status}
@@ -2001,10 +2001,10 @@ export default function TripDetailPage() {
                             <div className="flex items-start justify-between">
                               <div className="flex items-center gap-3">
                                 <Avatar>
-                                  <AvatarFallback>{request.user.fullName?.[0] || request.user.username[0]}</AvatarFallback>
+                                  <AvatarFallback>{(request.user.full_name || request.user.fullName)?.[0] || request.user.username[0]}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <p className="font-medium">{request.user.fullName || request.user.username}</p>
+                                  <p className="font-medium">{request.user.full_name || request.user.fullName || request.user.username}</p>
                                   <p className="text-sm text-gray-600">{request.message}</p>
                                 </div>
                               </div>

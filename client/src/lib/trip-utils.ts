@@ -3,7 +3,7 @@
 export interface TripParticipant {
   id: number;
   user_id: number;
-  status: 'accepted' | 'pending' | 'rejected';
+  status: 'accepted' | 'approved' | 'pending' | 'rejected';
   joined_at: string;
   user?: {
     id: number;
@@ -30,8 +30,8 @@ export interface Trip {
  */
 export function getRealParticipantsCount(trip: Trip): number {
   if (trip.participants && Array.isArray(trip.participants)) {
-    // Always prioritize counting accepted participants from the participants array
-    return trip.participants.filter(p => p.status === 'accepted').length;
+    // Always prioritize counting accepted/approved participants from the participants array
+    return trip.participants.filter(p => p.status === 'accepted' || p.status === 'approved').length;
   }
   // Fallback to current_participants field
   return trip.current_participants || 1;
