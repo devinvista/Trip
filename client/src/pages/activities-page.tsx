@@ -48,7 +48,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { motion, AnimatePresence } from "framer-motion";
 import { activityCategories } from "@shared/schema";
 import type { Activity } from "@shared/schema";

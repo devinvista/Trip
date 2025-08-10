@@ -23,7 +23,7 @@ import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { useState, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { getRealParticipantsCount, getAvailableSpots, isTripFull } from "@/lib/trip-utils";
 import { getTripDuration, safeParseDate } from "@/lib/date-utils";
 

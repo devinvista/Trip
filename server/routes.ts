@@ -65,7 +65,7 @@ export function registerRoutes(app: Express): Server {
       if (start_date) filters.start_date = new Date(start_date as string);
       if (end_date) filters.end_date = new Date(end_date as string);
       if (budget) filters.budget = parseInt(budget as string);
-      if (travelStyle) filters.travelStyle = travelStyle as string;
+      if (travelStyle) filters.travel_style = travelStyle as string;
       
       const trips = await storage.getAllTrips();
       

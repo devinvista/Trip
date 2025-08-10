@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
@@ -85,14 +85,14 @@ const formatPhoneNumber = (value: string) => {
 };
 
 const profileSchema = z.object({
-  fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   phone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos").max(20, "Telefone deve ter no máximo 20 dígitos"),
   bio: z.string().max(500, "Bio deve ter no máximo 500 caracteres").optional(),
   location: z.string().min(2, "Localização deve ter pelo menos 2 caracteres"),
   languages: z.array(z.string()).min(1, "Selecione pelo menos um idioma"),
   interests: z.array(z.string()).min(1, "Selecione pelo menos um interesse"),
-  travelStyles: z.array(z.string()).min(1, "Selecione pelo menos um estilo de viagem")
+  travel_styles: z.array(z.string()).min(1, "Selecione pelo menos um estilo de viagem")
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;

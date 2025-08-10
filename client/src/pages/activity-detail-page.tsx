@@ -39,7 +39,7 @@ import { ActivityBudgetProposals } from "@/components/activity-budget-proposals"
 import { AddActivityToTrip } from "@/components/add-activity-to-trip";
 import { ActivityReviews } from "@/components/activity-reviews";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";

@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,7 +20,7 @@ import {
 import logoImage from "@assets/20250713_0013_Logo com Fundo Transparente_remix_01k00w7vt0fg184dm3z41h2sk1_1752377252367.png";
 
 export function Navbar() {
-  const { user, logoutMutation, isLoading } = useAuth();
+  const { user, logout_mutation, is_loading } = useAuth();
   const [location] = useLocation();
 
   const navItems = [
@@ -33,11 +33,11 @@ export function Navbar() {
   const isActive = (href: string) => location === href || location.startsWith(href);
 
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logout_mutation.mutate();
   };
 
   // Loading state - Responsivo
-  if (isLoading) {
+  if (is_loading) {
     return (
       <header className="bg-white/95 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
@@ -115,16 +115,16 @@ export function Navbar() {
                     >
                       <UserAvatar 
                         user={{
-                          fullName: user.fullName,
-                          profilePhoto: user.profilePhoto || undefined,
-                          isVerified: user.isVerified
+                          full_name: user.full_name,
+                          profile_photo: user.profile_photo || undefined,
+                          is_verified: user.is_verified
                         }}
                         size="sm"
                         className="w-7 sm:w-8 h-7 sm:h-8 ring-2 ring-white shadow-md"
                       />
                       <div className="hidden md:block text-left">
                         <div className="font-medium text-slate-700 text-sm leading-tight">
-                          {user?.fullName?.split(' ')[0]}
+                          {user?.full_name?.split(' ')[0]}
                         </div>
                         <div className="text-xs text-slate-500 leading-tight max-w-20 truncate">
                           {user?.location || 'Viajante'}
@@ -139,15 +139,15 @@ export function Navbar() {
                       <div className="flex items-center space-x-3">
                         <UserAvatar 
                           user={{
-                            fullName: user.fullName,
-                            profilePhoto: user.profilePhoto || undefined,
-                            isVerified: user.isVerified
+                            full_name: user.full_name,
+                            profile_photo: user.profile_photo || undefined,
+                            is_verified: user.is_verified
                           }}
                           size="md"
                           className="w-10 h-10"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-slate-900 truncate">{user?.fullName}</div>
+                          <div className="font-medium text-slate-900 truncate">{user?.full_name}</div>
                           <div className="text-sm text-slate-500 truncate">{user?.email}</div>
                         </div>
                       </div>

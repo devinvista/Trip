@@ -1,7 +1,7 @@
 
 import { ReactNode } from "react";
 import { useLocation } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { LoadingSpinner } from "@/components/loading-spinner";
 
 interface ProtectedRouteProps {
@@ -9,10 +9,10 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, isLoading } = useAuth();
+  const { user, is_loading } = useAuth();
   const [, navigate] = useLocation();
 
-  if (isLoading) {
+  if (is_loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner variant="travel" size="lg" message="Verificando autenticação..." />

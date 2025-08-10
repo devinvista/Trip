@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { Navbar } from "@/components/navbar";
 import { TravelBoard } from "@/components/travel-board";

@@ -120,7 +120,7 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createTrip(tripData: InsertTrip): Promise<Trip> {
-    const [trip] = await db.insert(trips).values(tripData).returning();
+    const [trip] = await db.insert(trips).values([tripData]).returning();
     return trip;
   }
 
@@ -232,11 +232,7 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async addMessage(messageData: InsertMessage): Promise<Message> {
-    const [message] = await db.insert(messages).values({
-      trip_id: messageData.trip_id,
-      sender_id: messageData.sender_id,
-      content: messageData.content
-    }).returning();
+    const [message] = await db.insert(messages).values(messageData).returning();
     return message;
   }
 
@@ -248,25 +244,7 @@ export class PostgreSQLStorage implements IStorage {
         sender_id: messages.sender_id,
         content: messages.content,
         sent_at: messages.sent_at,
-        sender: {
-          id: users.id,
-          username: users.username,
-          email: users.email,
-          full_name: users.full_name,
-          phone: users.phone,
-          bio: users.bio,
-          location: users.location,
-          profile_photo: users.profile_photo,
-          languages: users.languages,
-          interests: users.interests,
-          travel_styles: users.travel_styles,
-          referred_by: users.referred_by,
-          is_verified: users.is_verified,
-          verification_method: users.verification_method,
-          average_rating: users.average_rating,
-          total_ratings: users.total_ratings,
-          created_at: users.created_at
-        }
+        sender: users
       })
       .from(messages)
       .innerJoin(users, eq(messages.sender_id, users.id))
@@ -568,8 +546,7 @@ export class PostgreSQLStorage implements IStorage {
   async createActivityBudgetProposal(proposalData: InsertActivityBudgetProposal): Promise<ActivityBudgetProposal> {
     const [proposal] = await db.insert(activityBudgetProposals).values({
       ...proposalData,
-      activity_id: proposalData.activity_id || 1, // TODO: Pass from request
-      created_by: proposalData.created_by || 1, // TODO: Get from authenticated user
+      // activity_id and created_by should already be in proposalData
       amount: proposalData.amount.toString() // Convert to string for PostgreSQL
     }).returning();
     return proposal;
@@ -584,7 +561,7 @@ export class PostgreSQLStorage implements IStorage {
         WHERE activity_id = ${activityId} 
         ORDER BY created_at DESC
       `);
-      console.log('✅ Avaliações encontradas:', result.rows.length);
+      console.log('✅ Avaliações encontradas:', result.rowCount);
       return result.rows as unknown as ActivityReview[];
     } catch (error) {
       console.error('❌ Erro ao buscar avaliações:', error);
@@ -595,7 +572,7 @@ export class PostgreSQLStorage implements IStorage {
   async createActivityReview(reviewData: InsertActivityReview): Promise<ActivityReview> {
     const [review] = await db.insert(activityReviews).values({
       ...reviewData,
-      user_id: reviewData.user_id || 1 // TODO: Get from authenticated user
+      // user_id should already be in reviewData
     }).returning();
     return review;
   }

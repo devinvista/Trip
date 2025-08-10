@@ -1,6 +1,6 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { Navbar } from "@/components/navbar";
 import { ChatWindow } from "@/components/chat-window";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -220,7 +220,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider 
       value={{ 
-        user, 
+        user: user || null, 
         is_loading, 
         error, 
         login_mutation, 

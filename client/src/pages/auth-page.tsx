@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,7 +43,7 @@ const referralValidationSchema = z.object({
 const registerSchema = insertUserSchema.extend({
   confirmPassword: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   email: z.string().email("Email inválido"),
-  fullName: z.string().min(3, "Nome completo deve ter pelo menos 3 caracteres"),
+  full_name: z.string().min(3, "Nome completo deve ter pelo menos 3 caracteres"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -59,7 +59,7 @@ type RegisterForm = z.infer<typeof registerSchema>;
 type InterestListForm = z.infer<typeof interestListSchema>;
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, login_mutation, register_mutation } = useAuth();
   const [, navigate] = useLocation();
   const { toast } = useToast();
   
@@ -89,13 +89,13 @@ export default function AuthPage() {
       password: "",
       confirmPassword: "",
       email: "",
-      fullName: "",
+      full_name: "",
       phone: "",
       bio: "",
       location: "",
       languages: [],
       interests: [],
-      travelStyles: [],
+      travel_styles: [],
     },
   });
 
@@ -187,7 +187,7 @@ export default function AuthPage() {
   });
 
   const onLogin = (data: LoginForm) => {
-    loginMutation.mutate(data, {
+    login_mutation.mutate(data, {
       onSuccess: () => {
         navigate("/dashboard");
       }
@@ -201,9 +201,9 @@ export default function AuthPage() {
   const onRegister = (data: RegisterForm) => {
     const { confirmPassword, ...registerData } = data;
     
-    registerMutation.mutate({
+    register_mutation.mutate({
       ...registerData,
-      referredBy: validatedCode,
+      referred_by: validatedCode,
     }, {
       onSuccess: () => {
         navigate("/dashboard");
@@ -218,13 +218,13 @@ export default function AuthPage() {
     });
   };
 
-  if (loginMutation.isPending || registerMutation.isPending) {
+  if (login_mutation.isPending || register_mutation.isPending) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-lg text-slate-600">
-            {loginMutation.isPending ? "Entrando..." : "Criando conta..."}
+            {login_mutation.isPending ? "Entrando..." : "Criando conta..."}
           </p>
         </div>
       </div>
