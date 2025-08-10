@@ -3147,6 +3147,71 @@ export function registerRoutes(app: Express): Server {
   });
   */
 
+  // ===== ENDPOINT DE ESTATÍSTICAS DE ATIVIDADES =====
+  app.get("/api/activities/stats", async (req, res) => {
+    try {
+      // Contar atividades ativas
+      const totalActivities = await db
+        .select({ count: sql`COUNT(*)::int` })
+        .from(activities)
+        .where(eq(activities.is_active, true));
+
+      // Contar propostas ativas
+      const totalProposals = await db
+        .select({ count: sql`COUNT(*)::int` })
+        .from(activityBudgetProposals)
+        .where(eq(activityBudgetProposals.is_active, true));
+
+      // Contar reviews
+      const totalReviews = await db
+        .select({ count: sql`COUNT(*)::int` })
+        .from(activityReviews)
+        .where(eq(activityReviews.is_hidden, false));
+
+      // Estatísticas por categoria
+      const byCategory = await db
+        .select({
+          category: activities.category,
+          count: sql`COUNT(*)::int`
+        })
+        .from(activities)
+        .where(eq(activities.is_active, true))
+        .groupBy(activities.category);
+
+      // Estatísticas por destino
+      const byDestination = await db
+        .select({
+          destination: activities.destination_name,
+          count: sql`COUNT(*)::int`
+        })
+        .from(activities)
+        .where(eq(activities.is_active, true))
+        .groupBy(activities.destination_name)
+        .limit(10);
+
+      const stats = {
+        totalActivities: totalActivities[0]?.count || 0,
+        totalProposals: totalProposals[0]?.count || 0,
+        totalReviews: totalReviews[0]?.count || 0,
+        avgProposalsPerActivity: totalActivities[0]?.count > 0 ? 
+          Math.round((totalProposals[0]?.count || 0) / totalActivities[0].count * 10) / 10 : 0,
+        byCategory: byCategory.reduce((acc, item) => {
+          acc[item.category] = item.count;
+          return acc;
+        }, {} as Record<string, number>),
+        byDestination: byDestination.reduce((acc, item) => {
+          acc[item.destination || 'Sem destino'] = item.count;
+          return acc;
+        }, {} as Record<string, number>)
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas de atividades:', error);
+      res.status(500).json({ message: "Erro ao buscar estatísticas de atividades" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
