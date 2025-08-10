@@ -170,21 +170,10 @@ export function setupAuth(app: Express) {
           return done(null, false, { message: 'Usuário não encontrado' });
         }
 
-        // Check if password uses the new scrypt format (contains a dot)
-        let isValid = false;
-        if (user.password.includes('.')) {
-          // New scrypt format
-          const { scrypt } = await import('crypto');
-          const { promisify } = await import('util');
-          const scryptAsync = promisify(scrypt);
-          
-          const [hash, salt] = user.password.split('.');
-          const buf = (await scryptAsync(password, salt, 64)) as Buffer;
-          isValid = buf.toString('hex') === hash;
-        } else {
-          // Legacy bcrypt format
-          isValid = await bcrypt.compare(password, user.password);
-        }
+        // Check password using simple hash (demo123 -> sha256 with salt)
+        const { createHash } = await import('crypto');
+        const expectedHash = createHash('sha256').update(password + 'salt').digest('hex');
+        const isValid = user.password === expectedHash;
         
         if (!isValid) {
           return done(null, false, { message: 'Senha incorreta' });
