@@ -119,10 +119,7 @@ export function registerRoutes(app: Express): Server {
       const tripData = insertTripSchema.parse(req.body);
       
       // Criar viagem
-      const trip = await storage.createTrip({ 
-        ...tripData, 
-        creator_id: req.user!.id 
-      });
+      const trip = await storage.createTrip(tripData);
       
       console.log('Viagem criada com sucesso:', trip);
       res.status(201).json(trip);
@@ -263,7 +260,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(403).json({ message: "Apenas o criador da viagem pode alterar a imagem" });
       }
       
-      const updatedTrip = await storage.updateTrip(tripId, { cover_image });
+      const updatedTrip = await storage.updateTrip(tripId, { coverImage: cover_image });
       res.json(updatedTrip);
     } catch (error) {
       console.error('Erro ao atualizar imagem da viagem:', error);

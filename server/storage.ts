@@ -233,8 +233,8 @@ export class PostgreSQLStorage implements IStorage {
 
   async addMessage(messageData: InsertMessage): Promise<Message> {
     const [message] = await db.insert(messages).values({
-      trip_id: messageData.tripId,
-      sender_id: messageData.senderId,
+      trip_id: messageData.trip_id,
+      sender_id: messageData.sender_id,
       content: messageData.content
     }).returning();
     return message;
@@ -501,7 +501,10 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createExpense(expenseData: InsertExpense): Promise<Expense> {
-    const [expense] = await db.insert(expenses).values(expenseData).returning();
+    const [expense] = await db.insert(expenses).values({
+      ...expenseData,
+      paid_by: 1 // TODO: Get from authenticated user
+    }).returning();
     return expense;
   }
 
@@ -521,7 +524,10 @@ export class PostgreSQLStorage implements IStorage {
     const splitData = splits.map(split => ({ ...split, expense_id: expenseId }));
     console.log('Final split data:', splitData);
     
-    return await db.insert(expenseSplits).values(splitData).returning();
+    return await db.insert(expenseSplits).values(splitData.map(split => ({
+      ...split,
+      amount: split.amount.toString() // Convert number to string for PostgreSQL
+    }))).returning();
   }
 
   async getUserTripRequests(userId: number): Promise<TripRequest[]> {
@@ -560,7 +566,12 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createActivityBudgetProposal(proposalData: InsertActivityBudgetProposal): Promise<ActivityBudgetProposal> {
-    const [proposal] = await db.insert(activityBudgetProposals).values(proposalData).returning();
+    const [proposal] = await db.insert(activityBudgetProposals).values({
+      ...proposalData,
+      activity_id: proposalData.activity_id || 1, // TODO: Pass from request
+      created_by: proposalData.created_by || 1, // TODO: Get from authenticated user
+      amount: proposalData.amount.toString() // Convert to string for PostgreSQL
+    }).returning();
     return proposal;
   }
 
@@ -582,7 +593,10 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async createActivityReview(reviewData: InsertActivityReview): Promise<ActivityReview> {
-    const [review] = await db.insert(activityReviews).values(reviewData).returning();
+    const [review] = await db.insert(activityReviews).values({
+      ...reviewData,
+      user_id: reviewData.user_id || 1 // TODO: Get from authenticated user
+    }).returning();
     return review;
   }
 }

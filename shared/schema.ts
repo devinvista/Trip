@@ -578,6 +578,11 @@ export type InsertActivityBooking = z.infer<typeof insertActivityBookingSchema>;
 export type InsertActivityBudgetProposal = z.infer<typeof insertActivityBudgetProposalSchema>;
 export type InsertTripActivity = z.infer<typeof insertTripActivitySchema>;
 
+// Export missing schemas that are referenced in routes
+// Fix: Add missing localidadeRatings export (alias for destinationRatings)
+export const localidadeRatings = destinationRatings;
+export const insertLocalidadeRatingSchema = insertDestinationRatingSchema;
+
 // Budget breakdown interface (simplified for budget base)
 export interface BudgetBreakdown {
   transport?: number;
