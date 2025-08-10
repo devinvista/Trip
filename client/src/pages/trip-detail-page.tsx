@@ -1495,7 +1495,7 @@ export default function TripDetailPage() {
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
                       <span>
-                        {format(new Date(trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
+                        {format(new Date(trip.start_date || trip.startDate), "dd/MM", { locale: ptBR })} - {format(new Date(trip.end_date || trip.endDate), "dd/MM/yyyy", { locale: ptBR })}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -1873,8 +1873,8 @@ export default function TripDetailPage() {
                     <CardContent>
                       <ActivitiesTimeline 
                         activities={planned_activities}
-                        tripStartDate={trip.startDate}
-                        tripEndDate={trip.endDate}
+                        tripStartDate={trip.start_date || trip.startDate}
+                        tripEndDate={trip.end_date || trip.endDate}
                         canJoin={canJoin}
                         onJoinClick={() => setActiveTab("overview")}
                         onActivitiesChange={setPlannedActivities}
