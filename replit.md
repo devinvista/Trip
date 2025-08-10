@@ -29,7 +29,7 @@ Idioma da interface: Português brasileiro (todos os elementos da UI traduzidos 
 - **Database**: PostgreSQL with Drizzle ORM (fully migrated from in-memory to persistent MySQL)
 
 ### Database Schema
-The application uses MySQL with the following main entities:
+The application uses PostgreSQL with the following main entities:
 - **Users**: Authentication, profile information, and travel preferences.
 - **Trips**: Travel plans with destinations, dates, budgets, and shared costs.
 - **Trip Participants**: Many-to-many relationship between users and trips.

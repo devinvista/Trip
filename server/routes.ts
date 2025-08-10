@@ -1386,23 +1386,27 @@ export function registerRoutes(app: Express): Server {
   app.get("/api/activities/hierarchy", async (req, res) => {
     try {
       const hierarchyData = await db.select({
-        countryType: activities.countryType,
+        countryType: activities.country_type,
         region: activities.region,
         city: activities.city,
         count: sql<number>`count(*)`.as('count')
       })
       .from(activities)
-      .where(eq(activities.isActive, true))
-      .groupBy(activities.countryType, activities.region, activities.city)
-      .orderBy(activities.countryType, activities.region, activities.city);
+      .where(eq(activities.is_active, true))
+      .groupBy(activities.country_type, activities.region, activities.city)
+      .orderBy(activities.country_type, activities.region, activities.city);
       
       // Organize data hierarchically
       const hierarchy: { [key: string]: { [key: string]: { [key: string]: number } } } = {};
       
       hierarchyData.forEach(item => {
-        if (!hierarchy[item.countryType]) hierarchy[item.countryType] = {};
-        if (!hierarchy[item.countryType][item.region || 'Sem Região']) hierarchy[item.countryType][item.region || 'Sem Região'] = {};
-        hierarchy[item.countryType][item.region || 'Sem Região'][item.city] = item.count;
+        const countryType = item.countryType || 'unknown';
+        const region = item.region || 'Sem Região';
+        const city = item.city || 'Sem Cidade';
+        
+        if (!hierarchy[countryType]) hierarchy[countryType] = {};
+        if (!hierarchy[countryType][region]) hierarchy[countryType][region] = {};
+        hierarchy[countryType][region][city] = item.count;
       });
       
       res.json(hierarchy);
@@ -1416,10 +1420,10 @@ export function registerRoutes(app: Express): Server {
     try {
       const { countryType, region, city, ...filters } = req.query;
       
-      let query = db.select().from(activities).where(eq(activities.isActive, true));
+      let query = db.select().from(activities).where(eq(activities.is_active, true));
       
       if (countryType) {
-        query = query.where(eq(activities.countryType, countryType as string));
+        query = query.where(eq(activities.country_type, countryType as string));
       }
       if (region) {
         query = query.where(eq(activities.region, region as string));
@@ -1433,7 +1437,7 @@ export function registerRoutes(app: Express): Server {
         query = query.where(eq(activities.category, filters.category as string));
       }
       
-      const result = await query.orderBy(desc(activities.averageRating), desc(activities.totalRatings));
+      const result = await query.orderBy(desc(activities.average_rating), desc(activities.total_ratings));
       res.json(result);
     } catch (error) {
       console.error("Erro ao buscar atividades por localização:", error);
@@ -1451,7 +1455,7 @@ export function registerRoutes(app: Express): Server {
       const popularActivities = activities
         .map(activity => ({
           ...activity,
-          popularityScore: Number(activity.averageRating || 0) * Math.log((activity.totalRatings || 0) + 1)
+          popularityScore: Number(activity.average_rating || 0) * Math.log((activity.total_ratings || 0) + 1)
         }))
         .sort((a, b) => b.popularityScore - a.popularityScore)
         .slice(0, limit)
@@ -1473,8 +1477,8 @@ export function registerRoutes(app: Express): Server {
       
       // Filter by high ratings and sort by average rating
       const topRatedActivities = activities
-        .filter(activity => Number(activity.averageRating || 0) >= 4.5)
-        .sort((a, b) => Number(b.averageRating || 0) - Number(a.averageRating || 0))
+        .filter(activity => Number(activity.average_rating || 0) >= 4.5)
+        .sort((a, b) => Number(b.average_rating || 0) - Number(a.average_rating || 0))
         .slice(0, limit);
       
       res.json(topRatedActivities);
