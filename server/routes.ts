@@ -427,6 +427,9 @@ export function registerRoutes(app: Express): Server {
       if (status === 'accepted') {
         await storage.addTripParticipant(request.trip_id, request.user_id);
         
+        // Add this new participant to all existing common expenses (splitWith === 'all')
+        await addParticipantToCommonExpenses(request.trip_id, request.user_id);
+        
         // Sync trip participant count based on actual accepted participants
         await syncTripParticipants(request.trip_id);
       }
@@ -673,19 +676,48 @@ export function registerRoutes(app: Express): Server {
       
       // Create splits based on selected participants
       let splitParticipants: number[];
+      let splitCount: number;
+      
+      // Get trip details to know max_participants
+      const trip = await storage.getTripById(trip_id);
+      const approvedParticipants = participants.filter(p => p.status === 'approved');
+      
+      console.log('🔍 Dados da viagem:', {
+        maxParticipants: trip?.max_participants,
+        currentApproved: approvedParticipants.length,
+        approvedIds: approvedParticipants.map(p => p.user_id)
+      });
+      
       if (req.body.splitWith === 'all') {
-        // Split equally among all participants (including future ones)
-        splitParticipants = participants.filter(p => p.status === 'approved').map(p => p.user_id);
+        // Split among current approved participants only
+        // When new participants join, they will get their splits added automatically
+        splitParticipants = approvedParticipants.map(p => p.user_id);
+        splitCount = splitParticipants.length;
+        console.log('✅ Dividindo despesa comum entre participantes aprovados atuais:', {
+          currentApproved: splitParticipants.length,
+          participantIds: splitParticipants,
+          splitPerPerson: expenseData.amount / splitCount,
+          totalAmount: expenseData.amount,
+          note: 'Novos participantes receberão splits automaticamente ao entrar'
+        });
       } else {
-        splitParticipants = req.body.splitWith || participants.filter(p => p.status === 'approved').map(p => p.user_id);
+        // Use specific participants only
+        splitParticipants = req.body.splitWith || approvedParticipants.map(p => p.user_id);
+        splitCount = splitParticipants.length;
+        console.log('✅ Dividindo entre participantes específicos:', {
+          participants: splitParticipants,
+          splitPerPerson: expenseData.amount / splitCount
+        });
       }
       
-      // If no specific participants provided, include the creator by default
+      // Fallback: if no participants found, include only the payer
       if (splitParticipants.length === 0) {
         splitParticipants = [req.user!.id];
+        splitCount = 1;
+        console.log('⚠️ Fallback: Dividindo apenas com o pagador:', req.user!.id);
       }
       
-      const splitAmount = expenseData.amount / splitParticipants.length;
+      const splitAmount = expenseData.amount / splitCount;
       
       const splitData = splitParticipants.map((user_id: number) => ({
         user_id: user_id,
@@ -3322,4 +3354,65 @@ export function registerRoutes(app: Express): Server {
   const httpServer = createServer(app);
 
   return httpServer;
+}
+
+// Helper function to add new participant to existing common expenses
+async function addParticipantToCommonExpenses(tripId: number, newUserId: number) {
+  try {
+    console.log(`🔄 Adicionando participante ${newUserId} às despesas comuns da viagem ${tripId}`);
+    
+    // Get all expenses for this trip that were split with 'all' (common expenses)
+    const tripExpenses = await storage.getTripExpenses(tripId);
+    
+    // Get current participants to recalculate splits
+    const participants = await storage.getTripParticipants(tripId);
+    const approvedParticipants = participants.filter(p => p.status === 'approved');
+    const totalParticipants = approvedParticipants.length;
+    
+    console.log(`📊 Encontradas ${tripExpenses.length} despesas, ${totalParticipants} participantes aprovados`);
+    
+    for (const expense of tripExpenses) {
+      const existingSplits = expense.splits || [];
+      
+      // Check if this expense was split among all participants (common expense)
+      // We identify common expenses by checking if all current participants have splits
+      const isCommonExpense = existingSplits.length > 0 && 
+        approvedParticipants.every(p => 
+          existingSplits.some(split => split.user_id === p.user_id)
+        );
+      
+      if (isCommonExpense) {
+        // Recalculate split amount for all participants
+        const newSplitAmount = expense.amount / totalParticipants;
+        
+        console.log(`💰 Recalculando despesa "${expense.title}": R$ ${expense.amount} ÷ ${totalParticipants} = R$ ${newSplitAmount.toFixed(2)} por pessoa`);
+        
+        // Update existing splits
+        for (const split of existingSplits) {
+          await db.update(expenseSplits)
+            .set({ amount: newSplitAmount.toString() })
+            .where(eq(expenseSplits.id, split.id));
+        }
+        
+        // Add split for the new participant (if not already exists)
+        const hasNewParticipantSplit = existingSplits.some(split => split.user_id === newUserId);
+        if (!hasNewParticipantSplit) {
+          await db.insert(expenseSplits).values({
+            expense_id: expense.id,
+            user_id: newUserId,
+            amount: newSplitAmount.toString(),
+            paid: false,
+            settled_at: null
+          });
+          
+          console.log(`✅ Adicionado split de R$ ${newSplitAmount.toFixed(2)} para usuário ${newUserId} na despesa "${expense.title}"`);
+        }
+      }
+    }
+    
+    console.log(`🎉 Participante ${newUserId} adicionado com sucesso às despesas comuns`);
+  } catch (error) {
+    console.error('❌ Erro ao adicionar participante às despesas comuns:', error);
+    throw error;
+  }
 }
