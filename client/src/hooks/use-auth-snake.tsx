@@ -14,8 +14,8 @@ interface RegisterData {
   password: string;
   email: string;
   full_name: string;
-  bio?: string;
-  location?: string;
+  bio?: string | null;
+  location?: string | null;
   languages?: string[];
   interests?: string[];
   travel_styles?: string[];

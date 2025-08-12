@@ -203,6 +203,11 @@ export default function AuthPage() {
     
     register_mutation.mutate({
       ...registerData,
+      bio: registerData.bio || undefined,
+      location: registerData.location || undefined,
+      languages: Array.isArray(registerData.languages) ? registerData.languages : [],
+      interests: Array.isArray(registerData.interests) ? registerData.interests : [],
+      travel_styles: Array.isArray(registerData.travel_styles) ? registerData.travel_styles : [],
     }, {
       onSuccess: () => {
         navigate("/dashboard");

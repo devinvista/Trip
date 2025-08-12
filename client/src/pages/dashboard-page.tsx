@@ -227,7 +227,7 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-8">
           {/* Welcome Banner */}
           <WelcomeBanner
-            userName={(user?.full_name || user?.fullName)?.split(' ')[0]}
+            userName={user?.full_name?.split(' ')[0]}
             onStartTour={startTour}
             onDismiss={() => {
               setShowWelcomeBanner(false);
@@ -241,14 +241,14 @@ export default function DashboardPage() {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div className="flex items-center gap-4">
                 <Avatar className="w-16 h-16">
-                  <AvatarImage src={user?.profilePhoto || ""} />
+                  <AvatarImage src={user?.profile_photo || ""} />
                   <AvatarFallback className="text-lg bg-gradient-to-br from-orange-400 to-amber-400 text-white">
-                    {user?.fullName?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                    {user?.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <h1 className="font-bold text-3xl text-gray-900">
-                    Olá, {user?.fullName?.split(' ')[0]}! 👋
+                    Olá, {user?.full_name?.split(' ')[0]}! 👋
                   </h1>
                   <p className="text-gray-600 flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
@@ -807,7 +807,7 @@ export default function DashboardPage() {
           onClose={closeTour}
           onComplete={completeTour}
           userPreferences={{
-            travelStyle: Array.isArray(user?.travelStyles) ? user.travelStyles.join(', ') : user?.travelStyles as string,
+            travelStyle: Array.isArray(user?.travel_styles) ? user.travel_styles.join(', ') : user?.travel_styles as string,
             interests: user?.interests as string[] | undefined,
             experience: 'iniciante' // Could be determined from user profile
           }}

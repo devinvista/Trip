@@ -394,7 +394,7 @@ function ActivitiesTimeline({
   const [newActivity, setNewActivity] = useState<Partial<PlannedActivity>>({
     priority: 'medium',
     category: 'sightseeing',
-    scheduledDate: tripStartDate
+    scheduled_date: tripStartDate
   });
   const { toast } = useToast();
 
@@ -479,10 +479,10 @@ function ActivitiesTimeline({
       description: newActivity.description,
       category: (newActivity.category as PlannedActivity['category']) || 'sightseeing',
       priority: newActivity.priority || 'medium',
-      estimatedCost: newActivity.estimatedCost,
+      estimated_cost: newActivity.estimated_cost,
       duration: newActivity.duration,
       location: newActivity.location,
-      scheduledDate: newActivity.scheduledDate || tripStartDate,
+      scheduled_date: newActivity.scheduled_date || tripStartDate,
       notes: newActivity.notes,
       completed: false,
       createdAt: new Date().toISOString(),
@@ -509,7 +509,7 @@ function ActivitiesTimeline({
       setNewActivity({
         priority: 'medium',
         category: 'sightseeing',
-        scheduledDate: tripStartDate
+        scheduled_date: tripStartDate
       });
       setIsAddingActivity(false);
       toast({
@@ -569,9 +569,9 @@ function ActivitiesTimeline({
     const grouped: { [key: string]: PlannedActivity[] } = {};
     
     activities.forEach(activity => {
-      if (activity.scheduledDate) {
+      if (activity.scheduled_date) {
         try {
-          const date = parseISO(activity.scheduledDate);
+          const date = parseISO(activity.scheduled_date);
           if (!isNaN(date.getTime())) {
             const dateKey = format(date, 'yyyy-MM-dd');
             
@@ -581,7 +581,7 @@ function ActivitiesTimeline({
             grouped[dateKey].push(activity);
           }
         } catch (error) {
-          console.warn('Error parsing activity date:', activity.scheduledDate, error);
+          console.warn('Error parsing activity date:', activity.scheduled_date, error);
         }
       }
     });
@@ -819,10 +819,10 @@ function ActivitiesTimeline({
                                 )}
                               </div>
                               
-                              {activity.estimatedCost && (
+                              {activity.estimated_cost && (
                                 <div className="flex items-center gap-2 text-sm font-semibold text-green-600 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
                                   <DollarSign className="h-4 w-4" />
-                                  <span>{formatBrazilianCurrency(activity.estimatedCost)}</span>
+                                  <span>{formatBrazilianCurrency(activity.estimated_cost)}</span>
                                 </div>
                               )}
                             </div>
@@ -857,7 +857,7 @@ function ActivitiesTimeline({
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-blue-600">
-              {formatBrazilianCurrency(activities.reduce((sum, activity) => sum + (activity.estimatedCost || 0), 0))}
+              {formatBrazilianCurrency(activities.reduce((sum, activity) => sum + (activity.estimated_cost || 0), 0))}
             </div>
             <div className="text-sm text-gray-500">Custo total estimado</div>
           </div>
@@ -936,8 +936,8 @@ function ActivitiesTimeline({
                   <Input
                     id="edit-cost"
                     type="number"
-                    value={editingActivity.estimatedCost || ''}
-                    onChange={(e) => setEditingActivity({...editingActivity, estimatedCost: Number(e.target.value)})}
+                    value={editingActivity.estimated_cost || ''}
+                    onChange={(e) => setEditingActivity({...editingActivity, estimated_cost: Number(e.target.value)})}
                   />
                 </div>
               </div>
@@ -1044,8 +1044,8 @@ function ActivitiesTimeline({
                 <Input
                   id="new-cost"
                   type="number"
-                  value={newActivity.estimatedCost || ''}
-                  onChange={(e) => setNewActivity({...newActivity, estimatedCost: Number(e.target.value)})}
+                  value={newActivity.estimated_cost || ''}
+                  onChange={(e) => setNewActivity({...newActivity, estimated_cost: Number(e.target.value)})}
                 />
               </div>
             </div>
@@ -1345,7 +1345,7 @@ export default function TripDetailPage() {
   // Calculate activities cost
   const calculateActivitiesCost = (activities: PlannedActivity[]) => {
     return activities.reduce((total, activity) => {
-      return total + (activity.estimatedCost || 0);
+      return total + (activity.estimated_cost || 0);
     }, 0);
   };
 
