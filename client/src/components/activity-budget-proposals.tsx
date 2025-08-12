@@ -20,17 +20,17 @@ import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode } 
 
 type ActivityBudgetProposal = {
   id: number;
-  activityId: number;
+  activity_id: number;
   title: string;
   description: string;
   amount: number;
   currency: string;
-  priceType: string;
+  price_type: string;
   inclusions: string[];
   exclusions: string[];
   votes: number;
-  isActive: boolean;
-  createdAt: string;
+  is_active: boolean;
+  created_at: string;
   creator: {
     id: number;
     username: string;

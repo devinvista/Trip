@@ -22,7 +22,7 @@ import { formatBrazilianCurrency, formatBrazilianNumber } from "@shared/utils";
 
 type ActivityReview = {
   id: number;
-  activityId: number;
+  activity_id: number;
   rating: number;
   review: string | null;
   photos: string[];

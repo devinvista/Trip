@@ -60,17 +60,17 @@ import { CoverImageSelector } from "@/components/cover-image-selector";
 import { apiRequest } from "@/lib/queryClient";
 
 const createTripSchema = insertTripSchema.omit({ destination_id: true }).extend({
-  startDate: z.string().min(1, "Data de início é obrigatória"),
-  endDate: z.string().min(1, "Data de fim é obrigatória"),
+  start_date: z.string().min(1, "Data de início é obrigatória"),
+  end_date: z.string().min(1, "Data de fim é obrigatória"),
   planned_activities: z.array(z.any()).optional(),
   destination: z.string().min(1, "Destino é obrigatório"),
 }).refine((data) => {
-  const startDate = new Date(data.startDate);
-  const endDate = new Date(data.endDate);
-  return endDate > startDate;
+  const start_date = new Date(data.start_date);
+  const end_date = new Date(data.end_date);
+  return end_date > start_date;
 }, {
   message: "A data de fim deve ser posterior à data de início",
-  path: ["endDate"],
+  path: ["end_date"],
 });
 
 type CreateTripForm = z.input<typeof createTripSchema>;
@@ -190,8 +190,8 @@ function CreateTripPageContent() {
       title: "",
       destination: "",
       description: "",
-      startDate: "",
-      endDate: "",
+      start_date: "",
+      end_date: "",
       max_participants: 4,
       budget: undefined,
       budget_breakdown: undefined,
@@ -340,8 +340,8 @@ function CreateTripPageContent() {
         
       const tripData = {
         ...data,
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
+        start_date: new Date(data.start_date),
+        end_date: new Date(data.end_date),
         budget: totalBudget,
         planned_activities: planned_activities,
         destination_id: selectedDestinationId,
@@ -683,7 +683,7 @@ function CreateTripPageContent() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <FormField
                             control={form.control}
-                            name="startDate"
+                            name="start_date"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Data de Início</FormLabel>
@@ -704,7 +704,7 @@ function CreateTripPageContent() {
 
                           <FormField
                             control={form.control}
-                            name="endDate"
+                            name="end_date"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Data de Fim</FormLabel>

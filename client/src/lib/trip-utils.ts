@@ -8,8 +8,8 @@ export interface TripParticipant {
   user?: {
     id: number;
     username: string;
-    fullName: string;
-    profilePhoto?: string;
+    full_name: string;
+    profile_photo?: string;
   };
 }
 

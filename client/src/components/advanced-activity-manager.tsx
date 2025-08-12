@@ -73,9 +73,9 @@ function ActivitiesTimeline({
   const groupedActivities = activities.reduce((groups, activity) => {
     let dateKey = 'Sem data definida';
     
-    if (activity.dateTime) {
+    if (activity.date_time) {
       try {
-        let dateValue = activity.dateTime;
+        let dateValue = activity.date_time;
         if (dateValue instanceof Date) {
           dateKey = dateValue.toISOString().split('T')[0];
         } 
@@ -94,7 +94,7 @@ function ActivitiesTimeline({
           }
         }
       } catch (error) {
-        console.warn('Error parsing activity date:', activity.dateTime, error);
+        console.warn('Error parsing activity date:', activity.date_time, error);
         dateKey = 'Sem data definida';
       }
     }
@@ -251,8 +251,8 @@ function ActivitiesTimeline({
                 {groupedActivities[dateGroup]
                   .sort((a, b) => {
                     // Sort by time if available
-                    if (a.dateTime?.includes('T') && b.dateTime?.includes('T')) {
-                      return a.dateTime.localeCompare(b.dateTime);
+                    if (a.date_time?.includes('T') && b.date_time?.includes('T')) {
+                      return a.date_time.localeCompare(b.date_time);
                     }
                     return 0;
                   })
@@ -317,7 +317,7 @@ function ActivitiesTimeline({
 
                     const priorityConfig = getPriorityConfig(activity.priority);
                     const categoryConfig = getCategoryConfig(activity.category);
-                    const time = formatTime(activity.dateTime);
+                    const time = formatTime(activity.date_time);
 
                     return (
                       <motion.div
@@ -532,10 +532,10 @@ function SortableActivityItem({
                   {activityCategories[activity.category as keyof typeof activityCategories]?.label}
                 </span>
                 
-                {activity.estimatedCost && (
+                {activity.estimated_cost && (
                   <span className="text-xs text-gray-500 flex items-center gap-1">
                     <DollarSign className="h-3 w-3" />
-                    R$ {activity.estimatedCost.toLocaleString('pt-BR')}
+                    R$ {activity.estimated_cost.toLocaleString('pt-BR')}
                   </span>
                 )}
                 
@@ -776,13 +776,13 @@ function ActivitySearchTab({
       description: selectedActivity.description,
       category: selectedActivity.category as PlannedActivity['category'],
       location: selectedActivity.location,
-      estimatedCost: estimatedCost,
+      estimated_cost: estimatedCost,
       duration: selectedActivity.duration || "A definir",
       priority: "medium" as PlannedActivity['priority'],
       attachments: [],
       urls: [],
       notes: `Atividade encontrada na busca\nPreço original: R$ ${selectedActivity.priceAmount || 0}\nParticipantes: ${participants}`,
-      dateTime: selectedDate || undefined,
+      date_time: selectedDate || undefined,
       status: "planned" as PlannedActivity['status']
     };
 
@@ -1010,13 +1010,13 @@ function ActivityFormTab({
       description: '',
       category: 'sightseeing',
       priority: 'medium',
-      estimatedCost: 0,
+      estimated_cost: 0,
       duration: '',
       location: '',
       urls: [],
       attachments: [],
       notes: '',
-      dateTime: ''
+      date_time: ''
     }
   );
 
@@ -1032,15 +1032,15 @@ function ActivityFormTab({
       description: formData.description,
       category: formData.category as PlannedActivity['category'],
       priority: formData.priority as PlannedActivity['priority'],
-      estimatedCost: formData.estimatedCost,
+      estimated_cost: formData.estimated_cost,
       duration: formData.duration,
       location: formData.location,
       urls: formData.urls || [],
       attachments: formData.attachments || [],
       notes: formData.notes,
-      dateTime: formData.dateTime,
+      date_time: formData.date_time,
       status: "planned",
-      createdAt: activity?.created_at || activity?.createdAt || new Date().toISOString(),
+      created_at: activity?.created_at || new Date().toISOString(),
     };
 
     onSave(savedActivity);
@@ -1133,10 +1133,10 @@ function ActivityFormTab({
             type="number"
             step="0.01"
             min="0"
-            value={formData.estimatedCost || ''}
+            value={formData.estimated_cost || ''}
             onChange={(e) => {
               const value = parseFloat(e.target.value) || 0;
-              setFormData(prev => ({ ...prev, estimatedCost: value }));
+              setFormData(prev => ({ ...prev, estimated_cost: value }));
             }}
             placeholder="0.00"
             className="border-2 focus:border-primary transition-colors duration-200 focus:ring-2 focus:ring-primary/20"
@@ -1358,8 +1358,8 @@ function EditActivityForm({
   tripEndDate?: string;
 }) {
   const [formData, setFormData] = useState({
-    estimatedCost: activity.estimatedCost || 0,
-    dateTime: activity.dateTime || '',
+    estimated_cost: activity.estimated_cost || 0,
+    date_time: activity.date_time || '',
     notes: activity.notes || '',
     priority: activity.priority || 'medium',
     duration: activity.duration || '',
@@ -1369,8 +1369,8 @@ function EditActivityForm({
   const handleSave = () => {
     const updatedActivity: PlannedActivity = {
       ...activity,
-      estimatedCost: formData.estimatedCost,
-      dateTime: formData.dateTime,
+      estimated_cost: formData.estimated_cost,
+      date_time: formData.date_time,
       notes: formData.notes,
       priority: formData.priority as PlannedActivity['priority'],
       duration: formData.duration,
