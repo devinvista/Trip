@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertActivityBudgetProposalSchema } from "@shared/schema";
 import type { z } from "zod";
 import { Plus, DollarSign, ThumbsUp, ThumbsDown, Check, User, Package, Star, TrendingUp } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode } from "@shared/utils";
@@ -72,7 +72,7 @@ export function ActivityBudgetProposals({
       description: "",
       amount: 0,
       currency: "BRL",
-      priceType: "per_person",
+      price_type: "per_person",
       inclusions: [],
       exclusions: []
     }
@@ -396,7 +396,7 @@ export function ActivityBudgetProposals({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="priceType"
+                      name="price_type"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium">Tipo de Preço</FormLabel>

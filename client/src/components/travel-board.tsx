@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -109,8 +109,8 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
     };
 
     trips.forEach((trip: Trip) => {
-      const startDate = new Date(trip.start_date || trip.startDate);
-      const endDate = new Date(trip.end_date || trip.endDate);
+      const startDate = new Date(trip.start_date);
+      const endDate = new Date(trip.end_date);
       
       if (endDate < now) {
         categorized.completed.push(trip);

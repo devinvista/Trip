@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ActivityBudgetProposals } from "./activity-budget-proposals";
 import { Plane, MapPin, Calendar, Users, DollarSign, Plus } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { useToast } from "@/hooks/use-toast";
 import { getParticipantsForBudgetCalculation } from "@/lib/trip-utils";
 import { formatBrazilianCurrency, formatBrazilianNumber, formatCurrencyByCode } from "@shared/utils";

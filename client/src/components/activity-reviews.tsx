@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertActivityReviewSchema } from "@shared/schema";
 import type { z } from "zod";
 import { Star, ThumbsUp, User, Calendar, MessageSquare, Plus, CheckCircle } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -58,11 +58,11 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
   const form = useForm<ReviewFormData>({
     resolver: zodResolver(insertActivityReviewSchema),
     defaultValues: {
-      activityId: activityId,
+      activity_id: activityId,
       rating: 5,
       review: "",
       photos: [],
-      visit_date: ""
+      visit_date: new Date()
     }
   });
 
@@ -210,7 +210,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                       <FormField
                         control={form.control}
-                        name="activityId"
+                        name="activity_id"
                         render={({ field }) => (
                           <FormItem className="hidden">
                             <FormControl>
@@ -256,7 +256,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
 
                       <FormField
                         control={form.control}
-                        name="visitDate"
+                        name="visit_date"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Data da Visita (opcional)</FormLabel>
@@ -264,6 +264,7 @@ export function ActivityReviews({ activityId, averageRating = 0, totalRatings = 
                               <Input 
                                 type="date"
                                 {...field}
+                                value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value}
                               />
                             </FormControl>
                             <FormMessage />

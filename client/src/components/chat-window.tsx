@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-snake";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -112,7 +112,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
       sentAt: new Date().toISOString(),
       sender: {
         id: user?.id || 1,
-        fullName: user?.full_name || user?.fullName || "Usuário",
+        fullName: user?.full_name || "Usuário",
         profilePhoto: undefined
       },
       status: "sent"
@@ -271,7 +271,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                     <div className={`flex-1 max-w-[75%] ${message.senderId === user?.id ? 'text-right' : ''}`}>
                       <div className={`flex items-center gap-2 mb-1 ${message.senderId === user?.id ? 'justify-end' : ''}`}>
                         <span className="text-sm font-semibold text-gray-700">
-                          {message.senderId === user?.id ? 'Você' : (message.sender?.full_name || message.sender?.fullName)}
+                          {message.senderId === user?.id ? 'Você' : message.sender?.fullName}
                         </span>
                         <span className="text-xs text-gray-500 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
