@@ -168,13 +168,33 @@ export function registerRoutes(app: Express): Server {
       const processedUpdates = { ...updates };
       
       if (processedUpdates.start_date) {
+        console.log("📅 Original start_date:", processedUpdates.start_date, "Type:", typeof processedUpdates.start_date);
+        
+        // Always convert to Date object
         processedUpdates.start_date = new Date(processedUpdates.start_date);
-        console.log("📅 Processed start_date:", processedUpdates.start_date);
+        
+        // Validate the date
+        if (isNaN(processedUpdates.start_date.getTime())) {
+          console.error("❌ Invalid start_date:", processedUpdates.start_date);
+          return res.status(400).json({ message: "Data de início inválida" });
+        }
+        
+        console.log("📅 Processed start_date:", processedUpdates.start_date, "ISO:", processedUpdates.start_date.toISOString());
       }
       
       if (processedUpdates.end_date) {
+        console.log("📅 Original end_date:", processedUpdates.end_date, "Type:", typeof processedUpdates.end_date);
+        
+        // Always convert to Date object
         processedUpdates.end_date = new Date(processedUpdates.end_date);
-        console.log("📅 Processed end_date:", processedUpdates.end_date);
+        
+        // Validate the date
+        if (isNaN(processedUpdates.end_date.getTime())) {
+          console.error("❌ Invalid end_date:", processedUpdates.end_date);
+          return res.status(400).json({ message: "Data de fim inválida" });
+        }
+        
+        console.log("📅 Processed end_date:", processedUpdates.end_date, "ISO:", processedUpdates.end_date.toISOString());
       }
 
       console.log("📝 Final updates being sent to database:", processedUpdates);

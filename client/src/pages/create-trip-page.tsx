@@ -60,8 +60,6 @@ import { CoverImageSelector } from "@/components/cover-image-selector";
 import { apiRequest } from "@/lib/queryClient";
 
 const createTripSchema = insertTripSchema.omit({ destination_id: true }).extend({
-  start_date: z.string().min(1, "Data de início é obrigatória"),
-  end_date: z.string().min(1, "Data de fim é obrigatória"),
   planned_activities: z.array(z.any()).optional(),
   destination: z.string().min(1, "Destino é obrigatório"),
 }).refine((data) => {

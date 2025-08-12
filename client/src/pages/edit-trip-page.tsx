@@ -162,7 +162,10 @@ export default function EditTripPage() {
       ...formData,
       destination_id: selectedDestinationId,
       budget: formData.budget ? parseInt(formData.budget) : 0,
-      max_participants: formData.max_participants ? parseInt(formData.max_participants) : 2
+      max_participants: formData.max_participants ? parseInt(formData.max_participants) : 2,
+      // Convert date strings to ISO format for backend
+      start_date: formData.start_date ? new Date(formData.start_date).toISOString() : undefined,
+      end_date: formData.end_date ? new Date(formData.end_date).toISOString() : undefined
     };
 
     updateTripMutation.mutate(data);
