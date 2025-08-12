@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { DestinationSelector } from "@/components/destination-selector";
 import { 
   ArrowLeft, 
   Save, 
@@ -43,6 +44,7 @@ export default function EditTripPage() {
     max_participants: '',
     travel_style: ''
   });
+  const [selectedDestinationId, setSelectedDestinationId] = useState<number | undefined>(undefined);
 
   // Fetch trip data
   const { data: trip, isLoading: tripLoading, error: tripError } = useQuery({
@@ -78,6 +80,11 @@ export default function EditTripPage() {
         max_participants: trip.max_participants?.toString() || '',
         travel_style: trip.travel_style || ''
       });
+      
+      // Set selected destination ID
+      if (trip.destination_id) {
+        setSelectedDestinationId(trip.destination_id);
+      }
     }
   }, [trip, user?.id, setLocation, toast]);
 
@@ -153,6 +160,7 @@ export default function EditTripPage() {
 
     const data = {
       ...formData,
+      destination_id: selectedDestinationId,
       budget: formData.budget ? parseInt(formData.budget) : 0,
       max_participants: formData.max_participants ? parseInt(formData.max_participants) : 2
     };
@@ -279,12 +287,18 @@ export default function EditTripPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Destino *
                         </label>
-                        <Input
-                          value={formData.destination}
-                          onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                          placeholder="Ex: Chapada Diamantina, BA"
+                        <DestinationSelector
+                          value={selectedDestinationId}
+                          onValueChange={(destinationId) => {
+                            setSelectedDestinationId(destinationId);
+                            if (destinationId) {
+                              setFormData({ ...formData, destination: destinationId.toString() });
+                            } else {
+                              setFormData({ ...formData, destination: "" });
+                            }
+                          }}
+                          placeholder="Selecione um destino cadastrado..."
                           className="w-full"
-                          required
                         />
                       </div>
 

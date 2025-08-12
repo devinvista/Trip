@@ -1,155 +1,173 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Check, ChevronsUpDown, MapPin, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { MapPin, Search } from "lucide-react";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 
 interface Destination {
   id: number;
   name: string;
   state?: string;
   country: string;
-  region?: string;
+  region: string;
   continent: string;
-  country_type: "nacional" | "internacional";
+  is_active: boolean;
 }
 
 interface DestinationSelectorProps {
   value?: number;
-  onChange: (destinationId: number) => void;
-  required?: boolean;
+  onValueChange: (destinationId: number | undefined) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
 }
 
-export function DestinationSelector({ value, onChange, required = false }: DestinationSelectorProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
+export function DestinationSelector({
+  value,
+  onValueChange,
+  placeholder = "Selecione um destino...",
+  disabled = false,
+  className
+}: DestinationSelectorProps) {
+  const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: destinations = [], isLoading } = useQuery<Destination[]>({
-    queryKey: ['/api/destinations'],
-    enabled: true,
+  const { data: destinations, isLoading } = useQuery<Destination[]>({
+    queryKey: ["/api/destinations"],
+    queryFn: async () => {
+      const response = await fetch("/api/destinations", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Erro ao carregar destinos");
+      }
+      return response.json();
+    },
   });
 
-  // Filter destinations based on search term
-  const filteredDestinations = destinations.filter((dest: Destination) =>
-    dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dest.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dest.state?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dest.region?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDestinations = destinations?.filter((destination) =>
+    destination.is_active && (
+      destination.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      destination.state?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      destination.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      destination.region.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  ) || [];
 
-  // Set selected destination when value changes
-  useEffect(() => {
-    if (value && destinations.length > 0) {
-      const destination = destinations.find((dest: Destination) => dest.id === value);
-      setSelectedDestination(destination || null);
-    }
-  }, [value, destinations]);
+  const selectedDestination = destinations?.find(d => d.id === value);
 
-  const handleDestinationSelect = (destinationId: string) => {
-    const numericId = parseInt(destinationId);
-    const destination = destinations.find((dest: Destination) => dest.id === numericId);
-    
-    if (destination) {
-      setSelectedDestination(destination);
-      onChange(numericId);
-    }
+  const getDestinationLabel = (destination: Destination) => {
+    return destination.state 
+      ? `${destination.name}, ${destination.state}` 
+      : `${destination.name}, ${destination.country}`;
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-2">
-        <Label>Destino {required && <span className="text-red-500">*</span>}</Label>
-        <div className="flex items-center space-x-2 p-3 border rounded-lg">
-          <MapPin className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Carregando destinos...</span>
-        </div>
-      </div>
-    );
-  }
+  const groupedDestinations = filteredDestinations.reduce((acc, destination) => {
+    const region = destination.region || "Outros";
+    if (!acc[region]) {
+      acc[region] = [];
+    }
+    acc[region].push(destination);
+    return acc;
+  }, {} as Record<string, Destination[]>);
 
   return (
-    <div className="space-y-2">
-      <Label>Destino {required && <span className="text-red-500">*</span>}</Label>
-      
-      {selectedDestination ? (
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2 p-3 border rounded-lg bg-primary/5">
-            <MapPin className="h-4 w-4 text-primary" />
-            <div className="flex-1">
-              <div className="font-medium">{selectedDestination.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {selectedDestination.state && `${selectedDestination.state}, `}
-                {selectedDestination.country} • {selectedDestination.continent}
-              </div>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => {
-                setSelectedDestination(null);
-                onChange(0);
-              }}
-            >
-              Alterar
-            </Button>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn("w-full justify-between", className)}
+          disabled={disabled}
+        >
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+            {selectedDestination ? (
+              <span className="truncate">{getDestinationLabel(selectedDestination)}</span>
+            ) : (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
           </div>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar destino..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0" align="start">
+        <Command shouldFilter={false}>
+          <div className="flex items-center border-b px-3">
+            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+            <input
+              placeholder="Buscar destinos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
-          
-          <Select value={value?.toString()} onValueChange={handleDestinationSelect}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione um destino" />
-            </SelectTrigger>
-            <SelectContent className="max-h-60">
-              {filteredDestinations.length > 0 ? (
-                filteredDestinations.map((destination: Destination) => (
-                  <SelectItem key={destination.id} value={destination.id.toString()}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{destination.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {destination.state && `${destination.state}, `}
-                        {destination.country} • {destination.continent}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))
-              ) : (
-                <SelectItem value="" disabled>
-                  {searchTerm ? "Nenhum destino encontrado" : "Carregando..."}
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-      
-      {required && !selectedDestination && (
-        <p className="text-sm text-red-500">
-          Destino é obrigatório
-        </p>
-      )}
-      
-      <p className="text-xs text-muted-foreground">
-        As atividades só podem ser criadas em destinos pré-cadastrados
-      </p>
-    </div>
+          <CommandList>
+            {isLoading ? (
+              <div className="p-4 text-center text-sm text-muted-foreground">
+                Carregando destinos...
+              </div>
+            ) : filteredDestinations.length === 0 ? (
+              <CommandEmpty>
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground">
+                    Nenhum destino encontrado
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Tente buscar por cidade, estado ou região
+                  </p>
+                </div>
+              </CommandEmpty>
+            ) : (
+              Object.entries(groupedDestinations).map(([region, regionDestinations]) => (
+                <CommandGroup key={region} heading={region}>
+                  {regionDestinations.map((destination) => (
+                    <CommandItem
+                      key={destination.id}
+                      value={destination.id.toString()}
+                      onSelect={() => {
+                        onValueChange(destination.id === value ? undefined : destination.id);
+                        setOpen(false);
+                      }}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <Check
+                        className={cn(
+                          "h-4 w-4",
+                          value === destination.id ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span>{getDestinationLabel(destination)}</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {destination.continent}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              ))
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

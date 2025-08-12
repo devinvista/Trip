@@ -54,7 +54,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { insertTripSchema, expenseCategories, BudgetBreakdown, PlannedActivity } from "@shared/schema";
 import { LoadingSpinner } from "@/components/loading-spinner";
-import { PlacesAutocomplete } from "@/components/places-autocomplete";
+import { DestinationSelector } from "@/components/destination-selector";
 import { AdvancedActivityManager } from "@/components/advanced-activity-manager";
 import { CoverImageSelector } from "@/components/cover-image-selector";
 import { apiRequest } from "@/lib/queryClient";
@@ -155,7 +155,7 @@ function CreateTripPageContent() {
   const [totalPoints, setTotalPoints] = useState(0);
   const [achievements, setAchievements] = useState(ACHIEVEMENTS);
   const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
-  const [selectedDestinationId, setSelectedDestinationId] = useState<number | null>(null);
+  const [selectedDestinationId, setSelectedDestinationId] = useState<number | undefined>(undefined);
   const [planned_activities, setPlannedActivities] = useState<PlannedActivity[]>([
     {
       id: '1',
@@ -586,27 +586,27 @@ function CreateTripPageContent() {
                           <h3 className="text-lg font-semibold">Destino dos Sonhos</h3>
                         </div>
                         
-                        <FormField
-                          control={form.control}
-                          name="destination"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Para onde vamos?</FormLabel>
-                              <FormControl>
-                                <PlacesAutocomplete
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  onDestinationSelect={(destination) => {
-                                    setSelectedDestinationId(destination.id);
-                                  }}
-                                  placeholder="Busque cidades incríveis como São Paulo, Paris, Tokyo..."
-                                  className="border-2 focus:border-primary"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                        <div className="space-y-2">
+                          <FormLabel>Para onde vamos?</FormLabel>
+                          <DestinationSelector
+                            value={selectedDestinationId}
+                            onValueChange={(destinationId) => {
+                              setSelectedDestinationId(destinationId);
+                              if (destinationId) {
+                                form.setValue("destination", destinationId.toString());
+                              } else {
+                                form.setValue("destination", "");
+                              }
+                            }}
+                            placeholder="Selecione um destino cadastrado..."
+                            className="border-2 focus:border-primary"
+                          />
+                          {form.formState.errors.destination && (
+                            <p className="text-sm text-destructive">
+                              {form.formState.errors.destination.message}
+                            </p>
                           )}
-                        />
+                        </div>
 
                         <FormField
                           control={form.control}
