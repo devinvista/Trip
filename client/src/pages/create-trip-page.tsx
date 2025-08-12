@@ -153,7 +153,7 @@ function CreateTripPageContent() {
       title: 'Visitar pontos turísticos principais',
       category: 'sightseeing',
       priority: 'high',
-      estimatedCost: 150,
+      estimated_cost: 150,
       duration: '4 horas',
       createdAt: new Date().toISOString(),
     },
@@ -162,7 +162,7 @@ function CreateTripPageContent() {
       title: 'Experimentar gastronomia local',
       category: 'food',
       priority: 'medium',
-      estimatedCost: 200,
+      estimated_cost: 200,
       duration: '2 horas',
       createdAt: new Date().toISOString(),
     },
@@ -171,7 +171,7 @@ function CreateTripPageContent() {
       title: 'Explorar a vida noturna',
       category: 'nightlife',
       priority: 'low',
-      estimatedCost: 100,
+      estimated_cost: 100,
       duration: '3 horas',
       createdAt: new Date().toISOString(),
     },
@@ -225,11 +225,11 @@ function CreateTripPageContent() {
     }
     
     // Dates & Duration
-    if (watchedValues.startDate && watchedValues.endDate) {
+    if (watchedValues.start_date && watchedValues.end_date) {
       updatedSteps[2].status = 'completed';
       totalProgress += updatedSteps[2].points;
       completedCount++;
-    } else if (watchedValues.startDate || watchedValues.endDate) {
+    } else if (watchedValues.start_date || watchedValues.end_date) {
       updatedSteps[2].status = 'in-progress';
     }
     
@@ -324,7 +324,7 @@ function CreateTripPageContent() {
   };
 
   const calculateActivitiesCost = (activities: PlannedActivity[]): number => {
-    return activities.reduce((total, activity) => total + (activity.estimatedCost || 0), 0);
+    return activities.reduce((total, activity) => total + (activity.estimated_cost || 0), 0);
   };
 
   const calculateCostPerPerson = (totalBudget: number, participants: number): number => {
@@ -629,7 +629,7 @@ function CreateTripPageContent() {
 
                         <FormField
                           control={form.control}
-                          name="coverImage"
+                          name="cover_image"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Imagem da Viagem</FormLabel>
@@ -892,8 +892,8 @@ function CreateTripPageContent() {
                           tripDestination={form.watch('destination')}
                           tripParticipants={1}
                           tripMaxParticipants={form.watch('max_participants') || 1}
-                          tripStartDate={form.watch('startDate')}
-                          tripEndDate={form.watch('endDate')}
+                          tripStartDate={form.watch('start_date')}
+                          tripEndDate={form.watch('end_date')}
                           className="border-2 border-gray-200 rounded-lg p-4"
                         />
                       </motion.div>
