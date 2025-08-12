@@ -285,8 +285,16 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async updateTrip(id: number, updates: Partial<Trip>): Promise<Trip | null> {
-    const [trip] = await db.update(trips).set(updates).where(eq(trips.id, id)).returning();
-    return trip || null;
+    console.log("📝 Storage updateTrip called with:", { id, updates });
+    
+    try {
+      const [trip] = await db.update(trips).set(updates).where(eq(trips.id, id)).returning();
+      console.log("✅ Trip updated in database:", trip);
+      return trip || null;
+    } catch (error) {
+      console.error("❌ Database update error:", error);
+      throw error;
+    }
   }
 
   async deleteTrip(id: number): Promise<boolean> {

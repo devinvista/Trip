@@ -138,6 +138,8 @@ export function registerRoutes(app: Express): Server {
       const trip_id = parseInt(req.params.id);
       const updates = req.body;
 
+      console.log("📝 Atualizando viagem:", trip_id, "Updates:", updates);
+
       // Get the trip to verify ownership
       const trip = await storage.getTripById(trip_id);
       if (!trip) {
@@ -162,14 +164,31 @@ export function registerRoutes(app: Express): Server {
         });
       }
 
-      const updatedTrip = await storage.updateTrip(trip_id, updates);
+      // Process date fields to ensure they are proper Date objects
+      const processedUpdates = { ...updates };
+      
+      if (processedUpdates.start_date) {
+        processedUpdates.start_date = new Date(processedUpdates.start_date);
+        console.log("📅 Processed start_date:", processedUpdates.start_date);
+      }
+      
+      if (processedUpdates.end_date) {
+        processedUpdates.end_date = new Date(processedUpdates.end_date);
+        console.log("📅 Processed end_date:", processedUpdates.end_date);
+      }
+
+      console.log("📝 Final updates being sent to database:", processedUpdates);
+
+      const updatedTrip = await storage.updateTrip(trip_id, processedUpdates);
       if (!updatedTrip) {
         return res.status(404).json({ message: "Viagem não encontrada" });
       }
 
+      console.log("✅ Trip updated successfully:", updatedTrip);
       res.json(updatedTrip);
     } catch (error: any) {
       console.error("❌ Erro ao atualizar viagem:", error);
+      console.error("❌ Stack trace:", error.stack);
       res.status(400).json({ 
         message: error instanceof Error ? error.message : "Erro ao atualizar viagem" 
       });
