@@ -125,25 +125,96 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async getTripById(id: number): Promise<Trip | null> {
-    const [trip] = await db.select().from(trips).where(eq(trips.id, id));
-    return trip || null;
-  }
-
-  async getAllTrips(): Promise<Trip[]> {
-    return await db.select().from(trips).orderBy(desc(trips.created_at));
-  }
-
-  async getUserTrips(userId: number): Promise<{ created: Trip[], participating: Trip[] }> {
-    // Get created trips
-    const created = await db.select().from(trips).where(eq(trips.creator_id, userId));
-    
-    // Get participating trips
-    const participating = await db
+    // Join with destinations to get destination name
+    const [result] = await db
       .select({
         id: trips.id,
         creator_id: trips.creator_id,
         title: trips.title,
         destination_id: trips.destination_id,
+        destination_name: destinations.name,
+        destination_state: destinations.state,
+        destination_country: destinations.country,
+        cover_image: trips.cover_image,
+        start_date: trips.start_date,
+        end_date: trips.end_date,
+        budget: trips.budget,
+        budget_breakdown: trips.budget_breakdown,
+        max_participants: trips.max_participants,
+        current_participants: trips.current_participants,
+        description: trips.description,
+        travel_style: trips.travel_style,
+        shared_costs: trips.shared_costs,
+        planned_activities: trips.planned_activities,
+        status: trips.status,
+        created_at: trips.created_at,
+      })
+      .from(trips)
+      .leftJoin(destinations, eq(trips.destination_id, destinations.id))
+      .where(eq(trips.id, id));
+
+    if (!result) return null;
+
+    // Add formatted destination string
+    const trip = {
+      ...result,
+      destination: result.destination_state 
+        ? `${result.destination_name}, ${result.destination_state}` 
+        : `${result.destination_name}, ${result.destination_country}`
+    };
+
+    return trip as Trip;
+  }
+
+  async getAllTrips(): Promise<Trip[]> {
+    // Join with destinations to get destination name
+    const result = await db
+      .select({
+        id: trips.id,
+        creator_id: trips.creator_id,
+        title: trips.title,
+        destination_id: trips.destination_id,
+        destination_name: destinations.name,
+        destination_state: destinations.state,
+        destination_country: destinations.country,
+        cover_image: trips.cover_image,
+        start_date: trips.start_date,
+        end_date: trips.end_date,
+        budget: trips.budget,
+        budget_breakdown: trips.budget_breakdown,
+        max_participants: trips.max_participants,
+        current_participants: trips.current_participants,
+        description: trips.description,
+        travel_style: trips.travel_style,
+        shared_costs: trips.shared_costs,
+        planned_activities: trips.planned_activities,
+        status: trips.status,
+        created_at: trips.created_at,
+      })
+      .from(trips)
+      .leftJoin(destinations, eq(trips.destination_id, destinations.id))
+      .orderBy(desc(trips.created_at));
+
+    // Map to include a formatted destination string
+    return result.map(trip => ({
+      ...trip,
+      destination: trip.destination_state 
+        ? `${trip.destination_name}, ${trip.destination_state}` 
+        : `${trip.destination_name}, ${trip.destination_country}`
+    })) as Trip[];
+  }
+
+  async getUserTrips(userId: number): Promise<{ created: Trip[], participating: Trip[] }> {
+    // Get created trips with destination names
+    const createdResults = await db
+      .select({
+        id: trips.id,
+        creator_id: trips.creator_id,
+        title: trips.title,
+        destination_id: trips.destination_id,
+        destination_name: destinations.name,
+        destination_state: destinations.state,
+        destination_country: destinations.country,
         cover_image: trips.cover_image,
         start_date: trips.start_date,
         end_date: trips.end_date,
@@ -159,12 +230,56 @@ export class PostgreSQLStorage implements IStorage {
         created_at: trips.created_at
       })
       .from(trips)
+      .leftJoin(destinations, eq(trips.destination_id, destinations.id))
+      .where(eq(trips.creator_id, userId));
+    
+    // Get participating trips with destination names
+    const participatingResults = await db
+      .select({
+        id: trips.id,
+        creator_id: trips.creator_id,
+        title: trips.title,
+        destination_id: trips.destination_id,
+        destination_name: destinations.name,
+        destination_state: destinations.state,
+        destination_country: destinations.country,
+        cover_image: trips.cover_image,
+        start_date: trips.start_date,
+        end_date: trips.end_date,
+        budget: trips.budget,
+        budget_breakdown: trips.budget_breakdown,
+        max_participants: trips.max_participants,
+        current_participants: trips.current_participants,
+        description: trips.description,
+        travel_style: trips.travel_style,
+        shared_costs: trips.shared_costs,
+        planned_activities: trips.planned_activities,
+        status: trips.status,
+        created_at: trips.created_at
+      })
+      .from(trips)
+      .leftJoin(destinations, eq(trips.destination_id, destinations.id))
       .innerJoin(tripParticipants, eq(trips.id, tripParticipants.trip_id))
       .where(and(
         eq(tripParticipants.user_id, userId),
         eq(tripParticipants.status, 'accepted'),
         ne(trips.creator_id, userId) // Exclude trips they created
       ));
+
+    // Format destination strings
+    const created = createdResults.map(trip => ({
+      ...trip,
+      destination: trip.destination_state 
+        ? `${trip.destination_name}, ${trip.destination_state}` 
+        : `${trip.destination_name}, ${trip.destination_country}`
+    })) as Trip[];
+
+    const participating = participatingResults.map(trip => ({
+      ...trip,
+      destination: trip.destination_state 
+        ? `${trip.destination_name}, ${trip.destination_state}` 
+        : `${trip.destination_name}, ${trip.destination_country}`
+    })) as Trip[];
 
     return { created, participating };
   }
