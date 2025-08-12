@@ -65,6 +65,7 @@ export default function DashboardPage() {
     queryFn: async () => {
       const response = await fetch("/api/my-trips", {
         credentials: "include",
+        cache: "no-cache", // Force fresh request
       });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -73,6 +74,7 @@ export default function DashboardPage() {
     },
     enabled: !!user,
     staleTime: 0, // Always fresh
+    cacheTime: 0, // Don't cache
     refetchOnWindowFocus: true,
     refetchOnMount: true,
     retry: 2,

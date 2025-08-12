@@ -452,11 +452,7 @@ export class PostgreSQLStorage implements IStorage {
   }
 
   async getTripsByCreator(creatorId: number): Promise<Trip[]> {
-    return await db.select().from(trips).where(eq(trips.creator_id, creatorId));
-  }
-
-  async getTripsByParticipant(userId: number): Promise<Trip[]> {
-    return await db
+    const results = await db
       .select({
         id: trips.id,
         creator_id: trips.creator_id,
@@ -474,14 +470,61 @@ export class PostgreSQLStorage implements IStorage {
         shared_costs: trips.shared_costs,
         planned_activities: trips.planned_activities,
         status: trips.status,
-        created_at: trips.created_at
+        created_at: trips.created_at,
+        destination_name: destinations.name,
+        destination_state: destinations.state,
+        destination_country: destinations.country
+      })
+      .from(trips)
+      .leftJoin(destinations, eq(trips.destination_id, destinations.id))
+      .where(eq(trips.creator_id, creatorId));
+
+    return results.map(trip => ({
+      ...trip,
+      destination: trip.destination_state 
+        ? `${trip.destination_name}, ${trip.destination_state}` 
+        : `${trip.destination_name}, ${trip.destination_country}`
+    })) as Trip[];
+  }
+
+  async getTripsByParticipant(userId: number): Promise<Trip[]> {
+    const results = await db
+      .select({
+        id: trips.id,
+        creator_id: trips.creator_id,
+        title: trips.title,
+        destination_id: trips.destination_id,
+        cover_image: trips.cover_image,
+        start_date: trips.start_date,
+        end_date: trips.end_date,
+        budget: trips.budget,
+        budget_breakdown: trips.budget_breakdown,
+        max_participants: trips.max_participants,
+        current_participants: trips.current_participants,
+        description: trips.description,
+        travel_style: trips.travel_style,
+        shared_costs: trips.shared_costs,
+        planned_activities: trips.planned_activities,
+        status: trips.status,
+        created_at: trips.created_at,
+        destination_name: destinations.name,
+        destination_state: destinations.state,
+        destination_country: destinations.country
       })
       .from(trips)
       .innerJoin(tripParticipants, eq(trips.id, tripParticipants.trip_id))
+      .leftJoin(destinations, eq(trips.destination_id, destinations.id))
       .where(and(
         eq(tripParticipants.user_id, userId),
         eq(tripParticipants.status, 'accepted')
       ));
+
+    return results.map(trip => ({
+      ...trip,
+      destination: trip.destination_state 
+        ? `${trip.destination_name}, ${trip.destination_state}` 
+        : `${trip.destination_name}, ${trip.destination_country}`
+    })) as Trip[];
   }
 
   // Additional placeholder methods - will be implemented as needed
