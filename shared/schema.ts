@@ -617,6 +617,7 @@ export interface PlannedActivity {
   scheduled_date?: string; // ISO date string
   location?: string;
   status?: string; // Add status property for compatibility
+  date_time?: string; // Add date_time property for compatibility
   created_at: string;
 }
 

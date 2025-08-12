@@ -12,9 +12,9 @@ interface Notification {
   type: 'info' | 'success' | 'warning' | 'message';
   title: string;
   message: string;
-  isRead: boolean;
-  createdAt: string;
-  actionUrl?: string;
+  is_read: boolean;
+  created_at: string;
+  action_url?: string;
 }
 
 export function NotificationCenter() {
@@ -56,7 +56,7 @@ export function NotificationCenter() {
     }
   });
 
-  const unreadCount = notifications.filter((n: Notification) => !n.isRead).length;
+  const unreadCount = notifications.filter((n: Notification) => !n.is_read).length;
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -72,12 +72,12 @@ export function NotificationCenter() {
   };
 
   const handleNotificationClick = (notification: Notification) => {
-    if (!notification.isRead) {
+    if (!notification.is_read) {
       markAsReadMutation.mutate(notification.id);
     }
     
-    if (notification.actionUrl) {
-      window.location.href = notification.actionUrl;
+    if (notification.action_url) {
+      window.location.href = notification.action_url;
     }
   };
 
@@ -133,7 +133,7 @@ export function NotificationCenter() {
                   key={notification.id}
                   className={cn(
                     "p-4 cursor-pointer hover:bg-gray-50 transition-colors",
-                    !notification.isRead && "bg-blue-50"
+                    !notification.is_read && "bg-blue-50"
                   )}
                   onClick={() => handleNotificationClick(notification)}
                 >
@@ -145,12 +145,12 @@ export function NotificationCenter() {
                       <div className="flex items-center justify-between">
                         <p className={cn(
                           "text-sm font-medium truncate",
-                          !notification.isRead && "text-gray-900",
-                          notification.isRead && "text-gray-600"
+                          !notification.is_read && "text-gray-900",
+                          notification.is_read && "text-gray-600"
                         )}>
                           {notification.title}
                         </p>
-                        {!notification.isRead && (
+                        {!notification.is_read && (
                           <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 ml-2"></div>
                         )}
                       </div>
@@ -158,7 +158,7 @@ export function NotificationCenter() {
                         {notification.message}
                       </p>
                       <p className="text-xs text-gray-400 mt-2">
-                        {new Date(notification.createdAt).toLocaleString('pt-BR')}
+                        {new Date(notification.created_at).toLocaleString('pt-BR')}
                       </p>
                     </div>
                   </div>

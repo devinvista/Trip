@@ -780,7 +780,7 @@ function ActivitySearchTab({
       duration: selectedActivity.duration || "A definir",
       priority: "medium" as PlannedActivity['priority'],
       attachments: [],
-      urls: [],
+      links: [],
       notes: `Atividade encontrada na busca\nPreço original: R$ ${selectedActivity.priceAmount || 0}\nParticipantes: ${participants}`,
       date_time: selectedDate || undefined,
       status: "planned" as PlannedActivity['status']
@@ -1013,7 +1013,7 @@ function ActivityFormTab({
       estimated_cost: 0,
       duration: '',
       location: '',
-      urls: [],
+      links: [],
       attachments: [],
       notes: '',
       date_time: ''
@@ -1035,7 +1035,7 @@ function ActivityFormTab({
       estimated_cost: formData.estimated_cost,
       duration: formData.duration,
       location: formData.location,
-      urls: formData.urls || [],
+      links: formData.links || [],
       attachments: formData.attachments || [],
       notes: formData.notes,
       date_time: formData.date_time,
@@ -1051,7 +1051,7 @@ function ActivityFormTab({
     if (newLink.trim()) {
       setFormData(prev => ({
         ...prev,
-        urls: [...(prev.urls || []), newLink.trim()]
+        links: [...(prev.links || []), newLink.trim()]
       }));
       setNewLink('');
     }
@@ -1060,7 +1060,7 @@ function ActivityFormTab({
   const removeLink = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      urls: prev.urls?.filter((_, i) => i !== index) || []
+      links: prev.links?.filter((_, i) => i !== index) || []
     }));
   };
 
@@ -1184,13 +1184,13 @@ function ActivityFormTab({
           <Input
             id="dateTime"
             type="date"
-            value={formData.dateTime ? formData.dateTime.split('T')[0] : ''}
+            value={formData.date_time ? formData.date_time.split('T')[0] : ''}
             onChange={(e) => {
-              const currentTime = formData.dateTime && formData.dateTime.includes('T') 
-                ? formData.dateTime.split('T')[1] 
+              const currentTime = formData.date_time && formData.date_time.includes('T') 
+                ? formData.date_time.split('T')[1] 
                 : '';
               const newDateTime = currentTime ? `${e.target.value}T${currentTime}` : e.target.value;
-              setFormData(prev => ({ ...prev, dateTime: newDateTime }));
+              setFormData(prev => ({ ...prev, date_time: newDateTime }));
             }}
             min={tripStartDate ? formatDateForInput(tripStartDate) : undefined}
             max={tripEndDate ? formatDateForInput(tripEndDate) : undefined}
@@ -1208,13 +1208,13 @@ function ActivityFormTab({
           <Input
             id="time"
             type="time"
-            value={formData.dateTime && formData.dateTime.includes('T') ? formData.dateTime.split('T')[1]?.split('.')[0] : ''}
+            value={formData.date_time && formData.date_time.includes('T') ? formData.date_time.split('T')[1]?.split('.')[0] : ''}
             onChange={(e) => {
-              const date = formData.dateTime ? formData.dateTime.split('T')[0] : '';
+              const date = formData.date_time ? formData.date_time.split('T')[0] : '';
               if (date && e.target.value) {
-                setFormData(prev => ({ ...prev, dateTime: `${date}T${e.target.value}` }));
+                setFormData(prev => ({ ...prev, date_time: `${date}T${e.target.value}` }));
               } else if (date) {
-                setFormData(prev => ({ ...prev, dateTime: date }));
+                setFormData(prev => ({ ...prev, date_time: date }));
               }
             }}
             className="border-2 focus:border-primary transition-colors"
@@ -1249,9 +1249,9 @@ function ActivityFormTab({
             <Plus className="h-4 w-4" />
           </Button>
         </div>
-        {formData.urls && formData.urls.length > 0 && (
+        {formData.links && formData.links.length > 0 && (
           <div className="space-y-2">
-            {formData.urls.map((url, index) => (
+            {formData.links.map((url, index) => (
               <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
                 <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex-1 truncate">
                   {url}
@@ -1631,8 +1631,8 @@ export function AdvancedActivityManager({
             onEdit={handleEditActivity}
             onDelete={handleDeleteActivity}
             onReorder={onActivitiesChange}
-            startDate={startDate}
-            endDate={endDate}
+            start_date={startDate}
+            end_date={endDate}
           />
         )}
       </div>
