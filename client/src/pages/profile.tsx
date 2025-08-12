@@ -55,7 +55,7 @@ import {
   Share,
   Mail,
   MessageSquare,
-  WhatsApp,
+
   Camera,
   Image,
   Upload,
@@ -134,14 +134,14 @@ export default function ProfilePage() {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: user?.fullName || "",
+      full_name: user?.full_name || "",
       email: user?.email || "",
       phone: user?.phone ? formatPhoneNumber(user.phone) : "",
       bio: user?.bio || "",
       location: user?.location || "",
       languages: user?.languages ? (Array.isArray(user.languages) ? user.languages : (typeof user.languages === 'string' ? JSON.parse(user.languages || '[]') : [])) : [],
       interests: user?.interests ? (Array.isArray(user.interests) ? user.interests : (typeof user.interests === 'string' ? JSON.parse(user.interests || '[]') : [])) : [],
-      travelStyles: user?.travelStyles ? (Array.isArray(user.travelStyles) ? user.travelStyles : (typeof user.travelStyles === 'string' ? JSON.parse(user.travelStyles || '[]') : [])) : user?.travelStyle ? [user.travelStyle] : []
+      travel_styles: user?.travel_styles ? (Array.isArray(user.travel_styles) ? user.travel_styles : (typeof user.travel_styles === 'string' ? JSON.parse(user.travel_styles || '[]') : [])) : []
     }
   });
 
@@ -505,7 +505,7 @@ export default function ProfilePage() {
           {/* Informações do perfil - layout responsivo */}
           <div className="px-4 sm:px-6 md:ml-8 mt-4">
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2" style={{ color: '#1B2B49' }}>
-              {user.fullName}
+              {user.full_name}
             </h1>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 text-sm sm:text-base">
               <div className="flex items-center gap-2" style={{ color: '#AAB0B7' }}>
@@ -536,12 +536,12 @@ export default function ProfilePage() {
             </p>
             
             {/* Estilos de viagem preferidos */}
-            {user.travelStyle && (
+            {user.travel_styles && (
               <div className="mb-4">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Estilo de Viagem</h4>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800">
-                    {travelStyles.find(s => s.value === user.travelStyle)?.label}
+                    {Array.isArray(user.travel_styles) ? user.travel_styles.map(style => travelStyles.find(s => s.value === style)?.label).filter(Boolean).join(', ') : 'Não informado'}
                   </Badge>
                 </div>
               </div>
@@ -583,7 +583,7 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <span>Membro desde {new Date(user.created_at || user.createdAt || '2025-01-01').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</span>
+                <span>Membro desde {new Date(user.created_at || '2025-01-01').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</span>
               </div>
             </div>
           </div>
@@ -1152,16 +1152,16 @@ export default function ProfilePage() {
                   <form onSubmit={form.handleSubmit(handleUpdateProfile)} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="fullName">Nome Completo</Label>
+                        <Label htmlFor="full_name">Nome Completo</Label>
                         <Input
-                          id="fullName"
-                          {...form.register("fullName")}
+                          id="full_name"
+                          {...form.register("full_name")}
                           disabled={!isEditing}
                           className={!isEditing ? "bg-slate-50" : ""}
                         />
-                        {form.formState.errors.fullName && (
+                        {form.formState.errors.full_name && (
                           <p className="text-sm text-red-500 mt-1">
-                            {form.formState.errors.fullName.message}
+                            {form.formState.errors.full_name.message}
                           </p>
                         )}
                       </div>
@@ -1241,15 +1241,15 @@ export default function ProfilePage() {
                         {travelStyles.map((style) => (
                           <Badge
                             key={style.value}
-                            variant={form.watch("travelStyles").includes(style.value) ? "default" : "outline"}
+                            variant={form.watch("travel_styles").includes(style.value) ? "default" : "outline"}
                             className={`cursor-pointer ${!isEditing ? "pointer-events-none" : ""}`}
                             onClick={() => {
                               if (!isEditing) return;
-                              const current = form.watch("travelStyles");
+                              const current = form.watch("travel_styles");
                               if (current.includes(style.value)) {
-                                form.setValue("travelStyles", current.filter(s => s !== style.value));
+                                form.setValue("travel_styles", current.filter(s => s !== style.value));
                               } else {
-                                form.setValue("travelStyles", [...current, style.value]);
+                                form.setValue("travel_styles", [...current, style.value]);
                               }
                             }}
                           >
@@ -1257,9 +1257,9 @@ export default function ProfilePage() {
                           </Badge>
                         ))}
                       </div>
-                      {form.formState.errors.travelStyles && (
+                      {form.formState.errors.travel_styles && (
                         <p className="text-sm text-red-500 mt-1">
-                          {form.formState.errors.travelStyles.message}
+                          {form.formState.errors.travel_styles.message}
                         </p>
                       )}
                     </div>

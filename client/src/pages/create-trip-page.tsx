@@ -155,7 +155,7 @@ function CreateTripPageContent() {
       priority: 'high',
       estimated_cost: 150,
       duration: '4 horas',
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: '2',
@@ -164,7 +164,7 @@ function CreateTripPageContent() {
       priority: 'medium',
       estimated_cost: 200,
       duration: '2 horas',
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: '3',
@@ -173,7 +173,7 @@ function CreateTripPageContent() {
       priority: 'low',
       estimated_cost: 100,
       duration: '3 horas',
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
   ]);
 

@@ -807,7 +807,7 @@ export default function DashboardPage() {
           onClose={closeTour}
           onComplete={completeTour}
           userPreferences={{
-            travelStyle: Array.isArray(user?.travel_styles) ? user.travel_styles.join(', ') : user?.travel_styles as string,
+            travel_style: Array.isArray(user?.travel_styles) ? user.travel_styles.join(', ') : user?.travel_styles as string,
             interests: user?.interests as string[] | undefined,
             experience: 'iniciante' // Could be determined from user profile
           }}

@@ -64,10 +64,10 @@ export function UserAvatar({
   return (
     <div className="relative inline-block">
       <Avatar className={cn(sizeClasses[size], className)}>
-        {(user.profile_photo || user.profilePhoto) && (
+        {user.profile_photo && (
           <AvatarImage 
-            src={user.profile_photo || user.profilePhoto} 
-            alt={user.full_name || user.fullName || 'Usuário'}
+            src={user.profile_photo} 
+            alt={user.full_name || 'Usuário'}
             className="object-cover"
           />
         )}
@@ -77,13 +77,13 @@ export function UserAvatar({
             background: 'linear-gradient(135deg, #1B2B49 0%, #41B6FF 100%)' 
           }}
         >
-          {getInitials(user.full_name || user.fullName || '')}
+          {getInitials(user.full_name || '')}
         </AvatarFallback>
       </Avatar>
       
-      {showVerificationBadge && user.isVerified && (
+      {showVerificationBadge && user.is_verified && (
         <VerificationBadge 
-          isVerified={user.isVerified || false}
+          isVerified={user.is_verified || false}
           size={badgeSizeMap[size]}
         />
       )}

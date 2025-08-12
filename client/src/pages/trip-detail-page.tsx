@@ -485,7 +485,7 @@ function ActivitiesTimeline({
       scheduled_date: newActivity.scheduled_date || tripStartDate,
       notes: newActivity.notes,
       completed: false,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       status: 'planned'
     };
     
@@ -1509,7 +1509,7 @@ export default function TripDetailPage() {
                       {trip.status === 'open' ? 'Aberta para participação' : 'Lotada'}
                     </Badge>
                     <Badge variant="outline">
-                      {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
+                      {travelStyleLabels[trip.travel_style] || trip.travel_style}
                     </Badge>
                   </div>
                 </div>
@@ -1958,13 +1958,13 @@ export default function TripDetailPage() {
                         <div key={participant.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-gray-50 rounded-lg">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-                              <AvatarImage src={participant.user.profilePhoto} />
+                              <AvatarImage src={participant.user.profile_photo} />
                               <AvatarFallback className="text-xs sm:text-sm">
-                                {(participant.user.full_name || participant.user.fullName)?.[0] || participant.user.username[0]}
+                                {participant.user.full_name?.[0] || participant.user.username[0]}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm sm:text-base truncate">{participant.user.full_name || participant.user.fullName || participant.user.username}</p>
+                              <p className="font-medium text-sm sm:text-base truncate">{participant.user.full_name || participant.user.username}</p>
                               <p className="text-xs sm:text-sm text-gray-600 truncate">{participant.user.location}</p>
                             </div>
                           </div>
@@ -2001,10 +2001,10 @@ export default function TripDetailPage() {
                             <div className="flex items-start justify-between">
                               <div className="flex items-center gap-3">
                                 <Avatar>
-                                  <AvatarFallback>{(request.user.full_name || request.user.fullName)?.[0] || request.user.username[0]}</AvatarFallback>
+                                  <AvatarFallback>{request.user.full_name?.[0] || request.user.username[0]}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <p className="font-medium">{request.user.full_name || request.user.fullName || request.user.username}</p>
+                                  <p className="font-medium">{request.user.full_name || request.user.username}</p>
                                   <p className="text-sm text-gray-600">{request.message}</p>
                                 </div>
                               </div>

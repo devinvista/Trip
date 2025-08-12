@@ -210,15 +210,15 @@ export function Navbar() {
                         <div className="flex items-center space-x-3 py-6 border-b border-slate-100">
                           <UserAvatar 
                             user={{
-                              fullName: user.full_name || user.fullName,
-                              profilePhoto: user.profilePhoto || undefined,
-                              isVerified: user.isVerified
+                              full_name: user.full_name,
+                              profile_photo: user.profile_photo || undefined,
+                              is_verified: user.is_verified
                             }}
                             size="lg"
                             className="w-12 h-12 ring-2 ring-blue-100"
                           />
                           <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-slate-900 truncate">{user?.full_name || user?.fullName}</div>
+                            <div className="font-semibold text-slate-900 truncate">{user?.full_name}</div>
                             <div className="text-sm text-slate-600 truncate">{user?.email}</div>
                             {user?.location && (
                               <div className="text-xs text-slate-500 truncate">{user.location}</div>

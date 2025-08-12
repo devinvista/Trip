@@ -85,11 +85,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      if (typeof userData.travelStyles === 'string') {
+      if (typeof userData.travel_styles === 'string') {
         try {
-          userData.travelStyles = JSON.parse(userData.travelStyles);
+          userData.travel_styles = JSON.parse(userData.travel_styles);
         } catch (e) {
-          userData.travelStyles = [];
+          userData.travel_styles = [];
         }
       }
       
@@ -151,11 +151,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      if (typeof userData.travelStyles === 'string') {
+      if (typeof userData.travel_styles === 'string') {
         try {
-          userData.travelStyles = JSON.parse(userData.travelStyles);
+          userData.travel_styles = JSON.parse(userData.travel_styles);
         } catch (e) {
-          userData.travelStyles = [];
+          userData.travel_styles = [];
         }
       }
       

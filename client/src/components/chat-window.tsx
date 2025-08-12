@@ -29,8 +29,8 @@ const mockMessages = [
     sentAt: new Date(Date.now() - 86400000 * 2).toISOString(),
     sender: {
       id: 1,
-      fullName: "Tom Tubin",
-      profilePhoto: undefined
+      full_name: "Tom Tubin",
+      profile_photo: undefined
     },
     status: "read"
   },
@@ -42,8 +42,8 @@ const mockMessages = [
     sentAt: new Date(Date.now() - 86400000).toISOString(),
     sender: {
       id: 2,
-      fullName: "Ana Silva",
-      profilePhoto: undefined
+      full_name: "Ana Silva",
+      profile_photo: undefined
     },
     status: "read"
   },
@@ -55,8 +55,8 @@ const mockMessages = [
     sentAt: new Date(Date.now() - 43200000).toISOString(),
     sender: {
       id: 3,
-      fullName: "Carlos Santos",
-      profilePhoto: undefined
+      full_name: "Carlos Santos",
+      profile_photo: undefined
     },
     status: "read"
   },
@@ -68,8 +68,8 @@ const mockMessages = [
     sentAt: new Date(Date.now() - 21600000).toISOString(),
     sender: {
       id: 4,
-      fullName: "Maria Oliveira",
-      profilePhoto: undefined
+      full_name: "Maria Oliveira",
+      profile_photo: undefined
     },
     status: "delivered"
   },
@@ -204,7 +204,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                   />
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs font-medium text-gray-900 truncate">
-                      {participant.user?.full_name || participant.user?.fullName || participant.user?.username}
+                      {participant.user?.full_name || participant.user?.username}
                     </span>
                     <div className="flex items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${isOrganizer ? 'bg-green-500' : 'bg-gray-400'}`}></div>
@@ -271,7 +271,7 @@ export function ChatWindow({ tripId, className = "", participants = [] }: ChatWi
                     <div className={`flex-1 max-w-[75%] ${message.senderId === user?.id ? 'text-right' : ''}`}>
                       <div className={`flex items-center gap-2 mb-1 ${message.senderId === user?.id ? 'justify-end' : ''}`}>
                         <span className="text-sm font-semibold text-gray-700">
-                          {message.senderId === user?.id ? 'Você' : message.sender?.fullName}
+                          {message.senderId === user?.id ? 'Você' : message.sender?.full_name}
                         </span>
                         <span className="text-xs text-gray-500 flex items-center gap-1">
                           <Clock className="h-3 w-3" />

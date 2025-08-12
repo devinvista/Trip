@@ -54,7 +54,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
     }
     
     // For cruise trips, use cruise ship images instead of destination images
-    if (trip.travel_style === 'cruzeiros' || trip.travelStyle === 'cruzeiros') {
+    if (trip.travel_style === 'cruzeiros') {
       const cruiseImages = [
         "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=800&q=80", // Luxury cruise ship
         "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80", // Cruise ship at sunset
@@ -109,7 +109,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
           
           <div className="absolute top-3 left-3">
             <Badge variant="outline" className="bg-white/90 backdrop-blur-sm">
-              {travelStyleLabels[trip.travelStyle] || trip.travelStyle}
+              {travelStyleLabels[trip.travel_style] || trip.travel_style}
             </Badge>
           </div>
 
@@ -237,7 +237,7 @@ export const TripCard = memo(function TripCard({ trip, showActions = true }: Tri
             <div>
               <span className="text-sm text-gray-600">Por</span>
               <span className="text-sm font-medium text-gray-800 ml-1">
-                {(trip.creator?.full_name || trip.creator?.fullName || 'Usuário')?.split(' ')[0]}
+                {(trip.creator?.full_name || 'Usuário')?.split(' ')[0]}
               </span>
             </div>
           </div>

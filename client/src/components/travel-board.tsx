@@ -303,10 +303,10 @@ export function TravelBoard({ className = "" }: TravelBoardProps) {
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
                         <AvatarFallback className="text-xs">
-                          {(trip.creator?.full_name || trip.creator?.fullName)?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                          {trip.creator?.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-xs text-gray-600">{trip.creator?.full_name || trip.creator?.fullName}</span>
+                      <span className="text-xs text-gray-600">{trip.creator?.full_name}</span>
                     </div>
 
                     {/* Action Buttons */}

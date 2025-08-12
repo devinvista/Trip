@@ -41,7 +41,7 @@ export default function EditTripPage() {
     end_date: '',
     budget: '',
     max_participants: '',
-    travelStyle: ''
+    travel_style: ''
   });
 
   // Fetch trip data
@@ -76,7 +76,7 @@ export default function EditTripPage() {
         end_date: trip.end_date ? new Date(trip.end_date).toISOString().split('T')[0] : '',
         budget: trip.budget?.toString() || '',
         max_participants: trip.max_participants?.toString() || '',
-        travelStyle: trip.travel_style || trip.travelStyle || ''
+        travel_style: trip.travel_style || ''
       });
     }
   }, [trip, user?.id, setLocation, toast]);
@@ -370,7 +370,7 @@ export default function EditTripPage() {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Estilo de Viagem
                         </label>
-                        <Select value={formData.travelStyle} onValueChange={(value) => setFormData({ ...formData, travelStyle: value })}>
+                        <Select value={formData.travel_style} onValueChange={(value) => setFormData({ ...formData, travel_style: value })}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione o estilo da viagem" />
                           </SelectTrigger>

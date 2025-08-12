@@ -219,7 +219,7 @@ export default function SearchPage() {
     const filtered = trips.filter((trip: any) => {
       // Filter out trips that have already started
       const currentDate = new Date();
-      const tripStartDate = new Date(trip.startDate);
+      const tripStartDate = new Date(trip.start_date || trip.startDate);
       
       // Only show trips that haven't started yet (future trips)
       if (tripStartDate <= currentDate) {
@@ -239,7 +239,7 @@ export default function SearchPage() {
       }
 
       // Travel type filter
-      if (selectedTravelTypes.length > 0 && !selectedTravelTypes.includes(trip.travelStyle)) {
+      if (selectedTravelTypes.length > 0 && !selectedTravelTypes.includes(trip.travel_style || trip.travelStyle)) {
         return false;
       }
 
@@ -278,7 +278,7 @@ export default function SearchPage() {
       if (selectedDateFilter) {
         const dateRange = getDateRangeFromFilter(selectedDateFilter);
         if (dateRange) {
-          const tripStartDate = new Date(trip.startDate);
+          const tripStartDate = new Date(trip.start_date || trip.startDate);
           if (tripStartDate < dateRange.start || tripStartDate > dateRange.end) {
             return false;
           }
@@ -296,7 +296,7 @@ export default function SearchPage() {
     return [...filteredTrips].sort((a: any, b: any) => {
       switch (sortBy) {
         case "date":
-          return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+          return new Date(a.start_date || a.startDate).getTime() - new Date(b.start_date || b.startDate).getTime();
         case "price-low":
           return (a.budget || 0) - (b.budget || 0);
         case "price-high":

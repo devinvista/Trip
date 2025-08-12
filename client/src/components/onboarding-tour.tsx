@@ -41,7 +41,7 @@ interface OnboardingTourProps {
   onClose: () => void;
   onComplete: () => void;
   userPreferences?: {
-    travelStyle?: string;
+    travel_style?: string;
     interests?: string[];
     experience?: 'iniciante' | 'intermediario' | 'experiente';
   };
@@ -105,7 +105,7 @@ const getPersonalizedSteps = (preferences?: OnboardingTourProps['userPreferences
   ];
 
   // Personalizar baseado nas preferências do usuário
-  if (preferences?.travelStyle) {
+  if (preferences?.travel_style) {
     const styleMessages = {
       'aventura': 'Perfeito para aventureiros! Você encontrará muitos companheiros para trilhas, escaladas e esportes radicais.',
       'praia': 'Ótima escolha! Temos muitas viagens para localidades paradisíacas e resorts.',
@@ -116,8 +116,8 @@ const getPersonalizedSteps = (preferences?: OnboardingTourProps['userPreferences
 
     baseSteps.splice(2, 0, {
       id: 'personalized',
-      title: `Viagens de ${preferences.travelStyle}`,
-      description: styleMessages[preferences.travelStyle as keyof typeof styleMessages] || 'Encontraremos viagens perfeitas para seu estilo!',
+      title: `Viagens de ${preferences.travel_style}`,
+      description: styleMessages[preferences.travel_style as keyof typeof styleMessages] || 'Encontraremos viagens perfeitas para seu estilo!',
       icon: <Target className="w-6 h-6 text-pink-400" />,
       position: 'center'
     });

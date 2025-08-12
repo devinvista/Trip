@@ -30,7 +30,7 @@ interface SearchFilters {
   endDate: string;
   budgetRange: [number, number];
   max_participants: number;
-  travelStyles: string[];
+  travel_styles: string[];
   minRating: number;
   sortBy: string;
 }
@@ -43,7 +43,7 @@ interface SearchFiltersPanelProps {
   className?: string;
 }
 
-const travelStyles = [
+const travel_styles = [
   { id: 'praia', name: 'Praia', color: 'bg-blue-100 text-blue-800' },
   { id: 'aventura', name: 'Aventura', color: 'bg-green-100 text-green-800' },
   { id: 'urbanas', name: 'Urbanas', color: 'bg-gray-100 text-gray-800' },
@@ -88,22 +88,22 @@ export function SearchFiltersPanel({
   };
 
   const toggleTravelStyle = (styleId: string) => {
-    const newStyles = filters.travelStyles.includes(styleId)
-      ? filters.travelStyles.filter(s => s !== styleId)
-      : [...filters.travelStyles, styleId];
+    const newStyles = filters.travel_styles.includes(styleId)
+      ? filters.travel_styles.filter((s: string) => s !== styleId)
+      : [...filters.travel_styles, styleId];
     
-    updateFilters({ travelStyles: newStyles });
+    updateFilters({ travel_styles: newStyles });
   };
 
   const hasActiveFilters = 
     filters.query ||
     filters.destination ||
-    filters.start_date || filters.startDate ||
-    filters.end_date || filters.endDate ||
+    filters.startDate ||
+    filters.endDate ||
     filters.budgetRange[0] > 0 ||
     filters.budgetRange[1] < 10000 ||
     filters.max_participants < 20 ||
-    filters.travelStyles.length > 0 ||
+    filters.travel_styles.length > 0 ||
     filters.minRating > 0;
 
   return (
@@ -201,8 +201,8 @@ export function SearchFiltersPanel({
               <Input
                 id="start-date"
                 type="date"
-                value={filters.start_date || filters.startDate}
-                onChange={(e) => updateFilters({ start_date: e.target.value })}
+                value={filters.startDate}
+                onChange={(e) => updateFilters({ startDate: e.target.value })}
               />
             </div>
             <div className="space-y-2">
@@ -210,8 +210,8 @@ export function SearchFiltersPanel({
               <Input
                 id="end-date"
                 type="date"
-                value={filters.end_date || filters.endDate}
-                onChange={(e) => updateFilters({ end_date: e.target.value })}
+                value={filters.endDate}
+                onChange={(e) => updateFilters({ endDate: e.target.value })}
               />
             </div>
           </CollapsibleContent>
@@ -275,13 +275,13 @@ export function SearchFiltersPanel({
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-3 mt-2">
             <div className="flex flex-wrap gap-2">
-              {travelStyles.map((style) => (
+              {travel_styles.map((style: any) => (
                 <Badge
                   key={style.id}
-                  variant={filters.travelStyles.includes(style.id) ? "default" : "outline"}
+                  variant={filters.travel_styles.includes(style.id) ? "default" : "outline"}
                   className={cn(
                     "cursor-pointer transition-all",
-                    filters.travelStyles.includes(style.id) 
+                    filters.travel_styles.includes(style.id) 
                       ? "bg-blue-600 text-white hover:bg-blue-700"
                       : "hover:bg-gray-100"
                   )}
