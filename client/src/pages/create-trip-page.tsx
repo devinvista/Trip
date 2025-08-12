@@ -76,7 +76,16 @@ const createTripSchema = insertTripSchema.omit({ destination_id: true }).extend(
 type CreateTripForm = z.input<typeof createTripSchema>;
 
 // Travel Planning Roadmap - Best Practices Based
-const PLANNING_ROADMAP = [
+interface RoadmapStep {
+  id: string;
+  title: string;
+  icon: any;
+  points: number;
+  status: 'pending' | 'in-progress' | 'completed';
+  description: string;
+}
+
+const PLANNING_ROADMAP: RoadmapStep[] = [
   { 
     id: 'research', 
     title: 'Pesquisa & Inspiração', 
@@ -802,11 +811,11 @@ function CreateTripPageContent() {
                           ) : (
                             <div className="space-y-4">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {Object.entries(expenseCategories).map(([key, label]) => (
+                                {Object.entries(expenseCategories).filter(([key]) => key !== 'activities').map(([key, label]) => (
                                   <FormField
                                     key={key}
                                     control={form.control}
-                                    name={`budget_breakdown.${key as keyof BudgetBreakdown}`}
+                                    name={`budget_breakdown.${key}` as any}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel className="text-sm">{label}</FormLabel>
