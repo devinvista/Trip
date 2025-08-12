@@ -69,7 +69,7 @@ export interface IStorage {
   addTripParticipant(tripId: number, userId: number): Promise<TripParticipant>;
   removeTripParticipant(tripId: number, userId: number): Promise<boolean>;
   createMessage(messageData: InsertMessage): Promise<Message>;
-  createExpense(expenseData: InsertExpense): Promise<Expense>;
+  createExpense(expenseData: InsertExpense & { paid_by: number }): Promise<Expense>;
   createExpenseSplits(expenseId: number, splits: InsertExpenseSplit[]): Promise<ExpenseSplit[]>;
   getUserTripRequests(userId: number): Promise<TripRequest[]>;
   
@@ -673,11 +673,8 @@ export class PostgreSQLStorage implements IStorage {
     return this.addMessage(messageData);
   }
 
-  async createExpense(expenseData: InsertExpense): Promise<Expense> {
-    const [expense] = await db.insert(expenses).values({
-      ...expenseData,
-      paid_by: 1 // TODO: Get from authenticated user
-    }).returning();
+  async createExpense(expenseData: InsertExpense & { paid_by: number }): Promise<Expense> {
+    const [expense] = await db.insert(expenses).values(expenseData).returning();
     return expense;
   }
 

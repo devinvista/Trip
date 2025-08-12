@@ -646,15 +646,20 @@ export function registerRoutes(app: Express): Server {
       const trip_id = parseInt(req.params.id);
       console.log('Dados recebidos para criação de despesa:', req.body);
       console.log('Usuário autenticado:', req.user);
+      console.log('Trip ID parsed:', trip_id);
+      console.log('Dados para schema:', {
+        ...req.body,
+        trip_id: trip_id
+      });
       
       const expenseData = insertExpenseSchema.parse({
         ...req.body,
-        tripId: trip_id
+        trip_id: trip_id
       });
       
       // Verify user is a participant of the trip
       const participants = await storage.getTripParticipants(trip_id);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
+      const isParticipant = participants.some(p => p.user_id === req.user!.id && (p.status === 'accepted' || p.status === 'approved'));
       
       if (!isParticipant) {
         return res.status(403).json({ message: "Você deve ser um participante da viagem para adicionar despesas" });
@@ -670,23 +675,23 @@ export function registerRoutes(app: Express): Server {
       let splitParticipants: number[];
       if (req.body.splitWith === 'all') {
         // Split equally among all participants (including future ones)
-        splitParticipants = participants.filter(p => p.status === 'accepted').map(p => p.user_id);
+        splitParticipants = participants.filter(p => p.status === 'approved').map(p => p.user_id);
       } else {
-        splitParticipants = req.body.splitWith || participants.filter(p => p.status === 'accepted').map(p => p.user_id);
+        splitParticipants = req.body.splitWith || participants.filter(p => p.status === 'approved').map(p => p.user_id);
+      }
+      
+      // If no specific participants provided, include the creator by default
+      if (splitParticipants.length === 0) {
+        splitParticipants = [req.user!.id];
       }
       
       const splitAmount = expenseData.amount / splitParticipants.length;
-      
-      console.log('Split participants:', splitParticipants);
-      console.log('Split amount per person:', splitAmount);
       
       const splitData = splitParticipants.map((user_id: number) => ({
         user_id: user_id,
         amount: splitAmount,
         paid: user_id === req.user!.id // Payer's split is automatically marked as paid
       }));
-      
-      console.log('Split data to create:', splitData);
       
       const splits = await storage.createExpenseSplits(expense.id, splitData);
       
@@ -703,7 +708,7 @@ export function registerRoutes(app: Express): Server {
       
       // Verify user is a participant of the trip
       const participants = await storage.getTripParticipants(trip_id);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
+      const isParticipant = participants.some(p => p.user_id === req.user!.id && (p.status === 'accepted' || p.status === 'approved'));
       
       if (!isParticipant) {
         return res.status(403).json({ message: "Acesso negado" });
@@ -728,7 +733,7 @@ export function registerRoutes(app: Express): Server {
       }
       
       const participants = await storage.getTripParticipants(trip_id);
-      const isParticipant = participants.some(p => p.user_id === req.user!.id && p.status === 'accepted');
+      const isParticipant = participants.some(p => p.user_id === req.user!.id && (p.status === 'accepted' || p.status === 'approved'));
       const isCreator = trip.creator_id === req.user!.id;
       
       if (!isParticipant && !isCreator) {
