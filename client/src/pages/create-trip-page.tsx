@@ -5,10 +5,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import Confetti from 'react-confetti';
 
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -44,12 +40,18 @@ import {
   Heart,
   Coffee,
   Compass,
-  GripVertical,
-  Plus,
-  Minus,
   ChevronRight,
   ChevronLeft,
-  AlertCircle
+  AlertCircle,
+  ArrowRight,
+  ArrowLeft,
+  Check,
+  Plus,
+  Minus,
+  BookOpen,
+  Route,
+  Lightbulb,
+  Shield
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { insertTripSchema, expenseCategories, BudgetBreakdown, PlannedActivity } from "@shared/schema";
@@ -59,9 +61,12 @@ import { AdvancedActivityManager } from "@/components/advanced-activity-manager"
 import { CoverImageSelector } from "@/components/cover-image-selector";
 import { apiRequest } from "@/lib/queryClient";
 
+// Enhanced schema with proper date handling
 const createTripSchema = insertTripSchema.omit({ destination_id: true }).extend({
   planned_activities: z.array(z.any()).optional(),
   destination: z.string().min(1, "Destino é obrigatório"),
+  start_date: z.string().min(1, "Data de início é obrigatória"),
+  end_date: z.string().min(1, "Data de fim é obrigatória"),
 }).refine((data) => {
   const start_date = new Date(data.start_date);
   const end_date = new Date(data.end_date);
@@ -71,125 +76,71 @@ const createTripSchema = insertTripSchema.omit({ destination_id: true }).extend(
   path: ["end_date"],
 });
 
-type CreateTripForm = z.input<typeof createTripSchema>;
+type CreateTripForm = z.infer<typeof createTripSchema>;
 
-// Travel Planning Roadmap - Best Practices Based
-interface RoadmapStep {
+// Multi-step wizard configuration
+interface WizardStep {
   id: string;
   title: string;
+  subtitle: string;
   icon: any;
-  points: number;
-  status: 'pending' | 'in-progress' | 'completed';
-  description: string;
+  isCompleted: boolean;
+  isActive: boolean;
 }
 
-const PLANNING_ROADMAP: RoadmapStep[] = [
-  { 
-    id: 'research', 
-    title: 'Pesquisa & Inspiração', 
-    icon: Globe, 
-    points: 20,
-    status: 'pending',
-    description: 'Escolha destino e pesquise sobre cultura, clima e atrações'
-  },
-  { 
-    id: 'budget', 
-    title: 'Planejamento Financeiro', 
-    icon: DollarSign, 
-    points: 25,
-    status: 'pending',
-    description: 'Defina orçamento total e categorize gastos'
-  },
-  { 
-    id: 'dates', 
-    title: 'Datas & Duração', 
-    icon: Calendar, 
-    points: 15,
-    status: 'pending',
-    description: 'Escolha as melhores datas considerando clima e eventos'
-  },
-  { 
-    id: 'activities', 
-    title: 'Atividades Planejadas', 
-    icon: Camera, 
-    points: 30,
-    status: 'pending',
-    description: 'Adicione atividades com custos, links e anexos'
-  },
-  { 
-    id: 'group', 
-    title: 'Formação do Grupo', 
-    icon: Users, 
-    points: 20,
-    status: 'pending',
-    description: 'Defina tamanho ideal e perfil dos companheiros'
-  },
-  { 
-    id: 'logistics', 
-    title: 'Logística & Detalhes', 
-    icon: CheckCircle, 
-    points: 20,
-    status: 'pending',
-    description: 'Finalize descrição e estilo de viagem'
-  },
-] as const;
-
-// Old SortableActivityItem removed - now using AdvancedActivityManager
-
-// Achievement System
-const ACHIEVEMENTS = [
-  { id: 'first_trip', title: 'Primeira Viagem', desc: 'Criar sua primeira viagem', icon: Star, unlocked: true },
-  { id: 'budget_master', title: 'Planejador Financeiro', desc: 'Detalhar orçamento completo', icon: Trophy, unlocked: false },
-  { id: 'social_butterfly', title: 'Organizador Social', desc: 'Criar viagem para 6+ pessoas', icon: Users, unlocked: false },
-  { id: 'adventurer', title: 'Aventureiro', desc: 'Criar viagem de aventura', icon: Compass, unlocked: false },
+const WIZARD_STEPS: WizardStep[] = [
+  { id: 'basics', title: 'Informações Básicas', subtitle: 'Defina título, destino e período', icon: BookOpen, isCompleted: false, isActive: true },
+  { id: 'planning', title: 'Planejamento', subtitle: 'Orçamento e grupo de viajantes', icon: Target, isCompleted: false, isActive: false },
+  { id: 'activities', title: 'Atividades', subtitle: 'Adicione experiências planejadas', icon: Camera, isCompleted: false, isActive: false },
+  { id: 'review', title: 'Revisão Final', subtitle: 'Confirme todos os detalhes', icon: CheckCircle, isCompleted: false, isActive: false },
 ];
+
+// Smart suggestions based on destination/travel style
+const TRAVEL_STYLE_SUGGESTIONS = {
+  'aventura': {
+    icon: '🏔️',
+    tips: ['Considere seguro viagem', 'Verifique equipamentos necessários', 'Pesquise sobre clima'],
+    budget_multiplier: 1.2
+  },
+  'cultural': {
+    icon: '🏛️',
+    tips: ['Reserve ingressos antecipadamente', 'Pesquise sobre história local', 'Considere guias especializados'],
+    budget_multiplier: 1.0
+  },
+  'gastronomia': {
+    icon: '🍽️',
+    tips: ['Reserve restaurantes populares', 'Experimente mercados locais', 'Considere tours gastronômicos'],
+    budget_multiplier: 1.15
+  },
+  'relaxante': {
+    icon: '🌴',
+    tips: ['Reserve spas antecipadamente', 'Considere resorts all-inclusive', 'Planeje tempo livre'],
+    budget_multiplier: 0.9
+  },
+  'urbanas': {
+    icon: '🏙️',
+    tips: ['Use transporte público', 'Explore diferentes bairros', 'Aproveite a vida noturna'],
+    budget_multiplier: 1.1
+  },
+  'praia': {
+    icon: '🏖️',
+    tips: ['Verifique temporadas', 'Considere protetor solar', 'Atividades aquáticas'],
+    budget_multiplier: 1.0
+  }
+};
 
 function CreateTripPageContent() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [roadmapSteps, setRoadmapSteps] = useState(PLANNING_ROADMAP);
+  
+  // Wizard state management
+  const [currentStep, setCurrentStep] = useState(0);
+  const [wizardSteps, setWizardSteps] = useState(WIZARD_STEPS);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [totalPoints, setTotalPoints] = useState(0);
-  const [achievements, setAchievements] = useState(ACHIEVEMENTS);
-  const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
   const [selectedDestinationId, setSelectedDestinationId] = useState<number | undefined>(undefined);
-  const [planned_activities, setPlannedActivities] = useState<PlannedActivity[]>([
-    {
-      id: '1',
-      title: 'Visitar pontos turísticos principais',
-      category: 'sightseeing',
-      priority: 'high',
-      estimated_cost: 150,
-      duration: '4 horas',
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      title: 'Experimentar gastronomia local',
-      category: 'food',
-      priority: 'medium',
-      estimated_cost: 200,
-      duration: '2 horas',
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: '3',
-      title: 'Explorar a vida noturna',
-      category: 'nightlife',
-      priority: 'low',
-      estimated_cost: 100,
-      duration: '3 horas',
-      created_at: new Date().toISOString(),
-    },
-  ]);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const [plannedActivities, setPlannedActivities] = useState<PlannedActivity[]>([]);
+  const [smartSuggestions, setSmartSuggestions] = useState<string[]>([]);
 
   const form = useForm<CreateTripForm>({
     resolver: zodResolver(createTripSchema),
@@ -209,921 +160,878 @@ function CreateTripPageContent() {
 
   const watchedValues = useWatch({ control: form.control });
 
-  // Calculate roadmap progress and update steps
-  const calculateRoadmapProgress = () => {
-    const updatedSteps = [...roadmapSteps];
-    let totalProgress = 0;
-    let completedCount = 0;
-    
-    // Research & Inspiration
-    if (watchedValues.destination && watchedValues.travel_style) {
-      updatedSteps[0].status = 'completed';
-      totalProgress += updatedSteps[0].points;
-      completedCount++;
-    } else if (watchedValues.destination || watchedValues.travel_style) {
-      updatedSteps[0].status = 'in-progress';
-    }
-    
-    // Budget Planning
-    if (watchedValues.budget || watchedValues.budget_breakdown) {
-      updatedSteps[1].status = 'completed';
-      totalProgress += updatedSteps[1].points;
-      completedCount++;
-    }
-    
-    // Dates & Duration
-    if (watchedValues.start_date && watchedValues.end_date) {
-      updatedSteps[2].status = 'completed';
-      totalProgress += updatedSteps[2].points;
-      completedCount++;
-    } else if (watchedValues.start_date || watchedValues.end_date) {
-      updatedSteps[2].status = 'in-progress';
-    }
-    
-    // Activities Planning
-    if (planned_activities.length >= 3) {
-      updatedSteps[3].status = 'completed';
-      totalProgress += updatedSteps[3].points;
-      completedCount++;
-    } else if (planned_activities.length > 0) {
-      updatedSteps[3].status = 'in-progress';
-    }
-    
-    // Group Formation
-    if (watchedValues.max_participants && watchedValues.max_participants > 2) {
-      updatedSteps[4].status = 'completed';
-      totalProgress += updatedSteps[4].points;
-      completedCount++;
-    }
-    
-    // Logistics & Details
-    if (watchedValues.title && watchedValues.description) {
-      updatedSteps[5].status = 'completed';
-      totalProgress += updatedSteps[5].points;
-      completedCount++;
-    } else if (watchedValues.title || watchedValues.description) {
-      updatedSteps[5].status = 'in-progress';
-    }
-    
-    if (JSON.stringify(updatedSteps) !== JSON.stringify(roadmapSteps)) {
-      setRoadmapSteps(updatedSteps);
-    }
-    
-    return { progress: (totalProgress / 130) * 100, completedCount };
-  };
-
-  const { progress, completedCount } = calculateRoadmapProgress();
-
-  // Check achievements
+  // Update wizard progress based on form completion
   useEffect(() => {
-    const newAchievements = [...achievements];
-    let newPoints = 0;
+    const updatedSteps = [...wizardSteps];
     
-    // Budget Master achievement
-    if (watchedValues.budget_breakdown && typeof watchedValues.budget_breakdown === 'object' && !achievements.find(a => a.id === 'budget_master')?.unlocked) {
-      const budgetMaster = newAchievements.find(a => a.id === 'budget_master');
-      if (budgetMaster) {
-        budgetMaster.unlocked = true;
-        newPoints += 50;
-        toast({
-          title: "🏆 Conquista Desbloqueada!",
-          description: "Planejador Financeiro - Você detalhou seu orçamento completo!",
-        });
-      }
-    }
+    // Step 1: Basics completion
+    const basicsComplete = watchedValues.title && watchedValues.destination && 
+                          watchedValues.start_date && watchedValues.end_date;
+    updatedSteps[0].isCompleted = Boolean(basicsComplete);
 
-    // Social Butterfly achievement
-    if (watchedValues.max_participants && watchedValues.max_participants >= 6 && !achievements.find(a => a.id === 'social_butterfly')?.unlocked) {
-      const socialButterfly = newAchievements.find(a => a.id === 'social_butterfly');
-      if (socialButterfly) {
-        socialButterfly.unlocked = true;
-        newPoints += 30;
-        toast({
-          title: "🦋 Conquista Desbloqueada!",
-          description: "Organizador Social - Viagem para grupos grandes!",
-        });
-      }
-    }
+    // Step 2: Planning completion
+    const planningComplete = watchedValues.budget && watchedValues.travel_style && 
+                           watchedValues.max_participants;
+    updatedSteps[1].isCompleted = Boolean(planningComplete);
 
-    // Adventurer achievement
-    if (watchedValues.travel_style === 'aventura' && !achievements.find(a => a.id === 'adventurer')?.unlocked) {
-      const adventurer = newAchievements.find(a => a.id === 'adventurer');
-      if (adventurer) {
-        adventurer.unlocked = true;
-        newPoints += 40;
-        toast({
-          title: "🧭 Conquista Desbloqueada!",
-          description: "Aventureiro - Pronto para a aventura!",
-        });
-      }
-    }
+    // Step 3: Activities completion
+    updatedSteps[2].isCompleted = plannedActivities.length > 0;
 
-    if (newPoints > 0) {
-      setAchievements(newAchievements);
-      setTotalPoints(prev => prev + newPoints);
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 3000);
-    }
-  }, [watchedValues, achievements]);
+    // Step 4: Review (always completable if previous steps are done)
+    updatedSteps[3].isCompleted = updatedSteps[0].isCompleted && 
+                                updatedSteps[1].isCompleted && 
+                                updatedSteps[2].isCompleted;
 
-  const calculateTotalBudget = (breakdown: BudgetBreakdown): number => {
-    return Object.values(breakdown).reduce((total, amount) => total + (amount || 0), 0);
+    setWizardSteps(updatedSteps);
+  }, [watchedValues, plannedActivities]);
+
+  // Smart suggestions based on travel style
+  useEffect(() => {
+    if (watchedValues.travel_style && TRAVEL_STYLE_SUGGESTIONS[watchedValues.travel_style as keyof typeof TRAVEL_STYLE_SUGGESTIONS]) {
+      const suggestions = TRAVEL_STYLE_SUGGESTIONS[watchedValues.travel_style as keyof typeof TRAVEL_STYLE_SUGGESTIONS];
+      setSmartSuggestions(suggestions.tips);
+    }
+  }, [watchedValues.travel_style]);
+
+  // Navigation functions
+  const nextStep = () => {
+    if (currentStep < wizardSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+      const updatedSteps = [...wizardSteps];
+      updatedSteps.forEach((step, index) => {
+        step.isActive = index === currentStep + 1;
+      });
+      setWizardSteps(updatedSteps);
+    }
   };
 
-  const calculateActivitiesCost = (activities: PlannedActivity[]): number => {
-    return activities.reduce((total, activity) => total + (activity.estimated_cost || 0), 0);
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      const updatedSteps = [...wizardSteps];
+      updatedSteps.forEach((step, index) => {
+        step.isActive = index === currentStep - 1;
+      });
+      setWizardSteps(updatedSteps);
+    }
   };
 
-  const calculateCostPerPerson = (totalBudget: number, participants: number): number => {
-    return participants > 0 ? Math.round(totalBudget / participants) : 0;
+  const goToStep = (stepIndex: number) => {
+    setCurrentStep(stepIndex);
+    const updatedSteps = [...wizardSteps];
+    updatedSteps.forEach((step, index) => {
+      step.isActive = index === stepIndex;
+    });
+    setWizardSteps(updatedSteps);
   };
 
+  // Form submission
   const createTripMutation = useMutation({
     mutationFn: async (data: CreateTripForm) => {
-      const activitiesCost = calculateActivitiesCost(planned_activities);
-      const totalBudget = data.budget_breakdown && typeof data.budget_breakdown === 'object'
-        ? calculateTotalBudget(data.budget_breakdown as BudgetBreakdown) + activitiesCost
-        : (data.budget || 0) + activitiesCost;
-        
-      const tripData = {
-        ...data,
-        start_date: new Date(data.start_date),
-        end_date: new Date(data.end_date),
-        budget: totalBudget,
-        planned_activities: planned_activities,
-        destination_id: selectedDestinationId,
-        max_participants: data.max_participants,
-        travel_style: data.travel_style,
-      };
-      
-      const response = await apiRequest("POST", "/api/trips", tripData);
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro ao criar viagem");
-      }
-      
-      return response.json();
+      const { destination, ...tripData } = data;
+      return apiRequest('/api/trips', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...tripData,
+          destination_id: selectedDestinationId,
+          planned_activities: plannedActivities,
+        }),
+      });
     },
     onSuccess: () => {
-      // Invalidate all trip-related queries
-      queryClient.invalidateQueries({ queryKey: ["/api/trips"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/my-trips"] });
-      
-      // Also remove any cached queries to force fresh fetch
-      queryClient.removeQueries({ queryKey: ["/api/my-trips"] });
-      
       setShowConfetti(true);
       toast({
-        title: "🎉 Viagem Criada com Sucesso!",
-        description: "Sua aventura está pronta! Outros viajantes já podem se juntar.",
+        title: "🎉 Viagem criada com sucesso!",
+        description: "Sua aventura está pronta para começar!",
       });
       
       setTimeout(() => {
-        navigate("/dashboard");
+        queryClient.invalidateQueries({ queryKey: ['/api/my-trips'] });
+        navigate('/dashboard');
       }, 2000);
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast({
         title: "Erro ao criar viagem",
-        description: error.message,
+        description: error.message || "Tente novamente em alguns instantes",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = (data: CreateTripForm) => {
-    // Final achievement unlock
-    const finalAchievement = achievements.find(a => a.id === 'first_trip');
-    if (finalAchievement && !finalAchievement.unlocked) {
-      finalAchievement.unlocked = true;
-      setTotalPoints(prev => prev + 100);
+    if (!selectedDestinationId) {
+      toast({
+        title: "Destino não selecionado",
+        description: "Por favor, selecione um destino válido",
+        variant: "destructive",
+      });
+      return;
     }
-    
     createTripMutation.mutate(data);
   };
 
-  // Removed old activity functions - now handled by AdvancedActivityManager
-
-  const travelStyles = [
-    { value: "praia", label: "Praia", icon: "🏖️" },
-    { value: "neve", label: "Neve", icon: "❄️" },
-    { value: "cruzeiros", label: "Cruzeiros", icon: "🚢" },
-    { value: "natureza", label: "Natureza e Ecoturismo", icon: "🌿" },
-    { value: "cultural", label: "Culturais e Históricas", icon: "🏛️" },
-    { value: "aventura", label: "Aventura", icon: "🏔️" },
-    { value: "parques", label: "Parques Temáticos", icon: "🎢" },
-    { value: "urbanas", label: "Viagens Urbanas", icon: "🏙️" }
-  ];
+  // Progress calculation
+  const overallProgress = Math.round(
+    (wizardSteps.filter(step => step.isCompleted).length / wizardSteps.length) * 100
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navbar />
-      {showConfetti && <Confetti />}
       
-      {/* Loading Overlay */}
-      <AnimatePresence>
-        {createTripMutation.isPending && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
-          >
-            <div className="bg-white/90 backdrop-blur rounded-2xl p-8 shadow-2xl">
-              <LoadingSpinner variant="travel" size="lg" message="Criando sua aventura dos sonhos..." />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header with Progress */}
+      {showConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={200}
+        />
+      )}
+
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Hero Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-full text-sm font-medium mb-6">
+            <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-blue-800 dark:text-blue-200">Criador Inteligente de Viagens</span>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+            Planeje Sua Próxima Aventura
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Crie experiências inesquecíveis com nosso planejador inteligente. 
+            Conecte-se com pessoas incríveis e descubra destinos fantásticos.
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Progress Sidebar */}
           <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="lg:col-span-1"
           >
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                <Plane className="h-8 w-8 text-primary" />
-              </motion.div>
-              <span className="font-bold text-3xl bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                Criar Nova Viagem
-              </span>
-            </div>
-            <p className="text-gray-600 mb-6">Transforme seus sonhos em realidade com nossa plataforma gamificada</p>
-            
-            {/* Progress Bar */}
-            <div className="bg-white rounded-lg p-6 shadow-lg mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-primary" />
-                  <span className="font-semibold">Progresso da Criação</span>
+            <Card className="sticky top-24 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Route className="h-5 w-5 text-blue-600" />
+                  Progresso da Criação
+                </CardTitle>
+                <div className="space-y-2">
+                  <Progress value={overallProgress} className="h-2" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {overallProgress}% concluído
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm font-medium">{totalPoints} pontos</span>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {wizardSteps.map((step, index) => {
+                    const Icon = step.icon;
+                    return (
+                      <motion.div
+                        key={step.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        onClick={() => goToStep(index)}
+                        className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+                          step.isActive 
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
+                            : step.isCompleted
+                            ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700'
+                            : 'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
+                        }`}
+                      >
+                        <div className={`flex items-center justify-center w-8 h-8 rounded-full flex-shrink-0 ${
+                          step.isActive 
+                            ? 'bg-white/20' 
+                            : step.isCompleted
+                            ? 'bg-green-500 text-white'
+                            : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                        }`}>
+                          {step.isCompleted ? (
+                            <Check className="h-4 w-4" />
+                          ) : (
+                            <Icon className="h-4 w-4" />
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <h4 className={`text-sm font-semibold ${
+                            step.isActive ? 'text-white' : step.isCompleted ? 'text-green-800 dark:text-green-200' : 'text-gray-800 dark:text-gray-200'
+                          }`}>
+                            {step.title}
+                          </h4>
+                          <p className={`text-xs ${
+                            step.isActive ? 'text-white/80' : step.isCompleted ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                          }`}>
+                            {step.subtitle}
+                          </p>
+                        </div>
+                        
+                        {index === currentStep && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-2 h-2 bg-white rounded-full"
+                          />
+                        )}
+                      </motion.div>
+                    );
+                  })}
                 </div>
-              </div>
-              <Progress value={progress} className="h-3 mb-2" />
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>{completedCount}/6 etapas concluídas</span>
-                <span>{Math.round(progress)}% completo</span>
-              </div>
-            </div>
 
-            {/* Achievements */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              {achievements.map((achievement) => (
-                <motion.div
-                  key={achievement.id}
-                  initial={{ scale: 0.8, opacity: 0.5 }}
-                  animate={{ 
-                    scale: achievement.unlocked ? 1 : 0.8, 
-                    opacity: achievement.unlocked ? 1 : 0.5 
-                  }}
-                  className={`p-4 rounded-lg border-2 ${
-                    achievement.unlocked 
-                      ? 'bg-gradient-to-r from-yellow-100 to-orange-100 border-yellow-300' 
-                      : 'bg-gray-50 border-gray-200'
-                  }`}
-                >
-                  <achievement.icon className={`h-6 w-6 mx-auto mb-2 ${
-                    achievement.unlocked ? 'text-yellow-600' : 'text-gray-400'
-                  }`} />
-                  <p className="text-xs font-medium text-center">{achievement.title}</p>
-                </motion.div>
-              ))}
-            </div>
+                {/* Smart Suggestions */}
+                {smartSuggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl border border-yellow-200 dark:border-yellow-700"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <Lightbulb className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                      <h5 className="font-medium text-yellow-800 dark:text-yellow-200">Dicas Inteligentes</h5>
+                    </div>
+                    <ul className="space-y-2">
+                      {smartSuggestions.map((tip, index) => (
+                        <li key={index} className="flex items-start gap-2 text-sm text-yellow-700 dark:text-yellow-300">
+                          <div className="w-1 h-1 bg-yellow-500 rounded-full mt-2 flex-shrink-0" />
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Form */}
-            <div className="lg:col-span-2">
-              <Card className="shadow-xl border-0">
-                <CardHeader className="bg-gradient-to-r from-primary to-purple-600 text-white">
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5" />
-                    Detalhes da Viagem
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                      {/* Step 1: Basic Info */}
+          {/* Main Form Content */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="lg:col-span-3"
+          >
+            <Card className="shadow-xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                      {React.createElement(wizardSteps[currentStep].icon, { className: "h-6 w-6 text-blue-600" })}
+                      {wizardSteps[currentStep].title}
+                    </CardTitle>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">
+                      {wizardSteps[currentStep].subtitle}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="text-blue-600 border-blue-200">
+                    Etapa {currentStep + 1} de {wizardSteps.length}
+                  </Badge>
+                </div>
+                <Separator className="mt-4" />
+              </CardHeader>
+
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                  <CardContent className="pb-6">
+                    <AnimatePresence mode="wait">
                       <motion.div
-                        initial={{ opacity: 0, x: -20 }}
+                        key={currentStep}
+                        initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
                       >
-                        <div className="flex items-center gap-2 mb-4">
-                          <Badge variant="outline" className="bg-blue-50">
-                            <Globe className="h-3 w-3 mr-1" />
-                            Etapa 1
-                          </Badge>
-                          <h3 className="text-lg font-semibold">Informações Básicas</h3>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Título da Viagem</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    placeholder="Ex: Aventura Épica em Machu Picchu" 
-                                    {...field} 
-                                    className="border-2 focus:border-primary"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                        {currentStep === 0 && (
+                          <StepBasics 
+                            form={form} 
+                            selectedDestinationId={selectedDestinationId}
+                            setSelectedDestinationId={setSelectedDestinationId}
                           />
-
-                          <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Descrição da Aventura</FormLabel>
-                                <FormControl>
-                                  <Textarea 
-                                    placeholder="Conte sobre sua viagem dos sonhos! O que vocês vão fazer? Que experiências incríveis esperam por vocês?"
-                                    className="min-h-[120px] border-2 focus:border-primary"
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                        )}
+                        
+                        {currentStep === 1 && (
+                          <StepPlanning 
+                            form={form} 
+                            watchedValues={watchedValues}
                           />
-                        </div>
-                      </motion.div>
-
-                      <Separator />
-
-                      {/* Step 2: Destination */}
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        <div className="flex items-center gap-2 mb-4">
-                          <Badge variant="outline" className="bg-green-50">
-                            <MapPin className="h-3 w-3 mr-1" />
-                            Etapa 2
-                          </Badge>
-                          <h3 className="text-lg font-semibold">Destino dos Sonhos</h3>
-                        </div>
+                        )}
                         
-                        <div className="space-y-2">
-                          <FormLabel>Para onde vamos?</FormLabel>
-                          <DestinationSelector
-                            value={selectedDestinationId}
-                            onValueChange={(destinationId) => {
-                              setSelectedDestinationId(destinationId);
-                              if (destinationId) {
-                                form.setValue("destination", destinationId.toString());
-                              } else {
-                                form.setValue("destination", "");
-                              }
-                            }}
-                            placeholder="Selecione um destino cadastrado..."
-                            className="border-2 focus:border-primary"
+                        {currentStep === 2 && (
+                          <StepActivities 
+                            plannedActivities={plannedActivities}
+                            setPlannedActivities={setPlannedActivities}
                           />
-                          {form.formState.errors.destination && (
-                            <p className="text-sm text-destructive">
-                              {form.formState.errors.destination.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <FormField
-                          control={form.control}
-                          name="travel_style"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Estilo de Viagem</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="border-2 focus:border-primary">
-                                    <SelectValue placeholder="Escolha o estilo da sua aventura" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {travelStyles.map((style) => (
-                                    <SelectItem key={style.value} value={style.value}>
-                                      <div className="flex items-center gap-2">
-                                        <span>{style.icon}</span>
-                                        <span>{style.label}</span>
-                                      </div>
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="cover_image"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Imagem da Viagem</FormLabel>
-                              <FormControl>
-                                <CoverImageSelector
-                                  currentImage={field.value}
-                                  onImageSelect={field.onChange}
-                                  trigger={
-                                    <Button 
-                                      type="button" 
-                                      variant="outline" 
-                                      className="w-full border-2 border-dashed hover:border-primary"
-                                    >
-                                      <Camera className="w-4 h-4 mr-2" />
-                                      {field.value ? 'Alterar Imagem' : 'Escolher Imagem'}
-                                    </Button>
-                                  }
-                                />
-                              </FormControl>
-                              {field.value && (
-                                <div className="mt-2">
-                                  <img 
-                                    src={field.value} 
-                                    alt="Preview da imagem selecionada" 
-                                    className="w-full h-32 object-cover rounded-md"
-                                  />
-                                </div>
-                              )}
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </motion.div>
-
-                      <Separator />
-
-                      {/* Step 3: Dates */}
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        <div className="flex items-center gap-2 mb-4">
-                          <Badge variant="outline" className="bg-purple-50">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            Etapa 3
-                          </Badge>
-                          <h3 className="text-lg font-semibold">Quando Partir</h3>
-                        </div>
+                        )}
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="start_date"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Data de Início</FormLabel>
-                                <FormControl>
-                                  <div className="relative">
-                                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                    <Input 
-                                      type="date" 
-                                      className="pl-10 border-2 focus:border-primary" 
-                                      {...field} 
-                                    />
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                        {currentStep === 3 && (
+                          <StepReview 
+                            form={form}
+                            watchedValues={watchedValues}
+                            plannedActivities={plannedActivities}
+                            selectedDestinationId={selectedDestinationId}
                           />
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
+                  </CardContent>
 
-                          <FormField
-                            control={form.control}
-                            name="end_date"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Data de Fim</FormLabel>
-                                <FormControl>
-                                  <div className="relative">
-                                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                    <Input 
-                                      type="date" 
-                                      className="pl-10 border-2 focus:border-primary" 
-                                      {...field} 
-                                    />
-                                  </div>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
+                  {/* Navigation Footer */}
+                  <CardContent className="pt-0">
+                    <Separator className="mb-6" />
+                    <div className="flex items-center justify-between">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={prevStep}
+                        disabled={currentStep === 0}
+                        className="flex items-center gap-2"
+                      >
+                        <ArrowLeft className="h-4 w-4" />
+                        Anterior
+                      </Button>
+
+                      <div className="flex items-center gap-2">
+                        {wizardSteps.map((_, index) => (
+                          <div
+                            key={index}
+                            className={`w-2 h-2 rounded-full transition-all ${
+                              index === currentStep 
+                                ? 'bg-blue-600 w-6' 
+                                : index < currentStep 
+                                ? 'bg-green-500' 
+                                : 'bg-gray-300 dark:bg-gray-600'
+                            }`}
                           />
-                        </div>
-                      </motion.div>
+                        ))}
+                      </div>
 
-                      <Separator />
-
-                      {/* Step 4: Budget */}
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.4 }}
-                      >
-                        <div className="flex items-center gap-2 mb-4">
-                          <Badge variant="outline" className="bg-yellow-50">
-                            <DollarSign className="h-3 w-3 mr-1" />
-                            Etapa 4
-                          </Badge>
-                          <h3 className="text-lg font-semibold">Planejamento Financeiro</h3>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium">Orçamento Detalhado</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-gray-600">Simples</span>
-                              <Switch 
-                                checked={showBudgetBreakdown}
-                                onCheckedChange={setShowBudgetBreakdown}
-                              />
-                              <span className="text-sm text-gray-600">Detalhado</span>
-                            </div>
-                          </div>
-
-                          {!showBudgetBreakdown ? (
-                            <FormField
-                              control={form.control}
-                              name="budget"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Orçamento Total da Viagem (R$)</FormLabel>
-                                  <FormControl>
-                                    <div className="relative">
-                                      <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                      <Input 
-                                        type="number" 
-                                        placeholder="6000" 
-                                        className="pl-10 border-2 focus:border-primary" 
-                                        {...field}
-                                        onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                                        value={field.value || ""}
-                                      />
-                                    </div>
-                                  </FormControl>
-                                  {field.value && form.watch('max_participants') && (
-                                    <div className="space-y-2">
-                                      {calculateActivitiesCost(planned_activities) > 0 && (
-                                        <div className="bg-purple-50 p-3 rounded-lg">
-                                          <p className="text-sm font-medium text-purple-900">
-                                            🎯 Custo das Atividades: R$ {calculateActivitiesCost(planned_activities).toLocaleString('pt-BR')}
-                                          </p>
-                                        </div>
-                                      )}
-                                      <div className="bg-emerald-50 p-3 rounded-lg">
-                                        <p className="text-sm font-medium text-emerald-900">
-                                          💰 Total da Viagem: R$ {(field.value + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}
-                                        </p>
-                                      </div>
-                                      <div className="bg-blue-50 p-3 rounded-lg">
-                                        <p className="text-sm font-medium text-blue-900">
-                                          👥 Custo por pessoa: R$ {calculateCostPerPerson(field.value + calculateActivitiesCost(planned_activities), form.watch('max_participants')).toLocaleString('pt-BR')}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  )}
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          ) : (
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {Object.entries(expenseCategories).filter(([key]) => key !== 'activities').map(([key, label]) => (
-                                  <FormField
-                                    key={key}
-                                    control={form.control}
-                                    name={`budget_breakdown.${key}` as any}
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-sm">{label}</FormLabel>
-                                        <FormControl>
-                                          <div className="relative">
-                                            <DollarSign className="absolute left-3 top-3 h-3 w-3 text-gray-500" />
-                                            <Input 
-                                              type="number" 
-                                              placeholder="0" 
-                                              className="pl-10 text-sm border-2 focus:border-primary" 
-                                              {...field}
-                                              onChange={(e) => field.onChange(parseInt(e.target.value) || undefined)}
-                                              value={field.value || ""}
-                                            />
-                                          </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                ))}
-                              </div>
-                              
-                              {form.watch('budget_breakdown') && (
-                                <div className="space-y-3">
-                                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
-                                    <span className="font-bold text-blue-900">💎 Orçamento Base:</span>
-                                    <span className="text-xl font-bold text-blue-900">
-                                      R$ {calculateTotalBudget(form.watch('budget_breakdown') || {}).toLocaleString('pt-BR')}
-                                    </span>
-                                  </div>
-                                  {calculateActivitiesCost(planned_activities) > 0 && (
-                                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
-                                      <span className="font-bold text-purple-900">🎯 Custo das Atividades:</span>
-                                      <span className="text-xl font-bold text-purple-900">
-                                        R$ {calculateActivitiesCost(planned_activities).toLocaleString('pt-BR')}
-                                      </span>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg border-2 border-emerald-300">
-                                    <span className="font-bold text-emerald-900">💰 Total da Viagem:</span>
-                                    <span className="text-2xl font-bold text-emerald-900">
-                                      R$ {(calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities)).toLocaleString('pt-BR')}
-                                    </span>
-                                  </div>
-                                  {form.watch('max_participants') && (calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities)) > 0 && (
-                                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border-2 border-green-200">
-                                      <span className="font-bold text-green-900">👥 Custo por Pessoa:</span>
-                                      <span className="text-xl font-bold text-green-900">
-                                        R$ {calculateCostPerPerson(
-                                          calculateTotalBudget(form.watch('budget_breakdown') || {}) + calculateActivitiesCost(planned_activities), 
-                                          form.watch('max_participants')
-                                        ).toLocaleString('pt-BR')}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-
-                      <Separator />
-
-                      {/* Step 5: Advanced Activities */}
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.5 }}
-                      >
-                        <div className="flex items-center gap-2 mb-4">
-                          <Badge variant="outline" className="bg-orange-50">
-                            <Camera className="h-3 w-3 mr-1" />
-                            Etapa 5
-                          </Badge>
-                          <h3 className="text-lg font-semibold">Atividades Planejadas</h3>
-                        </div>
-                        
-                        <AdvancedActivityManager
-                          activities={planned_activities}
-                          onActivitiesChange={setPlannedActivities}
-                          tripDestination={form.watch('destination')}
-                          tripParticipants={1}
-                          tripMaxParticipants={form.watch('max_participants') || 1}
-                          tripStartDate={form.watch('start_date')}
-                          tripEndDate={form.watch('end_date')}
-                          className="border-2 border-gray-200 rounded-lg p-4"
-                        />
-                      </motion.div>
-
-                      <Separator />
-
-                      {/* Step 6: Group */}
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.6 }}
-                      >
-                        <div className="flex items-center gap-2 mb-4">
-                          <Badge variant="outline" className="bg-indigo-50">
-                            <Users className="h-3 w-3 mr-1" />
-                            Etapa 6
-                          </Badge>
-                          <h3 className="text-lg font-semibold">Companheiros de Viagem</h3>
-                        </div>
-                        
-                        <FormField
-                          control={form.control}
-                          name="max_participants"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Máximo de Participantes</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Users className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
-                                  <Input 
-                                    type="number" 
-                                    min="2" 
-                                    max="20" 
-                                    className="pl-10 border-2 focus:border-primary" 
-                                    {...field}
-                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 4)}
-                                  />
-                                </div>
-                              </FormControl>
-                              <p className="text-sm text-gray-600 mt-1">
-                                👥 Grupos maiores desbloqueiam conquistas especiais!
-                              </p>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </motion.div>
-
-                      <Separator />
-
-                      {/* Submit Button */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
-                      >
-                        <Button 
-                          type="submit" 
-                          size="lg" 
-                          className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 text-white font-bold py-4 text-lg shadow-lg"
-                          disabled={createTripMutation.isPending}
+                      {currentStep < wizardSteps.length - 1 ? (
+                        <Button
+                          type="button"
+                          onClick={nextStep}
+                          disabled={!wizardSteps[currentStep].isCompleted}
+                          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        >
+                          Próximo
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <Button
+                          type="submit"
+                          disabled={createTripMutation.isPending || !wizardSteps[3].isCompleted}
+                          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 min-w-[140px]"
                         >
                           {createTripMutation.isPending ? (
-                            <>
-                              <Clock className="mr-2 h-4 w-4 animate-spin" />
-                              Criando sua aventura...
-                            </>
+                            <LoadingSpinner size="sm" />
                           ) : (
-                            <>
-                              <Sparkles className="mr-2 h-4 w-4" />
-                              Criar Viagem dos Sonhos
-                            </>
+                            <CheckCircle className="h-4 w-4" />
                           )}
+                          Criar Viagem
                         </Button>
-                      </motion.div>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-6">
-                {/* Planning Roadmap */}
-                <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Compass className="h-5 w-5" />
-                      Roadmap de Planejamento
-                    </CardTitle>
-                    <p className="text-sm text-gray-600">Siga as melhores práticas para viagens</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {roadmapSteps.map((step, index) => {
-                        const Icon = step.icon;
-                        return (
-                          <motion.div
-                            key={step.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className={`relative flex items-start gap-3 p-3 rounded-lg border-2 transition-all ${
-                              step.status === 'completed' 
-                                ? 'bg-green-50 border-green-200' 
-                                : step.status === 'in-progress'
-                                ? 'bg-blue-50 border-blue-200'
-                                : 'bg-gray-50 border-gray-200'
-                            }`}
-                          >
-                            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                              step.status === 'completed' 
-                                ? 'bg-green-500 text-white' 
-                                : step.status === 'in-progress'
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-300 text-gray-600'
-                            }`}>
-                              {step.status === 'completed' ? (
-                                <CheckCircle className="h-4 w-4" />
-                              ) : (
-                                <Icon className="h-4 w-4" />
-                              )}
-                            </div>
-                            
-                            <div className="flex-1">
-                              <h4 className={`text-sm font-semibold ${
-                                step.status === 'completed' ? 'text-green-800' : 'text-gray-800'
-                              }`}>
-                                {step.title}
-                              </h4>
-                              <p className="text-xs text-gray-600 mt-1">{step.description}</p>
-                              {step.status === 'completed' && (
-                                <div className="flex items-center gap-1 mt-2">
-                                  <Star className="h-3 w-3 text-yellow-500" />
-                                  <span className="text-xs text-yellow-600 font-medium">
-                                    +{step.points} pontos
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Activities Summary */}
-                <Card className="shadow-lg border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-purple-800">
-                      <Camera className="h-5 w-5" />
-                      Resumo das Atividades
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-purple-700">Total de Atividades:</span>
-                        <Badge variant="outline" className="bg-purple-100 text-purple-800">
-                          {planned_activities.length}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-purple-700">Custo Estimado:</span>
-                        <span className="text-sm font-bold text-purple-900">
-                          R$ {calculateActivitiesCost(planned_activities).toLocaleString('pt-BR')}
-                        </span>
-                      </div>
-                      {planned_activities.length > 0 && (
-                        <div className="pt-2 border-t border-purple-200">
-                          <p className="text-xs text-purple-600 mb-2">Top 3 Atividades:</p>
-                          <div className="space-y-1">
-                            {planned_activities.slice(0, 3).map((activity, index) => (
-                              <div key={activity.id} className="flex items-center gap-2 text-xs">
-                                <span className="w-4 h-4 bg-purple-200 rounded-full flex items-center justify-center text-purple-800 font-bold">
-                                  {index + 1}
-                                </span>
-                                <span className="truncate flex-1 text-purple-700">{activity.title}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
                       )}
                     </div>
                   </CardContent>
-                </Card>
-
-                {/* Travel Tips */}
-                <Card className="shadow-lg border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-yellow-800">
-                      <Zap className="h-5 w-5" />
-                      Dicas de Planejamento
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3 text-sm">
-                      <div className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>Pesquise sobre feriados e eventos locais</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>Reserve pelo menos 20% do orçamento para emergências</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>Organize atividades por prioridade e proximidade</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span>Considere seguro viagem para destinos internacionais</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
+                </form>
+              </Form>
+            </Card>
+          </motion.div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Step Components
+function StepBasics({ 
+  form, 
+  selectedDestinationId, 
+  setSelectedDestinationId 
+}: { 
+  form: any; 
+  selectedDestinationId: number | undefined; 
+  setSelectedDestinationId: (id: number | undefined) => void; 
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-base font-medium">
+                <Sparkles className="h-4 w-4 text-purple-600" />
+                Título da Viagem
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  {...field} 
+                  placeholder="Ex: Aventura no Rio de Janeiro"
+                  className="h-12 text-lg border-2 focus:border-blue-500 transition-colors"
+                  data-testid="input-trip-title"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="destination"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-base font-medium">
+                <MapPin className="h-4 w-4 text-red-600" />
+                Destino
+              </FormLabel>
+              <FormControl>
+                <DestinationSelector
+                  value={field.value}
+                  onValueChange={(value, destinationId) => {
+                    field.onChange(value);
+                    setSelectedDestinationId(destinationId);
+                  }}
+                  className="h-12 text-lg"
+                  data-testid="select-destination"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-2 text-base font-medium">
+              <BookOpen className="h-4 w-4 text-blue-600" />
+              Descrição da Viagem
+            </FormLabel>
+            <FormControl>
+              <Textarea 
+                {...field} 
+                placeholder="Descreva o que torna essa viagem especial. Que experiências você quer viver?"
+                className="min-h-24 text-base border-2 focus:border-blue-500 transition-colors resize-none"
+                data-testid="textarea-description"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="start_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-base font-medium">
+                <Calendar className="h-4 w-4 text-green-600" />
+                Data de Início
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  {...field} 
+                  type="date" 
+                  className="h-12 text-lg border-2 focus:border-blue-500 transition-colors"
+                  min={new Date().toISOString().split('T')[0]}
+                  data-testid="input-start-date"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="end_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-base font-medium">
+                <Calendar className="h-4 w-4 text-red-600" />
+                Data de Término
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  {...field} 
+                  type="date" 
+                  className="h-12 text-lg border-2 focus:border-blue-500 transition-colors"
+                  min={form.watch('start_date') || new Date().toISOString().split('T')[0]}
+                  data-testid="input-end-date"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
+  );
+}
+
+function StepPlanning({ form, watchedValues }: { form: any; watchedValues: any }) {
+  const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
+  
+  return (
+    <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-6">
+        <FormField
+          control={form.control}
+          name="budget"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-base font-medium">
+                <DollarSign className="h-4 w-4 text-green-600" />
+                Orçamento Total (R$)
+              </FormLabel>
+              <FormControl>
+                <Input 
+                  {...field} 
+                  type="number" 
+                  placeholder="Ex: 2500"
+                  className="h-12 text-lg border-2 focus:border-blue-500 transition-colors"
+                  min="0"
+                  step="50"
+                  onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                  data-testid="input-budget"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="max_participants"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-base font-medium">
+                <Users className="h-4 w-4 text-blue-600" />
+                Máximo de Participantes
+              </FormLabel>
+              <FormControl>
+                <div className="flex items-center space-x-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => field.onChange(Math.max(2, field.value - 1))}
+                    disabled={field.value <= 2}
+                    data-testid="button-decrease-participants"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <div className="flex-1 text-center">
+                    <span className="text-2xl font-bold text-blue-600">{field.value}</span>
+                    <p className="text-sm text-gray-500">pessoas</p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => field.onChange(Math.min(20, field.value + 1))}
+                    disabled={field.value >= 20}
+                    data-testid="button-increase-participants"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <FormField
+        control={form.control}
+        name="travel_style"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="flex items-center gap-2 text-base font-medium">
+              <Compass className="h-4 w-4 text-purple-600" />
+              Estilo de Viagem
+            </FormLabel>
+            <FormControl>
+              <Select onValueChange={field.onChange} value={field.value} data-testid="select-travel-style">
+                <SelectTrigger className="h-12 text-lg border-2 focus:border-blue-500">
+                  <SelectValue placeholder="Escolha o estilo que mais combina com você" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(TRAVEL_STYLE_SUGGESTIONS).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">{value.icon}</span>
+                        <span className="capitalize font-medium">{key}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Budget Breakdown Toggle */}
+      <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div>
+          <h4 className="font-medium">Orçamento Detalhado</h4>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Organize seus gastos por categoria para melhor controle
+          </p>
+        </div>
+        <Switch
+          checked={showBudgetBreakdown}
+          onCheckedChange={setShowBudgetBreakdown}
+          data-testid="switch-budget-breakdown"
+        />
+      </div>
+
+      {showBudgetBreakdown && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="space-y-4"
+        >
+          <FormField
+            control={form.control}
+            name="budget_breakdown"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Distribuição do Orçamento</FormLabel>
+                <FormControl>
+                  <div className="grid grid-cols-2 gap-4">
+                    {expenseCategories.map((category) => (
+                      <div key={category.id} className="space-y-2">
+                        <label className="text-sm font-medium capitalize flex items-center gap-2">
+                          <span className="text-lg">{category.icon}</span>
+                          {category.name}
+                        </label>
+                        <Input
+                          type="number"
+                          placeholder="R$ 0"
+                          className="border-2 focus:border-blue-500"
+                          onChange={(e) => {
+                            const currentBreakdown = field.value || {};
+                            field.onChange({
+                              ...currentBreakdown,
+                              [category.id]: e.target.value ? parseFloat(e.target.value) : 0
+                            });
+                          }}
+                          data-testid={`input-budget-${category.id}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+function StepActivities({ 
+  plannedActivities, 
+  setPlannedActivities 
+}: { 
+  plannedActivities: PlannedActivity[]; 
+  setPlannedActivities: (activities: PlannedActivity[]) => void; 
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl">
+        <Camera className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Planeje Suas Experiências</h3>
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Adicione atividades, custos estimados e detalhes importantes. 
+          Isso ajudará outros viajantes a entender o que esperar da viagem.
+        </p>
+      </div>
+
+      <AdvancedActivityManager
+        activities={plannedActivities}
+        onActivitiesChange={setPlannedActivities}
+        className="border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-xl p-6"
+      />
+
+      {plannedActivities.length === 0 && (
+        <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+          <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-3" />
+          <h4 className="font-medium text-gray-600 dark:text-gray-400 mb-2">
+            Nenhuma atividade adicionada ainda
+          </h4>
+          <p className="text-sm text-gray-500">
+            Use o botão acima para começar a planejar suas experiências
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepReview({ 
+  form, 
+  watchedValues, 
+  plannedActivities, 
+  selectedDestinationId 
+}: { 
+  form: any; 
+  watchedValues: any; 
+  plannedActivities: PlannedActivity[]; 
+  selectedDestinationId: number | undefined; 
+}) {
+  const totalActivityCosts = plannedActivities.reduce((sum, activity) => 
+    sum + (activity.estimated_cost || 0), 0
+  );
+
+  const tripDuration = watchedValues.start_date && watchedValues.end_date 
+    ? Math.ceil((new Date(watchedValues.end_date).getTime() - new Date(watchedValues.start_date).getTime()) / (1000 * 3600 * 24))
+    : 0;
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center p-6 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl">
+        <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Quase Pronto!</h3>
+        <p className="text-gray-600 dark:text-gray-400">
+          Revise todos os detalhes antes de criar sua viagem
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Detalhes Básicos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Título</p>
+              <p className="font-semibold">{watchedValues.title || "Sem título"}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Destino</p>
+              <p className="font-semibold">{watchedValues.destination || "Não selecionado"}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Período</p>
+              <p className="font-semibold">
+                {watchedValues.start_date && watchedValues.end_date 
+                  ? `${new Date(watchedValues.start_date).toLocaleDateString()} - ${new Date(watchedValues.end_date).toLocaleDateString()} (${tripDuration} dias)`
+                  : "Datas não definidas"
+                }
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Planejamento
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Orçamento Total</p>
+              <p className="font-semibold text-green-600">
+                {watchedValues.budget ? `R$ ${watchedValues.budget.toLocaleString()}` : "Não definido"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Participantes</p>
+              <p className="font-semibold">{watchedValues.max_participants || 0} pessoas</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Estilo</p>
+              <p className="font-semibold capitalize">
+                {watchedValues.travel_style 
+                  ? `${TRAVEL_STYLE_SUGGESTIONS[watchedValues.travel_style as keyof typeof TRAVEL_STYLE_SUGGESTIONS]?.icon} ${watchedValues.travel_style}`
+                  : "Não definido"
+                }
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Camera className="h-5 w-5" />
+            Atividades Planejadas ({plannedActivities.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {plannedActivities.length > 0 ? (
+            <div className="space-y-3">
+              {plannedActivities.slice(0, 3).map((activity, index) => (
+                <div key={activity.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <div className="flex-1">
+                    <p className="font-medium">{activity.title}</p>
+                    <p className="text-sm text-gray-500 capitalize">{activity.category} • {activity.priority}</p>
+                  </div>
+                  {activity.estimated_cost && (
+                    <Badge variant="secondary">R$ {activity.estimated_cost}</Badge>
+                  )}
+                </div>
+              ))}
+              {plannedActivities.length > 3 && (
+                <p className="text-sm text-gray-500 text-center">
+                  +{plannedActivities.length - 3} atividades adicionais
+                </p>
+              )}
+              <div className="flex items-center justify-between pt-3 border-t">
+                <p className="font-medium">Custo Total das Atividades:</p>
+                <p className="font-bold text-green-600">R$ {totalActivityCosts.toLocaleString()}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-4">Nenhuma atividade planejada ainda</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {watchedValues.description && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="h-5 w-5" />
+              Descrição
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              {watchedValues.description}
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
