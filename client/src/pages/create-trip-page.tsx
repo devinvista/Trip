@@ -51,11 +51,15 @@ import {
   BookOpen,
   Route,
   Lightbulb,
-  Shield
+  Shield,
+  Search,
+  Trash2,
+  ArrowUp
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { insertTripSchema, expenseCategories, BudgetBreakdown, PlannedActivity } from "@shared/schema";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { useQuery } from "@tanstack/react-query";
 import { DestinationSelector } from "@/components/destination-selector";
 import { AdvancedActivityManager } from "@/components/advanced-activity-manager";
 import { CoverImageSelector } from "@/components/cover-image-selector";
@@ -174,8 +178,8 @@ function CreateTripPageContent() {
                            watchedValues.max_participants;
     updatedSteps[1].isCompleted = Boolean(planningComplete);
 
-    // Step 3: Activities completion
-    updatedSteps[2].isCompleted = plannedActivities.length > 0;
+    // Step 3: Activities completion (opcional - permite pular)
+    updatedSteps[2].isCompleted = true; // Sempre permite avançar
 
     // Step 4: Review (always completable if previous steps are done)
     updatedSteps[3].isCompleted = updatedSteps[0].isCompleted && 
@@ -904,33 +908,278 @@ function StepActivities({
   plannedActivities: PlannedActivity[]; 
   setPlannedActivities: (activities: PlannedActivity[]) => void; 
 }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [isAddingActivity, setIsAddingActivity] = useState(false);
+
+  // Query para buscar atividades do banco
+  const { data: availableActivities = [], isLoading } = useQuery<any[]>({
+    queryKey: ["/api/activities"],
+    queryFn: async () => {
+      const response = await fetch("/api/activities?sortBy=rating", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Erro ao carregar atividades");
+      return response.json();
+    },
+  });
+
+  // Filtrar atividades
+  const filteredActivities = availableActivities.filter(activity => {
+    const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || activity.category === selectedCategory;
+    const notAlreadyAdded = !plannedActivities.find(planned => planned.id === activity.id.toString());
+    
+    return matchesSearch && matchesCategory && notAlreadyAdded;
+  });
+
+  // Categorias únicas das atividades
+  const categories = ["all", ...new Set(availableActivities.map(activity => activity.category))];
+  
+  const categoryLabels: Record<string, string> = {
+    all: "Todas",
+    pontos_turisticos: "Pontos Turísticos", 
+    adventure: "Aventura",
+    cultural: "Cultural",
+    food_tours: "Gastronomia",
+    nature: "Natureza",
+    water_sports: "Esportes Aquáticos"
+  };
+
+  const addActivity = (activity: any) => {
+    const newActivity: PlannedActivity = {
+      id: activity.id.toString(),
+      title: activity.title,
+      description: activity.description || "",
+      category: activity.category,
+      estimated_cost: activity.price || 0,
+      duration: activity.duration || "1-2 horas",
+      priority: "medium",
+      attachments: [],
+      links: [],
+      notes: `Atividade encontrada na busca\nPreço original: R$ ${activity.price || 0}`,
+      status: "planned"
+    };
+
+    setPlannedActivities([...plannedActivities, newActivity]);
+    
+    toast({
+      title: "✅ Atividade adicionada!",
+      description: `${activity.title} foi adicionada ao seu plano`,
+    });
+  };
+
+  const removeActivity = (activityId: string) => {
+    setPlannedActivities(plannedActivities.filter(activity => activity.id !== activityId));
+    
+    toast({
+      title: "🗑️ Atividade removida",
+      description: "A atividade foi removida do seu plano",
+    });
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl">
-        <Camera className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-        <h3 className="text-xl font-semibold mb-2">Planeje Suas Experiências</h3>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Adicione atividades, custos estimados e detalhes importantes. 
-          Isso ajudará outros viajantes a entender o que esperar da viagem.
-        </p>
-      </div>
-
-      <AdvancedActivityManager
-        activities={plannedActivities}
-        onActivitiesChange={setPlannedActivities}
-        className="border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-xl p-6"
-      />
-
-      {plannedActivities.length === 0 && (
-        <div className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
-          <AlertCircle className="h-8 w-8 text-gray-400 mx-auto mb-3" />
-          <h4 className="font-medium text-gray-600 dark:text-gray-400 mb-2">
-            Nenhuma atividade adicionada ainda
-          </h4>
-          <p className="text-sm text-gray-500">
-            Use o botão acima para começar a planejar suas experiências
-          </p>
+    <div className="space-y-8">
+      {/* Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center"
+      >
+        <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full mb-6">
+          <MapPin className="h-5 w-5 text-blue-600" />
+          <span className="font-medium text-blue-800 dark:text-blue-200">
+            Experiências Incríveis Te Esperam
+          </span>
         </div>
+        <h2 className="text-3xl font-bold mb-4">Monte Seu Roteiro Perfeito</h2>
+        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Descubra atividades avaliadas por outros viajantes e crie experiências inesquecíveis
+        </p>
+      </motion.div>
+
+      {/* Search and Filters */}
+      <Card className="border-0 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Buscar por atividades, locais ou experiências..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 h-12 text-lg border-2 focus:border-blue-500 rounded-xl"
+                />
+              </div>
+            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="md:w-48 h-12 border-2 rounded-xl">
+                <SelectValue placeholder="Filtrar categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {categoryLabels[category] || category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Available Activities */}
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-xl h-64 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredActivities.map((activity) => (
+                <motion.div
+                  key={activity.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="group cursor-pointer"
+                  onClick={() => addActivity(activity)}
+                >
+                  <Card className="h-full border-0 shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                    <CardContent className="p-0">
+                      {activity.images?.[0] && (
+                        <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-t-xl flex items-center justify-center">
+                          <Camera className="h-12 w-12 text-white/60" />
+                        </div>
+                      )}
+                      
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h4 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">
+                              {activity.title}
+                            </h4>
+                            <Badge variant="secondary" className="text-xs">
+                              {categoryLabels[activity.category] || activity.category}
+                            </Badge>
+                          </div>
+                          <div className="text-right">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                              <span className="font-medium">{activity.average_rating?.toFixed(1) || "5.0"}</span>
+                            </div>
+                            {activity.price > 0 && (
+                              <p className="text-green-600 font-bold">R$ {activity.price}</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                          {activity.description}
+                        </p>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Clock className="h-4 w-4" />
+                            <span>{activity.duration || "1-2h"}</span>
+                          </div>
+                          <Button size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Plus className="h-4 w-4 mr-1" />
+                            Adicionar
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {filteredActivities.length === 0 && !isLoading && (
+            <div className="text-center py-12">
+              <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h4 className="text-lg font-medium text-gray-600 mb-2">Nenhuma atividade encontrada</h4>
+              <p className="text-gray-500">Tente ajustar os filtros ou termo de busca</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Selected Activities */}
+      {plannedActivities.length > 0 && (
+        <Card className="border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              Atividades Selecionadas ({plannedActivities.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {plannedActivities.map((activity) => (
+                <motion.div
+                  key={activity.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800"
+                >
+                  <div className="flex-1">
+                    <h5 className="font-semibold">{activity.title}</h5>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+                      {categoryLabels[activity.category] || activity.category}
+                    </p>
+                  </div>
+                  
+                  {activity.estimated_cost > 0 && (
+                    <Badge variant="secondary" className="bg-green-100 dark:bg-green-800">
+                      R$ {activity.estimated_cost}
+                    </Badge>
+                  )}
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeActivity(activity.id)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              ))}
+              
+              <div className="pt-4 border-t">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Custo Total das Atividades:</span>
+                  <span className="font-bold text-green-600 text-lg">
+                    R$ {plannedActivities.reduce((sum, activity) => sum + (activity.estimated_cost || 0), 0).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Empty State */}
+      {plannedActivities.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600"
+        >
+          <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-6" />
+          <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-3">
+            Seu roteiro está vazio
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            Explore as atividades acima e monte o roteiro perfeito para sua viagem
+          </p>
+          <div className="inline-flex items-center gap-2 text-blue-600">
+            <ArrowUp className="h-4 w-4" />
+            <span className="font-medium">Clique em uma atividade para adicionar</span>
+          </div>
+        </motion.div>
       )}
     </div>
   );
