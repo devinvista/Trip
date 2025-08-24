@@ -289,7 +289,21 @@ function CreateTripPageContent() {
       return;
     }
     
-    createTripMutation.mutate(data);
+    // Avança para o próximo passo (atividades) em vez de criar a viagem
+    setCurrentStep(currentStep + 1);
+  };
+
+  // Função separada para criar a viagem (apenas na revisão final)
+  const handleCreateTrip = () => {
+    const formData = form.getValues();
+    const tripData = {
+      ...formData,
+      destination_id: selectedDestinationId,
+      planned_activities: plannedActivities,
+    };
+    
+    console.log("Creating trip with data:", tripData);
+    createTripMutation.mutate(tripData);
   };
 
   // Progress calculation
@@ -549,7 +563,8 @@ function CreateTripPageContent() {
                         </Button>
                       ) : (
                         <Button
-                          type="submit"
+                          type="button"
+                          onClick={handleCreateTrip}
                           disabled={createTripMutation.isPending || !wizardSteps[3].isCompleted}
                           className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 min-w-[140px]"
                         >
