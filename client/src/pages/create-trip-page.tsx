@@ -267,6 +267,10 @@ function CreateTripPageContent() {
   });
 
   const onSubmit = (data: CreateTripForm) => {
+    console.log("Form submission data:", data);
+    console.log("Selected destination ID:", selectedDestinationId);
+    console.log("Planned activities:", plannedActivities);
+    
     if (!selectedDestinationId) {
       toast({
         title: "Destino não selecionado",
@@ -275,6 +279,16 @@ function CreateTripPageContent() {
       });
       return;
     }
+    
+    if (!data.title || !data.start_date || !data.end_date) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha título, data de início e fim",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     createTripMutation.mutate(data);
   };
 
@@ -605,10 +619,16 @@ function StepBasics({
               </FormLabel>
               <FormControl>
                 <DestinationSelector
-                  value={field.value}
-                  onValueChange={(value: string, destinationId: number | undefined) => {
-                    field.onChange(value);
+                  value={selectedDestinationId}
+                  onValueChange={(destinationId: number | undefined) => {
                     setSelectedDestinationId(destinationId);
+                    // Find destination name by ID and update form
+                    if (destinationId) {
+                      // This will be set when destinations are loaded
+                      field.onChange(`destination-${destinationId}`);
+                    } else {
+                      field.onChange("");
+                    }
                   }}
                   className="h-12 text-lg"
                   data-testid="select-destination"
