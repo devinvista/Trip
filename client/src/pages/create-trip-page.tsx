@@ -959,6 +959,7 @@ function StepActivities({
       attachments: [],
       links: [],
       notes: `Atividade encontrada na busca\nPreço original: R$ ${activity.price || 0}`,
+      date_time: undefined,
       status: "planned"
     };
 
@@ -1066,9 +1067,9 @@ function StepActivities({
                           <div className="text-right">
                             <div className="flex items-center gap-1 mb-1">
                               <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                              <span className="font-medium">{activity.average_rating?.toFixed(1) || "5.0"}</span>
+                              <span className="font-medium">{typeof activity.average_rating === 'number' ? activity.average_rating.toFixed(1) : "5.0"}</span>
                             </div>
-                            {activity.price > 0 && (
+                            {(activity.price && activity.price > 0) && (
                               <p className="text-green-600 font-bold">R$ {activity.price}</p>
                             )}
                           </div>
