@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -229,14 +229,21 @@ function CreateTripPageContent() {
   const createTripMutation = useMutation({
     mutationFn: async (data: CreateTripForm) => {
       const { destination, ...tripData } = data;
-      return apiRequest('/api/trips', {
+      const response = await fetch('/api/trips', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           ...tripData,
           destination_id: selectedDestinationId,
           planned_activities: plannedActivities,
         }),
       });
+      if (!response.ok) {
+        throw new Error('Failed to create trip');
+      }
+      return response.json();
     },
     onSuccess: () => {
       setShowConfetti(true);
@@ -424,7 +431,10 @@ function CreateTripPageContent() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-2xl font-bold flex items-center gap-3">
-                      {React.createElement(wizardSteps[currentStep].icon, { className: "h-6 w-6 text-blue-600" })}
+{(() => {
+                        const Icon = wizardSteps[currentStep].icon;
+                        return <Icon className="h-6 w-6 text-blue-600" />;
+                      })()}
                       {wizardSteps[currentStep].title}
                     </CardTitle>
                     <p className="text-gray-600 dark:text-gray-300 mt-1">
@@ -596,7 +606,7 @@ function StepBasics({
               <FormControl>
                 <DestinationSelector
                   value={field.value}
-                  onValueChange={(value, destinationId) => {
+                  onValueChange={(value: string, destinationId: number | undefined) => {
                     field.onChange(value);
                     setSelectedDestinationId(destinationId);
                   }}
@@ -819,11 +829,11 @@ function StepPlanning({ form, watchedValues }: { form: any; watchedValues: any }
                 <FormLabel>Distribuição do Orçamento</FormLabel>
                 <FormControl>
                   <div className="grid grid-cols-2 gap-4">
-                    {expenseCategories.map((category) => (
-                      <div key={category.id} className="space-y-2">
+                    {Object.entries(expenseCategories).map(([key, categoryName]) => (
+                      <div key={key} className="space-y-2">
                         <label className="text-sm font-medium capitalize flex items-center gap-2">
-                          <span className="text-lg">{category.icon}</span>
-                          {category.name}
+                          <span className="text-lg">💰</span>
+                          {categoryName}
                         </label>
                         <Input
                           type="number"
@@ -833,10 +843,10 @@ function StepPlanning({ form, watchedValues }: { form: any; watchedValues: any }
                             const currentBreakdown = field.value || {};
                             field.onChange({
                               ...currentBreakdown,
-                              [category.id]: e.target.value ? parseFloat(e.target.value) : 0
+                              [key]: e.target.value ? parseFloat(e.target.value) : 0
                             });
                           }}
-                          data-testid={`input-budget-${category.id}`}
+                          data-testid={`input-budget-${key}`}
                         />
                       </div>
                     ))}
