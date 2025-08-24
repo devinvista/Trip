@@ -115,11 +115,14 @@ export function registerRoutes(app: Express): Server {
       console.log('Dados recebidos para criação de viagem:', req.body);
       console.log('Usuário autenticado:', req.user);
       
-      // Validar dados da viagem e adicionar creator_id
-      const tripData = insertTripSchema.parse({
-        ...req.body,
+      // Validar dados da viagem
+      const validatedData = insertTripSchema.parse(req.body);
+      
+      // Adicionar creator_id após validação
+      const tripData = {
+        ...validatedData,
         creator_id: req.user.id
-      });
+      };
       
       console.log('Dados processados para criação:', tripData);
       
